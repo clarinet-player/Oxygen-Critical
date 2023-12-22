@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://d2x5py41o3i6g"]
+
+[sub_resource type="GDScript" id="GDScript_n47eq"]
+resource_name = "surfaceData"
+script/source = "class_name SurfaceData
+extends Node
+
+
+@export var thickness : float = 10.0
+
+@export var hardness : float = 10.0
+"
+
+[node name="surfaceData" type="Node"]
+script = SubResource("GDScript_n47eq")

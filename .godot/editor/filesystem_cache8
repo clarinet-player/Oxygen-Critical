@@ -1,4 +1,15 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1702334271
+::res://::1703195137
 icon.svg::CompressedTexture2D::8724437967346365169::1702187069::1702187082::1::::<><>::
-::res://space-game/::1702334104
+::res://classes/::1703198869
+bullet.tscn::PackedScene::4851513591805773323::1703198509::0::1::::<><>::
+kinematicBody.tscn::PackedScene::6526286798366831390::1703198509::0::1::::<><>::
+player_body.tscn::PackedScene::3870511626010616731::1703198869::0::1::::<><>::
+stickyBody.tscn::PackedScene::1036368045463060559::1703198509::0::1::::<><>::
+surfaceData.tscn::PackedScene::9103691120901991812::1703198509::0::1::::<><>::
+worldState.tscn::PackedScene::890259437353000500::1703198509::0::1::::<><>::
+::res://scenes/::1703198510
+body.gd::GDScript::-1::1703197746::0::1::::<>RigidBody3D<>::
+testscene.tscn::PackedScene::5730862881325956368::1703199389::0::1::::<><>::res://scripts/testcentrifuge.gd<>res://scenes/body.gd
+::res://scripts/::1703197672
+testcentrifuge.gd::GDScript::-1::1703197672::0::1::::<>Node3D<>::

@@ -1,0 +1,91 @@
+[gd_scene load_steps=2 format=3 uid="uid://cbedyqmsdeuql"]
+
+[sub_resource type="GDScript" id="GDScript_dlcs3"]
+resource_name = "bullet"
+script/source = "class_name Bullet
+extends RayCast3D
+
+
+
+var mass : float = 10.0
+var aeroMultiplier : float = 0.99
+
+var velocity : Vector3 = Vector3(1, 0, 0)
+var acceleration : float = 0.0
+
+var _time : float
+
+@onready var _raycast = $RayCast3D
+@onready var _mesh = $MeshInstance3D
+
+
+
+func _process(delta):
+	_mesh.scale.x = velocity.length()
+	_mesh.scale.y = mass
+	_mesh.scale.z = mass
+
+
+
+func _physics_process(delta):
+	
+	_time = delta
+	
+	target_position = velocity * _time
+	force_raycast_update()
+	
+	
+	while is_colliding():
+		var colliding_body = get_collider()
+		var collision_point = get_collision_point()
+		var distance_travelled = global_position.distance_to(collision_point)
+		var exit_point = _raycast.get_collision_point()
+		
+		_time -= distance_travelled / velocity.length()
+		global_position = collision_point
+		
+		
+		if \"surface_data\" in colliding_body:
+			var surface = colliding_body.surface_data
+			_wall_impact(collision_point, exit_point, get_collision_normal(), surface)
+		
+		elif \"player\" in colliding_body:
+			var player = colliding_body.player
+			_player_hit(collision_point, exit_point, player)
+		
+		
+		global_position = to_local(collision_point) + Vector3(0, 0, 0.01)
+		
+		target_position = velocity * _time
+		force_raycast_update()
+	
+	
+	velocity *= aeroMultiplier
+	velocity += Vector3(0, 0, acceleration * delta)
+	velocity += to_local(WorldState.get_gravity_vector * delta)
+	global_position = to_global(target_position)
+
+
+
+func _wall_impact(start : Vector3, end : Vector3, normal : Vector3, data : Node):
+	var thickness = data.thickness
+	var hardness = data.hardness
+	
+	
+
+
+
+func _player_hit(start : Vector3, end : Vector3, player : Node):
+	pass
+"
+
+[node name="bullet" type="RayCast3D"]
+enabled = false
+script = SubResource("GDScript_dlcs3")
+
+[node name="RayCast3D" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.01)
+enabled = false
+hit_from_inside = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]

@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://o1a3h24dxewl"]
+
+[sub_resource type="GDScript" id="GDScript_umip7"]
+resource_name = "stickyBody"
+script/source = "class_name StickyBody
+extends RigidBody3D
+
+enum surfaceTypes {
+	FLOOR,
+	WALL,
+	CEILING
+}
+
+var stickyType : surfaceTypes = surfaceTypes.CEILING
+var surface : 
+"
+
+[node name="stickyBody" type="RigidBody3D"]
+script = SubResource("GDScript_umip7")

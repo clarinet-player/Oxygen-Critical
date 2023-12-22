@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3 uid="uid://mxipb7mafqj1"]
+
+[sub_resource type="GDScript" id="GDScript_8vbcv"]
+resource_name = "worldState"
+script/source = "extends Node
+
+enum gravityTypes {
+	NORMAL,
+	ZERO,
+	SPIN
+}
+
+var gravityState : gravityTypes = gravityTypes.ZERO
+
+var gravityStrength : float = 0.0
+
+var airPressure : float = 0.0
+
+func get_gravity_vector() -> Vector3:
+	if gravityState == gravityTypes.NORMAL:
+		return Vector3(0, gravityStrength * -1, 0)
+	else:
+		return Vector3.ZERO
+"
+
+[node name="worldState" type="Node"]
+script = SubResource("GDScript_8vbcv")
