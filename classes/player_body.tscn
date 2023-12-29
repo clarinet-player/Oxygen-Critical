@@ -5,53 +5,212 @@ script/source = "class_name PlayerBody
 extends RigidBody3D
 
 
-var anchored_body : RigidBody3D
+@export var walk_acceleration : float = 3.0
+@export var walk_friction : float = 3.0
+@export var walk_max_speed : float = 10.0
 
-var _jump_request_time : int
-var _jump_vector : Vector3
+@export var sprint_acceleration : float = 5.0
+@export var sprint_max_speed : float = 20.0
+
+@export var slide_power : float = 5.0
+@export var slide_friction : float = 1.0
+
+@export var jump_power : float = 10.0
+
+@export var mouse_sensitivity : float = 0.01
+
+var _mouse_position : Vector2 = Vector2.ZERO
+
+var _anchored_body : RigidBody3D
+var _anchor_point_l : Vector3
+
+var _set_velocity : Vector3
+
+var _lateral_velocity : Vector2
+var _surface_normal : Vector3
+
+enum move_type {
+	IDLE,
+	WALKING,
+	SPRINTING,
+	SLIDING
+}
+
+var _movement_state : move_type = move_type.WALKING
 
 
+# Called when we enter the scene tree
+func _ready():
+	body_entered.connect(_on_collision)
+
+
+############    EXECUTED EVERY PHYSICS FRAME    #############
+
+
+# Before simulation
+func _physics_process(delta):
+	
+	# Get mouse input
+	var _new = get_viewport().get_mouse_position()
+	var _difference = _new - _mouse_position
+	
+	
+	# Rotate to match mouse input
+	if _anchored_body:
+		var _looking : Vector3 = global_transform.basis.z
+		
+		rotate(_surface_normal, _difference.x * mouse_sensitivity)
+		rotate(_looking - _looking.dot(_surface_normal) * _surface_normal, _difference.y * mouse_sensitivity)
+		
+	rotate(global_transform.basis.y, _difference.x * mouse_sensitivity)
+	rotate(global_transform.basis.x, _difference.y * mouse_sensitivity)
+	
+	_mouse_position = _new
+	
+	
+	# Stop execution if we're not anchored
+	if !_anchored_body:
+		return
+	
+	
+	# Move to follow our anchor
+	global_position = _anchored_body.to_global(_anchor_point_l)
+	
+	
+	# Jumping
+	if Input.is_action_pressed(\"Space\"):
+		detach(global_transform.basis.z * jump_power)
+		apply_central_impulse(global_transform.basis.z * jump_power)
+	
+	
+	# Modifying Movement State
+	if Input.is_action_pressed(\"Control\"):
+		if _movement_state != move_type.SLIDING:
+			_movement_state = move_type.SLIDING
+			_lateral_velocity += _lateral_velocity.normalized() * slide_power
+	elif _movement_state == move_type.SLIDING:
+		_movement_state = move_type.IDLE
+	
+	if Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\"):
+		if _movement_state == move_type.IDLE:
+			_movement_state = move_type.WALKING
+	elif _movement_state != move_type.SLIDING:
+		_movement_state = move_type.IDLE
+	
+	if Input.is_action_pressed(\"Shift\") and _movement_state == move_type.WALKING:
+		_movement_state = move_type.SPRINTING
+	
+	
+	# Getting movement input
+	match _movement_state:
+		
+		move_type.IDLE:
+			if _lateral_velocity < walk_friction * delta:
+				_lateral_velocity = Vector2.ZERO
+			else:
+				_lateral_velocity -= walk_friction * delta
+		
+		move_type.WALKING:
+			var _accel = delta * walk_acceleration
+			
+			if Input.is_action_pressed(\"W\"):
+				_lateral_velocity.y += _accel
+			if Input.is_action_pressed(\"S\"):
+				_lateral_velocity.y -= _accel
+			if Input.is_action_pressed(\"A\"):
+				_lateral_velocity.x -= _accel
+			if Input.is_action_pressed(\"D\"):
+				_lateral_velocity.x += _accel
+			
+			_lateral_velocity.limit_length(walk_max_speed)
+		
+		move_type.SPRINTING:
+			var _accel = delta * sprint_acceleration
+			
+			if Input.is_action_pressed(\"W\"):
+				_lateral_velocity.y += _accel
+			if Input.is_action_pressed(\"S\"):
+				_lateral_velocity.y -= _accel
+			if Input.is_action_pressed(\"A\"):
+				_lateral_velocity.x -= _accel
+			if Input.is_action_pressed(\"D\"):
+				_lateral_velocity.x += _accel
+			
+			_lateral_velocity.limit_length(sprint_max_speed)
+		
+		move_type.SLIDING:
+			if _lateral_velocity < slide_friction * delta:
+				_lateral_velocity = Vector2.ZERO
+			else:
+				_lateral_velocity -= walk_friction * delta
+	
+	
+	# Applying movement
+	var _looking : Vector3 = global_transform.basis.z
+	
+	var _forward : Vector3 = _looking - _looking.dot(_surface_normal) * _surface_normal
+	
+	var _side : Vector3 = _forward.rotated(_surface_normal, 90)
+	
+	var _movement : Vector3 = (_forward * _lateral_velocity.y) + ( _side * _lateral_velocity.x)
+	move_and_collide(_movement)
+
+
+# During simulation
 func _integrate_forces(state):
+	if _anchored_body:
+		return
 	
-	#movement
+	if !_set_velocity.is_zero_approx():
+		state.linear_velocity = _set_velocity
+		_set_velocity = Vector3.ZERO
 	
-	#jumping
-	if anchored_body and Time.get_ticks_msec() - _jump_request_time < 100:
-		_jump_request_time = 0
-		jump()
+	state.linear_velocity += WorldState.get_gravity_vector() * get_physics_process_delta_time()
 
 
-func try_jump(direction : Vector3):
-	_jump_request_time = Time.get_ticks_msec()
-	_jump_vector = direction
+#############################################################
 
 
-func jump():
-	detach()
-	apply_central_impulse(_jump_vector)
+func _on_collision(body : RigidBody3D):
+	if _anchored_body:
+		return
+	
+	if body.grabbable:
+		attach(body, global_position)
+		var velocity = to_local(linear_velocity)
+		_lateral_velocity = Vector2(velocity.x, velocity.z + velocity.y)
 
 
-func attach(body):
-	reparent(body)
-	anchored_body = body
+func attach(body : RigidBody3D, anchor_point_g : Vector3):
+	_anchored_body = body
+	_anchor_point_l = _anchored_body.to_local(anchor_point_g)
 
 
-func detach():
+func detach(velocity : Vector3):
 	var offset : Vector3 = position
 	
-	reparent(anchored_body.get_parent())
+	reparent(_anchored_body.get_parent())
 	
-	apply_central_impulse( anchored_body.linear_velocity )
-	apply_central_impulse( position.cross( anchored_body.angular_velocity ) )
+	_set_velocity = velocity
+	_set_velocity += _anchored_body.linear_velocity 
+	_set_velocity += position.cross( _anchored_body.angular_velocity )
 	
-	anchored_body = null
+	_anchored_body = null
 "
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_be7sq"]
+[sub_resource type="SphereShape3D" id="SphereShape3D_g30ov"]
+radius = 1.0
 
 [node name="player_body" type="RigidBody3D"]
+mass = 50.0
 custom_integrator = true
+max_contacts_reported = 1
+contact_monitor = true
+lock_rotation = true
 script = SubResource("GDScript_n1bfo")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-shape = SubResource("CapsuleShape3D_be7sq")
+shape = SubResource("SphereShape3D_g30ov")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

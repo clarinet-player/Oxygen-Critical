@@ -1,11 +1,7 @@
-res://classes/bullet.tscn
+res://classes/worldState.tscn
 res://classes/player_body.tscn
-res://scenes/testscene.tscn
 res://classes/kinematicBody.tscn
 res://classes/stickyBody.tscn
-res://classes/worldState.tscn
 res://classes/surfaceData.tscn
-res://scripts/testcentrifuge.gd
-res://scenes/body.gd
-res://scripts/StaticBody3D.gd
-res://scripts/body.gd
+res://classes/bullet.tscn
+res://scenes/testscene.tscn
