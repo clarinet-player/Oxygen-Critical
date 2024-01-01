@@ -4,21 +4,16 @@
 resource_name = "worldState"
 script/source = "extends Node
 
-enum gravityTypes {
-	THRUST,
-	ZERO,
-	SPIN
-}
+# Gravity states: zero, thrust, spin
+var gravity_state : String = \"thrust\" 
 
-var gravityState : gravityTypes = gravityTypes.ZERO
+var gravity_strength : float = 9.8
 
-var gravityStrength : float = 0.0
-
-var airPressure : float = 0.0
+var air_pressure : float = 1.0
 
 func get_gravity_vector() -> Vector3:
-	if gravityState == gravityTypes.THRUST:
-		return Vector3(0, gravityStrength * -1, 0)
+	if gravity_state == \"thrust\":
+		return Vector3(0, gravity_strength * -1, 0)
 	else:
 		return Vector3.ZERO
 "

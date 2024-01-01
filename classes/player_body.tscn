@@ -5,29 +5,32 @@ script/source = "class_name PlayerBody
 extends RigidBody3D
 
 
-@export var walk_acceleration : float = 3.0
-@export var walk_friction : float = 3.0
-@export var walk_max_speed : float = 10.0
 
-@export var sprint_acceleration : float = 5.0
-@export var sprint_max_speed : float = 20.0
+@export var walk_acceleration : float = 30.0
+@export var walk_friction : float = 40.0
+@export var walk_max_speed : float = 3
 
-@export var slide_power : float = 5.0
+@export var sprint_acceleration : float = 40.0
+@export var sprint_max_speed : float = 6
+
+@export var slide_power : float = 2.0
 @export var slide_friction : float = 1.0
 
-@export var jump_power : float = 10.0
+@export var jump_power : float = 3.0
 
 @export var mouse_sensitivity : float = 0.01
 
-var _mouse_position : Vector2 = Vector2.ZERO
+var _mouse_position : Vector2
 
 var _anchored_body : RigidBody3D
 var _anchor_point_l : Vector3
-
-var _set_velocity : Vector3
-
-var _lateral_velocity : Vector2
 var _surface_normal : Vector3
+
+var _velocity_2d : Vector2
+var _velocity_3d : Vector3
+
+var _jump_stamina : float = 1.0
+var _slide_stamina : float = 1.0
 
 enum move_type {
 	IDLE,
@@ -39,55 +42,71 @@ enum move_type {
 var _movement_state : move_type = move_type.WALKING
 
 
+
 # Called when we enter the scene tree
 func _ready():
-	body_entered.connect(_on_collision)
+	_mouse_position = get_viewport().get_mouse_position()
+	#Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
-############    EXECUTED EVERY PHYSICS FRAME    #############
+
+############    Executed every physics frame    ############
 
 
-# Before simulation
-func _physics_process(delta):
-	
+
+func _physics_process(delta : float):
+
 	# Get mouse input
 	var _new = get_viewport().get_mouse_position()
 	var _difference = _new - _mouse_position
+	_mouse_position = _new
 	
 	
 	# Rotate to match mouse input
 	if _anchored_body:
-		var _looking : Vector3 = global_transform.basis.z
-		
 		rotate(_surface_normal, _difference.x * mouse_sensitivity)
-		rotate(_looking - _looking.dot(_surface_normal) * _surface_normal, _difference.y * mouse_sensitivity)
+		rotate(global_transform.basis.x.normalized(), _difference.y * mouse_sensitivity)
 		
-	rotate(global_transform.basis.y, _difference.x * mouse_sensitivity)
-	rotate(global_transform.basis.x, _difference.y * mouse_sensitivity)
-	
-	_mouse_position = _new
-	
-	
-	# Stop execution if we're not anchored
-	if !_anchored_body:
-		return
+	else:
+		rotate(global_transform.basis.y.normalized(), _difference.x * mouse_sensitivity)
+		rotate(global_transform.basis.x.normalized(), _difference.y * mouse_sensitivity)
 	
 	
-	# Move to follow our anchor
-	global_position = _anchored_body.to_global(_anchor_point_l)
+	# Regen stamina
+	_jump_stamina = clamp(_jump_stamina + delta, 0, 1)
+	_slide_stamina = clamp(_slide_stamina + delta, 0, 1)
 	
 	
-	# Jumping
-	if Input.is_action_pressed(\"Space\"):
-		detach(global_transform.basis.z * jump_power)
-		apply_central_impulse(global_transform.basis.z * jump_power)
+	if _anchored_body:
+		
+		# Move to follow our anchor
+		global_position = _anchored_body.to_global(_anchor_point_l)
 	
+	
+		# Jumping
+		if Input.is_action_pressed(\"Space\"):
+			detach()
+			_velocity_3d += _surface_normal
+			_velocity_3d += global_transform.basis.z * -1 * jump_power * _jump_stamina
+			_jump_stamina = 0
+	
+	
+	# Delegate movement
+	if _anchored_body:
+		_surface_move(delta)
+	else:
+		_free_move(delta)
+
+
+
+func _surface_move(delta : float):
 	
 	# Modifying Movement State
 	if Input.is_action_pressed(\"Control\"):
 		if _movement_state != move_type.SLIDING:
 			_movement_state = move_type.SLIDING
-			_lateral_velocity += _lateral_velocity.normalized() * slide_power
+			_velocity_2d.y += slide_power * _slide_stamina
+			_slide_stamina = 0
 	elif _movement_state == move_type.SLIDING:
 		_movement_state = move_type.IDLE
 	
@@ -105,95 +124,146 @@ func _physics_process(delta):
 	match _movement_state:
 		
 		move_type.IDLE:
-			if _lateral_velocity < walk_friction * delta:
-				_lateral_velocity = Vector2.ZERO
+			if _velocity_2d.length() < walk_friction * delta:
+				_velocity_2d = Vector2.ZERO
 			else:
-				_lateral_velocity -= walk_friction * delta
+				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - walk_friction * delta)
 		
 		move_type.WALKING:
 			var _accel = delta * walk_acceleration
 			
 			if Input.is_action_pressed(\"W\"):
-				_lateral_velocity.y += _accel
+				_velocity_2d.y += _accel
 			if Input.is_action_pressed(\"S\"):
-				_lateral_velocity.y -= _accel
+				_velocity_2d.y -= _accel
 			if Input.is_action_pressed(\"A\"):
-				_lateral_velocity.x -= _accel
+				_velocity_2d.x -= _accel
 			if Input.is_action_pressed(\"D\"):
-				_lateral_velocity.x += _accel
+				_velocity_2d.x += _accel
 			
-			_lateral_velocity.limit_length(walk_max_speed)
+			if _velocity_2d.length() > walk_max_speed + walk_friction * delta:
+				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - walk_friction * delta)
+			else:
+				_velocity_2d = _velocity_2d.limit_length(walk_max_speed)
 		
 		move_type.SPRINTING:
 			var _accel = delta * sprint_acceleration
 			
 			if Input.is_action_pressed(\"W\"):
-				_lateral_velocity.y += _accel
+				_velocity_2d.y += _accel
 			if Input.is_action_pressed(\"S\"):
-				_lateral_velocity.y -= _accel
+				_velocity_2d.y -= _accel
 			if Input.is_action_pressed(\"A\"):
-				_lateral_velocity.x -= _accel
+				_velocity_2d.x -= _accel
 			if Input.is_action_pressed(\"D\"):
-				_lateral_velocity.x += _accel
+				_velocity_2d.x += _accel
 			
-			_lateral_velocity.limit_length(sprint_max_speed)
+			if _velocity_2d.length() > sprint_max_speed + walk_friction * delta:
+				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - walk_friction * delta)
+			else:
+				_velocity_2d = _velocity_2d.limit_length(sprint_max_speed)
 		
 		move_type.SLIDING:
-			if _lateral_velocity < slide_friction * delta:
-				_lateral_velocity = Vector2.ZERO
+			if _velocity_2d.length() < slide_friction * delta:
+				_velocity_2d = Vector2.ZERO
 			else:
-				_lateral_velocity -= walk_friction * delta
+				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - slide_friction * delta)
 	
 	
 	# Applying movement
-	var _looking : Vector3 = global_transform.basis.z
+	var _looking : Vector3 = global_transform.basis.z * -1
+	var _forward : Vector3 = _looking - _looking.dot(_surface_normal) * _surface_normal
+	var _side : Vector3 = _forward.cross(_surface_normal)
+	var _movement : Vector3 = (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
+	
+	var _collision = move_and_collide(_movement * delta)
+	while _collision:
+		
+		var _body = _collision.get_collider()
+		var _normal = _collision.get_normal()
+		var _remaining : float = _movement.length() - _collision.get_travel().length()
+		
+		if _body == _anchored_body and acos(_surface_normal.dot(_normal)) <= 0.5:
+			_surface_normal = _normal
+			
+			_looking = global_transform.basis.z * -1
+			_forward = _looking - _looking.dot(_surface_normal) * _surface_normal
+			_side = _forward.cross(_surface_normal)
+			
+			_movement = (_forward * _velocity_2d.y * _remaining) + ( _side * _velocity_2d.x * _remaining)
+			
+		else:
+			var _new_velocity = _movement - _movement.dot(_normal) * _normal
+			_velocity_2d = Vector2(_new_velocity.dot(_side), _new_velocity.dot(_forward))
+			_movement = _new_velocity * _remaining
+		
+		_collision = move_and_collide(_movement)
+	
+	
+	
+	_collision = move_and_collide(_surface_normal * -2 * delta)
+	if !_collision:
+		detach()
+		return
+	
+	_anchor_point_l = _anchored_body.to_local(self.global_position)
+
+
+
+func _free_move(delta : float):
+	
+	# Apply gravity, if any
+	_velocity_3d += WorldState.get_gravity_vector() * delta
+	
+	# Apply air resistance
+	_velocity_3d *= (350 - WorldState.air_pressure) / 350
+	
+	# Try to move to our new position
+	var _collision = move_and_collide(_velocity_3d * delta)
+	while _collision:
+		
+		var _body = _collision.get_collider()
+		var _normal = _collision.get_normal()
+		
+		if \"get_is_grabbable\" in _body and _body.get_is_grabbable:
+			attach(_body, global_position, _normal)
+			_surface_move(_collision.get_remainder().length()/_velocity_3d.length())
+			return
+		
+		_collision = move_and_collide(_collision.get_remainder().bounce(_normal) * 0.5)
+		_velocity_3d = _velocity_3d.bounce(_normal) * 0.5
+
+
+
+############################################################
+
+
+
+func attach(_body : RigidBody3D, _anchor_point_g : Vector3, _normal : Vector3):
+	_anchored_body = _body
+	_anchor_point_l = _anchored_body.to_local(_anchor_point_g)
+	_surface_normal = _normal
+	
+	var _looking : Vector3 = global_transform.basis.z * -1
 	
 	var _forward : Vector3 = _looking - _looking.dot(_surface_normal) * _surface_normal
 	
-	var _side : Vector3 = _forward.rotated(_surface_normal, 90)
+	var _side : Vector3 = _forward.cross(_surface_normal)
 	
-	var _movement : Vector3 = (_forward * _lateral_velocity.y) + ( _side * _lateral_velocity.x)
-	move_and_collide(_movement)
+	_velocity_2d = Vector2(_velocity_3d.dot(_side), _velocity_3d.dot(_looking))
 
 
-# During simulation
-func _integrate_forces(state):
-	if _anchored_body:
-		return
+
+func detach():
+	var _looking : Vector3 = global_transform.basis.z * -1
 	
-	if !_set_velocity.is_zero_approx():
-		state.linear_velocity = _set_velocity
-		_set_velocity = Vector3.ZERO
+	var _forward : Vector3 = _looking - _looking.dot(_surface_normal) * _surface_normal
 	
-	state.linear_velocity += WorldState.get_gravity_vector() * get_physics_process_delta_time()
-
-
-#############################################################
-
-
-func _on_collision(body : RigidBody3D):
-	if _anchored_body:
-		return
+	var _side : Vector3 = _forward.cross(_surface_normal)
 	
-	if body.grabbable:
-		attach(body, global_position)
-		var velocity = to_local(linear_velocity)
-		_lateral_velocity = Vector2(velocity.x, velocity.z + velocity.y)
-
-
-func attach(body : RigidBody3D, anchor_point_g : Vector3):
-	_anchored_body = body
-	_anchor_point_l = _anchored_body.to_local(anchor_point_g)
-
-
-func detach(velocity : Vector3):
-	var offset : Vector3 = position
-	
-	reparent(_anchored_body.get_parent())
-	
-	_set_velocity = velocity
-	_set_velocity += _anchored_body.linear_velocity 
-	_set_velocity += position.cross( _anchored_body.angular_velocity )
+	_velocity_3d = _anchored_body.linear_velocity 
+	_velocity_3d += position.cross(_anchored_body.angular_velocity)
+	_velocity_3d += (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
 	
 	_anchored_body = null
 "
@@ -206,7 +276,10 @@ mass = 50.0
 custom_integrator = true
 max_contacts_reported = 1
 contact_monitor = true
+can_sleep = false
 lock_rotation = true
+freeze = true
+freeze_mode = 1
 script = SubResource("GDScript_n1bfo")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]

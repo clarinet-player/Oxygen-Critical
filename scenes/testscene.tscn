@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://cnwcqemqhqc53"]
+[gd_scene load_steps=11 format=3 uid="uid://cnwcqemqhqc53"]
 
 [ext_resource type="PackedScene" uid="uid://bve504yaouv3p" path="res://classes/player_body.tscn" id="1_wfpof"]
+[ext_resource type="PackedScene" uid="uid://dgx1j2j0swpac" path="res://classes/wall.tscn" id="2_pl458"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vmb76"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -15,15 +16,21 @@ sky = SubResource("Sky_t6vij")
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_fh36h"]
-size = Vector3(100, 0.5, 100)
-
-[sub_resource type="BoxMesh" id="BoxMesh_203qp"]
-size = Vector3(100, 0.5, 100)
-
 [sub_resource type="SphereMesh" id="SphereMesh_gh80h"]
 radius = 1.0
 height = 2.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fh36h"]
+size = Vector3(50, 50, 50)
+
+[sub_resource type="BoxMesh" id="BoxMesh_203qp"]
+size = Vector3(50, 50, 50)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_itsvf"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_1lixv"]
+size = Vector3(2, 2, 2)
 
 [node name="testscene" type="Node3D"]
 
@@ -34,17 +41,48 @@ shadow_enabled = true
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_63ddg")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-shape = SubResource("BoxShape3D_fh36h")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
-mesh = SubResource("BoxMesh_203qp")
-
 [node name="player_body" parent="." instance=ExtResource("1_wfpof")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.598687, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.84748, 27.8909, 11.8258)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="player_body"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.758666, 0)
 mesh = SubResource("SphereMesh_gh80h")
+
+[node name="wall" parent="." instance=ExtResource("2_pl458")]
+freeze = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="wall"]
+shape = SubResource("BoxShape3D_fh36h")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="wall"]
+mesh = SubResource("BoxMesh_203qp")
+skeleton = NodePath("")
+
+[node name="wall2" parent="." instance=ExtResource("2_pl458")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.3231, 1.42146, 26.2435)
+freeze = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="wall2"]
+shape = SubResource("BoxShape3D_itsvf")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="wall2"]
+mesh = SubResource("BoxMesh_1lixv")
+
+[node name="wall3" parent="." instance=ExtResource("2_pl458")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.64163, 25.998, 14.6455)
+freeze = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="wall3"]
+shape = SubResource("BoxShape3D_itsvf")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="wall3"]
+mesh = SubResource("BoxMesh_1lixv")
+
+[node name="wall4" parent="." instance=ExtResource("2_pl458")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.2244, 1.42146, -4.90179)
+freeze = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="wall4"]
+shape = SubResource("BoxShape3D_itsvf")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="wall4"]
+mesh = SubResource("BoxMesh_1lixv")

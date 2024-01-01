@@ -1,8 +1,8 @@
 MeshInstance3D
 CollisionShape3D
+RigidBody3D
 StaticBody3D
 Camera3D
-RigidBody3D
 Node3D
 RayCast3D
 Node
