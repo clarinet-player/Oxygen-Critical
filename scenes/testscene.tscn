@@ -13,6 +13,7 @@ sky_material = SubResource("ProceduralSkyMaterial_vmb76")
 [sub_resource type="Environment" id="Environment_63ddg"]
 background_mode = 2
 sky = SubResource("Sky_t6vij")
+reflected_light_source = 1
 tonemap_mode = 2
 glow_enabled = true
 fog_light_color = Color(0.0392157, 0.0392157, 0.0392157, 1)
