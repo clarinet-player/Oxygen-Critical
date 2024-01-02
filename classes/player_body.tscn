@@ -16,7 +16,7 @@ extends RigidBody3D
 @export var slide_power : float = 2.0
 @export var slide_friction : float = 1.0
 
-@export var jump_power : float = 3.0
+@export var jump_power : float = 4.0
 
 @export var mouse_sensitivity : float = 0.01
 
@@ -47,6 +47,7 @@ var _movement_state : move_type = move_type.WALKING
 func _ready():
 	_mouse_position = get_viewport().get_mouse_position()
 	#Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	#_velocity_3d = Vector3(0, -1, 0)
 
 
 
@@ -55,7 +56,7 @@ func _ready():
 
 
 func _physics_process(delta : float):
-
+	
 	# Get mouse input
 	var _new = get_viewport().get_mouse_position()
 	var _difference = _new - _mouse_position
@@ -86,7 +87,7 @@ func _physics_process(delta : float):
 		# Jumping
 		if Input.is_action_pressed(\"Space\"):
 			detach()
-			_velocity_3d += _surface_normal
+			_velocity_3d += _surface_normal * 2
 			_velocity_3d += global_transform.basis.z * -1 * jump_power * _jump_stamina
 			_jump_stamina = 0
 	
@@ -170,43 +171,49 @@ func _surface_move(delta : float):
 				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - slide_friction * delta)
 	
 	
-	# Applying movement
+	# Calculating movement direction along the ground
 	var _looking : Vector3 = global_transform.basis.z * -1
 	var _forward : Vector3 = _looking - _looking.dot(_surface_normal) * _surface_normal
 	var _side : Vector3 = _forward.cross(_surface_normal)
 	var _movement : Vector3 = (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
 	
+	
+	# Applying movement
 	var _collision = move_and_collide(_movement * delta)
+	
 	while _collision:
 		
 		var _body = _collision.get_collider()
 		var _normal = _collision.get_normal()
-		var _remaining : float = _movement.length() - _collision.get_travel().length()
+		var _time_remaining : float = _collision.get_remainder().length() / _movement.length()
+		
 		
 		if _body == _anchored_body and acos(_surface_normal.dot(_normal)) <= 0.5:
+			
 			_surface_normal = _normal
 			
 			_looking = global_transform.basis.z * -1
 			_forward = _looking - _looking.dot(_surface_normal) * _surface_normal
 			_side = _forward.cross(_surface_normal)
 			
-			_movement = (_forward * _velocity_2d.y * _remaining) + ( _side * _velocity_2d.x * _remaining)
+			_movement = (_forward * _velocity_2d.y * _time_remaining) + ( _side * _velocity_2d.x * _time_remaining)
 			
 		else:
+			
 			var _new_velocity = _movement - _movement.dot(_normal) * _normal
 			_velocity_2d = Vector2(_new_velocity.dot(_side), _new_velocity.dot(_forward))
-			_movement = _new_velocity * _remaining
+			_movement = _new_velocity * _time_remaining
 		
 		_collision = move_and_collide(_movement)
 	
 	
-	
-	_collision = move_and_collide(_surface_normal * -2 * delta)
-	if !_collision:
+	# Checking we're still on the ground
+	_collision = move_and_collide(_surface_normal * -1 * delta)
+	if _collision and _collision.get_collider() == _anchored_body:
+		_anchor_point_l = _anchored_body.to_local(self.global_position)
+		_surface_normal = _collision.get_normal()
+	else:
 		detach()
-		return
-	
-	_anchor_point_l = _anchored_body.to_local(self.global_position)
 
 
 
@@ -286,4 +293,4 @@ script = SubResource("GDScript_n1bfo")
 shape = SubResource("SphereShape3D_g30ov")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
