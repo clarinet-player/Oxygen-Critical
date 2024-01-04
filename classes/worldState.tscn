@@ -9,7 +9,7 @@ var gravity_state : String = \"thrust\"
 
 var gravity_strength : float = 9.8
 
-var air_pressure : float = 0.0
+var air_pressure : float = 1.0
 
 func get_gravity_vector() -> Vector3:
 	if gravity_state == \"thrust\":
