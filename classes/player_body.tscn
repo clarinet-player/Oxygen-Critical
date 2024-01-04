@@ -18,7 +18,7 @@ extends RigidBody3D
 
 @export var jump_power : float = 4.0
 
-@export var mouse_sensitivity : float = 0.01
+@export var mouse_sensitivity : float = 0.005
 
 var _mouse_position : Vector2
 
@@ -47,7 +47,7 @@ var _movement_state : move_type = move_type.WALKING
 func _ready():
 	_mouse_position = get_viewport().get_mouse_position()
 	_velocity_3d = Vector3(0, -1, 0)
-
+	
 
 
 ############    Executed every physics frame    ############
@@ -64,12 +64,12 @@ func _physics_process(delta : float):
 	
 	# Rotate to match mouse input
 	if _anchored_body:
-		rotate(_surface_normal, _difference.x * mouse_sensitivity)
-		rotate(global_transform.basis.x.normalized(), _difference.y * mouse_sensitivity)
+		rotate(_surface_normal, _difference.x * mouse_sensitivity * -1)
+		rotate(global_transform.basis.x.normalized(), _difference.y * mouse_sensitivity * -1)
 		
 	else:
-		rotate(global_transform.basis.y.normalized(), _difference.x * mouse_sensitivity)
-		rotate(global_transform.basis.x.normalized(), _difference.y * mouse_sensitivity)
+		rotate(global_transform.basis.y.normalized(), _difference.x * mouse_sensitivity * -1)
+		rotate(global_transform.basis.x.normalized(), _difference.y * mouse_sensitivity * -1)
 	
 	
 	# Regen stamina
@@ -81,8 +81,8 @@ func _physics_process(delta : float):
 		
 		# Move to follow our anchor
 		global_position = _anchored_body.to_global(_anchor_point_l)
-	
-	
+		
+		
 		# Jumping
 		if Input.is_action_pressed(\"Space\") and _jump_stamina > 0.3:
 			detach()
@@ -138,16 +138,11 @@ func _surface_move(delta : float):
 		
 		move_type.WALKING:
 			
-			var _accel = delta * walk_acceleration
+			var _change : Vector2
+			_change.y = Input.get_axis(\"S\", \"W\")
+			_change.x = Input.get_axis(\"A\", \"D\")
 			
-			if Input.is_action_pressed(\"W\"):
-				_velocity_2d.y += _accel
-			if Input.is_action_pressed(\"S\"):
-				_velocity_2d.y -= _accel
-			if Input.is_action_pressed(\"A\"):
-				_velocity_2d.x -= _accel
-			if Input.is_action_pressed(\"D\"):
-				_velocity_2d.x += _accel
+			_velocity_2d += _change.normalized() * delta * walk_acceleration
 			
 			if _velocity_2d.length() > walk_max_speed + walk_friction * delta:
 				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - walk_friction * delta)
@@ -156,16 +151,11 @@ func _surface_move(delta : float):
 		
 		move_type.SPRINTING:
 			
-			var _accel = delta * sprint_acceleration
+			var _change : Vector2
+			_change.y = Input.get_axis(\"S\", \"W\")
+			_change.x = Input.get_axis(\"A\", \"D\")
 			
-			if Input.is_action_pressed(\"W\"):
-				_velocity_2d.y += _accel
-			if Input.is_action_pressed(\"S\"):
-				_velocity_2d.y -= _accel
-			if Input.is_action_pressed(\"A\"):
-				_velocity_2d.x -= _accel
-			if Input.is_action_pressed(\"D\"):
-				_velocity_2d.x += _accel
+			_velocity_2d += _change.normalized() * delta * sprint_acceleration
 			
 			if _velocity_2d.length() > sprint_max_speed + walk_friction * delta:
 				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - walk_friction * delta)
@@ -208,6 +198,7 @@ func _surface_move(delta : float):
 			
 			if _loops > 2: # prevents the player getting stuck inside geometry
 				global_position += _surface_normal
+				print(\"stuck in geometry\")
 			
 		else:
 			
@@ -265,7 +256,7 @@ func attach(_body : RigidBody3D, _anchor_point_g : Vector3, _normal : Vector3):
 	var _forward : Vector3 = _looking - _looking.dot(_surface_normal) * _surface_normal
 	var _side : Vector3 = _forward.cross(_surface_normal)
 	
-	_velocity_2d = Vector2(_velocity_3d.dot(_side), _velocity_3d.dot(_looking))
+	_velocity_2d = Vector2(_velocity_3d.dot(_side), _velocity_3d.dot(_forward))
 
 
 
