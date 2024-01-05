@@ -22,7 +22,7 @@ extends RigidBody3D
 
 var _mouse_position : Vector2
 
-var _anchored_body : RigidBody3D
+var _anchored_shape : CollisionShape3D
 var _anchor_point_l : Vector3
 var _surface_normal : Vector3
 
@@ -63,7 +63,7 @@ func _physics_process(delta : float):
 	
 	
 	# Rotate to match mouse input
-	if _anchored_body:
+	if _anchored_shape:
 		rotate(_surface_normal, _difference.x * mouse_sensitivity * -1)
 		rotate(global_transform.basis.x.normalized(), _difference.y * mouse_sensitivity * -1)
 		_velocity_2d = _velocity_2d.rotated(_difference.x * mouse_sensitivity)
@@ -78,10 +78,10 @@ func _physics_process(delta : float):
 	_slide_stamina = clamp(_slide_stamina + delta, 0, 1)
 	
 	
-	if _anchored_body:
+	if _anchored_shape:
 		
 		# Move to follow our anchor
-		global_position = _anchored_body.to_global(_anchor_point_l)
+		global_position = _anchored_shape.to_global(_anchor_point_l)
 		
 		
 		# Jumping
@@ -93,7 +93,7 @@ func _physics_process(delta : float):
 	
 	
 	# Delegate movement
-	if _anchored_body:
+	if _anchored_shape:
 		_anchored_move(delta)
 	else:
 		_free_move(delta)
@@ -182,12 +182,12 @@ func _anchored_move(delta : float):
 	
 	while _collision:
 		
-		var _body = _collision.get_collider()
+		var _shape = _collision.get_collider_shape()
 		var _normal = _collision.get_normal()
 		_time -= delta * (_collision.get_travel().length() / _velocity_2d.length())
 		
 		
-		if _body == _anchored_body and acos(_surface_normal.dot(_normal)) <= 0.5:
+		if _shape == _anchored_shape and acos(_surface_normal.dot(_normal)) <= 1.5:
 			
 			_surface_normal = _normal
 			
@@ -212,12 +212,12 @@ func _anchored_move(delta : float):
 	
 	# Checking we're still on the ground
 	_collision = move_and_collide(_surface_normal * -10 * delta)
-	if _collision and _collision.get_collider() == _anchored_body:
-		_anchor_point_l = _anchored_body.to_local(self.global_position)
+	
+	if _collision and _collision.get_collider_shape() == _anchored_shape:
+		_anchor_point_l = _anchored_shape.to_local(self.global_position)
 		_surface_normal = _collision.get_normal()
 	else:
 		detach()
-
 
 
 
@@ -227,17 +227,18 @@ func _free_move(delta : float):
 	_velocity_3d += WorldState.get_gravity_vector() * delta
 	
 	# Apply air resistance
-	_velocity_3d *= (350 - WorldState.air_pressure) / 350
+	_velocity_3d *= (400 - WorldState.air_pressure) / 400
 	
 	# Try to move to our new position
 	var _collision = move_and_collide(_velocity_3d * delta)
 	while _collision:
 		
-		var _body = _collision.get_collider()
+		var _shape = _collision.get_collider_shape()
 		var _normal = _collision.get_normal()
 		
-		if \"get_is_grabbable\" in _body and _body.get_is_grabbable:
-			attach(_body, global_position, _normal)
+		if _shape.get_is_grabbable():
+			
+			attach(_shape, global_position, _normal)
 			_anchored_move(_collision.get_remainder().length()/_velocity_3d.length())
 			return
 		
@@ -250,9 +251,9 @@ func _free_move(delta : float):
 
 
 
-func attach(_body : RigidBody3D, _anchor_point_g : Vector3, _normal : Vector3):
-	_anchored_body = _body
-	_anchor_point_l = _anchored_body.to_local(_anchor_point_g)
+func attach(_shape : CollisionShape3D, _anchor_point_g : Vector3, _normal : Vector3):
+	_anchored_shape = _shape
+	_anchor_point_l = _anchored_shape.to_local(_anchor_point_g)
 	_surface_normal = _normal
 	
 	var _looking : Vector3 = global_transform.basis.z * -1
@@ -265,16 +266,17 @@ func attach(_body : RigidBody3D, _anchor_point_g : Vector3, _normal : Vector3):
 
 func detach():
 	var _looking : Vector3 = global_transform.basis.z * -1
-	
 	var _forward : Vector3 = _looking - _looking.dot(_surface_normal) * _surface_normal
-	
 	var _side : Vector3 = _forward.cross(_surface_normal)
 	
-	_velocity_3d = _anchored_body.linear_velocity 
-	_velocity_3d += position.cross(_anchored_body.angular_velocity)
-	_velocity_3d += (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
+	var _body : RigidBody3D = _anchored_shape.get_parent()
 	
-	_anchored_body = null
+	_velocity_3d = _body.linear_velocity 
+	_velocity_3d += (global_position - _body.global_position).cross(_body.angular_velocity)
+	_velocity_3d += (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
+	print(_velocity_3d)
+	
+	_anchored_shape = null
 "
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_g30ov"]

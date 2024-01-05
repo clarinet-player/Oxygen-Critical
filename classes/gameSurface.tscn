@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3 uid="uid://d16rwkt574n4s"]
+
+[sub_resource type="GDScript" id="GDScript_hkejp"]
+script/source = "class_name GameSurface
+extends CollisionShape3D
+
+
+@export var thickness : float = 10.0
+@export var hardness : float = 10.0
+
+@export var grabbable_states : Array = [\"zero\", \"thrust\", \"spin\"]
+
+
+func get_is_grabbable():
+	if grabbable_states.find(WorldState.gravity_state) != -1:
+		return true
+	else:
+		return false
+"
+
+[node name="GameSurface" type="CollisionShape3D"]
+script = SubResource("GDScript_hkejp")
