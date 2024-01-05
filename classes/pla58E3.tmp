@@ -69,8 +69,7 @@ func _physics_process(delta : float):
 		
 		
 		# Rotate to follow our anchor
-		var _body = _anchored_shape.get_parent()
-		rotate(_body.angular_velocity.normalized(), _body.angular_velocity.length() * delta)
+		rotate(_anchored_shape.angular_velocity, _anchored_shape.angular_velocity.length())
 		
 		
 		# Rotate to match mouse input
