@@ -18,7 +18,7 @@ extends RigidBody3D
 
 @export var jump_power : float = 4.0
 
-@export var mouse_sensitivity : float = 0.005
+@export var mouse_sensitivity : float = 10
 
 var _mouse_position : Vector2
 
@@ -47,7 +47,7 @@ var _movement_state : move_type = move_type.WALKING
 func _ready():
 	_mouse_position = get_viewport().get_mouse_position()
 	_velocity_3d = Vector3(0, -1, 0)
-	
+
 
 
 ############    Executed every physics frame    ############
@@ -58,7 +58,7 @@ func _physics_process(delta : float):
 	
 	# Get mouse input
 	var _new = get_viewport().get_mouse_position()
-	var _difference = _new - _mouse_position
+	var _difference = (_new - _mouse_position) / 1920
 	_mouse_position = _new
 	
 	
@@ -66,6 +66,7 @@ func _physics_process(delta : float):
 	if _anchored_body:
 		rotate(_surface_normal, _difference.x * mouse_sensitivity * -1)
 		rotate(global_transform.basis.x.normalized(), _difference.y * mouse_sensitivity * -1)
+		_velocity_2d = _velocity_2d.rotated(_difference.x * mouse_sensitivity)
 		
 	else:
 		rotate(global_transform.basis.y.normalized(), _difference.x * mouse_sensitivity * -1)
@@ -93,13 +94,13 @@ func _physics_process(delta : float):
 	
 	# Delegate movement
 	if _anchored_body:
-		_surface_move(delta)
+		_anchored_move(delta)
 	else:
 		_free_move(delta)
 
 
 
-func _surface_move(delta : float):
+func _anchored_move(delta : float):
 	
 	# Modifying Movement State
 	if Input.is_action_pressed(\"Control\"):
@@ -197,7 +198,7 @@ func _surface_move(delta : float):
 			_movement = (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
 			
 			if _loops > 2: # prevents the player getting stuck inside geometry
-				global_position += _surface_normal
+				global_translate(_surface_normal)
 				print(\"stuck in geometry\")
 			
 		else:
@@ -218,6 +219,8 @@ func _surface_move(delta : float):
 		detach()
 
 
+
+
 func _free_move(delta : float):
 	
 	# Apply gravity, if any
@@ -235,7 +238,7 @@ func _free_move(delta : float):
 		
 		if \"get_is_grabbable\" in _body and _body.get_is_grabbable:
 			attach(_body, global_position, _normal)
-			_surface_move(_collision.get_remainder().length()/_velocity_3d.length())
+			_anchored_move(_collision.get_remainder().length()/_velocity_3d.length())
 			return
 		
 		_collision = move_and_collide(_collision.get_remainder().bounce(_normal) * 0.5)
@@ -278,10 +281,7 @@ func detach():
 radius = 1.0
 
 [node name="player_body" type="RigidBody3D"]
-mass = 50.0
 custom_integrator = true
-max_contacts_reported = 1
-contact_monitor = true
 can_sleep = false
 lock_rotation = true
 freeze = true
@@ -293,3 +293,4 @@ shape = SubResource("SphereShape3D_g30ov")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+fov = 80.0

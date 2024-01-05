@@ -1,6 +1,1 @@
-res://classes/worldState.tscn
-res://classes/surfaceData.tscn
-res://classes/bullet.tscn
-res://scenes/testscene.tscn
 res://classes/player_body.tscn
-res://classes/wall.tscn
