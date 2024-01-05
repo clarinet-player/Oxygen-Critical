@@ -4,3 +4,6 @@ res://classes/bullet.tscn
 res://scenes/testscene.tscn
 res://classes/player_body.tscn
 res://classes/wall.tscn
+res://classes/game_surface.tscn
+res://classes/gameSurface.tscn
+res://scripts/ship.gd
