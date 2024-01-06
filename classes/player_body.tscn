@@ -1,4 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://bve504yaouv3p"]
+[gd_scene load_steps=4 format=3 uid="uid://bve504yaouv3p"]
+
+[ext_resource type="PackedScene" uid="uid://cskrtkkrkyd4q" path="res://assets/AK12/ak_12.tscn" id="1_cnjq7"]
 
 [sub_resource type="GDScript" id="GDScript_n1bfo"]
 script/source = "class_name PlayerBody
@@ -16,9 +18,9 @@ extends RigidBody3D
 @export var slide_power : float = 2.0
 @export var slide_friction : float = 1.0
 
-@export var jump_power : float = 4.0
+@export var jump_power : float = 2.0
 
-@export var mouse_sensitivity : float = 10
+@export var mouse_sensitivity : float = 3.0
 
 var _mouse_position : Vector2
 
@@ -43,10 +45,26 @@ var _movement_state : move_type = move_type.WALKING
 
 
 
-# Called when we enter the scene tree
 func _ready():
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	_mouse_position = get_viewport().get_mouse_position()
 	_velocity_3d = Vector3(0, -10, 0)
+
+
+
+func _input(event):
+	
+	# Rotating to follow mouse
+	if event is InputEventMouseMotion:
+		if _anchored_shape:
+			
+			rotate(_surface_normal, event.relative.x * mouse_sensitivity * -0.001)
+			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
+			_velocity_2d = _velocity_2d.rotated(event.relative.x * mouse_sensitivity * 0.001)
+			
+		else:
+			rotate(global_transform.basis.y.normalized(), event.relative.x * mouse_sensitivity * -0.001)
+			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
 
 
 
@@ -56,10 +74,9 @@ func _ready():
 
 func _physics_process(delta : float):
 	
-	# Get mouse input
-	var _new = get_viewport().get_mouse_position()
-	var _difference = (_new - _mouse_position) / 1920
-	_mouse_position = _new
+	# Regen stamina
+	_jump_stamina = clamp(_jump_stamina + delta, 0, 1)
+	_slide_stamina = clamp(_slide_stamina + delta, 0, 1)
 	
 	
 	if _anchored_shape:
@@ -70,31 +87,15 @@ func _physics_process(delta : float):
 		
 		# Rotate to follow our anchor
 		var _body = _anchored_shape.get_parent()
-		rotate(_body.angular_velocity.normalized(), _body.angular_velocity.length() * delta)
+		if !_body.angular_velocity.is_zero_approx():
+			rotate(_body.angular_velocity.normalized(), _body.angular_velocity.length() * delta)
 		
-		
-		# Rotate to match mouse input
-		rotate(_surface_normal, _difference.x * mouse_sensitivity * -1)
-		rotate(global_transform.basis.x.normalized(), _difference.y * mouse_sensitivity * -1)
-		_velocity_2d = _velocity_2d.rotated(_difference.x * mouse_sensitivity)
-		
-	else:
-		rotate(global_transform.basis.y.normalized(), _difference.x * mouse_sensitivity * -1)
-		rotate(global_transform.basis.x.normalized(), _difference.y * mouse_sensitivity * -1)
-	
-	
-	# Regen stamina
-	_jump_stamina = clamp(_jump_stamina + delta, 0, 1)
-	_slide_stamina = clamp(_slide_stamina + delta, 0, 1)
-	
-	
-	if _anchored_shape:
 		
 		# Jumping
 		if Input.is_action_pressed(\"Space\") and _jump_stamina > 0.3:
 			detach()
-			_velocity_3d += _surface_normal * 2
-			#_velocity_3d += global_transform.basis.z * -1 * jump_power * _jump_stamina
+			_velocity_3d += _surface_normal * _jump_stamina
+			_velocity_3d += global_transform.basis.z * -1 * jump_power * _jump_stamina
 			_jump_stamina = 0
 	
 	
@@ -290,11 +291,10 @@ func detach():
 radius = 1.0
 
 [node name="player_body" type="RigidBody3D"]
-custom_integrator = true
 can_sleep = false
 lock_rotation = true
 freeze = true
-freeze_mode = 1
+custom_integrator = true
 script = SubResource("GDScript_n1bfo")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
@@ -303,3 +303,6 @@ shape = SubResource("SphereShape3D_g30ov")
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 fov = 80.0
+
+[node name="ak12" parent="." instance=ExtResource("1_cnjq7")]
+transform = Transform3D(-0.278488, 0.826811, -0.488701, 0.948965, 0.158459, -0.272681, -0.148017, -0.539699, -0.828744, 0.281315, 0.750673, -0.188785)

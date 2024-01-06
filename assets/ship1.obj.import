@@ -3,7 +3,7 @@
 importer="wavefront_obj"
 importer_version=1
 type="Mesh"
-uid="uid://fqdp5qducron"
+uid="uid://3nfnvsc74364"
 path="res://.godot/imported/ship1.obj-7c9034ea1288640bfc858c874e7cf2ae.mesh"
 
 [deps]
@@ -19,3 +19,4 @@ generate_tangents=true
 scale_mesh=Vector3(1, 1, 1)
 offset_mesh=Vector3(0, 0, 0)
 optimize_mesh=true
+force_disable_mesh_compression=false

@@ -1,6 +1,6 @@
+res://classes/player_body.tscn
 res://classes/worldState.tscn
 res://classes/gameSurface.tscn
 res://classes/bullet.tscn
 res://scenes/testscene.tscn
-res://classes/player_body.tscn
-res://scripts/ship.gd
+res://assets/AK12/ak_12.tscn
