@@ -191,8 +191,8 @@ func _anchored_move(delta : float):
 		
 		var _shape = _collision.get_collider_shape()
 		var _normal = _collision.get_normal()
-		_time -= delta * (_collision.get_travel().length() / _velocity_2d.length())
-		
+		if !_velocity_2d.is_zero_approx():
+			_time -= delta * (_collision.get_travel().length() / _velocity_2d.length())
 		
 		if _shape == _anchored_shape and acos(_surface_normal.dot(_normal)) <= 1.5:
 			
@@ -204,9 +204,11 @@ func _anchored_move(delta : float):
 			
 			_movement = (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
 			
-			if _loops > 2: # prevents the player getting stuck inside geometry
+			if _loops > 2: # prevents getting stuck inside geometry
 				global_translate(_surface_normal)
-				print(\"stuck in geometry\")
+			
+			if _loops > 4:
+				break
 			
 		else:
 			
@@ -238,19 +240,31 @@ func _free_move(delta : float):
 	
 	# Try to move to our new position
 	var _collision = move_and_collide(_velocity_3d * delta)
+	var _loops = 0
+	
 	while _collision:
 		
 		var _shape = _collision.get_collider_shape()
 		var _normal = _collision.get_normal()
 		
 		if _shape.get_is_grabbable():
-			
 			attach(_shape, global_position, _normal)
 			_anchored_move(_collision.get_remainder().length()/_velocity_3d.length())
 			return
 		
+		if _loops > 2: # prevents getting stuck in geometry
+			global_translate(_normal)
+		
+		if _loops > 4:
+			break
+		
 		_collision = move_and_collide(_collision.get_remainder().bounce(_normal) * 0.5)
 		_velocity_3d = _velocity_3d.bounce(_normal) * 0.5
+		
+		var _body = _shape.get_parent()
+		_velocity_3d += (_body.global_position - global_position).cross(_body.angular_velocity) * 0.5
+		
+		_loops += 1
 
 
 
@@ -269,6 +283,10 @@ func attach(_shape : CollisionShape3D, _anchor_point_g : Vector3, _normal : Vect
 	var _side : Vector3 = _forward.cross(_surface_normal)
 	
 	_velocity_2d = Vector2(_velocity_3d.dot(_side), _velocity_3d.dot(_forward))
+	
+	var _body = _shape.get_parent()
+	var _body_motion = (_body.global_position - global_position).cross(_body.angular_velocity)
+	_velocity_2d -= Vector2(_body_motion.dot(_side), _body_motion.dot(_forward))
 
 
 
@@ -280,8 +298,8 @@ func detach():
 	
 	var _body : RigidBody3D = _anchored_shape.get_parent()
 	
-	_velocity_3d = _body.linear_velocity 
-	_velocity_3d += (_body.global_position - global_position).cross(_body.angular_velocity)
+	#_velocity_3d = _body.linear_velocity 
+	_velocity_3d = (_body.global_position - global_position).cross(_body.angular_velocity)
 	_velocity_3d += (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
 	
 	_anchored_shape = null
