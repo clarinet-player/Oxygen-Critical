@@ -96,8 +96,8 @@ func _physics_process(delta : float):
 		var _up : Vector3 = global_transform.basis.y
 		var _adjusted_normal : Vector3 = (_surface_normal - _surface_normal.dot(_roll) * _roll).normalized()
 		var _angle : float = acos(_up.dot(_adjusted_normal))
-		if _angle > 0.01:
-			rotate(_up.cross(_adjusted_normal).normalized(), _angle * 10 * delta)
+		rotate(_up.cross(_adjusted_normal).normalized(), _angle * 10 * delta)
+		print()
 		
 		
 		# Jumping

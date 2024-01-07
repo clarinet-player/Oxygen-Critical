@@ -65,6 +65,11 @@ func _input(event):
 		else:
 			rotate(global_transform.basis.y.normalized(), event.relative.x * mouse_sensitivity * -0.001)
 			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
+		
+		
+		var _angle = acos(_surface_normal.dot(global_transform.basis.z))
+		if _anchored_shape and _angle < 0.1:
+			rotate(global_transform.basis.x.normalized(), 0.9 - _angle)
 
 
 
