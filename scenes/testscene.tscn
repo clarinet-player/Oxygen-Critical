@@ -24,7 +24,8 @@ fog_light_color = Color(0.0392157, 0.0392157, 0.0392157, 1)
 fog_density = 0.1
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_j8woo"]
-radius = 0.3
+radius = 0.25
+height = 1.75
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4vvhj"]
 cull_mode = 2
@@ -89,6 +90,7 @@ environment = SubResource("Environment_63ddg")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.530196, 27.0414, -0.244938)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="player_body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.379778, 0)
 mesh = SubResource("CapsuleMesh_j8woo")
 
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
@@ -103,7 +105,7 @@ skeleton = NodePath("")
 shape = SubResource("BoxShape3D_pjokn")
 
 [node name="Ship" type="RigidBody3D" parent="."]
-transform = Transform3D(0.448992, 0, -0.893536, 0, 1, 0, 0.893536, 0, 0.448992, 1.03203, 39.6409, 1.75187)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.03203, 51.9829, -30.3617)
 freeze = true
 freeze_mode = 1
 custom_integrator = true
