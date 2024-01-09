@@ -3,3 +3,5 @@ res://classes/gameSurface.tscn
 res://classes/bullet.tscn
 res://scenes/testscene.tscn
 res://classes/player_body.tscn
+res://scenes/bullettestscene.tscn
+res://scripts/bullettestscene.gd

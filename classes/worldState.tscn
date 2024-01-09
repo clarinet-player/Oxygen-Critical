@@ -5,11 +5,11 @@ resource_name = "worldState"
 script/source = "extends Node
 
 # Gravity states: zero, thrust, spin
-var gravity_state : String = \"spin\"
+var gravity_state : String = \"zero\"
 
 var gravity_strength : float = 9.8
 
-var air_pressure : float = 1.0
+var air_pressure : float = 0
 
 func get_gravity_vector() -> Vector3:
 	if gravity_state == \"thrust\":

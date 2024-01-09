@@ -1,0 +1,116 @@
+[gd_scene load_steps=3 format=3 uid="uid://cbedyqmsdeuql"]
+
+[sub_resource type="GDScript" id="GDScript_dlcs3"]
+resource_name = "bullet"
+script/source = "class_name Bullet
+extends RayCast3D
+
+
+
+var mass : float = 10.0
+var aeroLoss : float = 0.01
+
+var velocity : Vector3 = Vector3(1, 0, 0)
+var acceleration : Vector3 = Vector3.ZERO
+
+var player : Node3D
+
+
+
+func _physics_process(delta):
+	
+	var _time = delta
+	
+	target_position = velocity * _time
+	force_raycast_update()
+	
+	while is_colliding():
+		
+		# Handle collision
+		var _body = get_collider()
+		var _collider = get_collider_shape()
+		var _point = get_collision_point()
+		var _normal = get_collision_normal()
+		var _travelled = global_position.distance_to(_point)
+		
+		global_position = _point
+		_time -= _travelled / velocity.length()
+		
+		if \"thickness\" in _collider:
+			_surface_hit(_collider, _normal, _time)
+		
+		if \"player\" in _collider:
+			_player_hit()
+		
+		global_translate(_normal * 0.01)
+		
+		
+		# Try to move again
+		target_position = velocity * _time
+		force_raycast_update()
+	
+	global_position = target_position
+	
+	
+	# Apply other forces
+	velocity += WorldState.get_gravity_vector() * delta
+	velocity += acceleration * delta
+	velocity *= 1 - aeroLoss * WorldState.air_pressure
+
+
+
+func _surface_hit(_collider, _normal, _time):
+	
+	# Deflection
+	var _ref_angle = acos(velocity.bounce(_normal).dot(velocity))
+	var _speed = velocity.length() / 100
+	var _angle = clamp((_collider.strength - (_ref_angle - 1.57)) / _speed, 0, 1) * _ref_angle
+	
+	velocity = velocity.rotated(velocity.cross(_normal), _angle)
+	
+	
+	# Slowing
+	velocity *= (20 - _collider.strength) / 20
+	
+	
+	# Deforming
+	aeroLoss *= _collider.strength
+	
+	
+	# Fragmenting
+	var _fragments : int = pow(_collider.strength + _ref_angle + _speed + randf(), 2) / 100
+	
+	if _fragments > 1:
+		var _p_scene = load(\"res://classes/bullet.tscn\")
+		
+		# Create X new bullets
+		for i in range(_fragments):
+			var _bullet = _p_scene.instantiate()
+			_bullet.reparent(self.get_parent())
+			
+			# Setting up each bullet
+			_bullet.global_position = global_position + (velocity.normalized() * 0.01)
+			_bullet.mass = mass / _fragments
+			_bullet.aeroLoss = randf() / 10
+			_bullet.velocity = Vector3(velocity.x * randf(), velocity.y * randf(), velocity.z * randf())
+			
+			_bullet._physics_process(_time)
+		
+		free()
+
+
+
+func _player_hit():
+	pass
+"
+
+[sub_resource type="SphereMesh" id="SphereMesh_2etx2"]
+radius = 0.1
+height = 0.2
+
+[node name="bullet" type="RayCast3D"]
+enabled = false
+script = SubResource("GDScript_dlcs3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_2etx2")

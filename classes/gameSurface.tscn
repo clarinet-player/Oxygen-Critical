@@ -5,8 +5,7 @@ script/source = "class_name GameSurface
 extends CollisionShape3D
 
 
-@export var thickness : float = 10.0
-@export var hardness : float = 10.0
+@export var strength : float =  10.0
 
 @export var grabbable_states : Array = [\"zero\", \"thrust\", \"spin\"]
 

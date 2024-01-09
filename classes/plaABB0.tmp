@@ -58,21 +58,14 @@ func _input(event):
 	if event is InputEventMouseMotion:
 		if _anchored_shape:
 			
+			var _angle = 1.57 - acos(_surface_normal.dot(global_transform.basis.z))
 			rotate(_surface_normal, event.relative.x * mouse_sensitivity * -0.001)
-			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
+			rotate(global_transform.basis.x.normalized(), clamp(event.relative.y * mouse_sensitivity * -0.001, -_angle, _angle))
 			_velocity_2d = _velocity_2d.rotated(event.relative.x * mouse_sensitivity * 0.001)
 			
 		else:
 			rotate(global_transform.basis.y.normalized(), event.relative.x * mouse_sensitivity * -0.001)
 			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
-	
-	elif event is InputEventMouseButton:
-		
-		var _bullet = preload(\"res://classes/bullet.tscn\")
-		_bullet = _bullet.instantiate()
-		get_parent().add_child(_bullet)
-		_bullet.global_position = $Camera3D.global_position
-		_bullet.velocity = $Camera3D.global_transform.basis.z * -20
 
 
 
