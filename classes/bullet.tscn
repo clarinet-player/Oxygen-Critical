@@ -19,6 +19,14 @@ var player : Node3D
 
 func _physics_process(delta):
 	
+	# Apply forces
+	velocity += WorldState.get_gravity_vector() * delta
+	velocity += acceleration * delta
+	velocity *= 1 - aeroLoss * WorldState.air_pressure * delta
+	if velocity.length() < 10 or global_position.length_squared() > 1000:
+		free()
+	
+	
 	var _time = delta
 	
 	var _target_pos = global_position + (velocity * _time)
@@ -28,7 +36,7 @@ func _physics_process(delta):
 	var _raycast = _space.intersect_ray(_ray)
 	
 	while !_raycast.is_empty():
-		print(\"collision\")
+		
 		# Handle collision
 		var _body = _raycast.collider
 		var _shape = _body.shape_owner_get_owner(_body.shape_find_owner(_raycast.shape))
@@ -41,10 +49,12 @@ func _physics_process(delta):
 		
 		
 		if \"strength\" in _shape:
-			_surface_hit(_shape, _normal, _time)
+			if _surface_hit(_shape, _normal, _time):
+				free()
 		
 		if \"player\" in _shape:
-			_player_hit()
+			if _player_hit():
+				free()
 		
 		global_translate(_normal * -0.01)
 		
@@ -56,23 +66,21 @@ func _physics_process(delta):
 		_raycast = _space.intersect_ray(_ray)
 	
 	global_position = _target_pos
+
+
+
+func _surface_hit(_collider, _normal, _time) -> bool:
+	var _angle = acos(velocity.dot(_normal))
+	var _speed = velocity.length() / 50
 	
-	# Apply other forces
-	velocity += WorldState.get_gravity_vector() * delta
-	velocity += acceleration * delta
-	velocity *= 1 - aeroLoss * WorldState.air_pressure
-	if velocity.length() < 10 or global_position.length_squared() > 1000:
-		queue_free()
-
-
-
-func _surface_hit(_collider, _normal, _time):
+	# Stopping
+	if _collider.strength > _speed:
+		return true
 	
 	# Deflection
-	var _ref_angle = acos(velocity.normalized().dot(_normal))
-	var _speed = velocity.length() / 100
-	#var _angle = clamp(_collider.strength - _ref_angle - _speed, 0, 1) * _ref_angle * 2
-	#velocity = velocity.rotated(velocity.cross(_normal).normalized(), _angle)
+	if _collider.strength / _angle > 3:
+		velocity = velocity.bounce(_normal)
+		global_translate(_normal * 0.01)
 	
 	# Slowing
 	velocity *= (15 - _collider.strength) / 15
@@ -81,25 +89,25 @@ func _surface_hit(_collider, _normal, _time):
 	aeroLoss *= _collider.strength * 2
 	
 	# Fragmenting
-	var _fragments : int = (_collider.strength + _speed) / (5 - _ref_angle)
-	if _fragments > 1:
-		print(_fragments)
+	if _speed / _angle < 4:
 		var _p_scene = preload(\"res://classes/bullet.tscn\")
 		
-		# Create X new bullets
-		for i in range(_fragments):
+		# Create 5 new bullets
+		for i in range(5):
 			var _bullet = _p_scene.instantiate()
-			get_parent().add_child(_bullet)
+			add_sibling(_bullet)
 			
 			# Setting up each bullet
 			_bullet.global_position = global_position + (velocity.normalized() * 0.01)
-			_bullet.mass = mass / _fragments
+			_bullet.mass = mass / 6
 			_bullet.aeroLoss = randf() / 10
 			_bullet.velocity = (velocity * 0.75) + Vector3(randf() - randf(), randf() - randf(), randf() - randf()) * velocity.length() * 0.25
 			
 			_bullet._physics_process(_time)
-		
-		queue_free()
+			
+		return true
+	else:
+		return false
 
 
 
