@@ -70,9 +70,9 @@ func _input(event):
 		
 		var _bullet = preload(\"res://classes/bullet.tscn\")
 		_bullet = _bullet.instantiate()
-		get_parent().add_child(_bullet)
+		add_sibling(_bullet)
 		_bullet.global_position = $Camera3D.global_position
-		_bullet.velocity = $Camera3D.global_transform.basis.z * -20
+		_bullet.velocity = $Camera3D.global_transform.basis.z * -150
 
 
 

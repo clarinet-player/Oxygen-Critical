@@ -3,7 +3,7 @@
 [sub_resource type="GDScript" id="GDScript_dlcs3"]
 resource_name = "bullet"
 script/source = "class_name Bullet
-extends RayCast3D
+extends Node3D
 
 
 
@@ -21,20 +21,24 @@ func _physics_process(delta):
 	
 	var _time = delta
 	
-	target_position = velocity * _time
-	force_raycast_update()
+	var _target_pos = global_position + (velocity * _time)
 	
-	while is_colliding():
-		
+	var _space = get_world_3d().direct_space_state
+	var _ray = PhysicsRayQueryParameters3D.create(global_position, _target_pos)
+	var _raycast = _space.intersect_ray(_ray)
+	
+	while !_raycast.is_empty():
+		print(\"collision\")
 		# Handle collision
-		var _body = get_collider()
-		var _shape = _body.shape_owner_get_owner(_body.shape_find_owner(get_collider_shape()))
-		var _point = get_collision_point()
-		var _normal = get_collision_normal()
+		var _body = _raycast.collider
+		var _shape = _body.shape_owner_get_owner(_body.shape_find_owner(_raycast.shape))
+		var _point = _raycast.position
+		var _normal = _raycast.normal
 		var _travelled = global_position.distance_to(_point)
 		
 		global_position = _point
 		_time -= _travelled / velocity.length()
+		
 		
 		if \"strength\" in _shape:
 			_surface_hit(_shape, _normal, _time)
@@ -46,56 +50,56 @@ func _physics_process(delta):
 		
 		
 		# Try to move again
-		target_position = velocity * _time
-		force_raycast_update()
+		_target_pos = global_position + (velocity * _time)
+		_space = get_world_3d().direct_space_state
+		_ray = PhysicsRayQueryParameters3D.create(global_position, _target_pos)
+		_raycast = _space.intersect_ray(_ray)
 	
-	global_position += target_position
+	global_position = _target_pos
 	
 	# Apply other forces
 	velocity += WorldState.get_gravity_vector() * delta
 	velocity += acceleration * delta
 	velocity *= 1 - aeroLoss * WorldState.air_pressure
-	if velocity.length() < 10 or global_position.length() > 1000:
+	if velocity.length() < 10 or global_position.length_squared() > 1000:
 		queue_free()
-	look_at(global_position + velocity)
-	$MeshInstance3D.mesh.radius = mass / 200
-	$MeshInstance3D.mesh.height = velocity.length() / 100
 
 
 
 func _surface_hit(_collider, _normal, _time):
 	
 	# Deflection
-	var _ref_angle = acos(velocity.normalized().dot(_normal)) - 1.57
+	var _ref_angle = acos(velocity.normalized().dot(_normal))
 	var _speed = velocity.length() / 100
 	#var _angle = clamp(_collider.strength - _ref_angle - _speed, 0, 1) * _ref_angle * 2
 	#velocity = velocity.rotated(velocity.cross(_normal).normalized(), _angle)
 	
 	# Slowing
-	velocity *= (20 - _collider.strength) / 20
+	velocity *= (15 - _collider.strength) / 15
 	
 	# Deforming
-	aeroLoss *= _collider.strength
+	aeroLoss *= _collider.strength * 2
 	
 	# Fragmenting
-	#var _fragments : int = pow(_collider.strength + _ref_angle + _speed + randf(), 2.5) / 100
-	#if _fragments > 1:
-	#	var _p_scene = load(\"res://classes/bullet.tscn\")
-	#	
-	#	# Create X new bullets
-	#	for i in range(_fragments):
-	#		var _bullet = _p_scene.instantiate()
-	#		get_parent().add_child(_bullet)
-	#		
-	#		# Setting up each bullet
-	#		_bullet.global_position = global_position + (velocity.normalized() * 0.01)
-	#		_bullet.mass = mass / _fragments
-	#		_bullet.aeroLoss = randf() / 10
-	#		_bullet.velocity = (velocity * 0.75) + Vector3(randf() - randf(), randf() - randf(), randf() - randf()) * velocity.length() * 0.25
-	#		
-	#		_bullet._physics_process(_time)
-	#	
-	#	queue_free()
+	var _fragments : int = (_collider.strength + _speed) / (5 - _ref_angle)
+	if _fragments > 1:
+		print(_fragments)
+		var _p_scene = preload(\"res://classes/bullet.tscn\")
+		
+		# Create X new bullets
+		for i in range(_fragments):
+			var _bullet = _p_scene.instantiate()
+			get_parent().add_child(_bullet)
+			
+			# Setting up each bullet
+			_bullet.global_position = global_position + (velocity.normalized() * 0.01)
+			_bullet.mass = mass / _fragments
+			_bullet.aeroLoss = randf() / 10
+			_bullet.velocity = (velocity * 0.75) + Vector3(randf() - randf(), randf() - randf(), randf() - randf()) * velocity.length() * 0.25
+			
+			_bullet._physics_process(_time)
+		
+		queue_free()
 
 
 
@@ -103,14 +107,13 @@ func _player_hit():
 	pass
 "
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_4ys08"]
-radius = 0.05
-height = 0.5
+[sub_resource type="SphereMesh" id="SphereMesh_diy8k"]
+radius = 0.1
+height = 0.2
 
-[node name="bullet" type="RayCast3D"]
-enabled = false
+[node name="bullet" type="Node3D"]
 script = SubResource("GDScript_dlcs3")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
-mesh = SubResource("CapsuleMesh_4ys08")
+mesh = SubResource("SphereMesh_diy8k")
