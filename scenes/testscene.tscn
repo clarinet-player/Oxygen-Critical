@@ -103,6 +103,7 @@ skeleton = NodePath("")
 
 [node name="GameSurface" parent="RigidBody3D" instance=ExtResource("2_yb1rw")]
 shape = SubResource("BoxShape3D_pjokn")
+strength = 4.0
 
 [node name="Ship" type="RigidBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.03203, 51.9829, -30.3617)
@@ -131,3 +132,16 @@ skeleton = NodePath("../..")
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
 shape = ExtResource("7_y1v4s")
 grabbable_states = ["zero"]
+
+[node name="RigidBody3D2" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -254.73, 34.546, 0)
+freeze = true
+freeze_mode = 1
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D2"]
+mesh = SubResource("BoxMesh_203qp")
+skeleton = NodePath("")
+
+[node name="GameSurface" parent="RigidBody3D2" instance=ExtResource("2_yb1rw")]
+shape = SubResource("BoxShape3D_pjokn")
+strength = 4.0

@@ -71,8 +71,24 @@ func _input(event):
 		var _bullet = preload(\"res://classes/bullet.tscn\")
 		_bullet = _bullet.instantiate()
 		add_sibling(_bullet)
+		
 		_bullet.global_position = $Camera3D.global_position
-		_bullet.velocity = $Camera3D.global_transform.basis.z * -150
+		_bullet.velocity = $Camera3D.global_transform.basis.z * - 715
+		_bullet.aeroLoss = 1
+		#_bullet.acceleration = $Camera3D.global_transform.basis.z * - 750
+		
+		if _anchored_shape:
+			
+			var _looking : Vector3 = global_transform.basis.z * -1
+			var _forward : Vector3 = _looking - _looking.dot(_surface_normal) * _surface_normal
+			var _side : Vector3 = _forward.cross(_surface_normal)
+			var _body : RigidBody3D = _anchored_shape.get_parent()
+			
+			_bullet.velocity += (_body.global_position - global_position).cross(_body.angular_velocity)
+			_bullet.velocity += (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
+			
+		else:
+			_bullet.velocity += _velocity_3d
 
 
 

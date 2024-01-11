@@ -1,5 +1,5 @@
-res://classes/bullet.tscn
 res://classes/worldState.tscn
 res://classes/gameSurface.tscn
+res://classes/bullet.tscn
 res://scenes/testscene.tscn
 res://classes/player_body.tscn
