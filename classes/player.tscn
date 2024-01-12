@@ -1,0 +1,41 @@
+[gd_scene load_steps=3 format=3 uid="uid://bq3u0xb10re6"]
+
+[ext_resource type="PackedScene" uid="uid://bve504yaouv3p" path="res://classes/player_body.tscn" id="1_gvrw3"]
+
+[sub_resource type="GDScript" id="GDScript_eidvd"]
+script/source = "extends Node3D
+
+
+@export var height : float = 1.25
+
+var _up_vec := Vector3(0, 0.1, 0)
+
+@onready var camera := $Camera3D
+@onready var playerbody := $player_body
+
+
+
+func _physics_process(delta):
+	
+	# Follow playerbody's motion
+	global_position = playerbody.global_position
+	playerbody.position = Vector3.ZERO
+	
+	
+	# Move camera
+	if playerbody.is_anchored():
+		_up_vec = lerp(_up_vec, playerbody.get_normal(), delta * 10).limit_length(height)
+	else:
+		_up_vec = lerp(_up_vec, playerbody.get_velocity() * -0.1, delta).limit_length(height)
+	
+	camera.position = _up_vec
+	camera.rotation = playerbody.rotation
+	
+"
+
+[node name="Player" type="Node3D"]
+script = SubResource("GDScript_eidvd")
+
+[node name="player_body" parent="." instance=ExtResource("1_gvrw3")]
+
+[node name="Camera3D" type="Camera3D" parent="."]

@@ -1,7 +1,7 @@
-Node3D
 MeshInstance3D
-RigidBody3D
 Camera3D
+Node3D
+RigidBody3D
 OmniLight3D
 CollisionShape3D
 CollisionPolygon3D

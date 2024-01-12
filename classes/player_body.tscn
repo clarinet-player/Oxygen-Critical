@@ -1,6 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://bve504yaouv3p"]
-
-[ext_resource type="PackedScene" uid="uid://cskrtkkrkyd4q" path="res://assets/AK12/ak_12.tscn" id="1_cnjq7"]
+[gd_scene load_steps=3 format=3 uid="uid://bve504yaouv3p"]
 
 [sub_resource type="GDScript" id="GDScript_n1bfo"]
 script/source = "class_name PlayerBody
@@ -18,11 +16,9 @@ extends RigidBody3D
 @export var slide_power : float = 2.0
 @export var slide_friction : float = 1.0
 
-@export var jump_power : float = 2.0
+@export var jump_power : float = 3.0
 
 @export var mouse_sensitivity : float = 3.0
-
-var _mouse_position : Vector2
 
 var _anchored_shape : CollisionShape3D
 var _anchor_point_l : Vector3
@@ -47,7 +43,6 @@ var _movement_state : move_type = move_type.WALKING
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	_mouse_position = get_viewport().get_mouse_position()
 	_velocity_3d = Vector3(0, -10, 0)
 
 
@@ -65,30 +60,6 @@ func _input(event):
 		else:
 			rotate(global_transform.basis.y.normalized(), event.relative.x * mouse_sensitivity * -0.001)
 			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
-	
-	elif event is InputEventMouseButton:
-		
-		var _bullet = preload(\"res://classes/bullet.tscn\")
-		_bullet = _bullet.instantiate()
-		add_sibling(_bullet)
-		
-		_bullet.global_position = $Camera3D.global_position
-		_bullet.velocity = $Camera3D.global_transform.basis.z * - 715
-		_bullet.aeroLoss = 1
-		#_bullet.acceleration = $Camera3D.global_transform.basis.z * - 750
-		
-		if _anchored_shape:
-			
-			var _looking : Vector3 = global_transform.basis.z * -1
-			var _forward : Vector3 = _looking - _looking.dot(_surface_normal) * _surface_normal
-			var _side : Vector3 = _forward.cross(_surface_normal)
-			var _body : RigidBody3D = _anchored_shape.get_parent()
-			
-			_bullet.velocity += (_body.global_position - global_position).cross(_body.angular_velocity)
-			_bullet.velocity += (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
-			
-		else:
-			_bullet.velocity += _velocity_3d
 
 
 
@@ -127,9 +98,12 @@ func _physics_process(delta : float):
 		
 		# Jumping
 		if Input.is_action_pressed(\"Space\") and _jump_stamina > 0.3:
+			
 			detach()
-			_velocity_3d += _surface_normal * _jump_stamina
-			_velocity_3d += global_transform.basis.z * -1 * jump_power * _jump_stamina
+			
+			var _looking : Vector3 = global_transform.basis.z * -1
+			var _forward : Vector3 = (_looking - _looking.dot(_surface_normal) * _surface_normal).normalized()
+			_velocity_3d += (_surface_normal + _forward).normalized() * jump_power * _jump_stamina
 			_jump_stamina = 0
 	
 	
@@ -339,10 +313,36 @@ func detach():
 	_anchored_shape = null
 	
 	_movement_state = move_type.IDLE
+
+
+
+func is_anchored() -> bool:
+	if _anchored_shape:
+		return true
+	else:
+		return false
+
+
+
+func get_velocity() -> Vector3:
+	if _anchored_shape:
+
+		var _looking : Vector3 = global_transform.basis.z * -1
+		var _forward : Vector3 = (_looking - _looking.dot(_surface_normal) * _surface_normal).normalized()
+		var _side : Vector3 = _forward.cross(_surface_normal)
+		
+		return (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
+		
+	else:
+		return _velocity_3d
+
+
+
+func get_normal() -> Vector3:
+	return _surface_normal
 "
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_g30ov"]
-radius = 0.75
 
 [node name="player_body" type="RigidBody3D"]
 can_sleep = false
@@ -353,10 +353,3 @@ script = SubResource("GDScript_n1bfo")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_g30ov")
-
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.706544, 0)
-fov = 80.0
-
-[node name="ak12" parent="." instance=ExtResource("1_cnjq7")]
-transform = Transform3D(4.37114e-08, 1, 1.09268e-14, 1, -4.37114e-08, 8.74228e-08, 8.74228e-08, 0, -1, 0.256469, 0.599492, -0.191333)
