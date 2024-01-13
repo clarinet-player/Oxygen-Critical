@@ -93,7 +93,7 @@ func _physics_process(delta):
 
 
 func _surface_hit(_collider, _normal, _time) -> bool:
-	print(velocity.length())
+	
 	var _angle = acos(velocity.normalized().dot(_normal))
 	var _speed = velocity.length() / 40
 	
@@ -144,6 +144,7 @@ radius = 0.1
 height = 0.2
 
 [node name="bullet" type="Node3D"]
+top_level = true
 script = SubResource("GDScript_dlcs3")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]

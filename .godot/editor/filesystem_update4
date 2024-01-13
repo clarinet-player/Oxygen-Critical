@@ -1,6 +1,10 @@
-res://classes/player_body.tscn
 res://classes/player.tscn
+res://classes/player body (old).tscn
+res://scenes/testscene.tscn
 res://classes/worldState.tscn
 res://classes/gameSurface.tscn
 res://classes/bullet.tscn
-res://scenes/testscene.tscn
+res://assets/AK12/ak_12.tscn
+res://scripts/testscene.gd
+res://assets/foreground_gun.gdshader
+res://weapons/AK12/ak_12.tscn

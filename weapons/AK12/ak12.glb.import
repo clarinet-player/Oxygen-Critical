@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://rqe2jexrqblq"
-path="res://.godot/imported/ak12.glb-fd5ca003f1c6f7556a0871d71a720efb.scn"
+path="res://.godot/imported/ak12.glb-a098115e7607cc90c41435b688aececb.scn"
 
 [deps]
 
-source_file="res://assets/AK12/ak12.glb"
-dest_files=["res://.godot/imported/ak12.glb-fd5ca003f1c6f7556a0871d71a720efb.scn"]
+source_file="res://weapons/AK12/ak12.glb"
+dest_files=["res://.godot/imported/ak12.glb-a098115e7607cc90c41435b688aececb.scn"]
 
 [params]
 

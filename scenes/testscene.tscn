@@ -1,10 +1,11 @@
-[gd_scene load_steps=25 format=3 uid="uid://cnwcqemqhqc53"]
+[gd_scene load_steps=26 format=3 uid="uid://cnwcqemqhqc53"]
 
 [ext_resource type="PackedScene" uid="uid://bq3u0xb10re6" path="res://classes/player.tscn" id="1_jsuib"]
+[ext_resource type="Script" path="res://scripts/testscene.gd" id="1_mbm1b"]
 [ext_resource type="PackedScene" uid="uid://d16rwkt574n4s" path="res://classes/gameSurface.tscn" id="2_yb1rw"]
 [ext_resource type="Script" path="res://scripts/ship.gd" id="3_bbgfq"]
 [ext_resource type="Shape3D" uid="uid://0yu6o35ijd5n" path="res://assets/ship2.tres" id="4_p5fog"]
-[ext_resource type="Texture2D" uid="uid://3cuw4l80rgui" path="res://assets/AK12/metal.jpg" id="4_teqpc"]
+[ext_resource type="Texture2D" uid="uid://3cuw4l80rgui" path="res://assets/metal.jpg" id="4_teqpc"]
 [ext_resource type="Shape3D" uid="uid://dsuyitw2p6oo7" path="res://assets/testscene.tres" id="7_y1v4s"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vmb76"]
@@ -92,6 +93,7 @@ albedo_texture = ExtResource("4_teqpc")
 albedo_texture = ExtResource("4_teqpc")
 
 [node name="testscene" type="Node3D"]
+script = ExtResource("1_mbm1b")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866024, -0.433016, 0.250001, 0.169986, 0.21524, 0.961653, -0.470221, 0.875311, -0.112796, 0, 39.3797, 0)
