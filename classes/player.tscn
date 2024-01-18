@@ -20,12 +20,12 @@ func _physics_process(delta):
 	
 	
 	# Move camera
-	if playerbody.is_anchored():
-		_up_vec = lerp(_up_vec, playerbody.get_normal(), delta * 10).limit_length(height)
-	else:
-		_up_vec = lerp(_up_vec, playerbody.get_velocity() * -0.1, delta).limit_length(height)
+	#if playerbody.is_anchored():
+	#	_up_vec = lerp(_up_vec, playerbody.get_normal(), delta * 10).limit_length(height)
+	#else:
+	#	_up_vec = lerp(_up_vec, playerbody.get_velocity() * -0.1, delta).limit_length(height)
 	
-	camera.position = _up_vec
+	#camera.position = _up_vec
 	camera.rotation = playerbody.rotation
 
 
@@ -118,8 +118,9 @@ func _physics_process(delta : float):
 		# Rotate to follow our anchor
 		var _body = _anchored_shape.get_parent()
 		if !_body.angular_velocity.is_zero_approx():
+			print(\"rotate\")
 			rotate(_body.angular_velocity.normalized(), _body.angular_velocity.length() * delta)
-		
+		print()
 		
 		# Adjust roll to avoid gimbal lock
 		var _roll : Vector3 = global_transform.basis.z
@@ -223,6 +224,8 @@ func _anchored_move(delta : float):
 			else:
 				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - slide_friction * delta)
 	
+	if _velocity_2d.is_zero_approx():
+		return
 	
 	# Applying movement
 	var _movement : Vector3 = (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
@@ -234,8 +237,8 @@ func _anchored_move(delta : float):
 		
 		var _shape = _collision.get_collider_shape()
 		var _normal = _collision.get_normal()
-		if !_velocity_2d.is_zero_approx():
-			_time -= delta * (_collision.get_travel().length() / _velocity_2d.length())
+		
+		_time -= delta * (_collision.get_travel().length() / _velocity_2d.length())
 		
 		if _shape == _anchored_shape and acos(_surface_normal.dot(_normal)) <= 1.5:
 			
@@ -251,6 +254,7 @@ func _anchored_move(delta : float):
 				global_translate(_surface_normal)
 			
 			if _loops > 4:
+				print(\"too many collisions\")
 				break
 			
 		else:
@@ -263,7 +267,7 @@ func _anchored_move(delta : float):
 	
 	
 	# Checking we're still on the ground
-	_collision = move_and_collide(_surface_normal * -10 * delta)
+	_collision = move_and_collide(_surface_normal * -100 * delta)
 	
 	if _collision and _collision.get_collider_shape() == _anchored_shape:
 		_anchor_point_l = _anchored_shape.to_local(self.global_position)
@@ -277,9 +281,6 @@ func _free_move(delta : float):
 	
 	# Apply gravity, if any
 	_velocity_3d += WorldState.get_gravity_vector() * delta
-	
-	# Apply air resistance
-	_velocity_3d *= (750 - WorldState.air_pressure) / 750
 	
 	# Try to move to our new position
 	var _collision = move_and_collide(_velocity_3d * delta)
@@ -297,9 +298,7 @@ func _free_move(delta : float):
 		
 		if _loops > 2: # prevents getting stuck in geometry
 			global_translate(_normal)
-		
-		if _loops > 4:
-			break
+			print(\"unstick\")
 		
 		_collision = move_and_collide(_collision.get_remainder().bounce(_normal) * 0.5)
 		_velocity_3d = _velocity_3d.bounce(_normal) * 0.5
