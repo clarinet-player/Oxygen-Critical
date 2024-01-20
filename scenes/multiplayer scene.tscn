@@ -1,0 +1,75 @@
+[gd_scene load_steps=8 format=3 uid="uid://q4r8761swehh"]
+
+[ext_resource type="PackedScene" uid="uid://d16rwkt574n4s" path="res://classes/gameSurface.tscn" id="1_oh3ka"]
+
+[sub_resource type="GDScript" id="GDScript_uwtoc"]
+script/source = "extends Node3D
+
+var peer = ENetMultiplayerPeer.new()
+var player_scene = load(\"res://classes/player.tscn\")
+
+func _ready():
+	if DisplayServer.get_name() == \"headless\":
+		peer.create_server(135)
+		multiplayer.multiplayer_peer = peer
+		multiplayer.peer_connected.connect(_add_player)
+		multiplayer.peer_disconnected.connect(_remove_player)
+	else:
+		peer.create_client(\"localhost\", 135)
+		multiplayer.multiplayer_peer = peer
+
+func _add_player(id : int):
+	print(\"player connected\")
+	var player = player_scene.instantiate()
+	player.name = str(id)
+	#player.set_multiplayer_authority(id)
+	call_deferred(\"add_child\", player)
+
+func _remove_player(id : int):
+	print(\"player disconnected\")
+	get_node(str(id)).queue_free()
+"
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_4wafa"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_xkbjv"]
+sky_material = SubResource("ProceduralSkyMaterial_4wafa")
+
+[sub_resource type="Environment" id="Environment_exp6h"]
+background_mode = 2
+sky = SubResource("Sky_xkbjv")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_efcck"]
+size = Vector3(10, 1, 10)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nw0cx"]
+size = Vector3(10, 1, 10)
+
+[node name="MultiplayerScene" type="Node3D"]
+script = SubResource("GDScript_uwtoc")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_exp6h")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://classes/player.tscn", "res://classes/bullet.tscn")
+spawn_path = NodePath("..")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.810388, 0)
+collision_layer = 3
+freeze = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D"]
+mesh = SubResource("BoxMesh_efcck")
+
+[node name="GameSurface" parent="RigidBody3D" instance=ExtResource("1_oh3ka")]
+shape = SubResource("BoxShape3D_nw0cx")

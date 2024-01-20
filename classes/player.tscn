@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://bq3u0xb10re6"]
+[gd_scene load_steps=7 format=3 uid="uid://bq3u0xb10re6"]
 
 [sub_resource type="GDScript" id="GDScript_eidvd"]
 script/source = "extends Node3D
@@ -6,14 +6,21 @@ script/source = "extends Node3D
 
 @export var height : float = 1.25
 
-var _up_vec := Vector3(0, 0.1, 0)
+#var _up_vec := Vector3(0, 0.1, 0)
 
 @onready var camera := $Camera3D
 @onready var playerbody := $PlayerBody
 
 
 
-func _physics_process(delta):
+func _enter_tree():
+	set_multiplayer_authority(int(str(name)))
+
+
+
+func _physics_process(_delta):
+	if !is_multiplayer_authority():
+		return
 	
 	# Follow playerbody's motion
 	global_position = playerbody.global_position
@@ -77,12 +84,15 @@ var _movement_state : move_type = move_type.WALKING
 
 
 func _ready():
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	_velocity_3d = Vector3(0, -10, 0)
+	if is_multiplayer_authority():
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		_velocity_3d = Vector3(0, -10, 0)
 
 
 
 func _input(event):
+	if !is_multiplayer_authority():
+		return
 	
 	# Rotating to follow mouse
 	if event is InputEventMouseMotion:
@@ -103,6 +113,8 @@ func _input(event):
 
 
 func _physics_process(delta : float):
+	if !is_multiplayer_authority():
+		return
 	
 	# Regen stamina
 	_jump_stamina = clamp(_jump_stamina + delta, 0, 1)
@@ -118,18 +130,17 @@ func _physics_process(delta : float):
 		# Rotate to follow our anchor
 		var _body = _anchored_shape.get_parent()
 		if !_body.angular_velocity.is_zero_approx():
-			print(\"rotate\")
 			rotate(_body.angular_velocity.normalized(), _body.angular_velocity.length() * delta)
-		print()
 		
 		# Adjust roll to avoid gimbal lock
 		var _roll : Vector3 = global_transform.basis.z
 		var _up : Vector3 = global_transform.basis.y
 		var _adjusted_normal : Vector3 = (_surface_normal - _surface_normal.dot(_roll) * _roll).normalized()
 		var _roll_angle : float = acos(_up.dot(_adjusted_normal))
+		var _axis = _up.cross(_adjusted_normal)
 		
-		if _roll_angle > 0.01:
-			rotate(_up.cross(_adjusted_normal).normalized(), _roll_angle * 10 * delta)
+		if _roll_angle > 0.01 and _axis.length() > 0.01:
+			rotate(_axis.normalized(), _roll_angle * 10 * delta)
 		
 		
 		# Jumping
@@ -254,7 +265,6 @@ func _anchored_move(delta : float):
 				global_translate(_surface_normal)
 			
 			if _loops > 4:
-				print(\"too many collisions\")
 				break
 			
 		else:
@@ -291,14 +301,13 @@ func _free_move(delta : float):
 		var _shape = _collision.get_collider_shape()
 		var _normal = _collision.get_normal()
 		
-		if _shape.get_is_grabbable():
+		if \"get_is_grabbable\" in _shape and _shape.get_is_grabbable():
 			attach(_shape, global_position, _normal)
 			_anchored_move(_collision.get_remainder().length()/_velocity_3d.length())
 			return
 		
 		if _loops > 2: # prevents getting stuck in geometry
 			global_translate(_normal)
-			print(\"unstick\")
 		
 		_collision = move_and_collide(_collision.get_remainder().bounce(_normal) * 0.5)
 		_velocity_3d = _velocity_3d.bounce(_normal) * 0.5
@@ -394,6 +403,10 @@ func get_normal() -> Vector3:
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ufnhc"]
 
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_r400h"]
+radius = 0.25
+height = 1.0
+
 [sub_resource type="GDScript" id="GDScript_ea26n"]
 script/source = "extends Node3D
 
@@ -411,7 +424,7 @@ var _fire_time_ms : float
 
 @onready var player_body := $\"../../PlayerBody\"
 
-@onready var _p_bullet = load(\"res://classes/bullet.tscn\")
+@onready var _p_bullet : PackedScene = load(\"res://classes/bullet.tscn\")
 
 
 
@@ -434,6 +447,9 @@ func update_weapon():
 
 
 func _physics_process(delta):
+	if !is_multiplayer_authority():
+		return
+	
 	var time = Time.get_ticks_msec()
 	
 	# Firing
@@ -464,17 +480,32 @@ func fire():
 	
 	# Spawn a bullet
 	var _bullet = _p_bullet.instantiate()
-	add_child(_bullet)
+	call_deferred(\"add_child\", _bullet)
 	_bullet.global_position = global_position + global_transform.basis.z * -0.5
 	_bullet.velocity = global_transform.basis.z * -1 * muzzle_vel + player_body.get_g_velocity()
 	_bullet.aeroLoss = aero_loss
 "
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_txwtg"]
+properties/0/path = NodePath("PlayerBody:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("PlayerBody:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("Camera3D:position")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath("Camera3D:rotation")
+properties/3/spawn = true
+properties/3/replication_mode = 1
 
 [node name="Player" type="Node3D"]
 script = SubResource("GDScript_eidvd")
 
 [node name="PlayerBody" type="RigidBody3D" parent="."]
 top_level = true
+collision_mask = 2
 can_sleep = false
 freeze = true
 script = SubResource("GDScript_qj47s")
@@ -482,9 +513,15 @@ script = SubResource("GDScript_qj47s")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerBody"]
 shape = SubResource("SphereShape3D_ufnhc")
 
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PlayerBody"]
+mesh = SubResource("CapsuleMesh_r400h")
+
 [node name="Camera3D" type="Camera3D" parent="."]
 
 [node name="Weapon" type="Node3D" parent="Camera3D"]
 process_mode = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.093, 0)
 script = SubResource("GDScript_ea26n")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_txwtg")

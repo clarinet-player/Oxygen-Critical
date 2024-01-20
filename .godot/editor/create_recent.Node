@@ -1,11 +1,14 @@
+MultiplayerSynchronizer
+MeshInstance3D
+RigidBody3D
+MultiplayerSpawner
+Button
+Node2D
 MultiMeshInstance3D
 Camera3D
 Node3D
 CollisionShape3D
-RigidBody3D
-MeshInstance3D
 OmniLight3D
 CollisionPolygon3D
 StaticBody3D
 RayCast3D
-Node

@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3 uid="uid://q4r8761swehh"]
+
+[sub_resource type="GDScript" id="GDScript_uwtoc"]
+script/source = "extends Node3D
+
+var peer = ENetMultiplayerPeer.new()
+var player_scene = load(\"res://classes/player.tscn\")
+
+func _ready():
+	if DisplayServer.get_name() == \"headless\":
+		peer.create_server(135)
+		multiplayer.multiplayer_peer = peer
+	else:
+		peer.create_client(\"localhost\", 135)
+		multiplayer.multiplayer_peer = peer
+"
+
+[node name="MultiplayerScene" type="Node3D"]
+script = SubResource("GDScript_uwtoc")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://classes/player.tscn")
+spawn_path = NodePath("..")

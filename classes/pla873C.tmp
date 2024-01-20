@@ -1,0 +1,522 @@
+[gd_scene load_steps=7 format=3 uid="uid://bq3u0xb10re6"]
+
+[sub_resource type="GDScript" id="GDScript_eidvd"]
+script/source = "extends Node3D
+
+
+@export var height : float = 1.25
+
+#var _up_vec := Vector3(0, 0.1, 0)
+
+@onready var camera := $Camera3D
+@onready var playerbody := $PlayerBody
+
+
+
+func _physics_process(_delta):
+	if !is_multiplayer_authority():
+		return
+	
+	# Follow playerbody's motion
+	global_position = playerbody.global_position
+	
+	
+	# Move camera
+	#if playerbody.is_anchored():
+	#	_up_vec = lerp(_up_vec, playerbody.get_normal(), delta * 10).limit_length(height)
+	#else:
+	#	_up_vec = lerp(_up_vec, playerbody.get_velocity() * -0.1, delta).limit_length(height)
+	
+	#camera.position = _up_vec
+	camera.rotation = playerbody.rotation
+
+
+
+func set_weapon(path : String):
+	var _new = load(path).instantiate()
+	$Camera3D/Weapon.add_child(_new)
+	$Camera3D/Weapon.update_weapon()
+"
+
+[sub_resource type="GDScript" id="GDScript_qj47s"]
+script/source = "extends RigidBody3D
+
+
+
+@export var walk_acceleration : float = 30.0
+@export var walk_friction : float = 40.0
+@export var walk_max_speed : float = 3
+
+@export var sprint_acceleration : float = 40.0
+@export var sprint_max_speed : float = 6
+
+@export var slide_power : float = 2.0
+@export var slide_friction : float = 1.0
+
+@export var jump_power : float = 3.0
+
+@export var mouse_sensitivity : float = 3.0
+
+var _anchored_shape : CollisionShape3D
+var _anchor_point_l : Vector3
+var _surface_normal : Vector3
+
+var _velocity_2d : Vector2
+var _velocity_3d : Vector3
+
+var _jump_stamina : float = 1.0
+var _slide_stamina : float = 1.0
+
+enum move_type {
+	IDLE,
+	WALKING,
+	SPRINTING,
+	SLIDING
+}
+
+var _movement_state : move_type = move_type.WALKING
+
+
+
+func _ready():
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	_velocity_3d = Vector3(0, -10, 0)
+
+
+
+func _input(event):
+	if !is_multiplayer_authority():
+		return
+	
+	# Rotating to follow mouse
+	if event is InputEventMouseMotion:
+		if _anchored_shape:
+			
+			rotate(_surface_normal, event.relative.x * mouse_sensitivity * -0.001)
+			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
+			_velocity_2d = _velocity_2d.rotated(event.relative.x * mouse_sensitivity * 0.001)
+			
+		else:
+			rotate(global_transform.basis.y.normalized(), event.relative.x * mouse_sensitivity * -0.001)
+			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
+
+
+
+############    Executed every physics frame    ############
+
+
+
+func _physics_process(delta : float):
+	if !is_multiplayer_authority():
+		return
+	
+	# Regen stamina
+	_jump_stamina = clamp(_jump_stamina + delta, 0, 1)
+	_slide_stamina = clamp(_slide_stamina + delta, 0, 1)
+	
+	
+	if _anchored_shape:
+		
+		# Move to follow our anchor
+		global_position = _anchored_shape.to_global(_anchor_point_l)
+		
+		
+		# Rotate to follow our anchor
+		var _body = _anchored_shape.get_parent()
+		if !_body.angular_velocity.is_zero_approx():
+			rotate(_body.angular_velocity.normalized(), _body.angular_velocity.length() * delta)
+		
+		# Adjust roll to avoid gimbal lock
+		var _roll : Vector3 = global_transform.basis.z
+		var _up : Vector3 = global_transform.basis.y
+		var _adjusted_normal : Vector3 = (_surface_normal - _surface_normal.dot(_roll) * _roll).normalized()
+		var _roll_angle : float = acos(_up.dot(_adjusted_normal))
+		
+		if _roll_angle > 0.01:
+			rotate(_up.cross(_adjusted_normal).normalized(), _roll_angle * 10 * delta)
+		
+		
+		# Jumping
+		if Input.is_action_pressed(\"Space\") and _jump_stamina > 0.3:
+			
+			detach()
+			
+			var _looking : Vector3 = global_transform.basis.z * -1
+			var _forward : Vector3 = (_looking - _looking.dot(_surface_normal) * _surface_normal).normalized()
+			_velocity_3d += (_surface_normal + _forward).normalized() * jump_power * _jump_stamina
+			_jump_stamina = 0
+	
+	
+	# Delegate movement
+	if _anchored_shape:
+		_anchored_move(delta)
+	else:
+		_free_move(delta)
+
+
+
+func _anchored_move(delta : float):
+	
+	# Modifying Movement State
+	if Input.is_action_pressed(\"Control\"):
+		if _movement_state != move_type.SLIDING:
+			_movement_state = move_type.SLIDING
+			_velocity_2d.y += slide_power * _slide_stamina
+			_slide_stamina = 0
+	elif _movement_state == move_type.SLIDING:
+		_movement_state = move_type.IDLE
+	
+	if Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\"):
+		if _movement_state == move_type.IDLE:
+			_movement_state = move_type.WALKING
+	elif _movement_state != move_type.SLIDING:
+		_movement_state = move_type.IDLE
+	
+	if Input.is_action_pressed(\"Shift\") and _movement_state == move_type.WALKING:
+		_movement_state = move_type.SPRINTING
+	
+	
+	# Calculating movement direction along the ground
+	var _looking : Vector3 = global_transform.basis.z * -1
+	var _forward : Vector3 = (_looking - _looking.dot(_surface_normal) * _surface_normal).normalized()
+	var _side : Vector3 = _forward.cross(_surface_normal)
+	
+	
+	# Getting movement input
+	match _movement_state:
+		
+		move_type.IDLE:
+			
+			if _velocity_2d.length() < walk_friction * delta:
+				_velocity_2d = Vector2.ZERO
+			else:
+				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - walk_friction * delta)
+		
+		move_type.WALKING:
+			
+			var _change : Vector2
+			_change.y = Input.get_axis(\"S\", \"W\")
+			_change.x = Input.get_axis(\"A\", \"D\")
+			
+			_velocity_2d += _change.normalized() * delta * walk_acceleration
+			
+			if _velocity_2d.length() > walk_max_speed + walk_friction * delta:
+				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - walk_friction * delta)
+			else:
+				_velocity_2d = _velocity_2d.limit_length(walk_max_speed)
+		
+		move_type.SPRINTING:
+			
+			var _change : Vector2
+			_change.y = Input.get_axis(\"S\", \"W\")
+			_change.x = Input.get_axis(\"A\", \"D\")
+			
+			_velocity_2d += _change.normalized() * delta * sprint_acceleration
+			
+			if _velocity_2d.length() > sprint_max_speed + walk_friction * delta:
+				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - walk_friction * delta)
+			else:
+				_velocity_2d = _velocity_2d.limit_length(sprint_max_speed)
+		
+		move_type.SLIDING:
+			
+			_velocity_2d.y += _forward.dot(WorldState.get_gravity_vector()) * delta
+			_velocity_2d.x += _side.dot(WorldState.get_gravity_vector()) * delta
+			
+			if _velocity_2d.length() < slide_friction * delta:
+				_velocity_2d = Vector2.ZERO
+			else:
+				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - slide_friction * delta)
+	
+	if _velocity_2d.is_zero_approx():
+		return
+	
+	# Applying movement
+	var _movement : Vector3 = (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
+	var _time = delta
+	var _collision = move_and_collide(_movement * _time)
+	var _loops = 0
+	
+	while _collision:
+		
+		var _shape = _collision.get_collider_shape()
+		var _normal = _collision.get_normal()
+		
+		_time -= delta * (_collision.get_travel().length() / _velocity_2d.length())
+		
+		if _shape == _anchored_shape and acos(_surface_normal.dot(_normal)) <= 1.5:
+			
+			_surface_normal = _normal
+			
+			_looking = global_transform.basis.z * -1
+			_forward = _looking - _looking.dot(_surface_normal) * _surface_normal
+			_side = _forward.cross(_surface_normal)
+			
+			_movement = (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
+			
+			if _loops > 2: # prevents getting stuck inside geometry
+				global_translate(_surface_normal)
+			
+			if _loops > 4:
+				break
+			
+		else:
+			
+			_movement = _movement - _movement.dot(_normal) * _normal
+			_velocity_2d = Vector2(_movement.dot(_side), _movement.dot(_forward))
+			
+		_loops += 1
+		_collision = move_and_collide(_movement * _time)
+	
+	
+	# Checking we're still on the ground
+	_collision = move_and_collide(_surface_normal * -100 * delta)
+	
+	if _collision and _collision.get_collider_shape() == _anchored_shape:
+		_anchor_point_l = _anchored_shape.to_local(self.global_position)
+		_surface_normal = _collision.get_normal()
+	else:
+		detach()
+
+
+
+func _free_move(delta : float):
+	
+	# Apply gravity, if any
+	_velocity_3d += WorldState.get_gravity_vector() * delta
+	
+	# Try to move to our new position
+	var _collision = move_and_collide(_velocity_3d * delta)
+	var _loops = 0
+	
+	while _collision:
+		
+		var _shape = _collision.get_collider_shape()
+		var _normal = _collision.get_normal()
+		
+		if \"get_is_grabbable\" in _shape and _shape.get_is_grabbable():
+			attach(_shape, global_position, _normal)
+			_anchored_move(_collision.get_remainder().length()/_velocity_3d.length())
+			return
+		
+		if _loops > 2: # prevents getting stuck in geometry
+			global_translate(_normal)
+		
+		_collision = move_and_collide(_collision.get_remainder().bounce(_normal) * 0.5)
+		_velocity_3d = _velocity_3d.bounce(_normal) * 0.5
+		
+		var _body = _shape.get_parent()
+		_velocity_3d += ((_body.global_position - global_position).cross(_body.angular_velocity) - _velocity_3d) * 0.5
+		
+		_loops += 1
+
+
+
+############################################################
+
+
+
+func attach(_shape : CollisionShape3D, _anchor_point_g : Vector3, _normal : Vector3):
+	
+	_anchored_shape = _shape
+	_anchor_point_l = _anchored_shape.to_local(_anchor_point_g)
+	_surface_normal = _normal
+	
+	var _looking : Vector3 = global_transform.basis.z * -1
+	var _forward : Vector3 = _looking - _looking.dot(_surface_normal) * _surface_normal
+	var _side : Vector3 = _forward.cross(_surface_normal)
+	
+	_velocity_2d = Vector2(_velocity_3d.dot(_side), _velocity_3d.dot(_forward))
+	
+	var _body = _shape.get_parent()
+	var _body_motion = (_body.global_position - global_position).cross(_body.angular_velocity)
+	_velocity_2d -= Vector2(_body_motion.dot(_side), _body_motion.dot(_forward))
+
+
+
+func detach():
+	
+	var _looking : Vector3 = global_transform.basis.z * -1
+	var _forward : Vector3 = _looking - _looking.dot(_surface_normal) * _surface_normal
+	var _side : Vector3 = _forward.cross(_surface_normal)
+	
+	var _body : RigidBody3D = _anchored_shape.get_parent()
+	
+	#_velocity_3d = _body.linear_velocity 
+	_velocity_3d = (_body.global_position - global_position).cross(_body.angular_velocity)
+	_velocity_3d += (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
+	
+	_anchored_shape = null
+	
+	_movement_state = move_type.IDLE
+
+
+
+func is_anchored() -> bool:
+	if _anchored_shape:
+		return true
+	else:
+		return false
+
+
+
+func get_g_velocity() -> Vector3:
+	if _anchored_shape:
+
+		var _looking : Vector3 = global_transform.basis.z * -1
+		var _forward : Vector3 = (_looking - _looking.dot(_surface_normal) * _surface_normal).normalized()
+		var _side : Vector3 = _forward.cross(_surface_normal)
+		
+		var _body : RigidBody3D = _anchored_shape.get_parent()
+		
+		return (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x) + (_body.global_position - global_position).cross(_body.angular_velocity)
+		
+	else:
+		return _velocity_3d
+
+
+
+func get_velocity() -> Vector3:
+	if _anchored_shape:
+
+		var _looking : Vector3 = global_transform.basis.z * -1
+		var _forward : Vector3 = (_looking - _looking.dot(_surface_normal) * _surface_normal).normalized()
+		var _side : Vector3 = _forward.cross(_surface_normal)
+		
+		return (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
+		
+	else:
+		return _velocity_3d
+
+
+
+func get_normal() -> Vector3:
+	return _surface_normal
+"
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ufnhc"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_r400h"]
+radius = 0.25
+height = 1.0
+
+[sub_resource type="GDScript" id="GDScript_ea26n"]
+script/source = "extends Node3D
+
+
+
+var weapon_name : String
+var firerate : float
+var muzzle_vel : float
+var aero_loss : float
+var spread : float
+
+var _heat : float
+var _firedelay : float
+var _fire_time_ms : float
+
+@onready var player_body := $\"../../PlayerBody\"
+
+@onready var _p_bullet = load(\"res://classes/bullet.tscn\")
+
+
+
+func update_weapon():
+	if get_child_count() < 1:
+		process_mode = Node.PROCESS_MODE_DISABLED
+		return
+	
+	var child = get_child(0)
+	
+	weapon_name = child.weapon_name
+	firerate = child.firerate
+	muzzle_vel = child.muzzle_vel
+	aero_loss = child.aero_loss
+	
+	_firedelay = 1000 / firerate
+	
+	process_mode = Node.PROCESS_MODE_INHERIT
+
+
+
+func _physics_process(delta):
+	if !is_multiplayer_authority():
+		return
+	
+	var time = Time.get_ticks_msec()
+	
+	# Firing
+	if Input.is_action_pressed(\"Mouse1\"):
+		if time > _fire_time_ms + _firedelay:
+			fire()
+			_fire_time_ms -= _firedelay
+			if time > _fire_time_ms + _firedelay:
+				_fire_time_ms = time
+			_heat += 1
+	
+	# Recovering heat after firing
+	if time - _fire_time_ms > _firedelay:
+		_heat -= delta * firerate
+
+
+
+func fire():
+	
+	# Calculate inaccuracy from movement
+	if player_body.is_anchored():
+		if player_body._movement_state == player_body.move_type.SLIDING:
+			spread = 4.5
+		else:
+			spread = player_body.get_velocity().length()
+	else:
+		spread = 4.5
+	
+	# Spawn a bullet
+	var _bullet = _p_bullet.instantiate()
+	add_child(_bullet)
+	_bullet.global_position = global_position + global_transform.basis.z * -0.5
+	_bullet.velocity = global_transform.basis.z * -1 * muzzle_vel + player_body.get_g_velocity()
+	_bullet.aeroLoss = aero_loss
+"
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_8scac"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("Camera3D:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("PlayerBody:rotation")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath("PlayerBody:position")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath("Camera3D:position")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+
+[node name="Player" type="Node3D"]
+script = SubResource("GDScript_eidvd")
+
+[node name="PlayerBody" type="RigidBody3D" parent="."]
+top_level = true
+can_sleep = false
+freeze = true
+script = SubResource("GDScript_qj47s")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerBody"]
+shape = SubResource("SphereShape3D_ufnhc")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PlayerBody"]
+mesh = SubResource("CapsuleMesh_r400h")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+
+[node name="Weapon" type="Node3D" parent="Camera3D"]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.093, 0)
+script = SubResource("GDScript_ea26n")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_8scac")
