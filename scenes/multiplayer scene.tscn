@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://q4r8761swehh"]
+[gd_scene load_steps=9 format=3 uid="uid://q4r8761swehh"]
 
 [ext_resource type="PackedScene" uid="uid://d16rwkt574n4s" path="res://classes/gameSurface.tscn" id="1_oh3ka"]
 
@@ -10,24 +10,37 @@ var player_scene = load(\"res://classes/player.tscn\")
 
 func _ready():
 	if DisplayServer.get_name() == \"headless\":
+		multiplayer.peer_connected.connect(_connect)
+		multiplayer.peer_disconnected.connect(_disconnect)
 		peer.create_server(135)
 		multiplayer.multiplayer_peer = peer
-		multiplayer.peer_connected.connect(_add_player)
-		multiplayer.peer_disconnected.connect(_remove_player)
 	else:
 		peer.create_client(\"localhost\", 135)
 		multiplayer.multiplayer_peer = peer
 
-func _add_player(id : int):
-	print(\"player connected\")
-	var player = player_scene.instantiate()
-	player.name = str(id)
-	#player.set_multiplayer_authority(id)
-	call_deferred(\"add_child\", player)
+func _connect(id : int):
+	print(\"player connected: \", id)
+	_add_player(id)
 
-func _remove_player(id : int):
-	print(\"player disconnected\")
+func _disconnect(id : int):
+	print(\"player disconnected: \", id)
 	get_node(str(id)).queue_free()
+
+func _add_player(id : int):
+	if id > 1:
+		var player = player_scene.instantiate()
+		player.name = str(id)
+		call_deferred(\"add_child\", player)
+
+@rpc(\"any_peer\")
+func spawn_bullet(pos : Vector3, vel : Vector3, accel : Vector3, mass : float, aero : float):
+	var _bullet = preload(\"res://classes/bullet.tscn\").instantiate()
+	add_child(_bullet, true)
+	_bullet.global_position = pos
+	_bullet.velocity = vel
+	_bullet.acceleration = accel
+	_bullet.mass = mass
+	_bullet.aeroLoss = aero
 "
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_4wafa"]
@@ -48,6 +61,9 @@ size = Vector3(10, 1, 10)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_nw0cx"]
 size = Vector3(10, 1, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_bo7i7"]
+size = Vector3(2, 2, 2)
 
 [node name="MultiplayerScene" type="Node3D"]
 script = SubResource("GDScript_uwtoc")
@@ -73,3 +89,7 @@ mesh = SubResource("BoxMesh_efcck")
 
 [node name="GameSurface" parent="RigidBody3D" instance=ExtResource("1_oh3ka")]
 shape = SubResource("BoxShape3D_nw0cx")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="RigidBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.70439, 1.54256, 0)
+mesh = SubResource("BoxMesh_bo7i7")

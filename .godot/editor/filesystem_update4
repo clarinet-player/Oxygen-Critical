@@ -1,3 +1,7 @@
 res://classes/player.tscn
-res://scenes/testscene.tscn
 res://scenes/multiplayer scene.tscn
+res://scenes/testscene.tscn
+res://classes/worldState.tscn
+res://classes/gameSurface.tscn
+res://classes/bullet.tscn
+res://weapons/AK12/ak_12.tscn
