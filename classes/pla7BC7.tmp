@@ -11,7 +11,7 @@ var _up_vec := Vector3(0, 0.1, 0)
 var health : float = 100
 var breaches : int = 0
 
-
+var hud
 @onready var camera := $Camera3D
 @onready var playerbody := $PlayerBody
 @onready var hitbox := $Hitbox
@@ -20,10 +20,17 @@ var breaches : int = 0
 
 func _enter_tree():
 	set_multiplayer_authority(int(str(name)))
-	set_weapon(\"res://weapons/AK12/ak_12.tscn\")
 	if is_multiplayer_authority():
 		$Camera3D.current = true
-		PlayerHud.visible = true
+		hud = load(\"res://ui/player hud.tscn\").instantiate()
+		add_child(hud)
+		$Camera3D/Weapon.hud = hud
+
+
+
+func _ready():
+	#set_weapon(\"res://weapons/AK12/ak_12.tscn\")
+	pass
 
 
 
@@ -32,7 +39,7 @@ func _process(delta):
 		return
 	
 	health = clamp(health - (breaches * delta * 2), 0, 100)
-	PlayerHud.set_health(health)
+	hud.set_health(health)
 	if health == 0:
 		spawn()
 	
@@ -59,17 +66,17 @@ func _physics_process(delta):
 		return
 	
 	if Input.is_action_just_pressed(\"E\"):
-		PlayerHud.start_progress_bar(2, \"healing\", heal)
+		hud.start_progress_bar(2, \"healing\", heal)
 
 
 
 func spawn():
-	PlayerHud.stop_all()
+	hud.stop_all()
 	global_position = Vector3.ZERO
 	global_rotation = Vector3.ZERO
 	health = 100
 	breaches = 0
-	PlayerHud.set_health(health)
+	hud.set_health(health)
 	$Camera3D/Weapon.reload()
 	$PlayerBody.on_spawn()
 
@@ -78,7 +85,7 @@ func spawn():
 func heal():
 	breaches = max(breaches - 1, 0)
 	health = min(health + 28, 100)
-	PlayerHud.set_health(health)
+	hud.set_health(health)
 
 
 
@@ -489,6 +496,7 @@ var _firedelay : float
 var _fire_time_ms : float
 
 @onready var player_body := $\"../../PlayerBody\"
+var hud
 
 
 
@@ -508,7 +516,7 @@ func update_weapon():
 	damage = child.damage
 	aero_loss = child.aero_loss
 	
-	PlayerHud.set_ammo(child.mag_size)
+	hud.set_ammo(child.mag_size)
 	
 	_firedelay = 1000 / firerate
 	
@@ -531,9 +539,9 @@ func _physics_process(delta):
 				_fire_time_ms = time
 			_heat += 1
 			magazine -= 1
-			PlayerHud.set_ammo(magazine)
-			PlayerHud.stop_progress(\"reloading\")
-			PlayerHud.stop_progress(\"healing\")
+			hud.set_ammo(magazine)
+			hud.stop_progress(\"reloading\")
+			hud.stop_progress(\"healing\")
 	
 	# Recovering heat after firing
 	if time - _fire_time_ms > _firedelay:
@@ -541,13 +549,13 @@ func _physics_process(delta):
 	
 	# Reloading
 	if Input.is_action_just_pressed(\"R\"):
-		PlayerHud.start_progress_bar(3, \"reloading\", reload)
+		hud.start_progress_bar(3, \"reloading\", reload)
 
 
 
 func reload():
 	magazine = mag_size
-	PlayerHud.set_ammo(mag_size)
+	hud.set_ammo(mag_size)
 
 
 
@@ -610,7 +618,7 @@ script = SubResource("GDScript_eidvd")
 
 [node name="PlayerBody" type="RigidBody3D" parent="."]
 top_level = true
-collision_layer = 0
+collision_mask = 2
 can_sleep = false
 freeze = true
 script = SubResource("GDScript_qj47s")

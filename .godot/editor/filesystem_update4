@@ -1,7 +1,9 @@
+res://ui/player hud.tscn
+res://scenes/testscene.tscn
 res://classes/player.tscn
 res://scenes/multiplayer scene.tscn
-res://scenes/testscene.tscn
-res://classes/worldState.tscn
-res://classes/gameSurface.tscn
 res://classes/bullet.tscn
 res://weapons/AK12/ak_12.tscn
+res://classes/worldState.tscn
+res://scenes/main menu.tscn
+res://scenes/multiplayer.tscn

@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://q4r8761swehh"]
+[gd_scene load_steps=10 format=3 uid="uid://q4r8761swehh"]
 
 [ext_resource type="PackedScene" uid="uid://d16rwkt574n4s" path="res://classes/gameSurface.tscn" id="1_oh3ka"]
 
@@ -9,6 +9,7 @@ var peer = ENetMultiplayerPeer.new()
 var player_scene = load(\"res://classes/player.tscn\")
 
 func _ready():
+	WorldState.playable_area = $\"Playable Area\"
 	if DisplayServer.get_name() == \"headless\":
 		multiplayer.peer_connected.connect(_connect)
 		multiplayer.peer_disconnected.connect(_disconnect)
@@ -65,6 +66,9 @@ size = Vector3(10, 1, 10)
 [sub_resource type="BoxMesh" id="BoxMesh_bo7i7"]
 size = Vector3(2, 2, 2)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_y7ye7"]
+size = Vector3(2.83115, 1.53125, 1.11597)
+
 [node name="MultiplayerScene" type="Node3D"]
 script = SubResource("GDScript_uwtoc")
 
@@ -93,3 +97,9 @@ shape = SubResource("BoxShape3D_nw0cx")
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="RigidBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.70439, 1.54256, 0)
 mesh = SubResource("BoxMesh_bo7i7")
+
+[node name="Playable Area" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Playable Area"]
+transform = Transform3D(12.1158, 0, 0, 0, 18.9573, 0, 0, 0, 30.864, -0.224989, -5.03554, -0.00376761)
+shape = SubResource("BoxShape3D_y7ye7")

@@ -1,0 +1,171 @@
+[gd_scene load_steps=3 format=3 uid="uid://bw31ycr56hs2f"]
+
+[sub_resource type="GDScript" id="GDScript_wnrnt"]
+script/source = "extends Control
+
+var progress_name : String
+var progress_speed : float
+var progress_callable : Callable
+
+@onready var progress := $\"Progress Bar\"
+
+@onready var crosshair := $Crosshair
+
+func set_health(new : float):
+	$\"Health Bar\".value = new
+
+func set_ammo(new : int):
+	$\"Panel/Ammo Counter\".text = str(new)
+
+func start_progress_bar(secs : float, task_name : String, callable : Callable):
+	progress.visible = true
+	crosshair.visible = false
+	progress.value = 0
+	progress_speed = 1 / secs
+	progress_name = task_name
+	progress_callable = callable
+
+func stop_progress(task_name : String):
+	if task_name == progress_name:
+		progress.visible = false
+		crosshair.visible = true
+
+func stop_all():
+	progress.visible = false
+	crosshair.visible = true
+
+func _process(delta):
+	if progress.visible == true:
+		progress.value += delta * progress_speed
+		if progress.value == 1:
+			progress.visible = false
+			crosshair.visible = true
+			progress_callable.call()
+"
+
+[sub_resource type="Theme" id="Theme_s0mw5"]
+
+[node name="PlayerHud" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_wnrnt")
+
+[node name="Health Bar" type="ProgressBar" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -205.0
+offset_top = -54.0
+offset_right = 206.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = SubResource("Theme_s0mw5")
+show_percentage = false
+
+[node name="Breach Counter" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_top = -80.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Crosshair" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="Crosshair"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -12.5
+offset_right = 2.0
+offset_bottom = 12.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel2" type="Panel" parent="Crosshair"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -12.5
+offset_top = -2.0
+offset_right = 12.5
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Progress Bar" type="ProgressBar" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -78.0
+offset_top = -13.5
+offset_right = 78.0
+offset_bottom = 13.5
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 1.0
+show_percentage = false
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -178.0
+offset_top = -80.0
+offset_right = -81.0
+offset_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Ammo Counter" type="RichTextLabel" parent="Panel"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -83.0
+offset_top = -43.0
+offset_bottom = 43.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 60

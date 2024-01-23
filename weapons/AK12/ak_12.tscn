@@ -6,9 +6,10 @@
 script/source = "extends Node3D
 
 var weapon_name : String = \"AK-12\"
-var firerate : float = 9
+var firerate : float = 10
+var mag_size : int = 20
 var muzzle_vel : float = 700
-var damage : float = 25
+var damage : float = 26
 var aero_loss : float = 1
 "
 

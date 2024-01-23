@@ -1,7 +1,5 @@
-[gd_scene load_steps=26 format=3 uid="uid://cnwcqemqhqc53"]
+[gd_scene load_steps=24 format=3 uid="uid://cnwcqemqhqc53"]
 
-[ext_resource type="PackedScene" uid="uid://bq3u0xb10re6" path="res://classes/player.tscn" id="1_jsuib"]
-[ext_resource type="Script" path="res://scripts/testscene.gd" id="1_mbm1b"]
 [ext_resource type="PackedScene" uid="uid://d16rwkt574n4s" path="res://classes/gameSurface.tscn" id="2_yb1rw"]
 [ext_resource type="Script" path="res://scripts/ship.gd" id="3_bbgfq"]
 [ext_resource type="Shape3D" uid="uid://0yu6o35ijd5n" path="res://assets/ship2.tres" id="4_p5fog"]
@@ -93,7 +91,6 @@ albedo_texture = ExtResource("4_teqpc")
 albedo_texture = ExtResource("4_teqpc")
 
 [node name="testscene" type="Node3D"]
-script = ExtResource("1_mbm1b")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866024, -0.433016, 0.250001, 0.169986, 0.21524, 0.961653, -0.470221, 0.875311, -0.112796, 0, 39.3797, 0)
@@ -102,10 +99,8 @@ shadow_enabled = true
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_63ddg")
 
-[node name="Player" parent="." instance=ExtResource("1_jsuib")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 26.1235, 0)
-
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -25.7205, 0)
 freeze = true
 freeze_mode = 1
 
@@ -118,7 +113,7 @@ shape = SubResource("BoxShape3D_pjokn")
 strength = 4.0
 
 [node name="Ship" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.03203, 51.9829, -30.3617)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.03203, 26.2624, -30.3617)
 freeze = true
 freeze_mode = 1
 custom_integrator = true
@@ -146,7 +141,7 @@ shape = ExtResource("7_y1v4s")
 grabbable_states = ["zero"]
 
 [node name="RigidBody3D2" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -254.73, 34.546, -64.9858)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -254.73, 8.82554, -64.9858)
 freeze = true
 freeze_mode = 1
 
@@ -159,7 +154,7 @@ shape = SubResource("BoxShape3D_pjokn")
 strength = 4.0
 
 [node name="RigidBody3D3" type="RigidBody3D" parent="."]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -152.02, 24.6578, 14.9565)
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -152.02, -1.06266, 14.9565)
 freeze = true
 freeze_mode = 1
 

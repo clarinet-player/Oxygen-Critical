@@ -1,30 +1,36 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1705868387
-export_presets.cfg::TextFile::-1::1705820371::0::1::::<><>::
+::res://::1705977374
+export_presets.cfg::TextFile::-1::1705960855::0::1::::<><>::
 icon.svg::CompressedTexture2D::8724437967346365169::1702187069::1704913904::1::::<><>::
-::res://assets/::1705118115
+::res://assets/::1705977127
+crosshair.png::CompressedTexture2D::6813641984644282386::1705960472::1705960494::1::::<><>::
 metal.jpg::CompressedTexture2D::1970671546397719232::1704575824::1705086495::1::::<><>::
+pikachu.png::CompressedTexture2D::2987508511258098730::1705976785::1705976793::1::::<><>::
 ship1.obj::Mesh::1992452463883919187::1704222247::1704913904::1::::<><>::
 ship2.obj::Mesh::7790162301134781609::1704222247::1704913904::1::::<><>::
 ship2.tres::ConcavePolygonShape3D::1805536636470162589::1704483057::0::1::::<><>::
 testscene.tres::ConcavePolygonShape3D::8465421319000102396::1704575824::0::1::::<><>::
-::res://classes/::1705820435
-bullet.tscn::PackedScene::4851513591805773323::1705820388::0::1::::<><>::
-gameSurface.tscn::PackedScene::9049239728378702472::1705820388::0::1::::<><>::
-player.tscn::PackedScene::104956028073985459::1705820435::0::1::::<><>::
-worldState.tscn::PackedScene::890259437353000500::1705820388::0::1::::<><>::
-::res://scenes/::1705820388
+thumbsup.jpg::CompressedTexture2D::3399232090794219126::1705977127::1705977127::1::::<><>::
+::res://classes/::1705977555
+bullet.tscn::PackedScene::4851513591805773323::1705977554::0::1::::<><>::
+gameSurface.tscn::PackedScene::9049239728378702472::1705868891::0::1::::<><>::
+player.tscn::PackedScene::104956028073985459::1705977554::0::1::::<><>::
+worldState.tscn::PackedScene::890259437353000500::1705977555::0::1::::<><>::
+::res://scenes/::1705977555
 bullettestscene.tscn::PackedScene::1004180416020809727::1704763278::0::1::::<><>::res://scripts/bullettestscene.gd<>uid://d16rwkt574n4s::::res://classes/gameSurface.tscn
-multiplayer scene.tscn::PackedScene::1183981302994529237::1705820388::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn
-testscene.tscn::PackedScene::5730862881325956368::1705820387::0::1::::<><>::uid://bq3u0xb10re6::::res://classes/player.tscn<>res://scripts/testscene.gd<>uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>res://scripts/ship.gd<>uid://0yu6o35ijd5n::::res://assets/ship2.tres<>uid://3cuw4l80rgui::::res://assets/metal.jpg<>uid://dsuyitw2p6oo7::::res://assets/testscene.tres
+main menu.tscn::PackedScene::176360083397563743::1705977555::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg
+multiplayer scene.tscn::PackedScene::1183981302994529237::1705977554::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn
+Multiplayer Manager.tscn::PackedScene::3298394945087652991::1705977820::0::1::::<><>::
+testscene.tscn::PackedScene::5730862881325956368::1705977554::0::1::::<><>::uid://bq3u0xb10re6::::res://classes/player.tscn<>res://scripts/testscene.gd<>uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>res://scripts/ship.gd<>uid://0yu6o35ijd5n::::res://assets/ship2.tres<>uid://3cuw4l80rgui::::res://assets/metal.jpg<>uid://dsuyitw2p6oo7::::res://assets/testscene.tres
 ::res://scripts/::1705451457
 body.gd::GDScript::-1::1703206004::0::1::::<>RigidBody3D<>::
 bullettestscene.gd::GDScript::-1::1704761304::0::1::::<>Node3D<>::
 ship.gd::GDScript::-1::1704575824::0::1::::<>RigidBody3D<>::
 testcentrifuge.gd::GDScript::-1::1703280375::0::1::::<>RigidBody3D<>::
 testscene.gd::GDScript::-1::1705451457::0::1::::<>Node3D<>::
+::res://ui/::1705977555
+player hud.tscn::PackedScene::3989999454422294155::1705977555::0::1::::<><>::
 ::res://weapons/::1705118115
-::res://weapons/AK12/::1705798841
+::res://weapons/AK12/::1705977555
 ak12.glb::PackedScene::1226531950275736826::1704575824::1705118115::1::::<><>::
-ak12.tres::Resource::6012576297635228613::1705798576::0::1::::<><>::
-ak_12.tscn::PackedScene::6057950990840864630::1705798840::0::1::::<><>::uid://3cuw4l80rgui::::res://assets/metal.jpg
+ak_12.tscn::PackedScene::6057950990840864630::1705977554::0::1::::<><>::uid://3cuw4l80rgui::::res://assets/metal.jpg
