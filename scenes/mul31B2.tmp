@@ -27,9 +27,16 @@ func _ready():
 
 
 
-func connect_player():
+func connect_player() -> bool:
 	peer.create_client(\"localhost\", 135)
 	multiplayer.multiplayer_peer = peer
+	
+	#if peer.get_connection_status() != peer.CONNECTION_CONNECTED:
+	#	print(\"connected\")
+	#	return false
+	
+	#print(\"not connected\")
+	return true
 
 
 

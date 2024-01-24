@@ -1,0 +1,157 @@
+[gd_scene load_steps=11 format=3 uid="uid://cmx5db1kixom7"]
+
+[ext_resource type="PackedScene" uid="uid://d16rwkt574n4s" path="res://classes/gameSurface.tscn" id="1_e0pjc"]
+[ext_resource type="PackedScene" uid="uid://de0weem1pd67y" path="res://classes/spawnpoint.tscn" id="2_7pod8"]
+
+[sub_resource type="GDScript" id="GDScript_e5p08"]
+script/source = "extends Node3D
+
+
+func _ready():
+	var area = AABB(Vector3(-30, -5, -30), Vector3(60, 10, 60))
+	WorldState.playable_area = area
+"
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hjjoh"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_554fn"]
+sky_material = SubResource("ProceduralSkyMaterial_hjjoh")
+
+[sub_resource type="Environment" id="Environment_yxgr7"]
+background_mode = 2
+sky = SubResource("Sky_554fn")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hbdbu"]
+size = Vector3(30, 0.5, 30)
+
+[sub_resource type="BoxMesh" id="BoxMesh_erkee"]
+size = Vector3(30, 0.5, 30)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_uwwva"]
+size = Vector3(0.5, 4, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_jexho"]
+size = Vector3(0.5, 4, 10)
+
+[node name="PlayableScene" type="Node3D"]
+script = SubResource("GDScript_e5p08")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_yxgr7")
+
+[node name="Floor" type="RigidBody3D" parent="."]
+freeze = true
+
+[node name="GameSurface" parent="Floor" instance=ExtResource("1_e0pjc")]
+shape = SubResource("BoxShape3D_hbdbu")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("BoxMesh_erkee")
+
+[node name="Ceiling" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 4, 10)
+freeze = true
+
+[node name="GameSurface" parent="Ceiling" instance=ExtResource("1_e0pjc")]
+shape = SubResource("BoxShape3D_hbdbu")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ceiling"]
+mesh = SubResource("BoxMesh_erkee")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1.9818, 10)
+
+[node name="GameSurface" parent="RigidBody3D" instance=ExtResource("1_e0pjc")]
+shape = SubResource("BoxShape3D_uwwva")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D"]
+mesh = SubResource("BoxMesh_jexho")
+
+[node name="RigidBody3D2" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14481, 1.9818, 0.0166454)
+
+[node name="GameSurface" parent="RigidBody3D2" instance=ExtResource("1_e0pjc")]
+shape = SubResource("BoxShape3D_uwwva")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D2"]
+mesh = SubResource("BoxMesh_jexho")
+
+[node name="RigidBody3D3" type="RigidBody3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -10.0161, 1.9818, 9.3096)
+
+[node name="GameSurface" parent="RigidBody3D3" instance=ExtResource("1_e0pjc")]
+shape = SubResource("BoxShape3D_uwwva")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D3"]
+mesh = SubResource("BoxMesh_jexho")
+
+[node name="RigidBody3D4" type="RigidBody3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 4.61361, 1.9818, -4.72899)
+
+[node name="GameSurface" parent="RigidBody3D4" instance=ExtResource("1_e0pjc")]
+shape = SubResource("BoxShape3D_uwwva")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D4"]
+mesh = SubResource("BoxMesh_jexho")
+
+[node name="RigidBody3D5" type="RigidBody3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -9.89603, 1.9818, -4.72899)
+
+[node name="GameSurface" parent="RigidBody3D5" instance=ExtResource("1_e0pjc")]
+shape = SubResource("BoxShape3D_uwwva")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D5"]
+mesh = SubResource("BoxMesh_jexho")
+
+[node name="RigidBody3D6" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.6775, 1.9818, 10.0736)
+
+[node name="GameSurface" parent="RigidBody3D6" instance=ExtResource("1_e0pjc")]
+shape = SubResource("BoxShape3D_uwwva")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D6"]
+mesh = SubResource("BoxMesh_jexho")
+
+[node name="RigidBody3D7" type="RigidBody3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 19.8551, 2.04876, 14.88)
+
+[node name="GameSurface" parent="RigidBody3D7" instance=ExtResource("1_e0pjc")]
+shape = SubResource("BoxShape3D_uwwva")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D7"]
+mesh = SubResource("BoxMesh_jexho")
+skeleton = NodePath("../../RigidBody3D7")
+
+[node name="RigidBody3D8" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.10829, 1.9818, 20.037)
+
+[node name="GameSurface" parent="RigidBody3D8" instance=ExtResource("1_e0pjc")]
+shape = SubResource("BoxShape3D_uwwva")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D8"]
+mesh = SubResource("BoxMesh_jexho")
+
+[node name="Spawnpoint" parent="." instance=ExtResource("2_7pod8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.99239, 1.37748, -9.8762)
+
+[node name="Spawnpoint2" parent="." instance=ExtResource("2_7pod8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.99239, 1.37748, 0.580954)
+
+[node name="Spawnpoint3" parent="." instance=ExtResource("2_7pod8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.3333, 2.55708, 20.1591)
+down = Vector3(0, 1, 0)
+
+[node name="Spawnpoint4" parent="." instance=ExtResource("2_7pod8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.3333, 2.55708, 8.91287)
+down = Vector3(0, 1, 0)
+
+[node name="DefaultCamera" type="Camera3D" parent="."]
+transform = Transform3D(-0.632527, 0.266457, -0.727262, -0.00540059, 0.937422, 0.348153, 0.774519, 0.224144, -0.591506, -18.1405, 4.65332, -15.7547)

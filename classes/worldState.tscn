@@ -11,7 +11,7 @@ var gravity_strength : float = 9.8
 
 var air_pressure : float = 1.0
 
-var playable_area : Area3D
+var playable_area : AABB
 
 func get_gravity_vector() -> Vector3:
 	if gravity_state == \"thrust\":

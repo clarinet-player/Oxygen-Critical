@@ -1,26 +1,30 @@
-[gd_scene load_steps=3 format=3 uid="uid://crovijoeg2hv"]
+[gd_scene load_steps=3 format=3 uid="uid://b6j6wnag62maf"]
 
-[ext_resource type="Texture2D" uid="uid://boou4dol2b4v7" path="res://assets/thumbsup.jpg" id="2_ix6ts"]
+[ext_resource type="Texture2D" uid="uid://boou4dol2b4v7" path="res://assets/thumbsup.jpg" id="1_8tipy"]
 
 [sub_resource type="GDScript" id="GDScript_tiiyp"]
 script/source = "extends Control
 
+signal request_disconnect
+
 
 func _ready():
-	$Control/Connect.button_down.connect(_connect)
-	$Control/Quit.button_down.connect(_quit)
+	$Control/Unpause.button_down.connect(_unpause)
+	$Control/Disconnect.button_down.connect(_disconnct)
 
 
-func _connect():
-	visible = false
-	get_parent().connect_player()
+func _unpause():
+	hide()
+	PlayerHud.show()
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
-func _quit():
-	get_tree().quit()
+func _disconnct():
+	request_disconnect.emit()
 "
 
-[node name="MainMenu" type="Control"]
+[node name="PauseMenu" type="Control"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -43,7 +47,7 @@ offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Connect" type="Button" parent="Control"]
+[node name="Unpause" type="Button" parent="Control"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -57,9 +61,9 @@ offset_bottom = -16.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 70
-text = "Connect"
+text = "Unpause"
 
-[node name="Quit" type="Button" parent="Control"]
+[node name="Disconnect" type="Button" parent="Control"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -73,7 +77,7 @@ offset_bottom = 128.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 70
-text = "Quit
+text = "Disconnect
 "
 
 [node name="Control2" type="Control" parent="."]
@@ -107,4 +111,4 @@ text = "Great Menu
 [node name="Thumbsup" type="Sprite2D" parent="Control2"]
 position = Vector2(266, 138)
 scale = Vector2(0.384766, 0.406699)
-texture = ExtResource("2_ix6ts")
+texture = ExtResource("1_8tipy")

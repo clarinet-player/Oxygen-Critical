@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=3 uid="uid://cskrtkkrkyd4q"]
 
-[ext_resource type="Texture2D" uid="uid://3cuw4l80rgui" path="res://assets/metal.jpg" id="2_dilq7"]
+[ext_resource type="Texture2D" uid="uid://3cuw4l80rgui" path="res://assets/metal.jpg" id="1_mm3es"]
 
 [sub_resource type="GDScript" id="GDScript_bxm1c"]
 script/source = "extends Node3D
@@ -99,7 +99,7 @@ albedo_color = Color(0.556863, 0.556863, 0.556863, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rxahm"]
 cull_mode = 2
-albedo_texture = ExtResource("2_dilq7")
+albedo_texture = ExtResource("1_mm3es")
 
 [node name="AK12" type="Node3D"]
 transform = Transform3D(0.0990615, 0, 0, 0, 0.0990615, 0, 0, 0, 0.0990615, 0, 0, 0)

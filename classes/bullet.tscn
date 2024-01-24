@@ -39,6 +39,9 @@ func _physics_process(delta):
 		
 		# Update ourselves
 		global_position = _point
+		if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
+			queue_free()
+			return
 		
 		var _passed = _travelled / velocity.length()
 		_time -= _passed
@@ -79,6 +82,9 @@ func _physics_process(delta):
 	
 	# Move to our final position
 	global_position = _target_pos
+	if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
+		queue_free()
+		return
 	
 	# Apply forces
 	velocity += WorldState.get_gravity_vector() * _time

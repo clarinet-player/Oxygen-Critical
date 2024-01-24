@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://de0weem1pd67y"]
+
+[sub_resource type="GDScript" id="GDScript_ccte6"]
+script/source = "extends Node3D
+
+@export var down : Vector3 = Vector3(0, -1, 0)
+"
+
+[node name="Spawnpoint" type="Node3D" groups=["Spawnpoints"]]
+script = SubResource("GDScript_ccte6")

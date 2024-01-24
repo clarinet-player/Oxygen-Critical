@@ -1,13 +1,16 @@
 res://assets/ship2.tres::3a8664dfa1f89e17d3b56139752c174c::1704483057::res://.godot/exported/133200997/export-cc4b48e690def9ab74a5170611582ecc-ship2.res
 res://assets/testscene.tres::cc561f7de42ea4b4a22df8df6eab6fdc::1704575824::res://.godot/exported/133200997/export-3af61bc0b216520590a9aeebcab7e9b0-testscene.res
-res://classes/bullet.tscn::cb84a086559e654651d534fbc9c8d3f8::1705986370::res://.godot/exported/133200997/export-7e8bc8cebabf63f9371b1a16f8f59add-bullet.scn
+res://classes/bullet.tscn::21ecda2d45ee61e4118f4a5442b4d2ed::1706075979::res://.godot/exported/133200997/export-7e8bc8cebabf63f9371b1a16f8f59add-bullet.scn
 res://classes/gameSurface.tscn::7e0a25b9cf9f2d78cdad492cc7697cc8::1705868891::res://.godot/exported/133200997/export-2ac207ac81a314f3a8823eb3c7f770e1-gameSurface.scn
-res://classes/player.tscn::0c176b5c7f09ecce7386894052e740a1::1705986370::res://.godot/exported/133200997/export-7c2a214eafefb657c111b03b75e2ff9c-player.scn
-res://classes/worldState.tscn::7872d3b2b335eadf6d72a1aeb3678d89::1705986370::res://.godot/exported/133200997/export-2b15d0f800fc19cb4c835112eb23e4ad-worldState.scn
+res://classes/player.tscn::ff6e88fd267a5ad771be75e0b5ed963c::1706075979::res://.godot/exported/133200997/export-7c2a214eafefb657c111b03b75e2ff9c-player.scn
+res://classes/worldState.tscn::b91f95ab3539daf96dc244185f6d23a4::1706075979::res://.godot/exported/133200997/export-2b15d0f800fc19cb4c835112eb23e4ad-worldState.scn
 res://scenes/bullettestscene.tscn::3fe82c0548c16c1680f3c3ea9d7623c5::1704763278::res://.godot/exported/133200997/export-b6cae5f08b26ad2b3ce03565e39f0cda-bullettestscene.scn
-res://scenes/testscene.tscn::cd4919d5ec5dc325caf8003694940e20::1705986370::res://.godot/exported/133200997/export-c28bac5e36908c04d783af0b9afbb11e-testscene.scn
-res://weapons/AK12/ak_12.tscn::b97dcd86fcc1633c387de4757d658211::1705986370::res://.godot/exported/133200997/export-089d2cbdc4c3bb42df7da893647aa90e-ak_12.scn
-res://scenes/multiplayer scene.tscn::44564f26c8a71b19859c87cb54e51add::1705986371::res://.godot/exported/133200997/export-9ed9f7d014bf13d60bbd0ef1c918f824-multiplayer scene.scn
-res://ui/player hud.tscn::b9b6af360e6544cdd20846e5bbc9be87::1705986370::res://.godot/exported/133200997/export-4d31b53f1fb3f4c08c0288ad64c2abeb-player hud.scn
-res://scenes/main menu.tscn::9ded2c4a08ab41a4ab207856711e3911::1705986454::res://.godot/exported/133200997/export-ce437267b8bb1179a3485e665475480c-main menu.scn
-res://scenes/multiplayer.tscn::d5e2bab9a6be4b50ad46781a92b26890::1705986370::res://.godot/exported/133200997/export-336fd610a451664113c265253af88936-multiplayer.scn
+res://scenes/testscene.tscn::6e0a1cd74ae6ff1450b45b88c5f32464::1706075979::res://.godot/exported/133200997/export-c28bac5e36908c04d783af0b9afbb11e-testscene.scn
+res://scenes/multiplayer scene.tscn::44564f26c8a71b19859c87cb54e51add::1705988365::res://.godot/exported/133200997/export-9ed9f7d014bf13d60bbd0ef1c918f824-multiplayer scene.scn
+res://ui/player hud.tscn::b9b6af360e6544cdd20846e5bbc9be87::1705988365::res://.godot/exported/133200997/export-4d31b53f1fb3f4c08c0288ad64c2abeb-player hud.scn
+res://ui/main menu.tscn::89d0e9fc12919c5fa9d6365c99134f38::1706075979::res://.godot/exported/133200997/export-ac370c915b9a9808b23d1c72500d5ed8-main menu.scn
+res://ui/pause menu.tscn::24c5b17b036994421f28615f6c34b0d5::1706075979::res://.godot/exported/133200997/export-5dbb7bc84dd8f472bc1296af9922e6bb-pause menu.scn
+res://classes/multiplayer.tscn::3400a1dc6d871a5d1c52ac6c5f7e90b4::1706075979::res://.godot/exported/133200997/export-d44284dd264b0e8ca13e7918deef1f2b-multiplayer.scn
+res://classes/spawnpoint.tscn::e6d4465fadb2465ba3e562befc3fc346::1706073565::res://.godot/exported/133200997/export-22e068601d610ac8bac5feb5e5a4c570-spawnpoint.scn
+res://scenes/playable scene.tscn::31e27dce1efe9c9065e38e5f5f9f5b49::1706075979::res://.godot/exported/133200997/export-b80ecf0e3d4f37c6a8561e79becb6cc6-playable scene.scn
+res://weapons/ak12.tscn::bf32a26b301153745224d7ac950b4469::1706075979::res://.godot/exported/133200997/export-c6901452f0c36f7700fca35e6dc8e851-ak12.scn

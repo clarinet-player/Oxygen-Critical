@@ -20,10 +20,11 @@ var breaches : int = 0
 
 func _enter_tree():
 	set_multiplayer_authority(int(str(name)))
-	set_weapon(\"res://weapons/AK12/ak_12.tscn\")
+	set_weapon(\"res://weapons/ak12.tscn\")
 	if is_multiplayer_authority():
 		$Camera3D.current = true
-		PlayerHud.visible = true
+		MainMenu.hide()
+		PlayerHud.show()
 
 
 
@@ -58,8 +59,21 @@ func _physics_process(delta):
 	if !is_multiplayer_authority():
 		return
 	
-	if Input.is_action_just_pressed(\"E\"):
+	if Input.is_action_just_pressed(\"E\") and !PauseMenu.visible:
 		PlayerHud.start_progress_bar(2, \"healing\", heal)
+	
+	if Input.is_action_just_pressed(\"Escape\"):
+		if PauseMenu.visible:
+			PauseMenu.hide()
+			PlayerHud.show()
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		else:
+			PauseMenu.show()
+			PlayerHud.hide()
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	
+	if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
+		spawn()
 
 
 
@@ -77,7 +91,7 @@ func spawn():
 
 func heal():
 	breaches = max(breaches - 1, 0)
-	health = min(health + 28, 100)
+	health = min(health + 26, 100)
 	PlayerHud.set_health(health)
 
 
@@ -153,6 +167,9 @@ func on_spawn():
 
 func _input(event):
 	if !is_multiplayer_authority():
+		return
+	
+	if PauseMenu.visible:
 		return
 	
 	# Rotating to follow mouse
@@ -240,7 +257,7 @@ func _anchored_move(delta : float):
 	elif _movement_state == move_type.SLIDING:
 		_movement_state = move_type.IDLE
 	
-	if Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\"):
+	if (Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\")) and !PauseMenu.visible:
 		if _movement_state == move_type.IDLE:
 			_movement_state = move_type.WALKING
 	elif _movement_state != move_type.SLIDING:
@@ -523,7 +540,7 @@ func _physics_process(delta):
 	var time = Time.get_ticks_msec()
 	
 	# Firing
-	if Input.is_action_pressed(\"Mouse1\") and magazine > 0:
+	if Input.is_action_pressed(\"Mouse1\") and magazine > 0 and !PauseMenu.visible:
 		if time > _fire_time_ms + _firedelay:
 			fire()
 			_fire_time_ms -= _firedelay
@@ -540,7 +557,7 @@ func _physics_process(delta):
 		_heat -= delta * firerate
 	
 	# Reloading
-	if Input.is_action_just_pressed(\"R\"):
+	if Input.is_action_just_pressed(\"R\") and !PauseMenu.visible:
 		PlayerHud.start_progress_bar(3, \"reloading\", reload)
 
 
@@ -605,7 +622,7 @@ properties/7/path = NodePath(".:_up_vec")
 properties/7/spawn = true
 properties/7/replication_mode = 1
 
-[node name="Player" type="Node3D"]
+[node name="Player" type="Node3D" groups=["Players"]]
 script = SubResource("GDScript_eidvd")
 
 [node name="PlayerBody" type="RigidBody3D" parent="."]

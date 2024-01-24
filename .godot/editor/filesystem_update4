@@ -1,9 +1,13 @@
-res://ui/player hud.tscn
-res://scenes/testscene.tscn
-res://classes/player.tscn
-res://scenes/multiplayer scene.tscn
-res://classes/bullet.tscn
-res://weapons/AK12/ak_12.tscn
-res://classes/worldState.tscn
-res://scenes/main menu.tscn
 res://scenes/multiplayer.tscn
+res://scenes/main menu.tscn
+res://classes/player.tscn
+res://ui/pause menu.tscn
+res://ui/main menu.tscn
+res://weapons/ak12.tscn
+res://scenes/playable scene.tscn
+res://classes/spawnpoint.tscn
+res://classes/multiplayer.tscn
+res://scenes/testscene.tscn
+res://classes/worldState.tscn
+res://classes/bullet.tscn
+res://classes/playerspawner.tscn
