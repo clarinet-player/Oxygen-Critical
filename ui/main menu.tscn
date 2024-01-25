@@ -45,6 +45,7 @@ offset_bottom = 656.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("2_s2yy4")
+expand_mode = 2
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 1
@@ -121,7 +122,11 @@ theme_override_font_sizes/normal_font_size = 80
 text = "Great Menu
 "
 
-[node name="Thumbsup" type="Sprite2D" parent="Control2"]
-position = Vector2(266, 138)
-scale = Vector2(0.384766, 0.406699)
+[node name="TextureRect" type="TextureRect" parent="Control2"]
+layout_mode = 0
+offset_left = 135.0
+offset_top = 13.0
+offset_right = 647.0
+offset_bottom = 431.0
+scale = Vector2(0.6, 0.6)
 texture = ExtResource("2_ix6ts")

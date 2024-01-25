@@ -1,10 +1,10 @@
-res://classes/player.tscn
+res://ui/main menu.tscn
 res://classes/multiplayer.tscn
 res://classes/worldState.tscn
-res://ui/main menu.tscn
 res://ui/pause menu.tscn
+res://ui/player hud.tscn
+res://classes/player.tscn
 res://scenes/playable scene.tscn
 res://scenes/testscene.tscn
-res://ui/player hud.tscn
 res://classes/bullet.tscn
 res://weapons/ak12.tscn
