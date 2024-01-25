@@ -22,6 +22,7 @@ func _enter_tree():
 	set_multiplayer_authority(int(str(name)))
 	set_weapon(\"res://weapons/ak12.tscn\")
 	if is_multiplayer_authority():
+		$Camera3D/Weapon.set_ammo_counter()
 		$Camera3D.current = true
 		MainMenu.hide()
 		PlayerHud.show()
@@ -35,7 +36,11 @@ func _process(delta):
 	health = clamp(health - (breaches * delta * 2), 0, 100)
 	PlayerHud.set_health(health)
 	if health == 0:
-		spawn()
+		get_parent().rpc_id(1, \"spawn_player\", get_parent().peer.get_unique_id())
+		PlayerHud.hide()
+		camera.current = false
+		get_parent().remove_child(self)
+		return
 	
 	# Move camera
 	if playerbody.is_anchored():
@@ -55,7 +60,7 @@ func _process(delta):
 
 
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	if !is_multiplayer_authority():
 		return
 	
@@ -73,19 +78,11 @@ func _physics_process(delta):
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	
 	if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
-		spawn()
-
-
-
-func spawn():
-	PlayerHud.stop_all()
-	global_position = Vector3.ZERO
-	global_rotation = Vector3.ZERO
-	health = 100
-	breaches = 0
-	PlayerHud.set_health(health)
-	$Camera3D/Weapon.reload()
-	$PlayerBody.on_spawn()
+		get_parent().rpc_id(1, \"spawn_player\", get_parent().peer.get_unique_id())
+		PlayerHud.hide()
+		camera.current = false
+		get_parent().remove_child(self)
+		return
 
 
 
@@ -146,14 +143,14 @@ enum move_type {
 	SLIDING
 }
 
-var _movement_state : move_type = move_type.WALKING
+var _movement_state : move_type = move_type.IDLE
 
 
 
 func _ready():
 	if is_multiplayer_authority():
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-		_velocity_3d = Vector3(0, -10, 0)
+		_velocity_3d = Vector3(0, -5, 0)
 
 
 
@@ -499,7 +496,6 @@ var magazine : int
 var muzzle_vel : float
 var damage : float
 var aero_loss : float
-var spread : float
 
 var _heat : float
 var _firedelay : float
@@ -525,11 +521,14 @@ func update_weapon():
 	damage = child.damage
 	aero_loss = child.aero_loss
 	
-	PlayerHud.set_ammo(child.mag_size)
-	
 	_firedelay = 1000 / firerate
 	
 	process_mode = Node.PROCESS_MODE_INHERIT
+
+
+
+func set_ammo_counter():
+	PlayerHud.set_ammo(mag_size)
 
 
 
@@ -554,7 +553,7 @@ func _physics_process(delta):
 	
 	# Recovering heat after firing
 	if time - _fire_time_ms > _firedelay:
-		_heat -= delta * firerate
+		_heat = max(_heat - delta * firerate, 0)
 	
 	# Reloading
 	if Input.is_action_just_pressed(\"R\") and !PauseMenu.visible:
@@ -570,7 +569,10 @@ func reload():
 
 func fire():
 	
+	var velocity : Vector3 = global_transform.basis.z * -1 * muzzle_vel
+	
 	# Calculate inaccuracy from movement
+	var spread : float
 	if player_body.is_anchored():
 		if player_body._movement_state == player_body.move_type.SLIDING:
 			spread = 4.5
@@ -579,7 +581,11 @@ func fire():
 	else:
 		spread = 4.5
 	
-	$\"../..\".get_parent().rpc_id(1, \"spawn_bullet\", global_position + (global_transform.basis.z * -0.5), global_transform.basis.z * -1 * muzzle_vel, Vector3.ZERO, damage, aero_loss)
+	var max_inaccuracy := spread + _heat
+	var inacurracy := Vector2(randf_range(0.5 * max_inaccuracy, max_inaccuracy), 0).rotated(randf_range(0, TAU)) * muzzle_vel / 250
+	velocity += (inacurracy.x * global_transform.basis.x) + (inacurracy.y * global_transform.basis.y)
+	
+	$\"../..\".get_parent().rpc_id(1, \"spawn_bullet\", global_position + (global_transform.basis.z * -0.5), velocity, Vector3.ZERO, damage, aero_loss)
 "
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ham1v"]

@@ -1,3 +1,4 @@
+TextureRect
 Camera3D
 CollisionShape3D
 Area3D
@@ -9,7 +10,5 @@ RichTextLabel
 Button
 Container
 Panel
-TextureRect
 TextEdit
 ProgressBar
-Node

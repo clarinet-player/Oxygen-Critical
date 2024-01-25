@@ -1,6 +1,6 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1706072319
-export_presets.cfg::TextFile::-1::1706053983::0::1::::<><>::
+::res://::1706117506
+export_presets.cfg::TextFile::-1::1706075999::0::1::::<><>::
 icon.svg::CompressedTexture2D::8724437967346365169::1702187069::1704913904::1::::<><>::
 ::res://assets/::1705977127
 crosshair.png::CompressedTexture2D::6813641984644282386::1705960472::1705960494::1::::<><>::
@@ -11,25 +11,27 @@ ship2.obj::Mesh::7790162301134781609::1704222247::1704913904::1::::<><>::
 ship2.tres::ConcavePolygonShape3D::1805536636470162589::1704483057::0::1::::<><>::
 testscene.tres::ConcavePolygonShape3D::8465421319000102396::1704575824::0::1::::<><>::
 thumbsup.jpg::CompressedTexture2D::3399232090794219126::1705977127::1705977127::1::::<><>::
-::res://classes/::1706072322
-bullet.tscn::PackedScene::4851513591805773323::1705988365::0::1::::<><>::
+::res://classes/::1706078279
+bullet.tscn::PackedScene::4851513591805773323::1706076024::0::1::::<><>::
 gameSurface.tscn::PackedScene::9049239728378702472::1705868891::0::1::::<><>::
-player.tscn::PackedScene::104956028073985459::1706072506::0::1::::<><>::
-worldState.tscn::PackedScene::890259437353000500::1705988365::0::1::::<><>::
-::res://scenes/::1706072322
+multiplayer.tscn::PackedScene::3298394945087652991::1706078278::0::1::::<><>::
+player.tscn::PackedScene::104956028073985459::1706078279::0::1::::<><>::
+spawnpoint.tscn::PackedScene::7492970016331983388::1706073565::0::1::::<><>::
+worldState.tscn::PackedScene::890259437353000500::1706078278::0::1::::<><>::
+::res://scenes/::1706078438
 bullettestscene.tscn::PackedScene::1004180416020809727::1704763278::0::1::::<><>::res://scripts/bullettestscene.gd<>uid://d16rwkt574n4s::::res://classes/gameSurface.tscn
 multiplayer scene.tscn::PackedScene::1183981302994529237::1705988365::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn
-multiplayer.tscn::PackedScene::3298394945087652991::1706072322::0::1::::<><>::
-testscene.tscn::PackedScene::5730862881325956368::1705988365::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>res://scripts/ship.gd<>uid://0yu6o35ijd5n::::res://assets/ship2.tres<>uid://3cuw4l80rgui::::res://assets/metal.jpg<>uid://dsuyitw2p6oo7::::res://assets/testscene.tres
+playable scene.tscn::PackedScene::5664415139704904680::1706078438::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>uid://de0weem1pd67y::::res://classes/spawnpoint.tscn
+testscene.tscn::PackedScene::5730862881325956368::1706076024::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>res://scripts/ship.gd<>uid://0yu6o35ijd5n::::res://assets/ship2.tres<>uid://3cuw4l80rgui::::res://assets/metal.jpg<>uid://dsuyitw2p6oo7::::res://assets/testscene.tres
 ::res://scripts/::1705451457
 body.gd::GDScript::-1::1703206004::0::1::::<>RigidBody3D<>::
 bullettestscene.gd::GDScript::-1::1704761304::0::1::::<>Node3D<>::
 ship.gd::GDScript::-1::1704575824::0::1::::<>RigidBody3D<>::
 testcentrifuge.gd::GDScript::-1::1703280375::0::1::::<>RigidBody3D<>::
 testscene.gd::GDScript::-1::1705451457::0::1::::<>Node3D<>::
-::res://ui/::1706072322
-main menu.tscn::PackedScene::176360083397563743::1706072322::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg
-pause menu.tscn::PackedScene::4582776433618976957::1706072322::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg
+::res://ui/::1706078279
+main menu.tscn::PackedScene::176360083397563743::1706078278::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg
+pause menu.tscn::PackedScene::4582776433618976957::1706078279::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg
 player hud.tscn::PackedScene::3989999454422294155::1705988365::0::1::::<><>::
-::res://weapons/::1706072322
-ak12.tscn::PackedScene::6057950990840864630::1706072322::0::1::::<><>::uid://3cuw4l80rgui::::res://assets/metal.jpg
+::res://weapons/::1706076024
+ak12.tscn::PackedScene::6057950990840864630::1706076024::0::1::::<><>::uid://3cuw4l80rgui::::res://assets/metal.jpg

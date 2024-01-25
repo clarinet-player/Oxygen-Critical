@@ -17,8 +17,6 @@ func _ready():
 		peer.create_server(135)
 		multiplayer.multiplayer_peer = peer
 		
-		var level = load(\"res://scenes/testscene.tscn\").instantiate()
-		
 	else:
 		MainMenu.connect(\"request_connect\", connect_player)
 		PauseMenu.connect(\"request_disconnect\", disconnect_player)
@@ -32,7 +30,9 @@ func connect_player():
 
 
 func disconnect_player():
-	get_node(str(peer.get_unique_id())).queue_free()
+	var player = get_node(str(peer.get_unique_id()))
+	player.queue_free()
+	remove_child(player)
 	peer.close()
 	MainMenu.show()
 	PauseMenu.hide()
@@ -42,7 +42,7 @@ func disconnect_player():
 
 func _on_connect(id : int):
 	print(\"player connected: \", id)
-	_add_player(id)
+	spawn_player(id)
 
 
 
@@ -52,8 +52,23 @@ func _on_disconnect(id : int):
 
 
 
-func _add_player(id : int):
+@rpc(\"any_peer\")
+func pre_spawn():
+	MainMenu.hide()
+	PlayerHud.hide()
+
+
+
+@rpc(\"any_peer\")
+func spawn_player(id : int):
 	if id > 1:
+		if get_node_or_null(str(id)):
+			get_node(str(id)).queue_free()
+			
+		rpc_id(id, \"pre_spawn\")
+		
+		await get_tree().create_timer(2.0).timeout
+
 		var player = player_scene.instantiate()
 		player.name = str(id)
 		call_deferred(\"add_child\", player)

@@ -10,7 +10,7 @@ var firerate : float = 10
 var mag_size : int = 20
 var muzzle_vel : float = 700
 var damage : float = 26
-var aero_loss : float = 1
+var aero_loss : float = 1.0
 "
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c4mp6"]

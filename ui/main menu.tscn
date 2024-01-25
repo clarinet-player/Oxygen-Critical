@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://crovijoeg2hv"]
+[gd_scene load_steps=4 format=3 uid="uid://crovijoeg2hv"]
 
 [ext_resource type="Texture2D" uid="uid://boou4dol2b4v7" path="res://assets/thumbsup.jpg" id="2_ix6ts"]
+[ext_resource type="Texture2D" uid="uid://bitf3f8hujhok" path="res://assets/pikachu.png" id="2_s2yy4"]
 
 [sub_resource type="GDScript" id="GDScript_tiiyp"]
 script/source = "extends Control
@@ -29,6 +30,21 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = SubResource("GDScript_tiiyp")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1138.0
+offset_top = -579.0
+offset_right = 1006.0
+offset_bottom = 656.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_s2yy4")
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 1

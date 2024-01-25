@@ -113,7 +113,7 @@ func _surface_hit(_collider, _normal, _time) -> bool:
 		global_translate(_normal * 0.01)
 	
 	# Slowing
-	velocity *= (15 - _collider.strength) / 15
+	velocity *= (20 - _collider.strength) / 20
 	
 	# Deforming
 	aeroLoss *= _collider.strength
@@ -122,14 +122,15 @@ func _surface_hit(_collider, _normal, _time) -> bool:
 	if _speed / _angle < 5:
 		var _p_scene = preload(\"res://classes/bullet.tscn\")
 		
-		# Create 10 new bullets
-		for i in range(10):
+		# Create new bullets
+		var fragments = randi_range(2, 8)
+		for i in range(fragments):
 			var _bullet = _p_scene.instantiate()
-			add_sibling(_bullet)
+			add_sibling(_bullet, true)
 			
 			# Setting up each bullet
 			_bullet.global_position = global_position + (velocity.normalized() * 0.01)
-			_bullet.mass = mass / 11
+			_bullet.mass = mass / fragments
 			_bullet.aeroLoss = randf() / 10
 			_bullet.velocity = (velocity * 0.75) + Vector3(randf() - randf(), randf() - randf(), randf() - randf()) * velocity.length() * 0.2
 			
@@ -142,7 +143,7 @@ func _surface_hit(_collider, _normal, _time) -> bool:
 
 
 func _player_hit(player):
-	var damage = mass * (400 / clamp(velocity.length(), 0, 400))
+	var damage = mass * (min(velocity.length() / 400, 1))
 	player.rpc_id(int(str(player.name)), \"damage\", damage)
 "
 

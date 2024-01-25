@@ -40,7 +40,8 @@ func _process(delta):
 		if progress.value == 1:
 			progress.visible = false
 			crosshair.visible = true
-			progress_callable.call()
+			if progress_callable.is_valid():
+				progress_callable.call()
 "
 
 [sub_resource type="Theme" id="Theme_s0mw5"]
