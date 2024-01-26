@@ -496,6 +496,8 @@ var magazine : int
 var muzzle_vel : float
 var damage : float
 var aero_loss : float
+var recoil : float
+var spray_control : float
 
 var _heat : float
 var _firedelay : float
@@ -507,7 +509,6 @@ var _fire_time_ms : float
 
 func update_weapon():
 	if get_child_count() < 1:
-		print(\"no weapon\")
 		process_mode = Node.PROCESS_MODE_DISABLED
 		return
 	
@@ -520,6 +521,8 @@ func update_weapon():
 	muzzle_vel = child.muzzle_vel
 	damage = child.damage
 	aero_loss = child.aero_loss
+	recoil = child.recoil
+	spray_control = child.spray_control
 	
 	_firedelay = 1000 / firerate
 	
@@ -541,19 +544,29 @@ func _physics_process(delta):
 	# Firing
 	if Input.is_action_pressed(\"Mouse1\") and magazine > 0 and !PauseMenu.visible:
 		if time > _fire_time_ms + _firedelay:
+			
+			$\"../../PlayerBody\".rotate(global_transform.basis.x, recoil / 250)
+			$\"..\".rotate(global_transform.basis.x, recoil / 250)
+			
 			fire()
 			_fire_time_ms -= _firedelay
 			if time > _fire_time_ms + _firedelay:
 				_fire_time_ms = time
 			_heat += 1
 			magazine -= 1
+			
 			PlayerHud.set_ammo(magazine)
 			PlayerHud.stop_progress(\"reloading\")
 			PlayerHud.stop_progress(\"healing\")
+			
+			if !player_body.is_anchored():
+				player_body._velocity_3d += global_transform.basis.z * recoil * 0.1
 	
 	# Recovering heat after firing
-	if time - _fire_time_ms > _firedelay:
-		_heat = max(_heat - delta * firerate, 0)
+	if time - _fire_time_ms > _firedelay && _heat > 0:
+		_heat = max(_heat - (delta * firerate * 2.5), 0)
+		$\"../../PlayerBody\".rotate(global_transform.basis.x, -recoil * delta * firerate / 100)
+		$\"..\".rotate(global_transform.basis.x, -recoil * delta * firerate / 100)
 	
 	# Reloading
 	if Input.is_action_just_pressed(\"R\") and !PauseMenu.visible:
@@ -575,15 +588,16 @@ func fire():
 	var spread : float
 	if player_body.is_anchored():
 		if player_body._movement_state == player_body.move_type.SLIDING:
-			spread = 4.5
+			spread = 5
 		else:
-			spread = player_body.get_velocity().length()
+			spread = player_body.get_velocity().length() * 1.2
 	else:
-		spread = 4.5
+		spread = 5
 	
-	var max_inaccuracy := spread + _heat
+	var max_inaccuracy = max(spread + _heat - spray_control, 0)
 	var inacurracy := Vector2(randf_range(0.5 * max_inaccuracy, max_inaccuracy), 0).rotated(randf_range(0, TAU)) * muzzle_vel / 250
 	velocity += (inacurracy.x * global_transform.basis.x) + (inacurracy.y * global_transform.basis.y)
+	velocity += (recoil * _heat) * global_transform.basis.y
 	
 	$\"../..\".get_parent().rpc_id(1, \"spawn_bullet\", global_position + (global_transform.basis.z * -0.5), velocity, Vector3.ZERO, damage, aero_loss)
 "

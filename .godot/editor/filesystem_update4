@@ -1,6 +1,6 @@
-res://ui/main menu.tscn
 res://classes/multiplayer.tscn
 res://classes/worldState.tscn
+res://ui/main menu.tscn
 res://ui/pause menu.tscn
 res://ui/player hud.tscn
 res://classes/player.tscn

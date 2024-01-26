@@ -6,12 +6,14 @@ script/source = "extends Node
 var peer = ENetMultiplayerPeer.new()
 var player_scene = load(\"res://classes/player.tscn\")
 
-@onready var level = load(\"res://scenes/testscene.tscn\").instantiate()
+@onready var _p_level = load(\"res://scenes/testscene.tscn\")
+var _level
 
 # Start the server
 func _ready():
-	add_child(level)
 	if DisplayServer.get_name() == \"headless\":
+		_level = _p_level.instantiate()
+		add_child(_level)
 		multiplayer.peer_connected.connect(_on_connect)
 		multiplayer.peer_disconnected.connect(_on_disconnect)
 		peer.create_server(135)
@@ -30,9 +32,13 @@ func connect_player():
 
 
 func disconnect_player():
-	var player = get_node(str(peer.get_unique_id()))
-	player.queue_free()
-	remove_child(player)
+	remove_child(_level)
+	_level.queue_free()
+	for child in get_children():
+		if child.name == \"MultiplayerSpawner\":
+			continue
+		child.queue_free()
+		remove_child(child)
 	peer.close()
 	MainMenu.show()
 	PauseMenu.hide()
@@ -49,6 +55,7 @@ func _on_connect(id : int):
 func _on_disconnect(id : int):
 	print(\"player disconnected: \", id)
 	get_node(str(id)).queue_free()
+	remove_child(get_node(str(id)))
 
 
 
@@ -56,6 +63,9 @@ func _on_disconnect(id : int):
 func pre_spawn():
 	MainMenu.hide()
 	PlayerHud.hide()
+	if !_level:
+		_level = _p_level.instantiate()
+		add_child(_level)
 
 
 
