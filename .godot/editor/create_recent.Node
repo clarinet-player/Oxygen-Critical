@@ -1,3 +1,4 @@
+AudioStreamPlayer3D
 Sprite3D
 MeshInstance3D
 TextureRect
@@ -12,4 +13,3 @@ Button
 Container
 Panel
 TextEdit
-ProgressBar

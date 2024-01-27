@@ -20,7 +20,7 @@ var breaches : int = 0
 
 func _enter_tree():
 	set_multiplayer_authority(int(str(name)))
-	set_weapon(\"res://weapons/ak12.tscn\")
+	set_weapon(\"res://weapons/ak12/ak12.tscn\")
 	if is_multiplayer_authority():
 		$Camera3D/Weapon.set_ammo_counter()
 		$Camera3D.current = true
@@ -256,9 +256,9 @@ func _physics_process(delta : float):
 		var _roll_angle : float = acos(_up.dot(_adjusted_normal))
 		var _axis = _up.cross(_adjusted_normal)
 		
-		#if !_axis.is_zero_approx():
-		rotate(_axis.normalized(), _roll_angle * 10 * delta)
-		$\"../Camera3D\".rotation = rotation
+		if _roll_angle > 0.01:
+			rotate(_axis.normalized(), _roll_angle * 10 * delta)
+			$\"../Camera3D\".rotation = rotation
 		
 		
 		# Jumping
@@ -548,15 +548,16 @@ var _firedelay : float
 var _fire_time_ms : float
 
 @onready var player_body := $\"../../PlayerBody\"
+@onready var audio := $AudioStreamPlayer3D
 
 
 
 func update_weapon():
-	if get_child_count() < 1:
+	if get_child_count() < 2:
 		process_mode = Node.PROCESS_MODE_DISABLED
 		return
 	
-	var child = get_child(0)
+	var child = get_child(1)
 	
 	weapon_name = child.weapon_name
 	firerate = child.firerate
@@ -567,6 +568,7 @@ func update_weapon():
 	aero_loss = child.aero_loss
 	recoil = child.recoil
 	spray_control = child.spray_control
+	$AudioStreamPlayer3D.stream = load(child.sfx)
 	
 	_firedelay = 1000 / firerate
 	
@@ -588,6 +590,10 @@ func _physics_process(delta):
 	# Firing
 	if Input.is_action_pressed(\"Mouse1\") and magazine > 0 and !PauseMenu.visible:
 		if time > _fire_time_ms + _firedelay:
+			
+			audio.pitch_scale = randf_range(0.96, 1.04)
+			audio.play()
+			rpc(\"play_sound\")
 			
 			$\"../../PlayerBody\".rotate(global_transform.basis.x, recoil / 250)
 			$\"..\".rotate(global_transform.basis.x, recoil / 250)
@@ -615,6 +621,13 @@ func _physics_process(delta):
 	# Reloading
 	if Input.is_action_just_pressed(\"R\") and !PauseMenu.visible:
 		PlayerHud.start_progress_bar(3, \"reloading\", reload)
+
+
+
+@rpc(\"any_peer\")
+func play_sound():
+	audio.pitch_scale = randf_range(0.96, 1.04)
+	audio.play()
 
 
 
@@ -705,6 +718,9 @@ shape = SubResource("SphereShape3D_ufnhc")
 process_mode = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.093, 0)
 script = SubResource("GDScript_ea26n")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Camera3D/Weapon"]
+process_mode = 3
 
 [node name="Hitbox" type="RigidBody3D" parent="."]
 collision_layer = 4

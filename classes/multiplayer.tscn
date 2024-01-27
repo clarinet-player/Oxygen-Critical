@@ -4,7 +4,6 @@
 script/source = "extends Node
 
 var peer = ENetMultiplayerPeer.new()
-var upnp
 
 var player_scene = load(\"res://classes/player.tscn\")
 var _p_level = load(\"res://scenes/playable scene.tscn\")
@@ -19,10 +18,6 @@ func _ready():
 		multiplayer.peer_connected.connect(_on_connect)
 		multiplayer.peer_disconnected.connect(_on_disconnect)
 		
-		upnp = UPNP.new()
-		print(upnp.discover())
-		print(upnp.add_port_mapping(7777))
-		
 		peer.create_server(7777)
 		multiplayer.multiplayer_peer = peer
 		
@@ -32,14 +27,8 @@ func _ready():
 
 
 
-func _exit_tree():
-	if DisplayServer.get_name() == \"headless\":
-		upnp.delete_port_mapping(7777)
-
-
-
 func connect_player():
-	peer.create_client(\"68.186.101.77\", 7777)
+	peer.create_client(\"localhost\", 7777)
 	multiplayer.multiplayer_peer = peer
 
 
