@@ -8,3 +8,4 @@ res://scenes/playable scene.tscn
 res://scenes/testscene.tscn
 res://classes/bullet.tscn
 res://weapons/ak12.tscn
+res://classes/spawnpoint.tscn

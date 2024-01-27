@@ -4,7 +4,7 @@
 script/source = "extends Node3D
 
 
-@export var height : float = 1
+var height : float = 1
 
 var _up_vec := Vector3(0, 0.1, 0)
 
@@ -26,6 +26,45 @@ func _enter_tree():
 		$Camera3D.current = true
 		MainMenu.hide()
 		PlayerHud.show()
+
+
+
+func _ready():
+	if is_multiplayer_authority():
+		var spawnpoint = _find_spawnpoint(get_tree().get_nodes_in_group(\"Spawnpoints\"), get_tree().get_nodes_in_group(\"Players\",))
+		global_position = spawnpoint.global_position
+		playerbody.global_position = spawnpoint.global_position
+		playerbody.impulse(spawnpoint.down * 10)
+		
+		var _axis = spawnpoint.down.cross(global_basis.y * -1)
+		var _angle = acos(spawnpoint.down.dot(global_basis.y * -1))
+		
+		if !_axis.is_zero_approx():
+			playerbody.rotate((spawnpoint.down.cross(global_basis.y * -1)).normalized(), acos(spawnpoint.down.dot(global_basis.y * -1)))
+			camera.rotate((spawnpoint.down.cross(global_basis.y * -1)).normalized(), acos(spawnpoint.down.dot(global_basis.y * -1)))
+		else:
+			playerbody.rotate(global_basis.x, acos(spawnpoint.down.dot(global_basis.y * -1)))
+			camera.rotate(global_basis.x, acos(spawnpoint.down.dot(global_basis.y * -1)))
+
+
+
+func _find_spawnpoint(spawnpoints : Array, players : Array):
+	var best_point
+	var best_value := 0.0
+	
+	players.erase(self)
+	if players.size() < 1:
+		return spawnpoints.pick_random()
+	
+	for point in spawnpoints:
+		var value := 0.0
+		for player in players:
+			value += point.global_position.distance_to(player.global_position)
+		if value > best_value:
+			best_value = value
+			best_point = point
+	
+	return best_point
 
 
 
@@ -150,7 +189,7 @@ var _movement_state : move_type = move_type.IDLE
 func _ready():
 	if is_multiplayer_authority():
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-		_velocity_3d = Vector3(0, -5, 0)
+		#_velocity_3d = Vector3(0, -5, 0)
 
 
 
@@ -217,9 +256,9 @@ func _physics_process(delta : float):
 		var _roll_angle : float = acos(_up.dot(_adjusted_normal))
 		var _axis = _up.cross(_adjusted_normal)
 		
-		if _roll_angle > 0.01 and _axis.length() > 0.01:
-			rotate(_axis.normalized(), _roll_angle * 10 * delta)
-			$\"../Camera3D\".rotation = rotation
+		#if !_axis.is_zero_approx():
+		rotate(_axis.normalized(), _roll_angle * 10 * delta)
+		$\"../Camera3D\".rotation = rotation
 		
 		
 		# Jumping
@@ -480,6 +519,11 @@ func get_velocity() -> Vector3:
 
 func get_normal() -> Vector3:
 	return _surface_normal
+
+
+
+func impulse(force : Vector3):
+	_velocity_3d += force
 "
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ufnhc"]
