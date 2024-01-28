@@ -4,6 +4,7 @@
 script/source = "extends Node
 
 var peer = ENetMultiplayerPeer.new()
+var upnp
 
 var player_scene = load(\"res://classes/player.tscn\")
 var _p_level = load(\"res://scenes/playable scene.tscn\")
@@ -15,6 +16,10 @@ func _ready():
 		_level = _p_level.instantiate()
 		add_child(_level)
 		
+		upnp = UPNP.new()
+		upnp.discover()
+		upnp.add_port_mapping(135)
+		
 		multiplayer.peer_connected.connect(_on_connect)
 		multiplayer.peer_disconnected.connect(_on_disconnect)
 		
@@ -24,6 +29,11 @@ func _ready():
 	else:
 		MainMenu.connect(\"request_connect\", connect_player)
 		PauseMenu.connect(\"request_disconnect\", disconnect_player)
+
+
+
+func _exit_tree():
+	upnp.delete_port_mapping(135)
 
 
 
