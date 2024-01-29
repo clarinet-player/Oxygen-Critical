@@ -12,6 +12,7 @@ var _level
 # Start the server
 func _ready():
 	if DisplayServer.get_name() == \"headless\":
+		print(\"server ready\")
 		_level = _p_level.instantiate()
 		add_child(_level)
 		
@@ -20,6 +21,7 @@ func _ready():
 		
 		peer.create_server(135)
 		multiplayer.multiplayer_peer = peer
+		print(\"135 open\")
 		
 	else:
 		MainMenu.connect(\"request_connect\", connect_player)
