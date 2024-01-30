@@ -5,32 +5,34 @@ script/source = "extends Node
 
 var peer = ENetMultiplayerPeer.new()
 
-var player_scene = load(\"res://classes/player.tscn\")
+var _p_player = load(\"res://classes/player.tscn\")
 var _p_level = load(\"res://scenes/playable scene.tscn\")
 var _level
 
-# Start the server
 func _ready():
+	
+	# Server setup
 	if DisplayServer.get_name() == \"headless\":
-		print(\"server ready\")
+		
 		_level = _p_level.instantiate()
 		add_child(_level)
 		
 		multiplayer.peer_connected.connect(_on_connect)
 		multiplayer.peer_disconnected.connect(_on_disconnect)
 		
-		peer.create_server(135)
+		peer.create_server(1024)
 		multiplayer.multiplayer_peer = peer
-		print(\"135 open\")
-		
+	
+	# Client setup
 	else:
+		
 		MainMenu.connect(\"request_connect\", connect_player)
 		PauseMenu.connect(\"request_disconnect\", disconnect_player)
 
 
 
 func connect_player():
-	peer.create_client(\"66.179.249.44\", 135)
+	peer.create_client(\"66.179.249.44\", 1024)
 	multiplayer.multiplayer_peer = peer
 
 
@@ -83,7 +85,7 @@ func spawn_player(id : int):
 		
 		await get_tree().create_timer(2.0).timeout
 		
-		var player = player_scene.instantiate()
+		var player = _p_player.instantiate()
 		player.name = str(id)
 		add_child(player)
 
