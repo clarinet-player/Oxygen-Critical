@@ -13,6 +13,7 @@ var breaches : int = 0
 
 
 @onready var camera := $Camera3D
+@onready var weapon := $Camera3D/Weapon
 @onready var playerbody := $PlayerBody
 @onready var hitbox := $Hitbox
 
@@ -20,9 +21,7 @@ var breaches : int = 0
 
 func _enter_tree():
 	set_multiplayer_authority(int(str(name)))
-	set_weapon(\"res://weapons/ak12/ak12.tscn\")
 	if is_multiplayer_authority():
-		$Camera3D/Weapon.set_ammo_counter()
 		$Camera3D.current = true
 		MainMenu.hide()
 		PlayerHud.show()
@@ -116,6 +115,18 @@ func _physics_process(_delta):
 			PlayerHud.hide()
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	
+	if Input.is_action_just_pressed(\"1\"):
+		weapon.set_weapon(\"res://weapons/ak12/ak12.tscn\")
+		weapon.rpc(\"set_weapon\", \"res://weapons/ak12/ak12.tscn\")
+	
+	if Input.is_action_just_pressed(\"2\"):
+		weapon.set_weapon(\"res://weapons/vector/vector.tscn\")
+		weapon.rpc(\"set_weapon\", \"res://weapons/vector/vector.tscn\")
+	
+	if Input.is_action_just_pressed(\"3\"):
+		weapon.set_weapon(\"res://weapons/glock/glock.tscn\")
+		weapon.rpc(\"set_weapon\", \"res://weapons/glock/glock.tscn\")
+	
 	if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
 		get_parent().rpc_id(1, \"spawn_player\", get_parent().peer.get_unique_id())
 		PlayerHud.hide()
@@ -129,13 +140,6 @@ func heal():
 	breaches = max(breaches - 1, 0)
 	health = min(health + 26, 100)
 	PlayerHud.set_health(health)
-
-
-
-func set_weapon(path : String):
-	var _new = load(path).instantiate()
-	$Camera3D/Weapon.add_child(_new, true)
-	$Camera3D/Weapon.update_weapon()
 
 
 
@@ -533,17 +537,14 @@ script/source = "extends Node3D
 
 
 
-var weapon_name : String
-var firerate : float
-var mag_size : int
-var magazine : int
-var muzzle_vel : float
-var damage : float
-var aero_loss : float
-var recoil : float
-var spray_control : float
+var weapon : Node3D
 
-var _heat : float
+var _mouse_down := false
+
+var _magazine : int
+var _heat : float # shots fired
+var _burst : int # shots to be fired
+
 var _firedelay : float
 var _fire_time_ms : float
 
@@ -552,71 +553,87 @@ var _fire_time_ms : float
 
 
 
-func update_weapon():
-	if get_child_count() < 2:
-		process_mode = Node.PROCESS_MODE_DISABLED
-		return
+@rpc(\"any_peer\")
+func set_weapon(path : String):
+	if weapon:
+		weapon.queue_free()
 	
-	var child = get_child(1)
+	weapon = load(path).instantiate()
+	add_child(weapon)
 	
-	weapon_name = child.weapon_name
-	firerate = child.firerate
-	mag_size = child.mag_size
-	magazine = child.mag_size
-	muzzle_vel = child.muzzle_vel
-	damage = child.damage
-	aero_loss = child.aero_loss
-	recoil = child.recoil
-	spray_control = child.spray_control
-	$AudioStreamPlayer3D.stream = load(child.sfx)
-	
-	_firedelay = 1000 / firerate
-	
-	process_mode = Node.PROCESS_MODE_INHERIT
-
-
-
-func set_ammo_counter():
-	PlayerHud.set_ammo(mag_size)
+	$AudioStreamPlayer3D.stream = load(weapon.sfx)
+	_firedelay = 1000 / weapon.firerate
+	_magazine = 0
+	if is_multiplayer_authority():
+		PlayerHud.set_ammo(weapon.mag_size)
+		PlayerHud.start_progress_bar(3, \"reloading\", reload)
+		_heat = 0
+		_burst = 0
 
 
 
 func _physics_process(delta):
 	if !is_multiplayer_authority():
 		return
+	if !weapon:
+		return
 	
 	var time = Time.get_ticks_msec()
 	
+	
+	# Getting trigger input
+	if Input.is_action_pressed(\"Mouse1\") and !_mouse_down and !PauseMenu.visible:
+		_mouse_down = true
+		if time > _fire_time_ms + _firedelay * weapon.firemode:
+			_burst = weapon.firemode
+	
+	if !Input.is_action_pressed(\"Mouse1\") and _mouse_down:
+		_mouse_down = false
+	
+	if weapon.firemode == 0:
+		if _mouse_down and !PauseMenu.visible:
+			_burst = 1
+		else:
+			_burst = 0
+	
+	
+	# Checking for remaining ammo
+	if _magazine < 1:
+		_burst = 0
+	
+	
 	# Firing
-	if Input.is_action_pressed(\"Mouse1\") and magazine > 0 and !PauseMenu.visible:
+	if _burst > 0 and time > _fire_time_ms + _firedelay:
+			
+		audio.pitch_scale = randf_range(0.96, 1.04)
+		audio.play()
+		rpc(\"play_sound\")
+		
+		$\"../../PlayerBody\".rotate(global_transform.basis.x, weapon.recoil / 400)
+		$\"..\".rotate(global_transform.basis.x, weapon.recoil / 400)
+		
+		fire()
+		_fire_time_ms -= _firedelay
 		if time > _fire_time_ms + _firedelay:
-			
-			audio.pitch_scale = randf_range(0.96, 1.04)
-			audio.play()
-			rpc(\"play_sound\")
-			
-			$\"../../PlayerBody\".rotate(global_transform.basis.x, recoil / 250)
-			$\"..\".rotate(global_transform.basis.x, recoil / 250)
-			
-			fire()
-			_fire_time_ms -= _firedelay
-			if time > _fire_time_ms + _firedelay:
-				_fire_time_ms = time
-			_heat += 1
-			magazine -= 1
-			
-			PlayerHud.set_ammo(magazine)
-			PlayerHud.stop_progress(\"reloading\")
-			PlayerHud.stop_progress(\"healing\")
-			
-			if !player_body.is_anchored():
-				player_body._velocity_3d += global_transform.basis.z * recoil * 0.1
+			_fire_time_ms = time
+		_heat += 1
+		_burst -= 1
+		_magazine -= 1
+		
+		PlayerHud.set_ammo(_magazine)
+		PlayerHud.stop_progress(\"reloading\")
+		PlayerHud.stop_progress(\"healing\")
+		
+		if !player_body.is_anchored():
+			player_body._velocity_3d += global_transform.basis.z * weapon.recoil * 0.1
+	
 	
 	# Recovering heat after firing
 	if time - _fire_time_ms > _firedelay && _heat > 0:
-		_heat = max(_heat - (delta * firerate * 2.5), 0)
-		$\"../../PlayerBody\".rotate(global_transform.basis.x, -recoil * delta * firerate / 100)
-		$\"..\".rotate(global_transform.basis.x, -recoil * delta * firerate / 100)
+		_heat = max(_heat - (delta * weapon.firerate * weapon.recovery), 0)
+		$\"../../PlayerBody\".rotate(global_transform.basis.x, -weapon.recoil * delta * weapon.firerate * weapon.recovery / 400)
+		$\"..\".rotate(global_transform.basis.x, -weapon.recoil * delta * weapon.firerate * weapon.recovery / 400)
+	
 	
 	# Reloading
 	if Input.is_action_just_pressed(\"R\") and !PauseMenu.visible:
@@ -632,14 +649,14 @@ func play_sound():
 
 
 func reload():
-	magazine = mag_size
-	PlayerHud.set_ammo(mag_size)
+	_magazine = weapon.mag_size
+	PlayerHud.set_ammo(_magazine)
 
 
 
 func fire():
 	
-	var velocity : Vector3 = global_transform.basis.z * -1 * muzzle_vel
+	var velocity : Vector3 = global_transform.basis.z * -1 * weapon.muzzle_vel
 	
 	# Calculate inaccuracy from movement
 	var spread : float
@@ -650,13 +667,13 @@ func fire():
 			spread = player_body.get_velocity().length() * 1.2
 	else:
 		spread = 5
-	
-	var max_inaccuracy = max(spread + _heat - spray_control, 0)
-	var inacurracy := Vector2(randf_range(0.5 * max_inaccuracy, max_inaccuracy), 0).rotated(randf_range(0, TAU)) * muzzle_vel / 250
+		
+	var max_inaccuracy = max(spread + _heat - weapon.spray_control, 0)
+	var inacurracy = Vector2(randf_range(0.5 * max_inaccuracy, max_inaccuracy), 0).rotated(randf_range(0, TAU)) * weapon.muzzle_vel / 250
 	velocity += (inacurracy.x * global_transform.basis.x) + (inacurracy.y * global_transform.basis.y)
-	velocity += (recoil * _heat) * global_transform.basis.y
+	#velocity += (weapon.recoil * _heat) * global_transform.basis.y
 	
-	$\"../..\".get_parent().rpc_id(1, \"spawn_bullet\", global_position + (global_transform.basis.z * -0.5), velocity, Vector3.ZERO, damage, aero_loss)
+	$\"../..\".get_parent().rpc_id(1, \"spawn_bullet\", global_position + (global_transform.basis.z * -0.5), velocity, Vector3.ZERO, weapon.damage, weapon.aero_loss)
 "
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ham1v"]
@@ -715,7 +732,6 @@ shape = SubResource("SphereShape3D_ufnhc")
 [node name="Camera3D" type="Camera3D" parent="."]
 
 [node name="Weapon" type="Node3D" parent="Camera3D"]
-process_mode = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.093, 0)
 script = SubResource("GDScript_ea26n")
 

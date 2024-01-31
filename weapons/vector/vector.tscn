@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=3 uid="uid://xnoad6jibou"]
+
+[sub_resource type="GDScript" id="GDScript_7fs47"]
+script/source = "extends Node3D
+
+var weapon_name = \"KRISS Vector\"
+var firerate : float = 20
+var firemode : int = 0
+var mag_size : int = 33
+var muzzle_vel : float = 400
+var damage : float = 16
+var aero_loss : float = 1.5
+var recovery : float = 2
+var recoil : float = 0.5
+var spray_control : float = 1
+var sfx = \"res://weapons/ak12/ak47-sfx-3.wav\" # placeholder
+"
+
+[node name="Vector_tscn" type="Node3D"]
+script = SubResource("GDScript_7fs47")

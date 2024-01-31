@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=3 uid="uid://dt3mkxltjioh7"]
+
+[sub_resource type="GDScript" id="GDScript_0nh03"]
+script/source = "extends Node3D
+
+var weapon_name = \"Glock-19\"
+var firerate : float = 15
+var firemode : int = 1
+var mag_size : int = 14
+var muzzle_vel : float = 350
+var damage : float = 22
+var aero_loss : float = 2.0
+var recovery : float = 0.3
+var recoil : float = 3
+var spray_control : float = 1
+var sfx = \"res://weapons/ak12/ak47-sfx-3.wav\" # placeholder
+"
+
+[node name="Glock" type="Node3D"]
+script = SubResource("GDScript_0nh03")
