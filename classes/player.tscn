@@ -74,7 +74,7 @@ func _process(delta):
 	health = clamp(health - (breaches * delta * 2), 0, 100)
 	PlayerHud.set_health(health)
 	if health == 0:
-		get_parent().rpc_id(1, \"spawn_player\", get_parent().peer.get_unique_id(), weapon.weapon_path)
+		get_parent().rpc_id(1, \"spawn_player\", get_parent().peer.get_unique_id())
 		PlayerHud.hide()
 		camera.current = false
 		get_parent().remove_child(self)
@@ -128,7 +128,7 @@ func _physics_process(_delta):
 		weapon.rpc(\"set_weapon\", \"res://weapons/glock/glock.tscn\")
 	
 	if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
-		get_parent().rpc_id(1, \"spawn_player\", get_parent().peer.get_unique_id(), weapon.weapon_path)
+		get_parent().rpc_id(1, \"spawn_player\", get_parent().peer.get_unique_id())
 		PlayerHud.hide()
 		camera.current = false
 		get_parent().remove_child(self)
@@ -538,7 +538,6 @@ script/source = "extends Node3D
 
 
 var weapon : Node3D
-var weapon_path := \"\"
 
 var _mouse_down := false
 
@@ -554,9 +553,23 @@ var _fire_time_ms : float
 
 
 
+func _ready():
+	weapon = load(\"res://weapons/ak12/ak12.tscn\").instantiate()
+	add_child(weapon)
+	
+	$AudioStreamPlayer3D.stream = load(weapon.sfx)
+	_firedelay = 1000 / weapon.firerate
+	_magazine = 0
+	PlayerHud.set_ammo(weapon.mag_size)
+	PlayerHud.start_progress_bar(3, \"reloading\", reload)
+	_heat = 0
+	_burst = 0
+	weapon.rpc(\"set_weapon\", \"res://weapons/vector/vector.tscn\")
+
+
+
 @rpc(\"any_peer\")
 func set_weapon(path : String):
-	weapon_path = path
 	
 	if weapon:
 		weapon.queue_free()

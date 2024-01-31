@@ -76,7 +76,7 @@ func pre_spawn():
 
 
 @rpc(\"any_peer\")
-func spawn_player(id : int, weapon : String):
+func spawn_player(id : int):
 	if id > 1:
 		if get_node_or_null(str(id)):
 			get_node(str(id)).queue_free()
@@ -88,11 +88,6 @@ func spawn_player(id : int, weapon : String):
 		var player = _p_player.instantiate()
 		player.name = str(id)
 		add_child(player)
-		
-		if !weapon.is_empty():
-			await player.ready
-			
-			player.weapon.rpc(\"set_weapon\", weapon)
 
 
 
