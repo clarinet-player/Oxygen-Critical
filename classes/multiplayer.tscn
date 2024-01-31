@@ -54,7 +54,7 @@ func disconnect_player():
 
 func _on_connect(id : int):
 	print(\"player connected: \", id)
-	spawn_player(id, \"\")
+	spawn_player(id)
 
 
 
