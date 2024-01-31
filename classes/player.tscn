@@ -560,11 +560,10 @@ func _ready():
 	$AudioStreamPlayer3D.stream = load(weapon.sfx)
 	_firedelay = 1000 / weapon.firerate
 	_magazine = 0
-	PlayerHud.set_ammo(weapon.mag_size)
-	PlayerHud.start_progress_bar(3, \"reloading\", reload)
-	_heat = 0
-	_burst = 0
-	weapon.rpc(\"set_weapon\", \"res://weapons/vector/vector.tscn\")
+	if is_multiplayer_authority():
+		reload()
+		_heat = 0
+		_burst = 0
 
 
 
@@ -599,6 +598,8 @@ func _physics_process(delta):
 	
 	# Getting trigger input
 	if Input.is_action_pressed(\"Mouse1\") and !_mouse_down and !PauseMenu.visible:
+		PlayerHud.stop_progress(\"reloading\")
+		PlayerHud.stop_progress(\"healing\")
 		_mouse_down = true
 		if time > _fire_time_ms + _firedelay * weapon.firemode:
 			_burst = weapon.firemode
@@ -637,8 +638,6 @@ func _physics_process(delta):
 		_magazine -= 1
 		
 		PlayerHud.set_ammo(_magazine)
-		PlayerHud.stop_progress(\"reloading\")
-		PlayerHud.stop_progress(\"healing\")
 		
 		if !player_body.is_anchored():
 			player_body._velocity_3d += global_transform.basis.z * weapon.recoil * 0.1
