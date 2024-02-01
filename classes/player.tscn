@@ -167,7 +167,7 @@ script/source = "extends RigidBody3D
 
 @export var jump_power : float = 3.0
 
-@export var mouse_sensitivity : float = 3.0
+@export var mouse_sensitivity : float = 2.0
 
 var _anchored_shape : CollisionShape3D
 var _anchor_point_l : Vector3
@@ -536,6 +536,7 @@ func impulse(force : Vector3):
 script/source = "extends Node3D
 
 
+@export var felt_recoil : float = 200
 
 var weapon : Node3D
 
@@ -581,7 +582,7 @@ func set_weapon(path : String):
 	_magazine = 0
 	if is_multiplayer_authority():
 		PlayerHud.set_ammo(weapon.mag_size)
-		PlayerHud.start_progress_bar(3, \"reloading\", reload)
+		PlayerHud.start_progress_bar(2, \"reloading\", reload)
 		_heat = 0
 		_burst = 0
 
@@ -626,8 +627,8 @@ func _physics_process(delta):
 		audio.play()
 		rpc(\"play_sound\")
 		
-		$\"../../PlayerBody\".rotate(global_transform.basis.x, weapon.recoil / 400)
-		$\"..\".rotate(global_transform.basis.x, weapon.recoil / 400)
+		$\"../../PlayerBody\".rotate(global_transform.basis.x, weapon.recoil / felt_recoil)
+		$\"..\".rotate(global_transform.basis.x, weapon.recoil / felt_recoil)
 		
 		fire()
 		_fire_time_ms -= _firedelay
@@ -646,13 +647,13 @@ func _physics_process(delta):
 	# Recovering heat after firing
 	if time - _fire_time_ms > _firedelay && _heat > 0:
 		_heat = max(_heat - (delta * weapon.firerate * weapon.recovery), 0)
-		$\"../../PlayerBody\".rotate(global_transform.basis.x, -weapon.recoil * delta * weapon.firerate * weapon.recovery / 400)
-		$\"..\".rotate(global_transform.basis.x, -weapon.recoil * delta * weapon.firerate * weapon.recovery / 400)
+		$\"../../PlayerBody\".rotate(global_transform.basis.x, -weapon.recoil * delta * weapon.firerate * weapon.recovery / felt_recoil)
+		$\"..\".rotate(global_transform.basis.x, -weapon.recoil * delta * weapon.firerate * weapon.recovery / felt_recoil)
 	
 	
 	# Reloading
 	if Input.is_action_just_pressed(\"R\") and !PauseMenu.visible:
-		PlayerHud.start_progress_bar(3, \"reloading\", reload)
+		PlayerHud.start_progress_bar(weapon.reload_time, \"reloading\", reload)
 
 
 
@@ -686,7 +687,7 @@ func fire():
 	var max_inaccuracy = max(spread + _heat - weapon.spray_control, 0)
 	var inacurracy = Vector2(randf_range(0.5 * max_inaccuracy, max_inaccuracy), 0).rotated(randf_range(0, TAU)) * weapon.muzzle_vel / 250
 	velocity += (inacurracy.x * global_transform.basis.x) + (inacurracy.y * global_transform.basis.y)
-	#velocity += (weapon.recoil * _heat) * global_transform.basis.y
+	velocity += (weapon.recoil * _heat) * global_transform.basis.y
 	
 	$\"../..\".get_parent().rpc_id(1, \"spawn_bullet\", global_position + (global_transform.basis.z * -0.5), velocity, Vector3.ZERO, weapon.damage, weapon.aero_loss)
 "

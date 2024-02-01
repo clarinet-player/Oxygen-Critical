@@ -45,7 +45,6 @@ offset_bottom = 656.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("2_s2yy4")
-expand_mode = 2
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 1

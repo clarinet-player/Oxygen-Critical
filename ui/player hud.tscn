@@ -21,7 +21,7 @@ func start_progress_bar(secs : float, task_name : String, callable : Callable):
 	progress.visible = true
 	crosshair.visible = false
 	progress.value = 0
-	progress_speed = 1 / secs
+	progress_speed = 100 / secs
 	progress_name = task_name
 	progress_callable = callable
 
@@ -37,7 +37,7 @@ func stop_all():
 func _process(delta):
 	if progress.visible == true:
 		progress.value += delta * progress_speed
-		if progress.value == 1:
+		if progress.value == 100:
 			progress.visible = false
 			crosshair.visible = true
 			if progress_callable.is_valid():
@@ -140,7 +140,6 @@ offset_right = 78.0
 offset_bottom = 13.5
 grow_horizontal = 2
 grow_vertical = 2
-max_value = 1.0
 show_percentage = false
 
 [node name="Panel" type="Panel" parent="."]

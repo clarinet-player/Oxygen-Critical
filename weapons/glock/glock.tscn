@@ -4,9 +4,10 @@
 script/source = "extends Node3D
 
 var weapon_name = \"Glock-19\"
-var firerate : float = 15
+var firerate : float = 16
 var firemode : int = 1
-var mag_size : int = 14
+var mag_size : int = 20
+var reload_time : float = 1.5
 var muzzle_vel : float = 350
 var damage : float = 22
 var aero_loss : float = 2.0
