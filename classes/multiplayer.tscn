@@ -32,6 +32,7 @@ func _ready():
 
 
 func connect_player():
+	peer.close()
 	peer.create_client(\"66.179.249.44\", 135)
 	multiplayer.multiplayer_peer = peer
 
