@@ -20,7 +20,7 @@ func _ready():
 		multiplayer.peer_connected.connect(_on_connect)
 		multiplayer.peer_disconnected.connect(_on_disconnect)
 		
-		peer.create_server(135)
+		print(peer.create_server(135))
 		multiplayer.multiplayer_peer = peer
 	
 	# Client setup
@@ -30,13 +30,14 @@ func _ready():
 		PauseMenu.connect(\"request_disconnect\", disconnect_player)
 
 
-
 func connect_player():
 	peer.close()
 	peer.create_client(\"66.179.249.44\", 135)
 	multiplayer.multiplayer_peer = peer
 
-
+func _process(delta):
+	if get_multiplayer_authority() == 1:
+		print(\"debug\")
 
 func disconnect_player():
 	remove_child(_level)
