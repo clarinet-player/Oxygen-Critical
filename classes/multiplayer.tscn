@@ -35,9 +35,7 @@ func connect_player():
 	peer.create_client(\"66.179.249.44\", 135)
 	multiplayer.multiplayer_peer = peer
 
-func _process(delta):
-	if get_multiplayer_authority() == 1:
-		print(\"debug\")
+
 
 func disconnect_player():
 	remove_child(_level)
