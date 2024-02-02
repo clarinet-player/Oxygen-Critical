@@ -644,7 +644,7 @@ func _physics_process(delta):
 		PlayerHud.set_ammo(_magazine)
 		
 		if !player_body.is_anchored():
-			player_body._velocity_3d += global_transform.basis.z * weapon.recoil * 0.1
+			player_body._velocity_3d += $\"..\".global_transform.basis.z * weapon.damage * 0.025
 	
 	
 	# Recovering heat after firing
