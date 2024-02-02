@@ -1,8 +1,10 @@
+Node3D
+Node
+Camera3D
 AudioStreamPlayer3D
 Sprite3D
 MeshInstance3D
 TextureRect
-Camera3D
 CollisionShape3D
 Area3D
 RigidBody3D
@@ -10,6 +12,3 @@ Control
 MultiplayerSpawner
 RichTextLabel
 Button
-Container
-Panel
-TextEdit

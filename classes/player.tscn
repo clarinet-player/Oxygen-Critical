@@ -580,6 +580,7 @@ func set_weapon(path : String):
 	$AudioStreamPlayer3D.stream = load(weapon.sfx)
 	_firedelay = 1000 / weapon.firerate
 	_magazine = 0
+	rotation = Vector3.ZERO
 	if is_multiplayer_authority():
 		PlayerHud.set_ammo(weapon.mag_size)
 		PlayerHud.start_progress_bar(2, \"reloading\", reload)
@@ -629,14 +630,16 @@ func _physics_process(delta):
 		
 		$\"../../PlayerBody\".rotate(global_transform.basis.x, weapon.recoil / felt_recoil)
 		$\"..\".rotate(global_transform.basis.x, weapon.recoil / felt_recoil)
+		rotate(basis.x, weapon.recoil / (felt_recoil * 2))
 		
-		fire()
 		_fire_time_ms -= _firedelay
 		if time > _fire_time_ms + _firedelay:
 			_fire_time_ms = time
 		_heat += 1
 		_burst -= 1
 		_magazine -= 1
+		
+		fire()
 		
 		PlayerHud.set_ammo(_magazine)
 		
@@ -649,6 +652,7 @@ func _physics_process(delta):
 		_heat = max(_heat - (delta * weapon.firerate * weapon.recovery), 0)
 		$\"../../PlayerBody\".rotate(global_transform.basis.x, -weapon.recoil * delta * weapon.firerate * weapon.recovery / felt_recoil)
 		$\"..\".rotate(global_transform.basis.x, -weapon.recoil * delta * weapon.firerate * weapon.recovery / felt_recoil)
+		rotate(basis.x, -weapon.recoil * delta * weapon.firerate * weapon.recovery / (felt_recoil * 2))
 	
 	
 	# Reloading
@@ -671,25 +675,25 @@ func reload():
 
 
 func fire():
-	
-	var velocity : Vector3 = global_transform.basis.z * -1 * weapon.muzzle_vel
+	var cam_basis = $\"..\".global_basis
+	var velocity : Vector3 = cam_basis.z * -1 * weapon.muzzle_vel
 	
 	# Calculate inaccuracy from movement
 	var spread : float
 	if player_body.is_anchored():
 		if player_body._movement_state == player_body.move_type.SLIDING:
-			spread = 5
+			spread = 4.5
 		else:
-			spread = player_body.get_velocity().length() * 1.2
+			spread = player_body.get_velocity().length()
 	else:
-		spread = 5
+		spread = 4.5
 		
 	var max_inaccuracy = max(spread + _heat - weapon.spray_control, 0)
 	var inacurracy = Vector2(randf_range(0.5 * max_inaccuracy, max_inaccuracy), 0).rotated(randf_range(0, TAU)) * weapon.muzzle_vel / 250
-	velocity += (inacurracy.x * global_transform.basis.x) + (inacurracy.y * global_transform.basis.y)
-	velocity += (weapon.recoil * _heat) * global_transform.basis.y
+	velocity += (inacurracy.x * cam_basis.x) + (inacurracy.y * cam_basis.y)
+	velocity += (weapon.recoil * _heat) * cam_basis.y
 	
-	$\"../..\".get_parent().rpc_id(1, \"spawn_bullet\", global_position + (global_transform.basis.z * -0.5), velocity, Vector3.ZERO, weapon.damage, weapon.aero_loss)
+	$\"../..\".get_parent().rpc_id(1, \"spawn_bullet\", global_position + (cam_basis.z * -0.5), velocity, Vector3.ZERO, weapon.damage, weapon.aero_loss)
 "
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ham1v"]

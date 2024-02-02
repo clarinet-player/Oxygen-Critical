@@ -1,3 +1,5 @@
+res://weapons/vector/vector.tscn
+res://weapons/ak12/ak12.tscn
 res://classes/multiplayer.tscn
 res://classes/worldState.tscn
 res://ui/main menu.tscn
@@ -6,6 +8,4 @@ res://ui/player hud.tscn
 res://classes/player.tscn
 res://scenes/playable scene.tscn
 res://classes/bullet.tscn
-res://weapons/ak12/ak12.tscn
-res://weapons/vector/vector.tscn
 res://weapons/glock/glock.tscn
