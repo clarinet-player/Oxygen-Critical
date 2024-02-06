@@ -17,7 +17,7 @@ script/source = "extends RigidBody3D
 @export var slide_power : float = 2.0
 @export var slide_friction : float = 1.0
 
-@export var jump_power : float = 4.0
+@export var jump_power : float = 3.0
 
 @export var mouse_sensitivity : float = 2.0
 
@@ -89,7 +89,7 @@ func _input(event):
 	
 	# Rotating to follow mouse
 	if event is InputEventMouseMotion:
-		if _anchored_shape and !Input.is_action_pressed(\"Space\"):
+		if _anchored_shape:
 			
 			rotate(_surface_normal, event.relative.x * mouse_sensitivity * -0.001)
 			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
@@ -203,12 +203,12 @@ func _physics_process(delta : float):
 	camera.global_position = global_position + _up_vec
 	hitbox.global_position = global_position + _up_vec * 0.35
 	
-	var _up : Vector3 = hitbox.global_basis.y
+	var _up : Vector3 = hitbox.basis.y
 	var _angle : float = acos(_up.dot(_up_vec))
 	var _axis = _up.cross(_up_vec)
 	
-	if !_axis.is_zero_approx():
-		hitbox.global_rotate(_axis.normalized(), _angle)
+	if _angle > 0.01 and !_axis.is_zero_approx():
+		hitbox.rotate(_axis.normalized(), _angle)
 	
 	
 	# Delegate movement
@@ -669,9 +669,6 @@ properties/5/replication_mode = 1
 properties/6/path = NodePath("Camera3D:rotation")
 properties/6/spawn = true
 properties/6/replication_mode = 1
-properties/7/path = NodePath(".:rotation")
-properties/7/spawn = true
-properties/7/replication_mode = 1
 
 [node name="Player" type="RigidBody3D" groups=["Players"]]
 top_level = true
