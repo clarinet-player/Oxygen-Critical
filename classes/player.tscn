@@ -470,6 +470,8 @@ func damage(amount : float):
 		breaches = clamp(breaches + 1, 0, 10)
 "
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_ufnhc"]
+
 [sub_resource type="GDScript" id="GDScript_ea26n"]
 script/source = "extends Node3D
 
@@ -632,8 +634,6 @@ func fire():
 	$\"../..\".get_parent().rpc_id(1, \"spawn_bullet\", global_position + (cam_basis.z * -0.5), velocity, Vector3.ZERO, weapon.damage, weapon.aero_loss)
 "
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_ufnhc"]
-
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ham1v"]
 radius = 0.3
 height = 1.6
@@ -681,6 +681,9 @@ can_sleep = false
 freeze = true
 script = SubResource("GDScript_qj47s")
 
+[node name="PlayerBody" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_ufnhc")
+
 [node name="Camera3D" type="Camera3D" parent="."]
 
 [node name="Weapon" type="Node3D" parent="Camera3D"]
@@ -690,10 +693,13 @@ script = SubResource("GDScript_ea26n")
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Camera3D/Weapon"]
 process_mode = 3
 
-[node name="PlayerBody" type="CollisionShape3D" parent="."]
-shape = SubResource("SphereShape3D_ufnhc")
+[node name="Hitbox" type="RigidBody3D" parent="."]
+collision_layer = 2
+collision_mask = 0
+can_sleep = false
+freeze = true
 
-[node name="Hitbox" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox"]
 shape = SubResource("CapsuleShape3D_ham1v")
 script = SubResource("GDScript_tf0av")
 
