@@ -15,7 +15,7 @@ script/source = "extends RigidBody3D
 @export var sprint_max_speed : float = 6
 @export var slide_friction : float = 1.0
 
-@export var jump_power : float = 4.0
+@export var jump_power : float = 5.0
 
 @export var mouse_sensitivity : float = 1.0
 
@@ -27,8 +27,10 @@ var _velocity_2d : Vector2
 var _velocity_3d : Vector3
 
 var _up_vec := Vector3(0, 0.1, 0)
-var _height := 1.0
+
 var _reorient := true
+
+var _jump_stamina : float = 1.0
 
 enum move_type {
 	IDLE,
@@ -90,14 +92,12 @@ func _input(event):
 			
 			rotate(_surface_normal, event.relative.x * mouse_sensitivity * -0.001)
 			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
+			_velocity_2d = _velocity_2d.rotated(event.relative.x * mouse_sensitivity * 0.001)
 			
 		else:
 			rotate(global_transform.basis.y.normalized(), event.relative.x * mouse_sensitivity * -0.001)
 			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
-		
-		_velocity_2d = _velocity_2d.rotated(event.relative.x * mouse_sensitivity * 0.001)
-		if _anchored_shape:
-			PlayerHud.set_hud_anchor(visible, acos(_surface_normal.dot(global_basis.y)))
+			_velocity_2d = _velocity_2d.rotated(event.relative.x * mouse_sensitivity * -0.001)
 
 
 
@@ -105,7 +105,6 @@ func _process(delta):
 	if !is_multiplayer_authority():
 		return
 	
-	# update health
 	health = clamp(health - (breaches * delta * 2), 0, 100)
 	PlayerHud.set_health(health)
 	if health == 0:
@@ -115,24 +114,11 @@ func _process(delta):
 		get_parent().remove_child(self)
 		return
 	
-	
-	# update anchor gui
-	if _anchored_shape:
-		if _reorient:
-			PlayerHud.set_hud_anchor(true, 0)
-		elif acos(_surface_normal.dot(global_basis.x)) < PI / 2:
-			PlayerHud.set_hud_anchor(true, acos(_surface_normal.dot(global_basis.y)))
-		else:
-			PlayerHud.set_hud_anchor(true, acos(_surface_normal.dot(-global_basis.y)) + PI)
-	else:
-		PlayerHud.set_hud_anchor(false)
-	
-	
 	if Input.is_action_pressed(\"Control\") and _anchored_shape:
 		_reorient = true
 	
 	if Input.is_action_just_pressed(\"E\") and !PauseMenu.visible:
-		PlayerHud.start_progress_bar(1, \"healing\", heal)
+		PlayerHud.start_progress_bar(2, \"healing\", heal)
 	
 	if Input.is_action_just_pressed(\"Escape\"):
 		if PauseMenu.visible:
@@ -169,33 +155,20 @@ func _physics_process(delta : float):
 	if !is_multiplayer_authority():
 		return
 	
+	# Regen stamina
+	_jump_stamina = clamp(_jump_stamina + delta, 0, 1)
+	
+	
 	if _anchored_shape:
-		
-		# Modifying Movement State
-		if Input.is_action_pressed(\"Shift\") and _velocity_2d.length() > sprint_max_speed + 0.1:
-			_height = 0.6
-			if _movement_state != move_type.SLIDING:
-				_movement_state = move_type.SLIDING
-		elif _movement_state == move_type.SLIDING:
-			_height = 1.0
-			_movement_state = move_type.IDLE
-			
-		if (Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\")) and !PauseMenu.visible:
-			if _movement_state == move_type.IDLE:
-				_movement_state = move_type.WALKING
-		elif _movement_state != move_type.SLIDING:
-			_movement_state = move_type.IDLE
-		
-		if Input.is_action_pressed(\"Shift\") and _movement_state == move_type.WALKING:
-			_movement_state = move_type.SPRINTING
-		
 		
 		# Move to follow our anchor
 		global_position = _anchored_shape.to_global(_anchor_point_l)
-		var _body = _anchored_shape.get_parent()
-		if !_body.angular_velocity.is_zero_approx():
-			rotate(_body.angular_velocity.normalized(), _body.angular_velocity.length() * delta)
 		
+		
+		# Rotate to follow our anchor
+		#var _body = _anchored_shape.get_parent()
+		#if !_body.angular_velocity.is_zero_approx():
+		#	rotate(_body.angular_velocity.normalized(), _body.angular_velocity.length() * delta)
 		
 		# Adjust roll to avoid gimbal lock
 		if _reorient:
@@ -206,21 +179,26 @@ func _physics_process(delta : float):
 			var _axis = _up.cross(_adjusted_normal)
 			
 			if _roll_angle > 0.01:
-				rotate(_axis.normalized(), _roll_angle * 7 * delta)
+				rotate(_axis.normalized(), _roll_angle * 8 * delta)
 		
 		
 		# Jumping
-		if Input.is_action_just_pressed(\"Space\"):
+		if Input.is_action_just_pressed(\"Space\") and _jump_stamina > 0.3:
 			
 			detach()
 			_reorient = false
-			_velocity_3d += -global_basis.z * jump_power
+			
+			#var _looking : Vector3 = global_transform.basis.z * -1
+			#var _forward : Vector3 = (_looking - _looking.dot(_surface_normal) * _surface_normal).normalized()
+			#_velocity_3d += (_surface_normal + _forward).normalized() * jump_power * _jump_stamina
+			_velocity_3d += -global_basis.z * jump_power * _jump_stamina
+			_jump_stamina = 0
 	
 	
 	if _anchored_shape:
-		_up_vec = lerp(_up_vec, _surface_normal, delta * 8).limit_length(_height)
+		_up_vec = lerp(_up_vec, _surface_normal, delta * 8).limit_length(1)
 	else:
-		_up_vec = lerp(_up_vec, -_velocity_3d, delta * 8).limit_length(_height)
+		_up_vec = lerp(_up_vec, -_velocity_3d, delta * 8).limit_length(1)
 	
 	move_and_collide((camera.global_position - _up_vec) - global_position)
 	camera.global_position = global_position + _up_vec
@@ -244,9 +222,26 @@ func _physics_process(delta : float):
 
 func _anchored_move(delta : float):
 	
+	# Modifying Movement State
+	if Input.is_action_pressed(\"Shift\") and _velocity_2d.length() > sprint_max_speed:
+		if _movement_state != move_type.SLIDING:
+			_movement_state = move_type.SLIDING
+	elif _movement_state == move_type.SLIDING:
+		_movement_state = move_type.IDLE
+		
+	if (Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\")) and !PauseMenu.visible:
+		if _movement_state == move_type.IDLE:
+			_movement_state = move_type.WALKING
+	elif _movement_state != move_type.SLIDING:
+		_movement_state = move_type.IDLE
+	
+	if Input.is_action_pressed(\"Shift\") and _movement_state == move_type.WALKING:
+		_movement_state = move_type.SPRINTING
+	
+	
 	# Calculating movement direction along the ground
 	var _forward : Vector3 = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
-	var _side : Vector3 = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
+	var _side : Vector3 = (-global_basis.x + global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
 	
 	var _input := Input.get_vector(\"A\", \"D\", \"S\", \"W\")
 	
@@ -310,7 +305,7 @@ func _anchored_move(delta : float):
 			_surface_normal = _normal
 			
 			_forward = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
-			_side = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
+			_side = (-global_basis.x + global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
 			
 			_movement = (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
 			
@@ -379,8 +374,9 @@ func attach(_shape : CollisionShape3D, _anchor_point_g : Vector3, _normal : Vect
 	_anchor_point_l = _anchored_shape.to_local(_anchor_point_g)
 	_surface_normal = _normal
 	
-	var _forward : Vector3 = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
-	var _side : Vector3 = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
+	var _looking : Vector3 = global_transform.basis.z * -1
+	var _forward : Vector3 = _looking - _looking.dot(_surface_normal) * _surface_normal
+	var _side : Vector3 = _forward.cross(_surface_normal)
 	
 	_velocity_2d = Vector2(_velocity_3d.dot(_side), _velocity_3d.dot(_forward))
 	
@@ -392,8 +388,9 @@ func attach(_shape : CollisionShape3D, _anchor_point_g : Vector3, _normal : Vect
 
 func detach():
 	
-	var _forward : Vector3 = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
-	var _side : Vector3 = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
+	var _looking : Vector3 = global_transform.basis.z * -1
+	var _forward : Vector3 = _looking - _looking.dot(_surface_normal) * _surface_normal
+	var _side : Vector3 = _forward.cross(_surface_normal)
 	
 	var _body : RigidBody3D = _anchored_shape.get_parent()
 	
@@ -417,8 +414,10 @@ func is_anchored() -> bool:
 
 func get_velocity() -> Vector3:
 	if _anchored_shape:
-		var _forward : Vector3 = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
-		var _side : Vector3 = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
+
+		var _looking : Vector3 = global_transform.basis.z * -1
+		var _forward : Vector3 = (_looking - _looking.dot(_surface_normal) * _surface_normal).normalized()
+		var _side : Vector3 = _forward.cross(_surface_normal)
 		
 		return (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
 		
@@ -514,7 +513,7 @@ func set_weapon(path : String):
 	rotation = Vector3.ZERO
 	if is_multiplayer_authority():
 		PlayerHud.set_ammo(weapon.mag_size)
-		PlayerHud.start_progress_bar(weapon.reload_time, \"reloading\", reload)
+		PlayerHud.start_progress_bar(2, \"reloading\", reload)
 		_heat = 0
 		_burst = 0
 
@@ -694,8 +693,6 @@ script = SubResource("GDScript_tf0av")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Hitbox"]
 mesh = SubResource("CapsuleMesh_r400h")
 skeleton = NodePath("../../PlayerBody")
-
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_txwtg")

@@ -7,9 +7,9 @@ var weapon_name = \"Glock-19\"
 var firerate : float = 16
 var firemode : int = 1
 var mag_size : int = 20
-var reload_time : float = 1.5
+var reload_time : float = 1.25
 var muzzle_vel : float = 350
-var damage : float = 20
+var damage : float = 25
 var aero_loss : float = 1.5
 var recovery : float = 0.5
 var recoil : float = 2.75
@@ -53,10 +53,10 @@ blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_miani")
 
 [node name="glock" type="Node3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.36394, -0.112528, -0.345913)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.422481, -0.112528, -0.373878)
 script = SubResource("GDScript_regjm")
 
 [node name="Cube" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.099779, -0.00598188, 0.00289175, -0.00583849, 0.0997134, 0.00481176, -0.0031713, 0.00463229, -0.0998423, -0.0319677, 0.0592262, 0.00773886)
+transform = Transform3D(-0.0997009, -0.00743343, -0.00211546, -0.00752739, 0.0996018, 0.00477663, 0.00175196, 0.00492158, -0.0998634, 0.0212446, 0.0427723, -0.0372843)
 mesh = SubResource("ArrayMesh_7qdux")
 skeleton = NodePath("")
