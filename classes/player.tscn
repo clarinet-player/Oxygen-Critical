@@ -15,7 +15,7 @@ script/source = "extends RigidBody3D
 @export var sprint_max_speed : float = 6
 @export var slide_friction : float = 1.0
 
-@export var jump_power : float = 4.0
+@export var jump_power : float = 3.0
 
 @export var mouse_sensitivity : float = 1.0
 
@@ -96,8 +96,6 @@ func _input(event):
 			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
 		
 		_velocity_2d = _velocity_2d.rotated(event.relative.x * mouse_sensitivity * 0.001)
-		if _anchored_shape:
-			PlayerHud.set_hud_anchor(visible, acos(_surface_normal.dot(global_basis.y)))
 
 
 
@@ -117,10 +115,8 @@ func _process(delta):
 	
 	
 	# update anchor gui
-	if _anchored_shape:
-		if _reorient:
-			PlayerHud.set_hud_anchor(true, 0)
-		elif acos(_surface_normal.dot(global_basis.x)) < PI / 2:
+	if _anchored_shape and !_reorient:
+		if acos(_surface_normal.dot(global_basis.x)) < PI / 2:
 			PlayerHud.set_hud_anchor(true, acos(_surface_normal.dot(global_basis.y)))
 		else:
 			PlayerHud.set_hud_anchor(true, acos(_surface_normal.dot(-global_basis.y)) + PI)
@@ -145,15 +141,12 @@ func _process(delta):
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	
 	if Input.is_action_just_pressed(\"1\"):
-		weapon.set_weapon(\"res://weapons/ak12/ak12.tscn\")
 		weapon.rpc(\"set_weapon\", \"res://weapons/ak12/ak12.tscn\")
 	
 	if Input.is_action_just_pressed(\"2\"):
-		weapon.set_weapon(\"res://weapons/vector/vector.tscn\")
 		weapon.rpc(\"set_weapon\", \"res://weapons/vector/vector.tscn\")
 	
 	if Input.is_action_just_pressed(\"3\"):
-		weapon.set_weapon(\"res://weapons/glock/glock.tscn\")
 		weapon.rpc(\"set_weapon\", \"res://weapons/glock/glock.tscn\")
 	
 	if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
@@ -222,7 +215,9 @@ func _physics_process(delta : float):
 	else:
 		_up_vec = lerp(_up_vec, -_velocity_3d, delta * 8).limit_length(_height)
 	
-	move_and_collide((camera.global_position - _up_vec) - global_position)
+	var collision = move_and_collide((camera.global_position - _up_vec) - global_position)
+	if collision and !_anchored_shape:
+		attach(collision.get_collider_shape(), global_position, collision.get_normal())
 	camera.global_position = global_position + _up_vec
 	hitbox.global_position = global_position + _up_vec * 0.35
 	
@@ -280,8 +275,8 @@ func _anchored_move(delta : float):
 		
 		move_type.SLIDING:
 			
-			_velocity_2d.y += _forward.dot(WorldState.get_gravity_vector()) * delta
-			_velocity_2d.x += _side.dot(WorldState.get_gravity_vector()) * delta
+			#_velocity_2d.y += _forward.dot(WorldState.get_gravity_vector()) * delta
+			#_velocity_2d.x += _side.dot(WorldState.get_gravity_vector()) * delta
 			
 			if _velocity_2d.length() < slide_friction * delta:
 				_velocity_2d = Vector2.ZERO
@@ -313,18 +308,18 @@ func _anchored_move(delta : float):
 			_side = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
 			
 			_movement = (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
-			
-			if _loops > 2: # prevents getting stuck inside geometry
-				global_translate(_surface_normal)
-			
-			if _loops > 4:
-				break
-			
+		
+		
 		else:
-			
 			_movement = _movement - _movement.dot(_normal) * _normal
-			_velocity_2d = Vector2(_movement.dot(_side), _movement.dot(_forward))
-			
+			#_velocity_2d = Vector2(_movement.dot(_side), _movement.dot(_forward))
+		
+		
+		if _loops > 2:
+			global_translate(_surface_normal)
+		if _loops > 4:
+			break
+		
 		_loops += 1
 		_collision = move_and_collide(_movement * _time)
 	
@@ -499,7 +494,7 @@ func _ready():
 
 
 
-@rpc(\"any_peer\")
+@rpc(\"any_peer\", \"call_local\")
 func set_weapon(path : String):
 	
 	if weapon:

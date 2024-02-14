@@ -106,16 +106,11 @@ func _physics_process(delta):
 func _surface_hit(_collider, _normal, _time) -> bool:
 	
 	var _angle = acos(velocity.normalized().dot(_normal))
-	var _speed = velocity.length() / 40
+	var _speed = velocity.length() / 45
 	
 	# Stopping
 	if _collider.strength > _speed:
 		return true
-	
-	# Deflection
-	if _angle > 0.01 and _collider.strength / _angle > 3:
-		velocity = velocity.bounce(_normal)
-		global_translate(_normal * 0.01)
 	
 	# Slowing
 	velocity *= (20 - _collider.strength) / 20
@@ -123,9 +118,11 @@ func _surface_hit(_collider, _normal, _time) -> bool:
 	# Deforming
 	aeroLoss *= _collider.strength
 	
-	# Fragmenting
+	# Fragmenting and deflection
 	if _speed / _angle < 5:
 		var _p_scene = preload(\"res://classes/bullet.tscn\")
+		
+		velocity = velocity.bounce(_normal)
 		
 		# Create new bullets
 		var fragments = randi_range(2, 8)

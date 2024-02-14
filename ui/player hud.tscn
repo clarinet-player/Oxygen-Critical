@@ -136,13 +136,13 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -28.0
+offset_left = -24.0
 offset_top = 90.0
-offset_right = 772.0
+offset_right = 776.0
 offset_bottom = 1059.0
 grow_horizontal = 2
 grow_vertical = 2
-scale = Vector2(0.07, 0.07)
+scale = Vector2(0.06, 0.06)
 texture = ExtResource("1_xoek8")
 
 [node name="Progress Bar" type="ProgressBar" parent="."]
