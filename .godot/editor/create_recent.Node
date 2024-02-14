@@ -1,3 +1,4 @@
+VBoxContainer
 GPUParticles3D
 TextureRect
 Control
@@ -12,4 +13,3 @@ MeshInstance3D
 CollisionShape3D
 Area3D
 MultiplayerSpawner
-RichTextLabel
