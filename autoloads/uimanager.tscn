@@ -1,0 +1,95 @@
+[gd_scene load_steps=5 format=3 uid="uid://bjavff8hks4lc"]
+
+[ext_resource type="PackedScene" uid="uid://crovijoeg2hv" path="res://ui/main menu.tscn" id="1_xw4nr"]
+[ext_resource type="PackedScene" uid="uid://b6j6wnag62maf" path="res://ui/pause menu.tscn" id="2_vniau"]
+[ext_resource type="PackedScene" uid="uid://bw31ycr56hs2f" path="res://ui/player hud.tscn" id="3_3xcav"]
+
+[sub_resource type="GDScript" id="GDScript_pym51"]
+script/source = "extends Node
+
+
+
+signal request_connect
+signal request_disconnect
+
+
+
+var paused := true
+
+@onready var mainmenu = $MainMenu
+@onready var pausemenu = $PauseMenu
+@onready var playerhud = $PlayerHud
+
+
+
+func _ready():
+	set_active_ui(1)
+	mainmenu.request_connect.connect(_connect)
+	pausemenu.request_disconnect.connect(_disconnect)
+	pausemenu.request_unpause.connect(unpause)
+
+
+
+func _connect():
+	request_connect.emit()
+	
+func _disconnect():
+	request_disconnect.emit()
+
+
+
+func _process(delta):
+	if DisplayServer.get_name() == \"headless\":
+		return
+	
+	if Input.is_action_just_pressed(\"Escape\"):
+		if mainmenu.visible:
+			get_tree().quit()
+		elif pausemenu.visible:
+			if GameManager.local_player:
+				set_active_ui(3)
+			else:
+				set_active_ui(0)
+		else:
+			set_active_ui(2)
+
+
+
+func set_active_ui(name : int): # 1-main menu 2-pause menu 3-player hud
+	if DisplayServer.get_name() == \"headless\":
+		return
+	
+	mainmenu.hide()
+	pausemenu.hide()
+	playerhud.hide()
+	
+	if name == 1:
+		mainmenu.show()
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		paused = true
+	elif name == 2:
+		pausemenu.show()
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		paused = true
+	elif name == 3:
+		playerhud.show()
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		paused = false
+
+
+
+func unpause():
+	if GameManager.local_player:
+		set_active_ui(3)
+	else:
+		set_active_ui(0)
+"
+
+[node name="UiManager" type="Node"]
+script = SubResource("GDScript_pym51")
+
+[node name="MainMenu" parent="." instance=ExtResource("1_xw4nr")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("2_vniau")]
+
+[node name="PlayerHud" parent="." instance=ExtResource("3_3xcav")]

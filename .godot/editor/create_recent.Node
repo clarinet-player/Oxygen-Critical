@@ -1,3 +1,4 @@
+MultiplayerSynchronizer
 VBoxContainer
 GPUParticles3D
 TextureRect
@@ -12,4 +13,3 @@ Sprite3D
 MeshInstance3D
 CollisionShape3D
 Area3D
-MultiplayerSpawner

@@ -10,16 +10,13 @@ signal request_connect
 
 
 func _ready():
-	$VBoxContainer/Connect.button_down.connect(_connect)
-	$VBoxContainer/Quit.button_down.connect(_quit)
+	$VBoxContainer/Connect.button_down.connect(_connect_pressed)
+	$VBoxContainer/Quit.button_down.connect(get_tree().quit)
 
 
-func _connect():
+
+func _connect_pressed():
 	request_connect.emit()
-
-
-func _quit():
-	get_tree().quit()
 "
 
 [node name="MainMenu" type="Control"]
