@@ -48,7 +48,6 @@ func disconnect_player():
 	peer.close()
 	MainMenu.show()
 	PauseMenu.hide()
-	PlayerHud.hide()
 
 
 
@@ -68,7 +67,6 @@ func _on_disconnect(id : int):
 @rpc(\"any_peer\")
 func pre_spawn():
 	MainMenu.hide()
-	PlayerHud.hide()
 	if !_level:
 		_level = _p_level.instantiate()
 		add_child(_level)

@@ -16,18 +16,26 @@ var acceleration : Vector3 = Vector3.ZERO
 
 
 func _physics_process(delta):
-	if !is_multiplayer_authority():
-		return
 	
 	if velocity.length() < 25:
-			queue_free()
-			get_parent().remove_child(self)
-			return
+		queue_free()
+		get_parent().remove_child(self)
+		return
+	
+	if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
+		queue_free()
+		return
+	
+	if !is_multiplayer_authority():
+		global_translate(velocity * delta)
+		velocity += WorldState.get_gravity_vector() * delta
+		velocity += acceleration * delta
+		velocity -= velocity * aeroLoss * 2 * delta
+		return
+	
 	
 	var _time = delta
-	
 	var _target_pos = global_position + (velocity * _time)
-	
 	var _space = get_world_3d().direct_space_state
 	var _ray = PhysicsRayQueryParameters3D.create(global_position, _target_pos)
 	var _raycast = _space.intersect_ray(_ray)
@@ -56,13 +64,6 @@ func _physics_process(delta):
 		velocity += acceleration * _passed
 		velocity -= velocity * aeroLoss * 2 * _passed
 		
-		# Remove ourselves if we're too slow
-		if velocity.length() < 25:
-			queue_free()
-			get_parent().remove_child(self)
-			return
-		
-		
 		# Actual collision handling
 		if \"strength\" in _shape:
 			if _surface_hit(_shape, _normal, _time):
@@ -76,6 +77,7 @@ func _physics_process(delta):
 				get_parent().remove_child(self)
 				return
 		
+		# Move through the surface so we don't collide with it again
 		global_translate(_normal * -0.01)
 		
 		
@@ -87,19 +89,11 @@ func _physics_process(delta):
 	
 	# Move to our final position
 	global_position = _target_pos
-	if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
-		queue_free()
-		return
 	
 	# Apply forces
 	velocity += WorldState.get_gravity_vector() * _time
 	velocity += acceleration * _time
 	velocity -= velocity * aeroLoss * 2 * _time
-	
-	if velocity.length() < 25:
-		queue_free()
-		get_parent().remove_child(self)
-		return
 
 
 

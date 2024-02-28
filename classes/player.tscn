@@ -1,5 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://bq3u0xb10re6"]
 
+[ext_resource type="PackedScene" uid="uid://bw31ycr56hs2f" path="res://ui/player hud.tscn" id="1_lc7md"]
+
 [sub_resource type="GDScript" id="GDScript_qj47s"]
 script/source = "extends RigidBody3D
 
@@ -7,24 +9,26 @@ script/source = "extends RigidBody3D
 
 #region Variables
 
-@export var walk_acceleration : float = 25.0
-@export var walk_friction : float = 35.0
-@export var walk_max_speed : float = 3
+var alive := true
 
-@export var sprint_acceleration : float = 35.0
-@export var sprint_max_speed : float = 6
-@export var slide_friction : float = 1.0
+var walk_acceleration : float = 25.0
+var walk_friction : float = 35.0
+var walk_max_speed : float = 3
 
-@export var jump_power : float = 3.0
+var sprint_acceleration : float = 35.0
+var sprint_max_speed : float = 6
+var slide_friction : float = 1.0
 
-@export var mouse_sensitivity : float = 1.0
+var jump_power : float = 3.0
+
+var mouse_sensitivity : float = 1.0
 
 var _anchored_shape : CollisionShape3D
 var _anchor_point_l : Vector3
 var _surface_normal : Vector3
 
-var _velocity_2d : Vector2
-var _velocity_3d : Vector3
+@export var _velocity_2d : Vector2
+@export var _velocity_3d : Vector3
 
 var _up_vec := Vector3(0, 0.1, 0)
 var _height := 1.0
@@ -40,12 +44,16 @@ enum move_type {
 var _movement_state : move_type = move_type.IDLE
 
 var health : float = 100
-var breaches : int = 0
+var breached := false
+
+var active_item : Node3D
+
 
 
 @onready var camera := $Camera3D
-@onready var weapon := $Camera3D/Weapon
 @onready var hitbox := $Hitbox
+@onready var hud := $PlayerHud
+@onready var inv := $Inventory
 #endregion
 
 
@@ -54,8 +62,6 @@ func _enter_tree():
 	set_multiplayer_authority(int(str(name)))
 	if is_multiplayer_authority():
 		$Camera3D.current = true
-		MainMenu.hide()
-		PlayerHud.show()
 
 
 
@@ -100,58 +106,50 @@ func _input(event):
 
 
 func _process(delta):
+	if breached:
+		health = max(0, health - 15 * delta)
+	
 	if !is_multiplayer_authority():
 		return
-	
-	# update health
-	health = clamp(health - (breaches * delta * 2), 0, 100)
-	PlayerHud.set_health(health)
-	if health == 0:
-		get_parent().rpc_id(1, \"spawn_player\", get_parent().peer.get_unique_id())
-		PlayerHud.hide()
-		camera.current = false
-		get_parent().remove_child(self)
-		return
-	
 	
 	# update anchor gui
 	if _anchored_shape and !_reorient:
 		if acos(_surface_normal.dot(global_basis.x)) < PI / 2:
-			PlayerHud.set_hud_anchor(true, acos(_surface_normal.dot(global_basis.y)))
+			hud.set_hud_anchor(true, acos(_surface_normal.dot(global_basis.y)))
 		else:
-			PlayerHud.set_hud_anchor(true, acos(_surface_normal.dot(-global_basis.y)) + PI)
+			hud.set_hud_anchor(true, acos(_surface_normal.dot(-global_basis.y)) + PI)
 	else:
-		PlayerHud.set_hud_anchor(false)
+		hud.set_hud_anchor(false)
 	
 	
 	if Input.is_action_pressed(\"Control\") and _anchored_shape:
 		_reorient = true
 	
-	if Input.is_action_just_pressed(\"E\") and !PauseMenu.visible:
-		PlayerHud.start_progress_bar(1, \"healing\", heal)
-	
 	if Input.is_action_just_pressed(\"Escape\"):
 		if PauseMenu.visible:
 			PauseMenu.hide()
-			PlayerHud.show()
+			hud.show()
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		else:
 			PauseMenu.show()
-			PlayerHud.hide()
+			hud.hide()
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	
-	if Input.is_action_just_pressed(\"1\"):
-		weapon.rpc(\"set_weapon\", \"res://weapons/ak12/ak12.tscn\")
-	
-	if Input.is_action_just_pressed(\"2\"):
-		weapon.rpc(\"set_weapon\", \"res://weapons/vector/vector.tscn\")
-	
-	if Input.is_action_just_pressed(\"3\"):
-		weapon.rpc(\"set_weapon\", \"res://weapons/glock/glock.tscn\")
+	#if Input.is_action_just_pressed(\"1\") and inv.get_child_count() > 0:
+	#	
+	#
+	#if Input.is_action_just_pressed(\"2\"):
+	#	weapon.rpc(\"set_weapon\", \"res://weapons/vector/vector.tscn\")
+	#
+	#if Input.is_action_just_pressed(\"3\"):
+	#	weapon.rpc(\"set_weapon\", \"res://weapons/glock/glock.tscn\")
+	#
+	#if Input.is_action_just_pressed(\"4\"):
+	#	weapon.rpc()
 	
 	if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
 		get_parent().rpc_id(1, \"spawn_player\", get_parent().peer.get_unique_id())
-		PlayerHud.hide()
+		hud.hide()
 		camera.current = false
 		get_parent().remove_child(self)
 
@@ -160,6 +158,7 @@ func _process(delta):
 #region Physics Frame
 func _physics_process(delta : float):
 	if !is_multiplayer_authority():
+		global_translate(_velocity_3d)
 		return
 	
 	if _anchored_shape:
@@ -258,7 +257,6 @@ func _anchored_move(delta : float):
 		move_type.WALKING:
 			
 			_velocity_2d += _input * delta * walk_acceleration
-			
 			if _velocity_2d.length() > walk_max_speed + walk_friction * delta:
 				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - walk_friction * delta)
 			else:
@@ -267,7 +265,6 @@ func _anchored_move(delta : float):
 		move_type.SPRINTING:
 			
 			_velocity_2d += _input * delta * sprint_acceleration
-			
 			if _velocity_2d.length() > sprint_max_speed + walk_friction * delta:
 				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - walk_friction * delta)
 			else:
@@ -277,7 +274,6 @@ func _anchored_move(delta : float):
 			
 			#_velocity_2d.y += _forward.dot(WorldState.get_gravity_vector()) * delta
 			#_velocity_2d.x += _side.dot(WorldState.get_gravity_vector()) * delta
-			
 			if _velocity_2d.length() < slide_friction * delta:
 				_velocity_2d = Vector2.ZERO
 			else:
@@ -303,10 +299,8 @@ func _anchored_move(delta : float):
 		if _shape == _anchored_shape and acos(_surface_normal.dot(_normal)) <= 1.5:
 			
 			_surface_normal = _normal
-			
 			_forward = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
 			_side = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
-			
 			_movement = (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
 		
 		
@@ -442,180 +436,43 @@ func _find_spawnpoint(spawnpoints : Array, players : Array):
 
 
 
-func heal():
-	breaches = max(breaches - 1, 0)
+func _set_active_item(item : Node3D):
+	active_item.active = false
+	active_item = item
+	active_item.active = true
+
+
+
+@rpc(\"authority\", \"call_local\", \"reliable\")
+func heal_breach():
+	breached = false
+
+
+
+@rpc(\"authority\", \"call_local\", \"reliable\")
+func heal_health():
 	health = min(health + 26, 100)
-	PlayerHud.set_health(health)
+	hud.set_health(health)
 
 
 
 @rpc(\"any_peer\")
 func damage(amount : float):
-	if is_multiplayer_authority():
-		health = clamp(health - amount, 0, 100)
-		breaches = clamp(breaches + 1, 0, 10)
+	health = clamp(health - amount, 0, 100)
+	breached = true
+
+
+
+@rpc(\"authority\", \"call_local\", \"reliable\")
+func death():
+	alive = false
+	hud.hide()
+
+
+
 "
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ufnhc"]
-
-[sub_resource type="GDScript" id="GDScript_ea26n"]
-script/source = "extends Node3D
-
-
-@export var felt_recoil : float = 200
-
-var weapon : Node3D
-
-var _mouse_down := false
-
-var _magazine : int
-var _heat : float # shots fired
-var _burst : int # shots to be fired
-
-var _firedelay : float
-var _fire_time_ms : float
-
-@onready var player_body := $\"../..\"
-@onready var audio := $AudioStreamPlayer3D
-
-
-
-func _ready():
-	weapon = load(\"res://weapons/ak12/ak12.tscn\").instantiate()
-	add_child(weapon)
-	
-	$AudioStreamPlayer3D.stream = load(weapon.sfx)
-	_firedelay = 1000 / weapon.firerate
-	_magazine = 0
-	if is_multiplayer_authority():
-		reload()
-		_heat = 0
-		_burst = 0
-
-
-
-@rpc(\"any_peer\", \"call_local\")
-func set_weapon(path : String):
-	
-	if weapon:
-		weapon.queue_free()
-	
-	weapon = load(path).instantiate()
-	add_child(weapon)
-	
-	$AudioStreamPlayer3D.stream = load(weapon.sfx)
-	_firedelay = 1000 / weapon.firerate
-	_magazine = 0
-	rotation = Vector3.ZERO
-	if is_multiplayer_authority():
-		PlayerHud.set_ammo(weapon.mag_size)
-		PlayerHud.start_progress_bar(weapon.reload_time, \"reloading\", reload)
-		_heat = 0
-		_burst = 0
-
-
-
-func _physics_process(delta):
-	if !is_multiplayer_authority():
-		return
-	if !weapon:
-		return
-	
-	var time = Time.get_ticks_msec()
-	
-	
-	# Getting trigger input
-	if Input.is_action_pressed(\"Mouse1\") and !_mouse_down and !PauseMenu.visible:
-		PlayerHud.stop_progress(\"reloading\")
-		PlayerHud.stop_progress(\"healing\")
-		_mouse_down = true
-		if time > _fire_time_ms + _firedelay * weapon.firemode:
-			_burst = weapon.firemode
-	
-	if !Input.is_action_pressed(\"Mouse1\") and _mouse_down:
-		_mouse_down = false
-	
-	if weapon.firemode == 0:
-		if _mouse_down and !PauseMenu.visible:
-			_burst = 1
-		else:
-			_burst = 0
-	
-	
-	# Checking for remaining ammo
-	if _magazine < 1:
-		_burst = 0
-	
-	
-	# Firing
-	if _burst > 0 and time > _fire_time_ms + _firedelay:
-			
-		audio.pitch_scale = randf_range(0.95, 1.05)
-		audio.play()
-		rpc(\"play_sound\")
-		
-		player_body.rotate(global_basis.x, weapon.recoil / felt_recoil)
-		rotate(basis.x, weapon.recoil / (felt_recoil * 2))
-		
-		_fire_time_ms -= _firedelay
-		if time > _fire_time_ms + _firedelay:
-			_fire_time_ms = time
-		_heat += 1
-		_burst -= 1
-		_magazine -= 1
-		
-		fire()
-		
-		PlayerHud.set_ammo(_magazine)
-		
-		if !player_body.is_anchored():
-			player_body._velocity_3d += $\"..\".global_transform.basis.z * weapon.damage * 0.025
-	
-	
-	# Recovering heat after firing
-	if time - _fire_time_ms > _firedelay && _heat > 0:
-		_heat = max(_heat - (delta * weapon.firerate * weapon.recovery), 0)
-		player_body.rotate(global_basis.x, -weapon.recoil * delta * weapon.firerate * weapon.recovery / felt_recoil)
-		rotate(basis.x, -weapon.recoil * delta * weapon.firerate * weapon.recovery / (felt_recoil * 2))
-	
-	
-	# Reloading
-	if Input.is_action_just_pressed(\"R\") and !PauseMenu.visible:
-		PlayerHud.start_progress_bar(weapon.reload_time, \"reloading\", reload)
-
-
-
-@rpc(\"any_peer\")
-func play_sound():
-	audio.pitch_scale = randf_range(0.96, 1.04)
-	audio.play()
-
-
-
-func reload():
-	_magazine = weapon.mag_size
-	PlayerHud.set_ammo(_magazine)
-
-
-
-func fire():
-	var cam_basis = $\"..\".global_basis
-	var velocity : Vector3 = cam_basis.z * -1 * weapon.muzzle_vel
-	
-	# Calculate inaccuracy from movement
-	var spread : float
-	if player_body.is_anchored():
-		spread = min(player_body.get_velocity().length(), 6)
-	else:
-		spread = 4.5
-		
-	var max_inaccuracy = max(spread + _heat - weapon.spray_control, 0)
-	var inacurracy = Vector2(randf_range(0.5 * max_inaccuracy, max_inaccuracy), 0).rotated(randf_range(0, TAU)) * weapon.muzzle_vel / 250
-	velocity += (inacurracy.x * cam_basis.x) + (inacurracy.y * cam_basis.y)
-	velocity += (weapon.recoil * _heat) * cam_basis.y
-	
-	$\"../..\".get_parent().rpc_id(1, \"spawn_bullet\", global_position + (cam_basis.z * -0.5), velocity, Vector3.ZERO, weapon.damage, weapon.aero_loss)
-"
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ham1v"]
 radius = 0.3
@@ -635,27 +492,21 @@ height = 1.6
 properties/0/path = NodePath(".:position")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath("Camera3D/Weapon:position")
+properties/1/path = NodePath("Camera3D/Weapon:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
-properties/2/path = NodePath("Camera3D/Weapon:rotation")
+properties/2/path = NodePath("Hitbox:position")
 properties/2/spawn = true
 properties/2/replication_mode = 1
-properties/3/path = NodePath("Hitbox:position")
+properties/3/path = NodePath("Hitbox:rotation")
 properties/3/spawn = true
 properties/3/replication_mode = 1
-properties/4/path = NodePath("Hitbox:rotation")
+properties/4/path = NodePath("Camera3D:position")
 properties/4/spawn = true
 properties/4/replication_mode = 1
-properties/5/path = NodePath("Camera3D:position")
+properties/5/path = NodePath("Camera3D:rotation")
 properties/5/spawn = true
 properties/5/replication_mode = 1
-properties/6/path = NodePath("Camera3D:rotation")
-properties/6/spawn = true
-properties/6/replication_mode = 1
-properties/7/path = NodePath(".:rotation")
-properties/7/spawn = true
-properties/7/replication_mode = 1
 
 [node name="Player" type="RigidBody3D" groups=["Players"]]
 top_level = true
@@ -668,13 +519,6 @@ script = SubResource("GDScript_qj47s")
 shape = SubResource("SphereShape3D_ufnhc")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-
-[node name="Weapon" type="Node3D" parent="Camera3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.093, 0)
-script = SubResource("GDScript_ea26n")
-
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Camera3D/Weapon"]
-process_mode = 3
 
 [node name="Hitbox" type="RigidBody3D" parent="."]
 collision_layer = 2
@@ -690,7 +534,15 @@ script = SubResource("GDScript_tf0av")
 mesh = SubResource("CapsuleMesh_r400h")
 skeleton = NodePath("../../PlayerBody")
 
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+[node name="Inventory" type="Node" parent="."]
+
+[node name="PlayerHud" parent="." instance=ExtResource("1_lc7md")]
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://weapons/ak12/ak12.tscn", "res://weapons/glock/glock.tscn", "res://weapons/vector/vector.tscn")
+spawn_path = NodePath("../Inventory")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_txwtg")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]

@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3 uid="uid://d1tp582ly7ap6"]
+
+[ext_resource type="PackedScene" uid="uid://d16rwkt574n4s" path="res://classes/gameSurface.tscn" id="1_erh0q"]
+[ext_resource type="PackedScene" uid="uid://bq3u0xb10re6" path="res://classes/player.tscn" id="2_w6m6j"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_kxpq0"]
+size = Vector3(10, 1, 10)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wwnir"]
+size = Vector3(10, 1, 10)
+
+[node name="FiringRange" type="Node3D"]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+mesh = SubResource("BoxMesh_kxpq0")
+
+[node name="GameSurface" parent="StaticBody3D" instance=ExtResource("1_erh0q")]
+shape = SubResource("BoxShape3D_wwnir")
+
+[node name="Player" parent="." instance=ExtResource("2_w6m6j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.40103, 0)
+_velocity_2d = Vector2(0, 0)
+_velocity_3d = Vector3(0, 0, 0)
