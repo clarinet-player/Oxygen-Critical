@@ -15,7 +15,6 @@ func _ready():
 
 func _unpause():
 	hide()
-	PlayerHud.show()
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 

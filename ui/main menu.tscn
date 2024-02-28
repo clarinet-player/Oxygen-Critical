@@ -10,7 +10,7 @@ signal request_connect
 
 
 func _ready():
-	$VBoxContainer/Connect.button_down.connect(_connect)
+	$VBoxContainer/Multiplayer.button_down.connect(_connect)
 	$VBoxContainer/Quit.button_down.connect(_quit)
 
 
@@ -90,19 +90,25 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -206.5
-offset_top = -124.5
-offset_right = 206.5
-offset_bottom = 124.5
+offset_left = -233.0
+offset_top = -223.5
+offset_right = 233.0
+offset_bottom = 223.5
 grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="Connect" type="Button" parent="VBoxContainer"]
+[node name="Multiplayer" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_font_sizes/font_size = 70
-text = "Connect"
+text = "Multiplayer"
+
+[node name="Singleplayer" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 70
+text = "Singleplayer
+"
 
 [node name="Quit" type="Button" parent="VBoxContainer"]
 layout_mode = 2
