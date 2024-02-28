@@ -21,5 +21,3 @@ shape = SubResource("BoxShape3D_wwnir")
 
 [node name="Player" parent="." instance=ExtResource("2_w6m6j")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.40103, 0)
-_velocity_2d = Vector2(0, 0)
-_velocity_3d = Vector3(0, 0, 0)

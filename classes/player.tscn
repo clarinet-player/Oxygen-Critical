@@ -488,25 +488,22 @@ script/source = "extends CollisionShape3D
 radius = 0.3
 height = 1.6
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_txwtg"]
-properties/0/path = NodePath(".:position")
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_0uupb"]
+properties/0/path = NodePath(".:_velocity_3d")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath("Camera3D/Weapon:rotation")
+properties/1/path = NodePath(".:position")
 properties/1/spawn = true
 properties/1/replication_mode = 1
-properties/2/path = NodePath("Hitbox:position")
+properties/2/path = NodePath(".:rotation")
 properties/2/spawn = true
 properties/2/replication_mode = 1
-properties/3/path = NodePath("Hitbox:rotation")
+properties/3/path = NodePath("Hitbox:position")
 properties/3/spawn = true
 properties/3/replication_mode = 1
-properties/4/path = NodePath("Camera3D:position")
+properties/4/path = NodePath("Hitbox:rotation")
 properties/4/spawn = true
 properties/4/replication_mode = 1
-properties/5/path = NodePath("Camera3D:rotation")
-properties/5/spawn = true
-properties/5/replication_mode = 1
 
 [node name="Player" type="RigidBody3D" groups=["Players"]]
 top_level = true
@@ -543,6 +540,6 @@ _spawnable_scenes = PackedStringArray("res://weapons/ak12/ak12.tscn", "res://wea
 spawn_path = NodePath("../Inventory")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_config = SubResource("SceneReplicationConfig_txwtg")
+replication_config = SubResource("SceneReplicationConfig_0uupb")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
