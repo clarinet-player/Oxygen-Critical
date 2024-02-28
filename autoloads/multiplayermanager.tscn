@@ -18,7 +18,7 @@ func _ready():
 		multiplayer.peer_connected.connect(_on_connect)
 		multiplayer.peer_disconnected.connect(_on_disconnect)
 		
-		print(peer.create_server(7777))
+		peer.create_server(7777)
 		multiplayer.multiplayer_peer = peer
 	
 	# Client setup
@@ -78,7 +78,8 @@ func spawn_player(id : int):
 		if get_node_or_null(str(id)):
 			get_node(str(id)).queue_free()
 			
-		rpc_id(id, \"pre_spawn\")
+		rpc_id(id, \"connected\")
+		rpc_id(id, \"set_level\", 1)
 		
 		await get_tree().create_timer(2.0).timeout
 		

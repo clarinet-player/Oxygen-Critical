@@ -18,7 +18,10 @@ var paused := true
 
 
 func _ready():
-	set_ui(1)
+	if DisplayServer.get_name() == \"headless\":
+		set_process(false)
+	else:
+		set_ui(1)
 
 
 
@@ -34,6 +37,8 @@ func _process(delta):
 
 
 func set_ui(ui : int):
+	if DisplayServer.get_name() == \"headless\":
+		return
 	mainmenu.hide()
 	pausemenu.hide()
 	playerhud.hide()
