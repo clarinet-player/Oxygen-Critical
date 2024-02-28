@@ -28,6 +28,8 @@ func _ready():
 		UiManager.pausemenu.connect(\"request_disconnect\", disconnect_player)
 
 
+
+#region connection
 # Executed on the client
 func connect_player():
 	peer.close()
@@ -49,7 +51,15 @@ func disconnect_player():
 # Executed on the server
 func _on_connect(id : int):
 	print(\"player connected: \", id)
-	spawn_player(id)
+	
+	rpc_id(id, \"connected\")
+	rpc_id(id, \"set_level\", 1)
+	
+	await get_tree().create_timer(2.0).timeout
+	
+	var player = _p_player.instantiate()
+	player.name = str(id)
+	add_child(player)
 
 func _on_disconnect(id : int):
 	print(\"player disconnected: \", id)
@@ -62,6 +72,7 @@ func _on_disconnect(id : int):
 @rpc(\"any_peer\")
 func connected():
 	UiManager.set_ui(0)
+#endregion
 
 
 
@@ -72,32 +83,25 @@ func set_level(level : int):
 
 
 
-@rpc(\"authority\")
-func spawn_player(id : int):
-	if id > 1:
-		if get_node_or_null(str(id)):
-			get_node(str(id)).queue_free()
-			
-		rpc_id(id, \"connected\")
-		rpc_id(id, \"set_level\", 1)
-		
-		await get_tree().create_timer(2.0).timeout
-		
-		var player = _p_player.instantiate()
-		player.name = str(id)
-		add_child(player)
-
-
-
-@rpc(\"any_peer\")
-func spawn_bullet(pos : Vector3, vel : Vector3, accel : Vector3, mass : float, aero : float):
-	var _bullet = preload(\"res://classes/bullet.tscn\").instantiate()
-	add_child(_bullet, true)
-	_bullet.global_position = pos
-	_bullet.velocity = vel
-	_bullet.acceleration = accel
-	_bullet.mass = mass
-	_bullet.aeroLoss = aero
+func _find_spawnpoint():
+	var best_point
+	var best_value := 0.0
+	
+	var players = get_tree().get_nodes_in_group(\"Players\")
+	var spawnpoints = get_tree().get_nodes_in_group(\"Spawnpoints\")
+	
+	if players.size() < 1:
+		return spawnpoints.pick_random()
+	
+	for point in spawnpoints:
+		var value := 0.0
+		for player in players:
+			value += point.global_position.distance_to(player.global_position)
+		if value > best_value:
+			best_value = value
+			best_point = point
+	
+	return best_point
 "
 
 [node name="MultiplayerManager" type="Node"]

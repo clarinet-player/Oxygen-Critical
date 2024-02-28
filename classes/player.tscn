@@ -66,7 +66,6 @@ func _enter_tree():
 
 func _ready():
 	if is_multiplayer_authority():
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 		var spawnpoint = _find_spawnpoint(get_tree().get_nodes_in_group(\"Spawnpoints\"), get_tree().get_nodes_in_group(\"Players\",))
 		global_position = spawnpoint.global_position
@@ -405,26 +404,6 @@ func get_velocity() -> Vector3:
 
 
 
-func _find_spawnpoint(spawnpoints : Array, players : Array):
-	var best_point
-	var best_value := 0.0
-	
-	players.erase(self)
-	if players.size() < 1:
-		return spawnpoints.pick_random()
-	
-	for point in spawnpoints:
-		var value := 0.0
-		for player in players:
-			value += point.global_position.distance_to(player.global_position)
-		if value > best_value:
-			best_value = value
-			best_point = point
-	
-	return best_point
-
-
-
 func _set_active_item(item : Node3D):
 	active_item.active = false
 	active_item = item
@@ -495,6 +474,8 @@ collision_layer = 0
 can_sleep = false
 freeze = true
 script = SubResource("GDScript_qj47s")
+_velocity_2d = null
+_velocity_3d = null
 
 [node name="PlayerBody" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_ufnhc")
