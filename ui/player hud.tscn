@@ -5,23 +5,34 @@
 [sub_resource type="GDScript" id="GDScript_wnrnt"]
 script/source = "extends Control
 
+
+
 var progress_name : String
 var progress_speed : float
 var progress_callable : Callable
+
 
 @onready var progress := $\"Progress Bar\"
 @onready var crosshair := $Crosshair
 @onready var hud_anchor := $Anchor
 
+
+
 func set_health(new : float):
 	$\"Health Bar\".value = new
+
+
 
 func set_ammo(new : int):
 	$\"Panel/Ammo Counter\".text = str(new)
 
+
+
 func set_hud_anchor(visibility : bool, rotation_rad : float = 0):
 	hud_anchor.visible = visibility
 	hud_anchor.rotation = rotation_rad
+
+
 
 func start_progress_bar(secs : float, task_name : String, callable : Callable):
 	progress.visible = true
@@ -31,14 +42,20 @@ func start_progress_bar(secs : float, task_name : String, callable : Callable):
 	progress_name = task_name
 	progress_callable = callable
 
+
+
 func stop_progress(task_name : String):
 	if task_name == progress_name:
 		progress.visible = false
 		crosshair.visible = true
 
+
+
 func stop_all():
 	progress.visible = false
 	crosshair.visible = true
+
+
 
 func _process(delta):
 	if progress.visible == true:

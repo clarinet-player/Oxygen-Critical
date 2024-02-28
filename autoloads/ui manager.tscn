@@ -1,0 +1,64 @@
+[gd_scene load_steps=5 format=3 uid="uid://j50xd2vp8mfv"]
+
+[ext_resource type="PackedScene" uid="uid://crovijoeg2hv" path="res://ui/main menu.tscn" id="1_ls3de"]
+[ext_resource type="PackedScene" uid="uid://b6j6wnag62maf" path="res://ui/pause menu.tscn" id="2_iqb27"]
+[ext_resource type="PackedScene" uid="uid://bw31ycr56hs2f" path="res://ui/player hud.tscn" id="3_rnj3e"]
+
+[sub_resource type="GDScript" id="GDScript_noakj"]
+script/source = "extends Node
+
+
+
+@onready var mainmenu := $MainMenu
+@onready var pausemenu := $PauseMenu
+@onready var playerhud := $PlayerHud
+
+var paused := true
+
+
+
+func _ready():
+	set_ui(1)
+
+
+
+func _process(delta):
+	if Input.is_action_just_pressed(\"Escape\"):
+		if mainmenu.visible:
+			get_tree().quit()
+		elif pausemenu.visible:
+			set_ui(3)
+		elif playerhud.visible:
+			set_ui(2)
+
+
+
+func set_ui(ui : int):
+	mainmenu.hide()
+	pausemenu.hide()
+	playerhud.hide()
+	
+	if ui == 1:
+		mainmenu.show()
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		paused = true
+	
+	elif ui == 2:
+		pausemenu.show()
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		paused = true
+	
+	elif ui == 3:
+		playerhud.show()
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		paused = false
+"
+
+[node name="UiManager" type="Node"]
+script = SubResource("GDScript_noakj")
+
+[node name="MainMenu" parent="." instance=ExtResource("1_ls3de")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("2_iqb27")]
+
+[node name="PlayerHud" parent="." instance=ExtResource("3_rnj3e")]

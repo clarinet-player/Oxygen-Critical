@@ -6,14 +6,16 @@ script/source = "extends Node
 var peer = ENetMultiplayerPeer.new()
 
 var _p_player = load(\"res://classes/player.tscn\")
-
+var _p_level = load(\"res://scenes/playable scene.tscn\")
+var _level
 
 func _ready():
 	
 	# Server setup
 	if DisplayServer.get_name() == \"headless\":
 		
-		set_level(1)
+		_level = _p_level.instantiate()
+		add_child(_level)
 		
 		multiplayer.peer_connected.connect(_on_connect)
 		multiplayer.peer_disconnected.connect(_on_disconnect)
@@ -28,13 +30,16 @@ func _ready():
 		UiManager.pausemenu.connect(\"request_disconnect\", disconnect_player)
 
 
-# Executed on the client
 func connect_player():
 	peer.close()
 	peer.create_client(\"66.179.249.44\", 7777)
 	multiplayer.multiplayer_peer = peer
 
+
+
 func disconnect_player():
+	remove_child(_level)
+	_level.queue_free()
 	for child in get_children():
 		if child.name == \"MultiplayerSpawner\":
 			continue
@@ -42,14 +47,14 @@ func disconnect_player():
 		remove_child(child)
 	peer.close()
 	UiManager.set_ui(1)
-	get_tree().change_scene_to_file(\"res://scenes/firing range.tscn\")
 
 
 
-# Executed on the server
 func _on_connect(id : int):
 	print(\"player connected: \", id)
 	spawn_player(id)
+
+
 
 func _on_disconnect(id : int):
 	print(\"player disconnected: \", id)
@@ -58,21 +63,16 @@ func _on_disconnect(id : int):
 
 
 
-# Executed on the client
 @rpc(\"any_peer\")
-func connected():
+func pre_spawn():
 	UiManager.set_ui(0)
+	if !_level:
+		_level = _p_level.instantiate()
+		add_child(_level)
 
 
 
-@rpc(\"authority\", \"call_remote\", \"reliable\")
-func set_level(level : int):
-	if level == 1:
-		get_tree().change_scene_to_file(\"res://scenes/playable scene.tscn\")
-
-
-
-@rpc(\"authority\")
+@rpc(\"any_peer\")
 func spawn_player(id : int):
 	if id > 1:
 		if get_node_or_null(str(id)):

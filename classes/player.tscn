@@ -1,6 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bq3u0xb10re6"]
-
-[ext_resource type="PackedScene" uid="uid://bw31ycr56hs2f" path="res://ui/player hud.tscn" id="1_lc7md"]
+[gd_scene load_steps=7 format=3 uid="uid://bq3u0xb10re6"]
 
 [sub_resource type="GDScript" id="GDScript_qj47s"]
 script/source = "extends RigidBody3D
@@ -52,8 +50,8 @@ var active_item : Node3D
 
 @onready var camera := $Camera3D
 @onready var hitbox := $Hitbox
-@onready var hud := $PlayerHud
 @onready var inv := $Inventory
+@onready var hud = UiManager.playerhud
 #endregion
 
 
@@ -62,6 +60,7 @@ func _enter_tree():
 	set_multiplayer_authority(int(str(name)))
 	if is_multiplayer_authority():
 		$Camera3D.current = true
+		UiManager.set_ui(3)
 
 
 
@@ -87,7 +86,7 @@ func _input(event):
 	if !is_multiplayer_authority():
 		return
 	
-	if PauseMenu.visible:
+	if UiManager.paused:
 		return
 	
 	# Rotating to follow mouse
@@ -113,27 +112,16 @@ func _process(delta):
 		return
 	
 	# update anchor gui
-	if _anchored_shape and !_reorient:
-		if acos(_surface_normal.dot(global_basis.x)) < PI / 2:
+	if _anchored_shape:
+		if _reorient:
+			hud.set_hud_anchor(true, 0)
+		elif acos(_surface_normal.dot(global_basis.x)) < PI / 2:
 			hud.set_hud_anchor(true, acos(_surface_normal.dot(global_basis.y)))
 		else:
 			hud.set_hud_anchor(true, acos(_surface_normal.dot(-global_basis.y)) + PI)
 	else:
 		hud.set_hud_anchor(false)
 	
-	
-	if Input.is_action_pressed(\"Control\") and _anchored_shape:
-		_reorient = true
-	
-	if Input.is_action_just_pressed(\"Escape\"):
-		if PauseMenu.visible:
-			PauseMenu.hide()
-			hud.show()
-			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-		else:
-			PauseMenu.show()
-			hud.hide()
-			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	
 	#if Input.is_action_just_pressed(\"1\") and inv.get_child_count() > 0:
 	#	
@@ -147,11 +135,11 @@ func _process(delta):
 	#if Input.is_action_just_pressed(\"4\"):
 	#	weapon.rpc()
 	
-	if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
-		get_parent().rpc_id(1, \"spawn_player\", get_parent().peer.get_unique_id())
-		hud.hide()
-		camera.current = false
-		get_parent().remove_child(self)
+	#if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
+	#	get_parent().rpc_id(1, \"spawn_player\", get_parent().peer.get_unique_id())
+	#	hud.hide()
+	#	camera.current = false
+	#	get_parent().remove_child(self)
 
 
 
@@ -163,15 +151,17 @@ func _physics_process(delta : float):
 	if _anchored_shape:
 		
 		# Modifying Movement State
-		if Input.is_action_pressed(\"Shift\") and _velocity_2d.length() > sprint_max_speed + 0.1:
+		if Input.is_action_pressed(\"Control\"):
 			_height = 0.6
 			if _movement_state != move_type.SLIDING:
 				_movement_state = move_type.SLIDING
-		elif _movement_state == move_type.SLIDING:
-			_height = 1.0
-			_movement_state = move_type.IDLE
+		else:
+			_reorient = true
+			if _movement_state == move_type.SLIDING:
+				_height = 1.0
+				_movement_state = move_type.IDLE
 			
-		if (Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\")) and !PauseMenu.visible:
+		if (Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\")) and !UiManager.paused:
 			if _movement_state == move_type.IDLE:
 				_movement_state = move_type.WALKING
 		elif _movement_state != move_type.SLIDING:
@@ -465,9 +455,7 @@ func damage(amount : float):
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func death():
 	alive = false
-	hud.hide()
-
-
+	UiManager.set_ui(0)
 
 "
 
@@ -528,8 +516,6 @@ mesh = SubResource("CapsuleMesh_r400h")
 skeleton = NodePath("../../PlayerBody")
 
 [node name="Inventory" type="Node" parent="."]
-
-[node name="PlayerHud" parent="." instance=ExtResource("1_lc7md")]
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://weapons/ak12/ak12.tscn", "res://weapons/glock/glock.tscn", "res://weapons/vector/vector.tscn")

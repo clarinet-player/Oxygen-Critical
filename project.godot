@@ -11,15 +11,15 @@ config_version=5
 [application]
 
 config/name="Space Game"
-run/main_scene="res://autoloads/multiplayermanager.tscn"
+run/main_scene="res://scenes/firing range.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 WorldState="*res://autoloads/worldState.tscn"
-PauseMenu="*res://ui/pause menu.tscn"
-MainMenu="*res://ui/main menu.tscn"
+UiManager="*res://autoloads/ui manager.tscn"
+Multiplayermanager="*res://autoloads/multiplayermanager.tscn"
 
 [display]
 
