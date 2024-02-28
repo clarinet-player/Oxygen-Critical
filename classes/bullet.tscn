@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://cbedyqmsdeuql"]
+[gd_scene load_steps=4 format=3 uid="uid://cbedyqmsdeuql"]
 
 [sub_resource type="GDScript" id="GDScript_dlcs3"]
 resource_name = "bullet"
@@ -15,23 +15,8 @@ var acceleration : Vector3 = Vector3.ZERO
 
 
 
-func update(data: Array):
-	global_position = data[0]
-	mass = data[1]
-	aeroLoss = data[2]
-	velocity = data[3]
-	acceleration = data[4]
-
-
-
 func _physics_process(delta):
-	if MultiplayerManager.multiplayer_active and !is_multiplayer_authority():
-		global_position += velocity * delta
-		if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
-			queue_free()
-		velocity += WorldState.get_gravity_vector() * delta
-		velocity += acceleration * delta
-		velocity -= velocity * aeroLoss * 2 * delta
+	if !is_multiplayer_authority():
 		return
 	
 	if velocity.length() < 25:
@@ -161,17 +146,25 @@ func _surface_hit(_collider, _normal, _time) -> bool:
 
 func _player_hit(player):
 	var damage = mass * (min(velocity.length() / 400, 1))
-	MultiplayerManager.rpc_id(int(str(player.name)), \"damage_player\", int(str(player.name)), damage)
+	player.rpc_id(int(str(player.name)), \"damage\", damage)
 "
 
 [sub_resource type="SphereMesh" id="SphereMesh_diy8k"]
 radius = 0.1
 height = 0.2
 
-[node name="bullet" type="Node3D" groups=["Bullets"]]
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_bl7mr"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+
+[node name="bullet" type="Node3D"]
 top_level = true
 script = SubResource("GDScript_dlcs3")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
 mesh = SubResource("SphereMesh_diy8k")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_bl7mr")

@@ -6,24 +6,25 @@
 script/source = "extends Control
 
 signal request_disconnect
-signal request_unpause
 
 
 func _ready():
-	$VBoxContainer/Unpause.button_down.connect(_unpause_pressed)
-	$VBoxContainer/Disconnect.button_down.connect(_disconnect_pressed)
+	$VBoxContainer/Unpause.button_down.connect(_unpause)
+	$VBoxContainer/Disconnect.button_down.connect(_disconnct)
 
 
+func _unpause():
+	hide()
+	PlayerHud.show()
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
-func _unpause_pressed():
-	request_unpause.emit()
 
-
-func _disconnect_pressed():
+func _disconnct():
 	request_disconnect.emit()
 "
 
 [node name="PauseMenu" type="Control"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
