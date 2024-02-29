@@ -11,7 +11,7 @@ signal on_fire
 signal out_of_ammo
 
 
-var active := false
+var _active := false
 
 
 #region firing parameters
@@ -46,15 +46,32 @@ var movement_inaccuracy := 0
 
 
 
+func activate():
+	_active = true
+	show()
+
+
+
+func deactivate():
+	_active = false
+	_burst = 0
+	hide()
+
+
+
 func _physics_process(delta):
 	if !is_multiplayer_authority():
 		return
 	
 	var time = Time.get_ticks_msec()
 	
+	if !_active and time - _fire_time_ms > _firedelay and _heat > 0:
+		_heat = max(_heat - (delta * firerate * recovery), 0)
+		return
+	
 	
 	# Getting trigger input
-	if Input.is_action_pressed(\"Mouse1\") and !_mouse_down and !PauseMenu.visible:
+	if Input.is_action_pressed(\"Mouse1\") and !_mouse_down and !UiManager.paused:
 		_mouse_down = true
 		if time > _fire_time_ms + _firedelay * firemode:
 			_burst = firemode
@@ -63,7 +80,7 @@ func _physics_process(delta):
 		_mouse_down = false
 	
 	if firemode == 0:
-		if _mouse_down and !PauseMenu.visible:
+		if _mouse_down and !UiManager.paused:
 			_burst = 1
 		else:
 			_burst = 0
@@ -90,7 +107,7 @@ func _physics_process(delta):
 	
 	
 	# Recovering heat after firing
-	if time - _fire_time_ms > _firedelay && _heat > 0:
+	if time - _fire_time_ms > _firedelay and _heat > 0:
 		_heat = max(_heat - (delta * firerate * recovery), 0)
 		rotate(basis.x, -recoil * delta * firerate * recovery / 200) ########################
 

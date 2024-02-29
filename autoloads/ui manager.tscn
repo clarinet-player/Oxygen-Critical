@@ -65,5 +65,6 @@ script = SubResource("GDScript_noakj")
 [node name="MainMenu" parent="." instance=ExtResource("1_ls3de")]
 
 [node name="PauseMenu" parent="." instance=ExtResource("2_iqb27")]
+visible = true
 
 [node name="PlayerHud" parent="." instance=ExtResource("3_rnj3e")]

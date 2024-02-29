@@ -7,7 +7,7 @@ script/source = "extends RigidBody3D
 
 #region Variables
 
-var alive := true
+@export var alive := false
 
 var walk_acceleration : float = 25.0
 var walk_friction : float = 35.0
@@ -56,33 +56,32 @@ var active_item : Node3D
 
 
 
-func _enter_tree():
+func on_spawn(position : Vector3, down : Vector3):
+	alive = true
+	show()
+	
+	global_position = position
+	_velocity_3d = down * 10
+	
+	var _axis = down.cross(global_basis.y * -1)
+	var _angle = acos(down.dot(global_basis.y * -1))
+	
+	if !_axis.is_zero_approx():
+		rotate(_axis.normalized(), _angle)
+	else:
+		rotate(global_basis.x, _angle)
+		
 	set_multiplayer_authority(int(str(name)))
-	if is_multiplayer_authority():
+	if !Multiplayermanager.mp_active or is_multiplayer_authority():
 		$Camera3D.current = true
+	
+	if !UiManager.paused:
 		UiManager.set_ui(3)
 
 
 
-func _ready():
-	if is_multiplayer_authority():
-
-		var spawnpoint = _find_spawnpoint(get_tree().get_nodes_in_group(\"Spawnpoints\"), get_tree().get_nodes_in_group(\"Players\",))
-		global_position = spawnpoint.global_position
-		_velocity_3d = spawnpoint.down * 10
-		
-		var _axis = spawnpoint.down.cross(global_basis.y * -1)
-		var _angle = acos(spawnpoint.down.dot(global_basis.y * -1))
-		
-		if !_axis.is_zero_approx():
-			rotate((spawnpoint.down.cross(global_basis.y * -1)).normalized(), acos(spawnpoint.down.dot(global_basis.y * -1)))
-		else:
-			rotate(global_basis.x, acos(spawnpoint.down.dot(global_basis.y * -1)))
-
-
-
 func _input(event):
-	if !is_multiplayer_authority():
+	if Multiplayermanager.mp_active and !is_multiplayer_authority():
 		return
 	
 	if UiManager.paused:
@@ -104,10 +103,16 @@ func _input(event):
 
 
 func _process(delta):
-	if breached:
-		health = max(0, health - 15 * delta)
 	
-	if !is_multiplayer_authority():
+	if !Multiplayermanager.mp_active or is_multiplayer_authority() or multiplayer.get_unique_id() == 1:
+		if breached:
+			health = max(0, health - 15 * delta)
+		if health <= 0:
+			death.rpc()
+		if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
+			death.rpc()
+	
+	if Multiplayermanager.mp_active and !is_multiplayer_authority():
 		return
 	
 	# update anchor gui
@@ -122,29 +127,31 @@ func _process(delta):
 		hud.set_hud_anchor(false)
 	
 	
-	#if Input.is_action_just_pressed(\"1\") and inv.get_child_count() > 0:
-	#	
-	#
-	#if Input.is_action_just_pressed(\"2\"):
-	#	weapon.rpc(\"set_weapon\", \"res://weapons/vector/vector.tscn\")
-	#
-	#if Input.is_action_just_pressed(\"3\"):
-	#	weapon.rpc(\"set_weapon\", \"res://weapons/glock/glock.tscn\")
-	#
-	#if Input.is_action_just_pressed(\"4\"):
-	#	weapon.rpc()
+	if Input.is_action_just_pressed(\"1\") and inv.get_child_count() > 0:
+		active_item.deactivate()
+		active_item = inv.get_child(0)
+		active_item.activate()
 	
-	#if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
-	#	get_parent().rpc_id(1, \"spawn_player\", get_parent().peer.get_unique_id())
-	#	hud.hide()
-	#	camera.current = false
-	#	get_parent().remove_child(self)
+	if Input.is_action_just_pressed(\"2\") and inv.get_child_count() > 1:
+		active_item.deactivate()
+		active_item = inv.get_child(1)
+		active_item.activate()
+	
+	if Input.is_action_just_pressed(\"3\") and inv.get_child_count() > 2:
+		active_item.deactivate()
+		active_item = inv.get_child(2)
+		active_item.activate()
+	
+	if Input.is_action_just_pressed(\"4\") and inv.get_child_count() > 3:
+		active_item.deactivate()
+		active_item = inv.get_child(3)
+		active_item.activate()
 
 
 
 #region Physics Frame
 func _physics_process(delta : float):
-	if !is_multiplayer_authority():
+	if Multiplayermanager.mp_active and !is_multiplayer_authority():
 		return
 	
 	if _anchored_shape:
@@ -404,13 +411,6 @@ func get_velocity() -> Vector3:
 
 
 
-func _set_active_item(item : Node3D):
-	active_item.active = false
-	active_item = item
-	active_item.active = true
-
-
-
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func heal_breach():
 	breached = false
@@ -435,6 +435,7 @@ func damage(amount : float):
 func death():
 	alive = false
 	UiManager.set_ui(0)
+	hide()
 
 "
 
@@ -474,8 +475,6 @@ collision_layer = 0
 can_sleep = false
 freeze = true
 script = SubResource("GDScript_qj47s")
-_velocity_2d = null
-_velocity_3d = null
 
 [node name="PlayerBody" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_ufnhc")
