@@ -56,6 +56,7 @@ var active_item : Node3D
 
 
 
+@rpc(\"authority\", \"call_local\", \"reliable\")
 func on_spawn(position : Vector3, down : Vector3):
 	alive = true
 	show()
@@ -471,6 +472,7 @@ properties/3/replication_mode = 1
 
 [node name="Player" type="RigidBody3D" groups=["Players"]]
 top_level = true
+visible = false
 collision_layer = 0
 can_sleep = false
 freeze = true
