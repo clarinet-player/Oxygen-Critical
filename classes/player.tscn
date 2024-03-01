@@ -56,8 +56,12 @@ var active_item : Node3D
 
 
 
-func _ready():
+func _enter_tree():
 	set_multiplayer_authority(int(str(name)))
+
+
+
+func _ready():
 	
 	if !Multiplayermanager.mp_active or is_multiplayer_authority():
 		$Camera3D.current = true
@@ -66,6 +70,7 @@ func _ready():
 		var spawnpoint = WorldState.find_spawnpoint()
 		
 		global_position = spawnpoint.global_position
+		_velocity_3d = spawnpoint.down * 10
 		
 		var _axis = spawnpoint.down.cross(global_basis.y * -1)
 		var _angle = acos(spawnpoint.down.dot(global_basis.y * -1))

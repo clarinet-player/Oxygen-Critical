@@ -57,6 +57,7 @@ func _on_connect(id : int):
 	print(\"player connected: \", id)
 	
 	rpc_id(id, \"connected\")
+	print(\"setting level\")
 	rpc_id(id, \"set_level\", 1)
 	
 	await get_tree().create_timer(1.0).timeout
@@ -83,6 +84,7 @@ func connected():
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
 func set_level(level : int):
+	print(\"set level: \", level)
 	if level == 1:
 		get_tree().change_scene_to_file(\"res://scenes/playable scene.tscn\")
 "
