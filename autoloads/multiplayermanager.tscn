@@ -35,11 +35,13 @@ func _ready():
 #region connection
 # Executed on the client
 func connect_player():
+	print(\"connecting...\")
 	peer.close()
 	peer.create_client(\"66.179.249.44\", 7777)
 	multiplayer.multiplayer_peer = peer
 
 func disconnect_player():
+	print(\"disconnecting...\")
 	mp_active = false
 	for child in get_children():
 		if child.name == \"MultiplayerSpawner\":
@@ -67,9 +69,8 @@ func _on_connect(id : int):
 	player.name = str(id)
 	add_child(player)
 	
-	await get_tree().create_timer(0.1).timeout
-	
-	player.on_spawn.rpc(spawnpoint.global_position, spawnpoint.down)
+	player.global_position = spawnpoint.global_position
+	player._velocity_3d = spawnpoint.down * 10
 
 func _on_disconnect(id : int):
 	print(\"player disconnected: \", id)
@@ -81,6 +82,7 @@ func _on_disconnect(id : int):
 # Executed on the client
 @rpc(\"any_peer\")
 func connected():
+	print(\"finished connecting\")
 	mp_active = true
 	UiManager.set_ui(0)
 #endregion

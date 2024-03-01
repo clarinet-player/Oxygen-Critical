@@ -7,7 +7,7 @@ script/source = "extends RigidBody3D
 
 #region Variables
 
-@export var alive := false
+@export var alive := true
 
 var walk_acceleration : float = 25.0
 var walk_friction : float = 35.0
@@ -56,16 +56,11 @@ var active_item : Node3D
 
 
 
-@rpc(\"authority\", \"call_local\", \"reliable\")
-func on_spawn(position : Vector3, down : Vector3):
-	alive = true
-	show()
+func _ready():
+	set_multiplayer_authority(int(str(name)))
 	
-	global_position = position
-	_velocity_3d = down * 10
-	
-	var _axis = down.cross(global_basis.y * -1)
-	var _angle = acos(down.dot(global_basis.y * -1))
+	var _axis = _velocity_3d.cross(global_basis.y * -1)
+	var _angle = acos(_velocity_3d.dot(global_basis.y * -1))
 	
 	if !_axis.is_zero_approx():
 		rotate(_axis.normalized(), _angle)
@@ -76,8 +71,7 @@ func on_spawn(position : Vector3, down : Vector3):
 	if !Multiplayermanager.mp_active or is_multiplayer_authority():
 		$Camera3D.current = true
 	
-	if !UiManager.paused:
-		UiManager.set_ui(3)
+	UiManager.set_ui(3)
 
 
 
@@ -432,7 +426,7 @@ func damage(amount : float):
 
 
 
-@rpc(\"authority\", \"call_local\", \"reliable\")
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
 func death():
 	alive = false
 	UiManager.set_ui(0)
@@ -469,10 +463,12 @@ properties/2/replication_mode = 1
 properties/3/path = NodePath("Hitbox:rotation")
 properties/3/spawn = true
 properties/3/replication_mode = 1
+properties/4/path = NodePath(".:_velocity_3d")
+properties/4/spawn = true
+properties/4/replication_mode = 1
 
 [node name="Player" type="RigidBody3D" groups=["Players"]]
 top_level = true
-visible = false
 collision_layer = 0
 can_sleep = false
 freeze = true
