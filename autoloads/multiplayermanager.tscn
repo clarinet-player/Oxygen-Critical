@@ -61,8 +61,6 @@ func _on_connect(id : int):
 	
 	await get_tree().create_timer(1.0).timeout
 	
-	var spawnpoint = _find_spawnpoint()
-	
 	var player = _p_player.instantiate()
 	player.name = str(id)
 	add_child(player)
