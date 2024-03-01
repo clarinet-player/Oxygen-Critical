@@ -67,7 +67,9 @@ func _on_connect(id : int):
 	
 	var player = _p_player.instantiate()
 	player.name = str(id)
+	print(\"before add child\")
 	add_child(player)
+	print(\"after add child\")
 	
 	player.global_position = spawnpoint.global_position
 	player._velocity_3d = spawnpoint.down * 10

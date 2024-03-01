@@ -57,6 +57,7 @@ var active_item : Node3D
 
 
 func _ready():
+	print(\"ready\")
 	set_multiplayer_authority(int(str(name)))
 	
 	var _axis = _velocity_3d.cross(global_basis.y * -1)
