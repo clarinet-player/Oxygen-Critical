@@ -56,23 +56,20 @@ var active_item : Node3D
 
 
 
-func _ready():
-	print(\"ready\")
+func on_spawn():
 	set_multiplayer_authority(int(str(name)))
 	
-	var _axis = _velocity_3d.cross(global_basis.y * -1)
-	var _angle = acos(_velocity_3d.dot(global_basis.y * -1))
-	
-	if !_axis.is_zero_approx():
-		rotate(_axis.normalized(), _angle)
-	else:
-		rotate(global_basis.x, _angle)
-		
-	set_multiplayer_authority(int(str(name)))
 	if !Multiplayermanager.mp_active or is_multiplayer_authority():
 		$Camera3D.current = true
+		UiManager.set_ui(3)
 	
-	UiManager.set_ui(3)
+		var _axis = _velocity_3d.cross(global_basis.y * -1)
+		var _angle = acos(_velocity_3d.dot(global_basis.y * -1))
+		
+		if !_axis.is_zero_approx():
+			rotate(_axis.normalized(), _angle)
+		else:
+			rotate(global_basis.x, _angle)
 
 
 
