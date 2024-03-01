@@ -13,11 +13,35 @@ var air_pressure : float = 1.0
 
 var playable_area : AABB
 
+
+
 func get_gravity_vector() -> Vector3:
 	if gravity_state == \"thrust\":
 		return Vector3(0, gravity_strength * -1, 0)
 	else:
 		return Vector3.ZERO
+
+
+
+func find_spawnpoint():
+	var best_point
+	var best_value := 0.0
+	
+	var players = get_tree().get_nodes_in_group(\"Players\")
+	var spawnpoints = get_tree().get_nodes_in_group(\"Spawnpoints\")
+	
+	if players.size() < 1:
+		return spawnpoints.pick_random()
+	
+	for point in spawnpoints:
+		var value := 0.0
+		for player in players:
+			value += point.global_position.distance_to(player.global_position)
+		if value > best_value:
+			best_value = value
+			best_point = point
+	
+	return best_point
 "
 
 [node name="worldState" type="Node"]
