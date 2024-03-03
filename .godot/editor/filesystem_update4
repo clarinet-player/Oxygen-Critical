@@ -1,9 +1,9 @@
-res://autoloads/multiplayermanager.tscn
+res://weapons/ak12/ak12.tscn
 res://autoloads/worldState.tscn
+res://autoloads/multiplayermanager.tscn
 res://autoloads/ui manager.tscn
 res://classes/player.tscn
 res://classes/bullet.tscn
-res://weapons/ak12/ak12.tscn
 res://weapons/glock/glock.tscn
 res://weapons/vector/vector.tscn
 res://scenes/firing range.tscn

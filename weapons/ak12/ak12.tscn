@@ -1,17 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://cskrtkkrkyd4q"]
+[gd_scene load_steps=11 format=3 uid="uid://cskrtkkrkyd4q"]
 
 [ext_resource type="Texture2D" uid="uid://3cuw4l80rgui" path="res://assets/metal.jpg" id="1_o4mcx"]
+[ext_resource type="AudioStream" uid="uid://ke4m2gyndm6k" path="res://weapons/ak12/ak47-sfx-3.wav" id="2_nnjmr"]
 
 [sub_resource type="GDScript" id="GDScript_bxm1c"]
 script/source = "extends Node3D
-
-
-
-signal on_fire
-signal out_of_ammo
-
-
-var _active := false
 
 
 #region firing parameters
@@ -19,13 +12,14 @@ var weapon_name : String = \"AK-12\"
 var firerate : float = 9
 var firemode : int = 0
 var mag_size : int = 20
-var reload_time : float = 3.0
+var reload_time : float = 3000
 var muzzle_vel : float = 800
 var damage : float = 25
 var aero_loss : float = 0.8
 var recovery : float = 2
 var recoil : float = 3
 var spray_control : float = 1.5
+var inventory_size : int = 2
 var sfx = \"res://weapons/ak12/ak47-sfx-3.wav\"
 #endregion
 
@@ -38,24 +32,24 @@ var _heat := 0.0
 var _burst := 0
 var magazine := mag_size
 
-
-var movement_inaccuracy := 0
+var reloading := false
+var reload_start_time := 0
 
 
 @onready var audio := $AudioStreamPlayer3D
 
 
 
-func activate():
-	_active = true
-	show()
+func _enter_tree():
+	set_multiplayer_authority(get_parent().get_multiplayer_authority())
 
 
 
-func deactivate():
-	_active = false
+func _exit_tree():
+	reloading = false
+	_heat = 0
 	_burst = 0
-	hide()
+	_mouse_down = false
 
 
 
@@ -65,12 +59,19 @@ func _physics_process(delta):
 	
 	var time = Time.get_ticks_msec()
 	
-	if !_active and time - _fire_time_ms > _firedelay and _heat > 0:
-		_heat = max(_heat - (delta * firerate * recovery), 0)
-		return
+	
+	# Reloading
+	if Input.is_action_just_pressed(\"R\") and !reloading and !UiManager.paused:
+		if magazine < mag_size and _burst == 0:
+			reloading = true
+			reload_start_time = time
+	
+	if reloading and time - reload_start_time > reload_time:
+		reloading = false
+		magazine = mag_size
 	
 	
-	# Getting trigger input
+	# Trigger Input
 	if Input.is_action_pressed(\"Mouse1\") and !_mouse_down and !UiManager.paused:
 		_mouse_down = true
 		if time > _fire_time_ms + _firedelay * firemode:
@@ -87,14 +88,15 @@ func _physics_process(delta):
 	
 	
 	# Checking for remaining ammo
-	if magazine < 1:
+	if magazine < 1 or reloading:
 		_burst = 0
 	
 	
 	# Firing
 	if _burst > 0 and time > _fire_time_ms + _firedelay:
 		
-		rotate(basis.x, recoil / 200) #################################
+		get_parent().rotate(basis.x.normalized(), recoil / 400)
+		rotate(basis.x.normalized(), recoil / 300)
 		
 		_fire_time_ms -= _firedelay
 		if time > _fire_time_ms + _firedelay:
@@ -103,22 +105,20 @@ func _physics_process(delta):
 		_burst -= 1
 		magazine -= 1
 		
+		fire()
 		rpc(\"fire\")
 	
 	
 	# Recovering heat after firing
 	if time - _fire_time_ms > _firedelay and _heat > 0:
 		_heat = max(_heat - (delta * firerate * recovery), 0)
-		rotate(basis.x, -recoil * delta * firerate * recovery / 200) ########################
+		
+		get_parent().rotate(basis.x.normalized(), -recoil * delta * firerate * recovery / 400)
+		rotate(basis.x.normalized(), -recoil * delta * firerate * recovery / 300)
 
 
 
-func reload():
-	magazine = mag_size
-
-
-
-@rpc(\"any_peer\", \"call_local\", \"reliable\")
+@rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func fire():
 	audio.pitch_scale = randf_range(0.95, 1.05)
 	audio.play()
@@ -128,7 +128,7 @@ func fire():
 	add_child(_bullet)
 	_bullet.global_position = global_position + (global_basis.z * -0.5)
 	_bullet.velocity = -global_basis.z * muzzle_vel
-	_bullet.damage = damage
+	_bullet.mass = damage
 	_bullet.aeroLoss = aero_loss
 "
 
@@ -221,7 +221,7 @@ cull_mode = 2
 albedo_texture = ExtResource("1_o4mcx")
 
 [node name="AK12" type="Node3D"]
-transform = Transform3D(0.0990615, 0, 0, 0, 0.0990615, 0, 0, 0, 0.0990615, 0, 0, 0)
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, 0)
 script = SubResource("GDScript_bxm1c")
 
 [node name="Skeleton3D" type="Skeleton3D" parent="."]
@@ -257,3 +257,4 @@ surface_material_override/0 = SubResource("StandardMaterial3D_pldgs")
 surface_material_override/2 = SubResource("StandardMaterial3D_rxahm")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("2_nnjmr")

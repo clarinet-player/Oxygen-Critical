@@ -1,6 +1,6 @@
-MultiplayerSynchronizer
 MultiplayerSpawner
 AudioStreamPlayer3D
+MultiplayerSynchronizer
 Node
 MeshInstance3D
 StaticBody3D
@@ -12,4 +12,3 @@ Control
 BoxContainer
 Node3D
 RigidBody3D
-Camera3D

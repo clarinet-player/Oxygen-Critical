@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://cbedyqmsdeuql"]
+[gd_scene load_steps=3 format=3 uid="uid://cbedyqmsdeuql"]
 
 [sub_resource type="GDScript" id="GDScript_dlcs3"]
 resource_name = "bullet"
@@ -147,11 +147,6 @@ func _player_hit(player):
 radius = 0.1
 height = 0.2
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_bl7mr"]
-properties/0/path = NodePath(".:position")
-properties/0/spawn = true
-properties/0/replication_mode = 1
-
 [node name="bullet" type="Node3D"]
 top_level = true
 script = SubResource("GDScript_dlcs3")
@@ -159,6 +154,3 @@ script = SubResource("GDScript_dlcs3")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
 mesh = SubResource("SphereMesh_diy8k")
-
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_config = SubResource("SceneReplicationConfig_bl7mr")

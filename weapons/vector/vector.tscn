@@ -7,7 +7,7 @@ var weapon_name = \"KRISS Vector\"
 var firerate : float = 21
 var firemode : int = 0
 var mag_size : int = 30
-var reload_time : float = 2.0
+var reload_time : float = 2000
 var muzzle_vel : float = 400
 var damage : float = 18
 var aero_loss : float = 2.25
@@ -15,6 +15,114 @@ var recovery : float = 2.5
 var recoil : float = 0.5
 var spray_control : float = 2
 var sfx = \"res://weapons/ak12/ak47-sfx-3.wav\" # placeholder
+
+
+var _mouse_down := false
+var _fire_time_ms := 0
+var _firedelay = 1000 / firerate
+
+var _heat := 0.0
+var _burst := 0
+var magazine := mag_size
+
+var reloading := false
+var reload_start_time := 0
+
+
+@onready var audio := $AudioStreamPlayer3D
+
+
+
+func _enter_tree():
+	set_multiplayer_authority(get_parent().get_multiplayer_authority())
+
+
+
+func _exit_tree():
+	reloading = false
+	_heat = 0
+	_burst = 0
+	_mouse_down = false
+
+
+
+func _physics_process(delta):
+	if !is_multiplayer_authority():
+		return
+	
+	var time = Time.get_ticks_msec()
+	
+	
+	# Reloading
+	if Input.is_action_just_pressed(\"R\") and !reloading and !UiManager.paused:
+		if magazine < mag_size and _burst == 0:
+			reloading = true
+			reload_start_time = time
+	
+	if reloading and time - reload_start_time > reload_time:
+		reloading = false
+		magazine = mag_size
+	
+	
+	# Trigger Input
+	if Input.is_action_pressed(\"Mouse1\") and !_mouse_down and !UiManager.paused:
+		_mouse_down = true
+		if time > _fire_time_ms + _firedelay * firemode:
+			_burst = firemode
+	
+	if !Input.is_action_pressed(\"Mouse1\") and _mouse_down:
+		_mouse_down = false
+	
+	if firemode == 0:
+		if _mouse_down and !UiManager.paused:
+			_burst = 1
+		else:
+			_burst = 0
+	
+	
+	# Checking for remaining ammo
+	if magazine < 1 or reloading:
+		_burst = 0
+	
+	
+	# Firing
+	if _burst > 0 and time > _fire_time_ms + _firedelay:
+		
+		get_parent().rotate(basis.x.normalized(), recoil / 400)
+		rotate(basis.x.normalized(), recoil / 300)
+		
+		_fire_time_ms -= _firedelay
+		if time > _fire_time_ms + _firedelay:
+			_fire_time_ms = time
+		_heat += 1
+		_burst -= 1
+		magazine -= 1
+		
+		fire()
+		rpc(\"fire\")
+	
+	
+	# Recovering heat after firing
+	if time - _fire_time_ms > _firedelay and _heat > 0:
+		_heat = max(_heat - (delta * firerate * recovery), 0)
+		
+		get_parent().rotate(basis.x.normalized(), -recoil * delta * firerate * recovery / 400)
+		rotate(basis.x.normalized(), -recoil * delta * firerate * recovery / 300)
+
+
+
+@rpc(\"any_peer\", \"call_remote\", \"reliable\")
+func fire():
+	audio.pitch_scale = randf_range(0.95, 1.05)
+	audio.play()
+	
+	var _bullet = preload(\"res://classes/bullet.tscn\").instantiate()
+	_bullet.set_multiplayer_authority(1)
+	add_child(_bullet)
+	_bullet.global_position = global_position + (global_basis.z * -0.5)
+	_bullet.velocity = -global_basis.z * muzzle_vel
+	_bullet.mass = damage
+	_bullet.aeroLoss = aero_loss
 "
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ckmv3"]
@@ -59,3 +167,5 @@ script = SubResource("GDScript_pnbwi")
 transform = Transform3D(-0.0694281, -0.0928802, -0.588687, -0.00964497, 0.592766, -0.0923862, 0.595892, -0.00122722, -0.0700842, 0.413699, -0.0785255, -0.412689)
 mesh = SubResource("ArrayMesh_7s747")
 skeleton = NodePath("")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
