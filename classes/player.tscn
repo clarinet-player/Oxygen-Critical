@@ -120,6 +120,7 @@ func _input(event):
 func _process(delta):
 	
 	if !Multiplayermanager.mp_active or multiplayer.get_unique_id() == 1:
+		print(\"authority\")
 		if breached:
 			health = max(0, health - 10 * delta)
 		if health <= 0:
@@ -128,6 +129,7 @@ func _process(delta):
 			die.rpc()
 	
 	if Multiplayermanager.mp_active and is_multiplayer_authority() and breached:
+		print(\"client\")
 		health = max(0, health - 10 * delta)
 		hud.set_health(health)
 	
@@ -449,14 +451,16 @@ func heal_health():
 
 @rpc(\"any_peer\")
 func damage(amount : float):
+	print(\"damage\")
 	health = clamp(health - amount, 0, 100)
 	breached = true
 	hud.set_health(health)
 
 
 
-@rpc(\"any_peer\", \"call_local\", \"reliable\")
+@rpc(\"authority\", \"call_local\", \"reliable\")
 func die():
+	print(\"die\")
 	UiManager.set_ui(0)
 	death.emit()
 	get_parent().remove_child(self)
