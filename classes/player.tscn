@@ -58,7 +58,7 @@ var active_item : Node3D
 
 
 func _enter_tree():
-	if Multiplayermanager.mp_active:
+	if name != \"Player\":
 		set_multiplayer_authority(int(str(name)))
 
 
@@ -121,11 +121,15 @@ func _process(delta):
 	
 	if !Multiplayermanager.mp_active or multiplayer.get_unique_id() == 1:
 		if breached:
-			health = max(0, health - 15 * delta)
+			health = max(0, health - 10 * delta)
 		if health <= 0:
 			die.rpc()
 		if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
 			die.rpc()
+	
+	if Multiplayermanager.mp_active and is_multiplayer_authority() and breached:
+		health = max(0, health - 10 * delta)
+		hud.set_health(health)
 	
 	if Multiplayermanager.mp_active and !is_multiplayer_authority():
 		return
@@ -447,6 +451,7 @@ func heal_health():
 func damage(amount : float):
 	health = clamp(health - amount, 0, 100)
 	breached = true
+	hud.set_health(health)
 
 
 

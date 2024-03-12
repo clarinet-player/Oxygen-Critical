@@ -1,8 +1,12 @@
-[gd_scene load_steps=5 format=3 uid="uid://baf3wcacoxjv8"]
+[gd_scene load_steps=6 format=3 uid="uid://baf3wcacoxjv8"]
+
+[ext_resource type="AudioStream" uid="uid://ke4m2gyndm6k" path="res://weapons/ak12/ak47-sfx-3.wav" id="1_iwpcx"]
 
 [sub_resource type="GDScript" id="GDScript_regjm"]
 script/source = "extends Node3D
 
+
+#region firing parameters
 var weapon_name = \"Glock-19\"
 var firerate : float = 16
 var firemode : int = 1
@@ -13,8 +17,10 @@ var damage : float = 25
 var aero_loss : float = 1.5
 var recovery : float = 0.6
 var recoil : float = 3.0
-var spray : float = 0.3
-var sfx = \"res://weapons/ak12/ak47-sfx-3.wav\" # placeholder
+var jerk : float = 0.3
+var spray : float = 1
+var inventory_size : int = 1
+#endregion
 
 
 var _mouse_down := false
@@ -42,6 +48,7 @@ func _enter_tree():
 
 func _ready():
 	hud.set_ammo(true, magazine)
+	rotation = Vector3.ZERO
 
 
 
@@ -50,7 +57,10 @@ func _exit_tree():
 	_heat = 0
 	_burst = 0
 	_mouse_down = false
+	
 	hud.stop_progress(\"reloading\")
+	audio.stop()
+	
 	request_ready()
 #endregion
 
@@ -100,19 +110,6 @@ func _physics_process(delta):
 	# Firing
 	if _burst > 0 and time > _fire_time_ms + _firedelay:
 		
-		get_parent().rotate(basis.x.normalized(), recoil / 400)
-		rotate(basis.x.normalized(), recoil / 400)
-		rotate(basis.y.normalized(), spray * _heat * (randf_range(-0.01, 0.01) - rotation.y * 0.1))
-		
-		_fire_time_ms -= _firedelay
-		if time > _fire_time_ms + _firedelay:
-			_fire_time_ms = time
-		_heat += 1
-		_burst -= 1
-		magazine -= 1
-		
-		hud.set_ammo(true, magazine)
-		
 		var inaccuracy : float
 		if $\"../..\".is_anchored():
 			inaccuracy = min($\"../..\".get_velocity().length(), 6)
@@ -121,6 +118,19 @@ func _physics_process(delta):
 		inaccuracy = (inaccuracy + _heat) * spray / 1000
 		
 		fire.rpc(global_position, -global_basis.z + Vector3(0, inaccuracy, 0).rotated(global_basis.z.normalized(), randf_range(0, TAU)))
+		
+		get_parent().rotate(basis.x.normalized(), recoil / 400)
+		rotate(basis.x.normalized(), recoil / 400)
+		rotate(basis.y.normalized(), jerk * _heat * (randf_range(-0.01, 0.01) - rotation.y * 0.25))
+		
+		_fire_time_ms -= _firedelay
+		if time > _fire_time_ms + _firedelay:
+			_fire_time_ms = time
+		_heat = min(10, _heat + 1)
+		_burst -= 1
+		magazine -= 1
+		
+		hud.set_ammo(true, magazine)
 	
 	
 	# Recovering heat after firing
@@ -128,7 +138,7 @@ func _physics_process(delta):
 		_heat = max(_heat - (delta * firerate * recovery), 0)
 		
 		get_parent().rotate(basis.x.normalized(), -recoil * delta * firerate * recovery / 400)
-		rotate(basis.x.normalized(), -recoil * delta * firerate * recovery / 300)
+		rotation = lerp(rotation, Vector3.ZERO, recovery * delta)
 
 
 
@@ -191,3 +201,4 @@ mesh = SubResource("ArrayMesh_7qdux")
 skeleton = NodePath("")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("1_iwpcx")
