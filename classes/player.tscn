@@ -447,22 +447,24 @@ func heal_health():
 
 
 
-@rpc(\"any_peer\")
+@rpc(\"authority\", \"call_local\", \"reliable\")
 func damage(amount : float):
-	print(\"damage\")
-	health = clamp(health - amount, 0, 100)
-	breached = true
-	hud.set_health(health)
+	if !Multiplayermanager.mp_active or is_multiplayer_authority():
+		print(\"damage\")
+		health = clamp(health - amount, 0, 100)
+		breached = true
+		hud.set_health(health)
 
 
 
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func die():
-	print(\"die\")
-	UiManager.set_ui(0)
-	death.emit()
-	get_parent().remove_child(self)
-	queue_free()
+	if !Multiplayermanager.mp_active or is_multiplayer_authority():
+		print(\"die\")
+		UiManager.set_ui(0)
+		death.emit()
+		get_parent().remove_child(self)
+		queue_free()
 
 "
 
