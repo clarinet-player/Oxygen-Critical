@@ -5,10 +5,11 @@ script/source = "extends RigidBody3D
 
 
 
+signal death
+
+
+
 #region Variables
-
-@export var alive := true
-
 var walk_acceleration : float = 25.0
 var walk_friction : float = 35.0
 var walk_max_speed : float = 3
@@ -57,28 +58,30 @@ var active_item : Node3D
 
 
 func _enter_tree():
-	set_multiplayer_authority(int(str(name)))
+	if Multiplayermanager.mp_active:
+		set_multiplayer_authority(int(str(name)))
 
 
 
 func _ready():
 	
-	if is_multiplayer_authority():
+	if !Multiplayermanager.mp_active or is_multiplayer_authority():
 		$Camera3D.current = true
 		UiManager.set_ui(3)
 		
 		var spawnpoint = WorldState.find_spawnpoint()
 		
-		global_position = spawnpoint.global_position
-		_velocity_3d = spawnpoint.down * 10
+		if spawnpoint:
+			global_position = spawnpoint.global_position
+			_velocity_3d = spawnpoint.down * 10
 		
-		var _axis = spawnpoint.down.cross(global_basis.y * -1)
-		var _angle = acos(spawnpoint.down.dot(global_basis.y * -1))
-		
-		if !_axis.is_zero_approx():
-			rotate(_axis.normalized(), _angle)
-		else:
-			rotate(global_basis.x, _angle)
+			var _axis = spawnpoint.down.cross(global_basis.y * -1)
+			var _angle = acos(spawnpoint.down.dot(global_basis.y * -1))
+			
+			if !_axis.is_zero_approx():
+				rotate(_axis.normalized(), _angle)
+			else:
+				rotate(global_basis.x, _angle)
 		
 		var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
 		inventory.append(ak)
@@ -86,11 +89,14 @@ func _ready():
 		inventory.append(vector)
 		var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
 		inventory.append(glock)
+	
+	hud.set_health(100)
+	hud.set_ammo(false, 0)
 
 
 
 func _input(event):
-	if !is_multiplayer_authority():
+	if Multiplayermanager.mp_active and !is_multiplayer_authority():
 		return
 	
 	if UiManager.paused:
@@ -113,13 +119,13 @@ func _input(event):
 
 func _process(delta):
 	
-	if is_multiplayer_authority() or multiplayer.get_unique_id() == 1:
+	if !Multiplayermanager.mp_active or multiplayer.get_unique_id() == 1:
 		if breached:
 			health = max(0, health - 15 * delta)
 		if health <= 0:
-			death.rpc()
+			die.rpc()
 		if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
-			death.rpc()
+			die.rpc()
 	
 	if Multiplayermanager.mp_active and !is_multiplayer_authority():
 		return
@@ -164,7 +170,7 @@ func _process(delta):
 
 #region Physics Frame
 func _physics_process(delta : float):
-	if !is_multiplayer_authority():
+	if Multiplayermanager.mp_active and !is_multiplayer_authority():
 		return
 	
 	if _anchored_shape:
@@ -205,7 +211,7 @@ func _physics_process(delta : float):
 			var _roll_angle : float = acos(_up.dot(_adjusted_normal))
 			var _axis = _up.cross(_adjusted_normal)
 			
-			if _roll_angle > 0.01:
+			if !_axis.is_zero_approx():
 				rotate(_axis.normalized(), _roll_angle * 7 * delta)
 		
 		
@@ -445,10 +451,11 @@ func damage(amount : float):
 
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
-func death():
-	alive = false
+func die():
 	UiManager.set_ui(0)
-	hide()
+	death.emit()
+	get_parent().remove_child(self)
+	queue_free()
 
 "
 

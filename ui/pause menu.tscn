@@ -5,7 +5,6 @@
 [sub_resource type="GDScript" id="GDScript_tiiyp"]
 script/source = "extends Control
 
-signal request_disconnect
 
 
 func _ready():
@@ -14,12 +13,15 @@ func _ready():
 
 
 func _unpause():
-	hide()
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	UiManager.set_ui(3)
 
 
 func _disconnct():
-	request_disconnect.emit()
+	if Multiplayermanager.mp_active:
+		Multiplayermanager.disconnect_player()
+	
+	get_tree().change_scene_to_file(\"res://scenes/bullettestscene.tscn\")
+	UiManager.set_ui(1)
 "
 
 [node name="PauseMenu" type="Control"]

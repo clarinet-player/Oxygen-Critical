@@ -13,7 +13,7 @@ var damage : float = 18
 var aero_loss : float = 2.25
 var recovery : float = 2.5
 var recoil : float = 0.5
-var spray_control : float = 2
+var spray : float = 1.0
 var sfx = \"res://weapons/ak12/ak47-sfx-3.wav\" # placeholder
 
 
@@ -30,11 +30,18 @@ var reload_start_time := 0
 
 
 @onready var audio := $AudioStreamPlayer3D
+@onready var hud = UiManager.playerhud
 
 
 
+#region entry/exit
 func _enter_tree():
 	set_multiplayer_authority(get_parent().get_multiplayer_authority())
+
+
+
+func _ready():
+	hud.set_ammo(true, magazine)
 
 
 
@@ -43,6 +50,9 @@ func _exit_tree():
 	_heat = 0
 	_burst = 0
 	_mouse_down = false
+	hud.stop_progress(\"reloading\")
+	request_ready()
+#endregion
 
 
 
@@ -58,10 +68,12 @@ func _physics_process(delta):
 		if magazine < mag_size and _burst == 0:
 			reloading = true
 			reload_start_time = time
+			hud.start_progress(reload_time / 1000, \"reloading\")
 	
 	if reloading and time - reload_start_time > reload_time:
 		reloading = false
 		magazine = mag_size
+		hud.set_ammo(true, magazine)
 	
 	
 	# Trigger Input
@@ -89,7 +101,8 @@ func _physics_process(delta):
 	if _burst > 0 and time > _fire_time_ms + _firedelay:
 		
 		get_parent().rotate(basis.x.normalized(), recoil / 400)
-		rotate(basis.x.normalized(), recoil / 300)
+		rotate(basis.x.normalized(), recoil / 400)
+		rotate(basis.y.normalized(), spray * _heat * (randf_range(-0.01, 0.01) - rotation.y * 0.1))
 		
 		_fire_time_ms -= _firedelay
 		if time > _fire_time_ms + _firedelay:
@@ -98,8 +111,16 @@ func _physics_process(delta):
 		_burst -= 1
 		magazine -= 1
 		
-		fire()
-		rpc(\"fire\")
+		hud.set_ammo(true, magazine)
+		
+		var inaccuracy : float
+		if $\"../..\".is_anchored():
+			inaccuracy = min($\"../..\".get_velocity().length(), 6)
+		else:
+			inaccuracy = 4.5
+		inaccuracy = (inaccuracy + _heat) * spray / 1000
+		
+		fire.rpc(global_position, -global_basis.z + Vector3(0, inaccuracy, 0).rotated(global_basis.z.normalized(), randf_range(0, TAU)))
 	
 	
 	# Recovering heat after firing
@@ -111,16 +132,16 @@ func _physics_process(delta):
 
 
 
-@rpc(\"any_peer\", \"call_remote\", \"reliable\")
-func fire():
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
+func fire(position : Vector3, direction : Vector3):
 	audio.pitch_scale = randf_range(0.95, 1.05)
 	audio.play()
 	
 	var _bullet = preload(\"res://classes/bullet.tscn\").instantiate()
 	_bullet.set_multiplayer_authority(1)
 	add_child(_bullet)
-	_bullet.global_position = global_position + (global_basis.z * -0.5)
-	_bullet.velocity = -global_basis.z * muzzle_vel
+	_bullet.global_position = position + direction
+	_bullet.velocity = direction * muzzle_vel
 	_bullet.mass = damage
 	_bullet.aeroLoss = aero_loss
 "

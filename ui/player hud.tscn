@@ -9,7 +9,6 @@ script/source = "extends Control
 
 var progress_name : String
 var progress_speed : float
-var progress_callable : Callable
 
 
 @onready var progress := $\"Progress Bar\"
@@ -23,8 +22,9 @@ func set_health(new : float):
 
 
 
-func set_ammo(new : int):
-	$\"Panel/Ammo Counter\".text = str(new)
+func set_ammo(vis : bool, ammo : int):
+	$Panel.visible = vis
+	$\"Panel/Ammo Counter\".text = str(ammo)
 
 
 
@@ -34,13 +34,12 @@ func set_hud_anchor(visibility : bool, rotation_rad : float = 0):
 
 
 
-func start_progress_bar(secs : float, task_name : String, callable : Callable):
+func start_progress(secs : float, task_name : String):
 	progress.visible = true
 	crosshair.visible = false
 	progress.value = 0
 	progress_speed = 100 / secs
 	progress_name = task_name
-	progress_callable = callable
 
 
 
@@ -51,20 +50,12 @@ func stop_progress(task_name : String):
 
 
 
-func stop_all():
-	progress.visible = false
-	crosshair.visible = true
-
-
-
 func _process(delta):
 	if progress.visible == true:
 		progress.value += delta * progress_speed
 		if progress.value == 100:
 			progress.visible = false
 			crosshair.visible = true
-			if progress_callable.is_valid():
-				progress_callable.call()
 "
 
 [sub_resource type="Theme" id="Theme_s0mw5"]

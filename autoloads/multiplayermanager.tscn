@@ -23,12 +23,6 @@ func _ready():
 		
 		peer.create_server(7777)
 		multiplayer.multiplayer_peer = peer
-	
-	# Client setup
-	else:
-		
-		UiManager.mainmenu.connect(\"request_connect\", connect_player)
-		UiManager.pausemenu.connect(\"request_disconnect\", disconnect_player)
 
 
 
@@ -47,8 +41,6 @@ func disconnect_player():
 		child.queue_free()
 		remove_child(child)
 	peer.close()
-	UiManager.set_ui(1)
-	get_tree().change_scene_to_file(\"res://scenes/firing range.tscn\")
 
 
 

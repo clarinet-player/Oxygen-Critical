@@ -1,6 +1,38 @@
-[gd_scene load_steps=4 format=3 uid="uid://d1tp582ly7ap6"]
+[gd_scene load_steps=9 format=3 uid="uid://d1tp582ly7ap6"]
 
 [ext_resource type="PackedScene" uid="uid://d16rwkt574n4s" path="res://classes/gameSurface.tscn" id="1_erh0q"]
+[ext_resource type="PackedScene" uid="uid://de0weem1pd67y" path="res://classes/spawnpoint.tscn" id="2_vig8a"]
+
+[sub_resource type="GDScript" id="GDScript_wrxwh"]
+script/source = "extends Node3D
+
+
+
+func _ready():
+	_spawn_player()
+	
+	var area = AABB(Vector3(-15, -8, -15), Vector3(30, 16, 30))
+	WorldState.playable_area = area
+
+
+func _spawn_player():
+	var player = preload(\"res://classes/player.tscn\").instantiate()
+	add_child(player)
+	player.death.connect(_spawn_player)
+"
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_bwht6"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_510wq"]
+sky_material = SubResource("ProceduralSkyMaterial_bwht6")
+
+[sub_resource type="Environment" id="Environment_lc0hx"]
+background_mode = 2
+sky = SubResource("Sky_510wq")
+tonemap_mode = 2
+glow_enabled = true
 
 [sub_resource type="BoxMesh" id="BoxMesh_kxpq0"]
 size = Vector3(10, 1, 10)
@@ -9,11 +41,23 @@ size = Vector3(10, 1, 10)
 size = Vector3(10, 1, 10)
 
 [node name="FiringRange" type="Node3D"]
+script = SubResource("GDScript_wrxwh")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_lc0hx")
+
+[node name="Rigidbody3D" type="RigidBody3D" parent="."]
+freeze = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Rigidbody3D"]
 mesh = SubResource("BoxMesh_kxpq0")
 
-[node name="GameSurface" parent="StaticBody3D" instance=ExtResource("1_erh0q")]
+[node name="GameSurface" parent="Rigidbody3D" instance=ExtResource("1_erh0q")]
 shape = SubResource("BoxShape3D_wwnir")
+
+[node name="Spawnpoint" parent="." instance=ExtResource("2_vig8a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.05499, 0)

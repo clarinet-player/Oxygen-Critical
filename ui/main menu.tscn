@@ -6,16 +6,20 @@
 [sub_resource type="GDScript" id="GDScript_tiiyp"]
 script/source = "extends Control
 
-signal request_connect
 
 
 func _ready():
 	$VBoxContainer/Multiplayer.button_down.connect(_connect)
+	$VBoxContainer/Singleplayer.button_down.connect(_singleplayer)
 	$VBoxContainer/Quit.button_down.connect(_quit)
 
 
 func _connect():
-	request_connect.emit()
+	Multiplayermanager.connect_player()
+
+
+func _singleplayer():
+	get_tree().change_scene_to_file(\"res://scenes/firing range.tscn\")
 
 
 func _quit():
