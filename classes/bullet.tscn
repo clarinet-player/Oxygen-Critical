@@ -140,7 +140,8 @@ func _surface_hit(_collider, _normal, _time) -> bool:
 
 func _player_hit(player):
 	var damage = mass * (min(velocity.length() / 400, 1))
-	player.rpc(\"damage\", damage)
+	player.rpc_id(int(str(player.name)), \"damage\", damage)
+	player.damage(damage)
 "
 
 [sub_resource type="SphereMesh" id="SphereMesh_diy8k"]

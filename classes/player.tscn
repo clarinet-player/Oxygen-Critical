@@ -123,9 +123,9 @@ func _process(delta):
 		if breached:
 			health = max(0, health - 10 * delta)
 		if health <= 0:
-			die.rpc()
+			die.rpc_id(int(str(name)))
 		if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
-			die.rpc()
+			die.rpc_id(int(str(name)))
 	
 	if Multiplayermanager.mp_active and is_multiplayer_authority() and breached:
 		health = max(0, health - 10 * delta)
@@ -447,24 +447,22 @@ func heal_health():
 
 
 
-@rpc(\"authority\", \"call_local\", \"reliable\")
+@rpc(\"authority\", \"call_remote\", \"reliable\")
 func damage(amount : float):
-	if !Multiplayermanager.mp_active or is_multiplayer_authority():
-		print(\"damage\")
-		health = clamp(health - amount, 0, 100)
-		breached = true
-		hud.set_health(health)
+	print(\"damage\")
+	health = clamp(health - amount, 0, 100)
+	breached = true
+	hud.set_health(health)
 
 
 
-@rpc(\"authority\", \"call_local\", \"reliable\")
+@rpc(\"authority\", \"call_remote\", \"reliable\")
 func die():
-	if !Multiplayermanager.mp_active or is_multiplayer_authority():
-		print(\"die\")
-		UiManager.set_ui(0)
-		death.emit()
-		get_parent().remove_child(self)
-		queue_free()
+	print(\"die\")
+	UiManager.set_ui(0)
+	death.emit()
+	get_parent().remove_child(self)
+	queue_free()
 
 "
 
