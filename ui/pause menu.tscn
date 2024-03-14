@@ -6,17 +6,11 @@
 script/source = "extends Control
 
 
-
-func _ready():
-	$VBoxContainer/Unpause.button_down.connect(_unpause)
-	$VBoxContainer/Disconnect.button_down.connect(_disconnct)
-
-
 func _unpause():
 	UiManager.set_ui(3)
 
 
-func _disconnct():
+func _disconnect():
 	if Multiplayermanager.mp_active:
 		Multiplayermanager.disconnect_player()
 	
@@ -96,3 +90,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 70
 text = "Disconnect
 "
+
+[connection signal="button_down" from="VBoxContainer/Unpause" to="." method="_unpause"]
+[connection signal="button_down" from="VBoxContainer/Disconnect" to="." method="_disconnect"]

@@ -7,13 +7,6 @@
 script/source = "extends Control
 
 
-
-func _ready():
-	$VBoxContainer/Multiplayer.button_down.connect(_connect)
-	$VBoxContainer/Singleplayer.button_down.connect(_singleplayer)
-	$VBoxContainer/Quit.button_down.connect(_quit)
-
-
 func _connect():
 	Multiplayermanager.connect_player()
 
@@ -119,3 +112,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 70
 text = "Quit
 "
+
+[connection signal="button_down" from="VBoxContainer/Multiplayer" to="." method="_connect"]
+[connection signal="button_down" from="VBoxContainer/Singleplayer" to="." method="_singleplayer"]
+[connection signal="button_down" from="VBoxContainer/Quit" to="." method="_quit"]

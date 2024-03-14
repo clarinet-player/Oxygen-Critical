@@ -5,7 +5,7 @@ script/source = "extends RigidBody3D
 
 
 
-signal death
+signal death(id : int)
 
 
 
@@ -124,10 +124,10 @@ func _process(delta):
 	if breached:
 		health -= 10 * delta
 	if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
-		health -= 90 * delta
+		health -= 100 * delta
 	hud.set_health(health)
 	if health <= 0.1:
-		die()
+		die.rpc()
 	
 	# update anchor gui
 	if _anchored_shape:
@@ -450,13 +450,12 @@ func damage(amount : float):
 
 
 
+@rpc(\"authority\", \"call_local\", \"reliable\")
 func die():
-	if Multiplayermanager.mp_active:
-		Multiplayermanager.player_death(multiplayer.get_unique_id())
-	get_parent().remove_child(self)
+	death.emit(int(str(name)))
 	queue_free()
-	UiManager.set_ui(0)
-	death.emit()
+	if is_multiplayer_authority():
+		UiManager.set_ui(0)
 "
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ufnhc"]

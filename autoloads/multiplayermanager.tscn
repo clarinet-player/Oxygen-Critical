@@ -5,8 +5,6 @@ script/source = "extends Node
 
 var peer = ENetMultiplayerPeer.new()
 
-var _p_player = load(\"res://classes/player.tscn\")
-
 var mp_active = false
 
 
@@ -53,9 +51,7 @@ func _on_connect(id : int):
 	
 	await get_tree().create_timer(1.0).timeout
 	
-	var player = _p_player.instantiate()
-	player.name = str(id)
-	add_child(player)
+	spawn_player(id)
 
 func _on_disconnect(id : int):
 	print(\"player disconnected: \", id)
@@ -73,16 +69,16 @@ func connected():
 
 
 
-@rpc(\"any_peer\", \"call_remote\", \"reliable\")
-func player_death(id : int):
-	print(\"player death\")
-	if multiplayer.get_unique_id() == 1:
-		print(\"killing player\")
-		await get_tree().create_timer(3.0).timeout
-		
-		var player = _p_player.instantiate()
-		player.name = str(id)
-		add_child(player)
+func spawn_player(id : int):
+	var player = preload(\"res://classes/player.tscn\").instantiate()
+	player.name = str(id)
+	add_child(player)
+	player.death.connect(on_player_death)
+
+
+
+func on_player_death(id : int):
+	pass
 
 
 
