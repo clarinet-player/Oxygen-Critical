@@ -55,8 +55,9 @@ func _on_connect(id : int):
 
 func _on_disconnect(id : int):
 	print(\"player disconnected: \", id)
-	get_node(str(id)).queue_free()
-	remove_child(get_node(str(id)))
+	#if get_node_or_null(str(id)):
+	#	get_node(str(id)).queue_free()
+	#	remove_child(get_node(str(id)))
 
 
 
@@ -78,7 +79,8 @@ func spawn_player(id : int):
 
 
 func on_player_death(id : int):
-	pass
+	await get_tree().create_timer(3.0).timeout
+	spawn_player(id)
 
 
 
