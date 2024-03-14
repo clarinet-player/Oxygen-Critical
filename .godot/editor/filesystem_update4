@@ -9,3 +9,4 @@ res://ui/main menu.tscn
 res://ui/pause menu.tscn
 res://ui/player hud.tscn
 res://classes/bullet.tscn
+res://autoloads/worldState.tscn

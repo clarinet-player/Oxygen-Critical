@@ -13,13 +13,13 @@ var firerate : float = 9
 var firemode : int = 0
 var mag_size : int = 20
 var reload_time : float = 3000
-var muzzle_vel : float = 800
+var muzzle_vel : float = 300
 var damage : float = 22
 var aero_loss : float = 0.8
 var recovery : float = 2
 var recoil : float = 2.5
 var jerk : float = 0.2
-var spray : float = 0.75
+var spray : float = 1
 var inventory_size : int = 2
 #endregion
 
@@ -117,8 +117,9 @@ func _physics_process(delta):
 		else:
 			inaccuracy = 30
 		inaccuracy = (inaccuracy + _heat) * spray / 1000
-		
-		fire.rpc(global_position, -global_basis.z + Vector3(0, inaccuracy, 0).rotated(global_basis.z.normalized(), randf_range(0, TAU)))
+		inaccuracy += 0.15
+		for i in range(5):
+			fire.rpc(global_position, -global_basis.z + Vector3(0, randf_range(inaccuracy / 2, inaccuracy), 0).rotated(global_basis.z.normalized(), randf_range(0, TAU)))
 		
 		get_parent().rotate(basis.x.normalized(), recoil / 400)
 		rotate(basis.x.normalized(), recoil / 400)

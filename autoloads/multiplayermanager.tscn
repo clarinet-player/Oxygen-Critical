@@ -73,6 +73,17 @@ func connected():
 
 
 
+@rpc(\"any_peer\", \"call_remote\", \"reliable\")
+func player_death(id : int):
+	if multiplayer.get_unique_id() == 1:
+		await get_tree().create_timer(3.0).timeout
+		
+		var player = _p_player.instantiate()
+		player.name = str(id)
+		add_child(player)
+
+
+
 @rpc(\"authority\", \"call_remote\", \"reliable\")
 func set_level(level : int):
 	if level == 1:
