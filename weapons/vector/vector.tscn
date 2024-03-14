@@ -71,6 +71,7 @@ func _physics_process(delta):
 		return
 	
 	var time = Time.get_ticks_msec()
+	var _c_heat = min(12, _heat)
 	
 	
 	# Reloading
@@ -112,21 +113,21 @@ func _physics_process(delta):
 		
 		var inaccuracy : float
 		if $\"../..\".is_anchored():
-			inaccuracy = min($\"../..\".get_velocity().length(), 6)
+			inaccuracy = min($\"../..\".get_velocity().length(), 6) * 10
 		else:
-			inaccuracy = 4.5
-		inaccuracy = (inaccuracy + _heat) * spray / 1000
+			inaccuracy = 30
+		inaccuracy = (inaccuracy + _c_heat) * spray / 1000
 		
 		fire.rpc(global_position, -global_basis.z + Vector3(0, inaccuracy, 0).rotated(global_basis.z.normalized(), randf_range(0, TAU)))
 		
 		get_parent().rotate(basis.x.normalized(), recoil / 400)
 		rotate(basis.x.normalized(), recoil / 400)
-		rotate(basis.y.normalized(), jerk * _heat * (randf_range(-0.01, 0.01) - rotation.y * 0.25))
+		rotate(basis.y.normalized(), jerk * _c_heat * (randf_range(-0.01, 0.01) - rotation.y * jerk))
 		
 		_fire_time_ms -= _firedelay
 		if time > _fire_time_ms + _firedelay:
 			_fire_time_ms = time
-		_heat = min(10, _heat + 1)
+		_heat += 1
 		_burst -= 1
 		magazine -= 1
 		
@@ -134,11 +135,12 @@ func _physics_process(delta):
 	
 	
 	# Recovering heat after firing
-	if time - _fire_time_ms > _firedelay and _heat > 0:
-		_heat = max(_heat - (delta * firerate * recovery), 0)
-		
-		get_parent().rotate(basis.x.normalized(), -recoil * delta * firerate * recovery / 400)
+	if time - _fire_time_ms > _firedelay:
 		rotation = lerp(rotation, Vector3.ZERO, recovery * delta)
+		
+		if _heat > 0:
+			_heat = max(_heat - (delta * firerate * recovery), 0)
+			get_parent().rotate(basis.x.normalized(), -recoil * delta * firerate * recovery / 400)
 
 
 

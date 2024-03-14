@@ -451,12 +451,12 @@ func damage(amount : float):
 
 
 func die():
-		get_parent().remove_child(self)
-		queue_free()
-		UiManager.set_ui(0)
-		death.emit()
-		if Multiplayermanager.mp_active:
-			Multiplayermanager.player_death(multiplayer.get_unique_id())
+	if Multiplayermanager.mp_active:
+		Multiplayermanager.player_death(multiplayer.get_unique_id())
+	get_parent().remove_child(self)
+	queue_free()
+	UiManager.set_ui(0)
+	death.emit()
 "
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ufnhc"]

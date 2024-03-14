@@ -31,7 +31,7 @@ func _process(delta):
 			get_tree().quit()
 		elif pausemenu.visible:
 			set_ui(3)
-		elif playerhud.visible:
+		else:
 			set_ui(2)
 
 

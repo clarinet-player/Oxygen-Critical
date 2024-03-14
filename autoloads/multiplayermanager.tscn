@@ -75,7 +75,9 @@ func connected():
 
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func player_death(id : int):
+	print(\"player death\")
 	if multiplayer.get_unique_id() == 1:
+		print(\"killing player\")
 		await get_tree().create_timer(3.0).timeout
 		
 		var player = _p_player.instantiate()
