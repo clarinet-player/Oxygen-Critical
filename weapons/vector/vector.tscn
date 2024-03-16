@@ -8,18 +8,18 @@ script/source = "extends Node3D
 
 #region firing parameters
 var weapon_name = \"KRISS Vector\"
-var firerate : float = 21
-var firemode : int = 0
-var mag_size : int = 30
-var reload_time : float = 2000
-var muzzle_vel : float = 400
-var damage : float = 16
-var aero_loss : float = 2.25
-var recovery : float = 2.5
-var recoil : float = 0.65
-var jerk : float = 0.1
-var spray : float = 0.9
-var inventory_size : int = 2
+var firerate := 21
+var firemode := 0
+var mag_size := 30
+var reload_time := 2000.0
+var muzzle_vel := 400.0
+var damage := 16.0
+var effective_range := 20.0
+var recovery := 2.5
+var recoil := 0.65
+var jerk := 0.1
+var spray := 0.9
+var inventory_size := 2
 #endregion
 
 
@@ -155,7 +155,7 @@ func fire(position : Vector3, direction : Vector3):
 	_bullet.global_position = position + direction
 	_bullet.velocity = direction * muzzle_vel
 	_bullet.mass = damage
-	_bullet.aeroLoss = aero_loss
+	_bullet.effective_range = effective_range
 "
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ckmv3"]

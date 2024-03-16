@@ -14,7 +14,7 @@ var mag_size : int = 20
 var reload_time : float = 1250
 var muzzle_vel : float = 350
 var damage : float = 22
-var aero_loss : float = 1.5
+var effective_range : float = 30.0
 var recovery : float = 0.6
 var recoil : float = 2.5
 var jerk : float = 0.35
@@ -155,7 +155,7 @@ func fire(position : Vector3, direction : Vector3):
 	_bullet.global_position = position + direction
 	_bullet.velocity = direction * muzzle_vel
 	_bullet.mass = damage
-	_bullet.aeroLoss = aero_loss
+	_bullet.effective_range = effective_range
 "
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_djkdr"]

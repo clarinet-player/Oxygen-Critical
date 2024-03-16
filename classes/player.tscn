@@ -89,9 +89,9 @@ func _ready():
 		inventory.append(vector)
 		var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
 		inventory.append(glock)
-	
-	hud.set_health(100)
-	hud.set_ammo(false, 0)
+		
+		hud.set_health(100)
+		hud.set_ammo(false, 0)
 
 
 
@@ -200,6 +200,7 @@ func _physics_process(delta : float):
 		var _body = _anchored_shape.get_parent()
 		if !_body.angular_velocity.is_zero_approx():
 			rotate(_body.angular_velocity.normalized(), _body.angular_velocity.length() * delta)
+			_up_vec = _up_vec.rotated(_body.angular_velocity.normalized(), _body.angular_velocity.length() * delta)
 		
 		
 		# Adjust roll to avoid gimbal lock
@@ -452,10 +453,10 @@ func damage(amount : float):
 
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func die():
-	death.emit(int(str(name)))
-	queue_free()
 	if is_multiplayer_authority():
 		UiManager.set_ui(0)
+	death.emit(int(str(name)))
+	queue_free()
 "
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ufnhc"]

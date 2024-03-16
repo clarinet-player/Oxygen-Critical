@@ -14,7 +14,7 @@ func _disconnect():
 	if Multiplayermanager.mp_active:
 		Multiplayermanager.disconnect_player()
 	
-	get_tree().change_scene_to_file(\"res://scenes/bullettestscene.tscn\")
+	get_tree().change_scene_to_file(\"res://scenes/Empty scene.tscn\")
 	UiManager.set_ui(1)
 "
 

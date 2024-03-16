@@ -8,29 +8,17 @@ extends Node3D
 
 
 var mass : float = 10.0
-var aeroLoss : float = 1
-
+var effective_range : float = 50.0
 var velocity : Vector3 = Vector3(1, 0, 0)
-var acceleration : Vector3 = Vector3.ZERO
+var dist_travelled : float = 0.0
 
 
 
 func _physics_process(delta):
 	
-	if velocity.length() < 25:
-		queue_free()
-		get_parent().remove_child(self)
-		return
-	
-	if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
-		queue_free()
-		return
-	
 	if Multiplayermanager.mp_active and !is_multiplayer_authority():
 		global_translate(velocity * delta)
 		velocity += WorldState.get_gravity_vector() * delta
-		velocity += acceleration * delta
-		velocity -= velocity * aeroLoss * 2 * delta
 		return
 	
 	
@@ -50,32 +38,29 @@ func _physics_process(delta):
 		var _normal = _raycast.normal
 		var _travelled = global_position.distance_to(_point)
 		
-		# Update ourselves
-		global_position = _point
-		if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
-			queue_free()
-			return
-		
 		var _passed = _travelled / velocity.length()
 		_time -= _passed
 		
-		# Apply forces
+		# Update ourself
 		velocity += WorldState.get_gravity_vector() * _passed
-		velocity += acceleration * _passed
-		velocity -= velocity * aeroLoss * 2 * _passed
+		dist_travelled += _travelled
+		global_position = _point
+		
+		# Remove ourself if necessary
+		if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
+			queue_free()
+			return
+		if dist_travelled > 2 * effective_range:
+			queue_free()
+			return
 		
 		# Actual collision handling
 		if \"strength\" in _shape:
-			if _surface_hit(_shape, _normal, _time):
-				queue_free()
-				get_parent().remove_child(self)
-				return
-		
+			effective_range -= _shape.strength
 		if \"player\" in _shape:
-			if _player_hit(_shape.player):
-				queue_free()
-				get_parent().remove_child(self)
-				return
+			var _player = _shape.player
+			print(1 - ((dist_travelled - effective_range) / effective_range))
+			_player.rpc_id(int(str(_player.name)), \"damage\", mass * (1 - ((dist_travelled - effective_range) / effective_range)))
 		
 		# Move through the surface so we don't collide with it again
 		global_translate(_normal * -0.01)
@@ -87,60 +72,20 @@ func _physics_process(delta):
 		_ray = PhysicsRayQueryParameters3D.create(global_position, _target_pos)
 		_raycast = _space.intersect_ray(_ray)
 	
-	# Move to our final position
+	
+	# Update ourself
+	velocity += WorldState.get_gravity_vector() * _time
+	dist_travelled += global_position.distance_to(_target_pos)
 	global_position = _target_pos
 	
-	# Apply forces
-	velocity += WorldState.get_gravity_vector() * _time
-	velocity += acceleration * _time
-	velocity -= velocity * aeroLoss * 2 * _time
-
-
-
-func _surface_hit(_collider, _normal, _time) -> bool:
 	
-	var _angle = acos(velocity.normalized().dot(_normal))
-	var _speed = velocity.length() / 45
-	
-	# Stopping
-	if _collider.strength > _speed:
-		return true
-	
-	# Slowing
-	velocity *= (20 - _collider.strength) / 20
-	
-	# Deforming
-	aeroLoss *= _collider.strength
-	
-	# Fragmenting and deflection
-	if _speed / _angle < 5:
-		var _p_scene = preload(\"res://classes/bullet.tscn\")
-		
-		velocity = velocity.bounce(_normal)
-		
-		# Create new bullets
-		var fragments = randi_range(2, 8)
-		for i in range(fragments):
-			var _bullet = _p_scene.instantiate()
-			add_sibling(_bullet, true)
-			
-			# Setting up each bullet
-			_bullet.global_position = global_position + (velocity.normalized() * 0.01)
-			_bullet.mass = mass / fragments
-			_bullet.aeroLoss = randf() / 10
-			_bullet.velocity = (velocity * 0.75) + Vector3(randf() - randf(), randf() - randf(), randf() - randf()) * velocity.length() * 0.2
-			
-			_bullet._physics_process(_time)
-			
-		return true
-	else:
-		return false
-
-
-
-func _player_hit(player):
-	var damage = mass * (min(velocity.length() / 400, 1))
-	player.rpc_id(int(str(player.name)), \"damage\", damage)
+	# Remove ourself if necessary
+	if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
+		queue_free()
+		return
+	if dist_travelled > 2 * effective_range:
+		queue_free()
+		return
 "
 
 [sub_resource type="SphereMesh" id="SphereMesh_diy8k"]
