@@ -59,7 +59,6 @@ func _physics_process(delta):
 			effective_range -= _shape.strength
 		if \"player\" in _shape:
 			var _player = _shape.player
-			print(1 - ((dist_travelled - effective_range) / effective_range))
 			_player.rpc_id(int(str(_player.name)), \"damage\", mass * (1 - ((dist_travelled - effective_range) / effective_range)))
 		
 		# Move through the surface so we don't collide with it again
