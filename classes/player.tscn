@@ -26,8 +26,7 @@ var _anchored_shape : CollisionShape3D
 var _anchor_point_l : Vector3
 var _surface_normal : Vector3
 
-@export var _velocity_2d : Vector2
-@export var _velocity_3d : Vector3
+@export var velocity : Vector3
 
 var _up_vec := Vector3(0, 0.1, 0)
 var _height := 1.0
@@ -73,7 +72,7 @@ func _ready():
 		
 		if spawnpoint:
 			global_position = spawnpoint.global_position
-			_velocity_3d = spawnpoint.down * 10
+			velocity = spawnpoint.down * 10
 		
 			var _axis = spawnpoint.down.cross(global_basis.y * -1)
 			var _angle = acos(spawnpoint.down.dot(global_basis.y * -1))
@@ -112,8 +111,6 @@ func _input(event):
 		else:
 			rotate(global_transform.basis.y.normalized(), event.relative.x * mouse_sensitivity * -0.001)
 			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
-		
-		_velocity_2d = _velocity_2d.rotated(event.relative.x * mouse_sensitivity * 0.001)
 
 
 
@@ -220,13 +217,13 @@ func _physics_process(delta : float):
 			
 			detach()
 			_reorient = false
-			_velocity_3d += -global_basis.z * jump_power
+			velocity += -global_basis.z * jump_power
 	
 	
 	if _anchored_shape:
 		_up_vec = lerp(_up_vec, _surface_normal, delta * 8).limit_length(_height)
 	else:
-		_up_vec = lerp(_up_vec, -_velocity_3d, delta * 8).limit_length(_height)
+		_up_vec = lerp(_up_vec, -velocity, delta * 8).limit_length(_height)
 	
 	var collision = move_and_collide((camera.global_position - _up_vec) - global_position)
 	if collision and !_anchored_shape:
@@ -263,44 +260,42 @@ func _anchored_move(delta : float):
 		
 		move_type.IDLE:
 			
-			if _velocity_2d.length() < walk_friction * delta:
-				_velocity_2d = Vector2.ZERO
+			if velocity.length() < walk_friction * delta:
+				velocity = Vector3.ZERO
 			else:
-				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - walk_friction * delta)
+				velocity = velocity.limit_length(velocity.length() - walk_friction * delta)
 		
 		move_type.WALKING:
 			
-			_velocity_2d += _input * delta * walk_acceleration
-			if _velocity_2d.length() > walk_max_speed + walk_friction * delta:
-				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - walk_friction * delta)
+			velocity += ((_side * _input.x) + (_forward * _input.y)) * delta * walk_acceleration
+			if velocity.length() > walk_max_speed + walk_friction * delta:
+				velocity = velocity.limit_length(velocity.length() - walk_friction * delta)
 			else:
-				_velocity_2d = _velocity_2d.limit_length(walk_max_speed)
+				velocity = velocity.limit_length(walk_max_speed)
 		
 		move_type.SPRINTING:
 			
-			_velocity_2d += _input * delta * sprint_acceleration
-			if _velocity_2d.length() > sprint_max_speed + walk_friction * delta:
-				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - walk_friction * delta)
+			velocity += ((_side * _input.x) + (_forward * _input.y)) * delta * sprint_acceleration
+			if velocity.length() > sprint_max_speed + walk_friction * delta:
+				velocity = velocity.limit_length(velocity.length() - walk_friction * delta)
 			else:
-				_velocity_2d = _velocity_2d.limit_length(sprint_max_speed)
+				velocity = velocity.limit_length(sprint_max_speed)
 		
 		move_type.SLIDING:
 			
-			#_velocity_2d.y += _forward.dot(WorldState.get_gravity_vector()) * delta
-			#_velocity_2d.x += _side.dot(WorldState.get_gravity_vector()) * delta
-			if _velocity_2d.length() < slide_friction * delta:
-				_velocity_2d = Vector2.ZERO
+			velocity += _forward * _forward.dot(WorldState.get_gravity_vector()) + _side * _side.dot(WorldState.get_gravity_vector())
+			if velocity.length() < slide_friction * delta:
+				velocity = Vector3.ZERO
 			else:
-				_velocity_2d = _velocity_2d.limit_length(_velocity_2d.length() - slide_friction * delta)
+				velocity = velocity.limit_length(velocity.length() - slide_friction * delta)
 	
 	
-	if _velocity_2d.is_zero_approx():
+	if velocity.is_zero_approx():
 		return
 	
 	# Applying movement
-	var _movement : Vector3 = (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
 	var _time = delta
-	var _collision = move_and_collide(_movement * _time)
+	var _collision = move_and_collide(velocity * _time)
 	var _loops = 0
 	
 	while _collision:
@@ -308,19 +303,18 @@ func _anchored_move(delta : float):
 		var _shape = _collision.get_collider_shape()
 		var _normal = _collision.get_normal()
 		
-		_time -= delta * (_collision.get_travel().length() / _velocity_2d.length())
+		_time -= delta * (_collision.get_travel().length() / velocity.length())
 		
 		if _shape == _anchored_shape and acos(_surface_normal.dot(_normal)) <= 1.5:
 			
 			_surface_normal = _normal
 			_forward = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
 			_side = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
-			_movement = (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
+			velocity = _forward * _forward.dot(velocity) + _side * _side.dot(velocity)
 		
 		
 		else:
-			_movement = _movement - _movement.dot(_normal) * _normal
-			#_velocity_2d = Vector2(_movement.dot(_side), _movement.dot(_forward))
+			velocity = velocity - velocity.dot(_normal) * _normal
 		
 		
 		if _loops > 2:
@@ -329,7 +323,7 @@ func _anchored_move(delta : float):
 			break
 		
 		_loops += 1
-		_collision = move_and_collide(_movement * _time)
+		_collision = move_and_collide(velocity * _time)
 	
 	
 	# Checking we're still on the ground
@@ -346,10 +340,10 @@ func _anchored_move(delta : float):
 func _free_move(delta : float):
 	
 	# Apply gravity, if any
-	_velocity_3d += WorldState.get_gravity_vector() * delta
+	velocity += WorldState.get_gravity_vector() * delta
 	
 	# Try to move to our new position
-	var _collision = move_and_collide(_velocity_3d * delta)
+	var _collision = move_and_collide(velocity * delta)
 	var _loops = 0
 	
 	while _collision:
@@ -359,17 +353,17 @@ func _free_move(delta : float):
 		
 		if \"get_is_grabbable\" in _shape and _shape.get_is_grabbable():
 			attach(_shape, global_position, _normal)
-			_anchored_move(_collision.get_remainder().length()/_velocity_3d.length())
+			_anchored_move(_collision.get_remainder().length()/velocity.length())
 			return
 		
 		if _loops > 2: # prevents getting stuck in geometry
 			global_translate(_normal)
 		
 		_collision = move_and_collide(_collision.get_remainder().bounce(_normal) * 0.5)
-		_velocity_3d = _velocity_3d.bounce(_normal) * 0.5
+		velocity = velocity.bounce(_normal) * 0.5
 		
 		var _body = _shape.get_parent()
-		_velocity_3d += ((_body.global_position - global_position).cross(_body.angular_velocity) - _velocity_3d) * 0.5
+		velocity += ((_body.global_position - global_position).cross(_body.angular_velocity) - velocity) * 0.5
 		
 		_loops += 1
 #endregion
@@ -385,11 +379,11 @@ func attach(_shape : CollisionShape3D, _anchor_point_g : Vector3, _normal : Vect
 	var _forward : Vector3 = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
 	var _side : Vector3 = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
 	
-	_velocity_2d = Vector2(_velocity_3d.dot(_side), _velocity_3d.dot(_forward))
+	velocity = velocity - velocity.dot(_surface_normal) * _surface_normal
 	
 	var _body = _shape.get_parent()
 	var _body_motion = (_body.global_position - global_position).cross(_body.angular_velocity)
-	_velocity_2d -= Vector2(_body_motion.dot(_side), _body_motion.dot(_forward))
+	velocity -= _body_motion
 
 
 
@@ -400,9 +394,7 @@ func detach():
 	
 	var _body : RigidBody3D = _anchored_shape.get_parent()
 	
-	#_velocity_3d = _body.linear_velocity 
-	_velocity_3d = (_body.global_position - global_position).cross(_body.angular_velocity)
-	_velocity_3d += (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
+	velocity += (_body.global_position - global_position).cross(_body.angular_velocity)
 	
 	_anchored_shape = null
 	
@@ -415,18 +407,6 @@ func is_anchored() -> bool:
 		return true
 	else:
 		return false
-
-
-
-func get_velocity() -> Vector3:
-	if _anchored_shape:
-		var _forward : Vector3 = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
-		var _side : Vector3 = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
-		
-		return (_forward * _velocity_2d.y) + ( _side * _velocity_2d.x)
-		
-	else:
-		return _velocity_3d
 
 
 

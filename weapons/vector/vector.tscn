@@ -111,14 +111,15 @@ func _physics_process(delta):
 	# Firing
 	if _burst > 0 and time > _fire_time_ms + _firedelay:
 		
+		var velocity = $\"../..\".velocity
 		var inaccuracy : float
 		if $\"../..\".is_anchored():
-			inaccuracy = min($\"../..\".get_velocity().length(), 6) * 10
+			inaccuracy = min(velocity.length(), 6) * 10
 		else:
 			inaccuracy = 30
 		inaccuracy = (inaccuracy + _c_heat) * spray / 1000
 		
-		fire.rpc(global_position, -global_basis.z + Vector3(0, inaccuracy, 0).rotated(global_basis.z.normalized(), randf_range(0, TAU)))
+		fire.rpc(global_position, -global_basis.z + velocity + (global_basis.y * inaccuracy).rotated(global_basis.z.normalized(), randf_range(0, TAU)))
 		
 		get_parent().rotate(basis.x.normalized(), recoil / 400)
 		rotate(basis.x.normalized(), recoil / 400)
@@ -197,7 +198,7 @@ shadow_mesh = SubResource("ArrayMesh_c5ye5")
 script = SubResource("GDScript_pnbwi")
 
 [node name="Vector" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.0694281, -0.0928802, -0.588687, -0.00964497, 0.592766, -0.0923862, 0.595892, -0.00122722, -0.0700842, 0.413699, -0.0785255, -0.412689)
+transform = Transform3D(-0.0694281, -0.0928802, -0.588687, -0.00964497, 0.592766, -0.0923862, 0.595892, -0.00122722, -0.0700842, 0.413699, -0.159027, -0.394809)
 mesh = SubResource("ArrayMesh_7s747")
 skeleton = NodePath("")
 

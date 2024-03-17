@@ -114,12 +114,12 @@ func _physics_process(delta):
 		
 		var inaccuracy : float
 		if $\"../..\".is_anchored():
-			inaccuracy = min($\"../..\".get_velocity().length(), 6) * 10
+			inaccuracy = min($\"../..\".velocity.length(), 6) * 10
 		else:
 			inaccuracy = 30
 		inaccuracy = (inaccuracy + _c_heat) * spray / 1000
 		
-		fire.rpc(global_position, -global_basis.z + Vector3(0, inaccuracy, 0).rotated(global_basis.z.normalized(), randf_range(0, TAU)))
+		fire.rpc(global_position, -global_basis.z + (global_basis.y * inaccuracy).rotated(global_basis.z.normalized(), randf_range(0, TAU)))
 		
 		get_parent().rotate(basis.x.normalized(), recoil / 400)
 		rotate(basis.x.normalized(), recoil / 400)
@@ -250,7 +250,7 @@ albedo_texture = ExtResource("1_o4mcx")
 script = SubResource("GDScript_bxm1c")
 
 [node name="Skeleton3D" type="Skeleton3D" parent="."]
-transform = Transform3D(-0.0219696, 0.0967311, 0.0126661, 0.0975504, 0.0219317, 0.00171054, -0.00112326, 0.0127316, -0.0991799, 0.416, -0.064, -0.306)
+transform = Transform3D(-0.0219696, 0.0967311, 0.0126661, 0.0975504, 0.0219317, 0.00171054, -0.00112326, 0.0127316, -0.0991799, 0.416, -0.119657, -0.306)
 bones/0/name = "AK12"
 bones/0/parent = -1
 bones/0/rest = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0)
