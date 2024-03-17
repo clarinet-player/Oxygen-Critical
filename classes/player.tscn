@@ -84,12 +84,16 @@ func _ready():
 				rotate(global_basis.x, _angle)
 		
 		
-		#if inventory.size() > 0:
-		#	active_item = inventory[0]
-		#	camera.add_child(active_item)
+		var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
+		inventory.append(ak)
+		var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
+		inventory.append(vector)
+		var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
+		inventory.append(glock)
 		
 		hud.set_health(100)
-		hud.set_ammo(false, 0)
+		active_item = ak
+		camera.add_child(active_item)
 
 
 

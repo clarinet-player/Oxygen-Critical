@@ -73,14 +73,6 @@ func connected():
 func spawn_player(id : int):
 	var player = preload(\"res://classes/player.tscn\").instantiate()
 	player.name = str(id)
-	
-	var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
-	player.inventory.append(ak)
-	var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
-	player.inventory.append(vector)
-	var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
-	player.inventory.append(glock)
-	
 	add_child(player)
 	player.death.connect(on_player_death)
 
