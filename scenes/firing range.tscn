@@ -14,12 +14,21 @@ script/source = "extends Node3D
 func _ready():
 	_spawn_player(1)
 	
-	var area = AABB(Vector3(-15, -5, -15), Vector3(30, 25, 30))
+	var area = AABB(Vector3(-15, -5, -15), Vector3(30, 30, 30))
 	WorldState.playable_area = area
+	WorldState.gravity_state = \"spin\"
 
 
 func _spawn_player(_id):
 	var player = preload(\"res://classes/player.tscn\").instantiate()
+	
+	var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
+	player.inventory.append(ak)
+	var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
+	player.inventory.append(vector)
+	var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
+	player.inventory.append(glock)
+	
 	add_child(player)
 	player.death.connect(_spawn_player)
 "
@@ -72,24 +81,26 @@ shape = SubResource("BoxShape3D_wwnir")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.05499, 0)
 
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
-transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -6.00714, 7.10661, 0)
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -6.00714, 10.5413, 0)
 freeze = true
 script = ExtResource("3_in0r1")
 
 [node name="Ship1" type="MeshInstance3D" parent="RigidBody3D"]
-transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0)
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
 mesh = ExtResource("4_4irnm")
 skeleton = NodePath("../..")
 
 [node name="Ship2" type="MeshInstance3D" parent="RigidBody3D"]
-transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0)
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
 mesh = ExtResource("5_ngp1h")
 skeleton = NodePath("../..")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
-transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0)
+[node name="GameSurface" parent="RigidBody3D" instance=ExtResource("1_erh0q")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_n1n7c")
+grabbable_states = ["zero"]
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="RigidBody3D"]
-transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0)
+[node name="GameSurface2" parent="RigidBody3D" instance=ExtResource("1_erh0q")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_6mrqu")
+grabbable_states = ["zero", "spin"]

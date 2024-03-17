@@ -1,6 +1,6 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1710625919
-export_presets.cfg::TextFile::-1::1710442284::0::1::::<><>::
+::res://::1710690124
+export_presets.cfg::TextFile::-1::1710630675::0::1::::<><>::
 icon.svg::CompressedTexture2D::8724437967346365169::1702190669::1707257175::1::::<><>::
 ::res://assets/::1707366152
 anchor.png::CompressedTexture2D::2750970278555625248::1707366152::1707366152::1::::<><>::
@@ -14,38 +14,32 @@ ship2.obj::Mesh::7790162301134781609::1704225847::1707257176::1::::<><>::
 ship2.tres::ConcavePolygonShape3D::1805536636470162589::1704486657::0::1::::<><>::
 testscene.tres::ConcavePolygonShape3D::8465421319000102396::1704579424::0::1::::<><>::
 thumbsup.jpg::CompressedTexture2D::3399232090794219126::1705980727::1705980727::1::::<><>::
-::res://autoloads/::1710443215
-multiplayermanager.tscn::PackedScene::3298394945087652991::1710443214::0::1::::<><>::
-ui manager.tscn::PackedScene::695190123698328647::1710443214::0::1::::<><>::uid://crovijoeg2hv::::res://ui/main menu.tscn<>uid://b6j6wnag62maf::::res://ui/pause menu.tscn<>uid://bw31ycr56hs2f::::res://ui/player hud.tscn
-worldState.tscn::PackedScene::890259437353000500::1710443215::0::1::::<><>::
-::res://classes/::1710528484
-bullet.tscn::PackedScene::4851513591805773323::1710443215::0::1::::<><>::
+::res://autoloads/::1710651304
+multiplayermanager.tscn::PackedScene::3298394945087652991::1710651303::0::1::::<><>::
+ui manager.tscn::PackedScene::695190123698328647::1710651303::0::1::::<><>::uid://crovijoeg2hv::::res://ui/main menu.tscn<>uid://b6j6wnag62maf::::res://ui/pause menu.tscn<>uid://bw31ycr56hs2f::::res://ui/player hud.tscn
+worldState.tscn::PackedScene::890259437353000500::1710651304::0::1::::<><>::
+::res://classes/::1710651304
+bullet.tscn::PackedScene::4851513591805773323::1710651304::0::1::::<><>::
 gameSurface.tscn::PackedScene::9049239728378702472::1705872491::0::1::::<><>::
-player.tscn::PackedScene::104956028073985459::1710528484::0::1::::<><>::
+player.tscn::PackedScene::104956028073985459::1710651304::0::1::::<><>::
 spawnpoint.tscn::PackedScene::7492970016331983388::1706384480::0::1::::<><>::
-::res://linux/::1710442284
-::res://scenes/::1710443215
-bullettestscene.tscn::PackedScene::1004180416020809727::1704766878::0::1::::<><>::res://scripts/bullettestscene.gd<>uid://d16rwkt574n4s::::res://classes/gameSurface.tscn
-firing range.tscn::PackedScene::9024361267217318717::1710443215::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>uid://de0weem1pd67y::::res://classes/spawnpoint.tscn
-multiplayer scene.tscn::PackedScene::1183981302994529237::1705991965::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn
+::res://linux/::1710630674
+::res://scenes/::1710651304
+Empty scene.tscn::PackedScene::8376312248054403878::1710627134::0::1::::<><>::
+firing range.tscn::PackedScene::9024361267217318717::1710651304::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>uid://de0weem1pd67y::::res://classes/spawnpoint.tscn<>res://scripts/ship.gd<>uid://3nfnvsc74364::::res://assets/ship1.obj<>uid://di8u3ngubd882::::res://assets/ship2.obj
 playable scene.tscn::PackedScene::5664415139704904680::1710271888::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>uid://de0weem1pd67y::::res://classes/spawnpoint.tscn
-testscene.tscn::PackedScene::5730862881325956368::1709151509::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>res://scripts/ship.gd<>uid://0yu6o35ijd5n::::res://assets/ship2.tres<>uid://3cuw4l80rgui::::res://assets/metal.jpg<>uid://dsuyitw2p6oo7::::res://assets/testscene.tres
-::res://scripts/::1705455057
-body.gd::GDScript::-1::1703209604::0::1::::<>RigidBody3D<>::
-bullettestscene.gd::GDScript::-1::1704764904::0::1::::<>Node3D<>::
-ship.gd::GDScript::-1::1704579424::0::1::::<>RigidBody3D<>::
-testcentrifuge.gd::GDScript::-1::1703283975::0::1::::<>RigidBody3D<>::
-testscene.gd::GDScript::-1::1705455057::0::1::::<>Node3D<>::
-::res://ui/::1710443215
-main menu.tscn::PackedScene::176360083397563743::1710443215::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg<>uid://bitf3f8hujhok::::res://assets/pikachu.png
-pause menu.tscn::PackedScene::4582776433618976957::1710443215::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg
-player hud.tscn::PackedScene::3989999454422294155::1710443215::0::1::::<><>::uid://bfgucw27ut5l1::::res://assets/anchor.png
+::res://scripts/::1710627165
+ship.gd::GDScript::-1::1710626500::0::1::::<>RigidBody3D<>::
+::res://ui/::1710651304
+main menu.tscn::PackedScene::176360083397563743::1710651304::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg<>uid://bitf3f8hujhok::::res://assets/pikachu.png
+pause menu.tscn::PackedScene::4582776433618976957::1710651304::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg
+player hud.tscn::PackedScene::3989999454422294155::1710651304::0::1::::<><>::uid://bfgucw27ut5l1::::res://assets/anchor.png
 ::res://weapons/::1706659615
-::res://weapons/ak12/::1710443214
-ak12.tscn::PackedScene::6057950990840864630::1710443214::0::1::::<><>::uid://3cuw4l80rgui::::res://assets/metal.jpg<>uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
+::res://weapons/ak12/::1710651304
+ak12.tscn::PackedScene::6057950990840864630::1710651304::0::1::::<><>::uid://3cuw4l80rgui::::res://assets/metal.jpg<>uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
 ak47-sfx-3.wav::AudioStreamWAV::711929598220884928::1706385933::1706385933::1::::<><>::
-::res://weapons/glock/::1710443214
-glock.tscn::PackedScene::2398482040883963623::1710443214::0::1::::<><>::uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
-::res://weapons/vector/::1710443214
-vector.tscn::PackedScene::1985506697532872956::1710443214::0::1::::<><>::uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
+::res://weapons/glock/::1710651304
+glock.tscn::PackedScene::2398482040883963623::1710651304::0::1::::<><>::uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
+::res://weapons/vector/::1710651304
+vector.tscn::PackedScene::1985506697532872956::1710651304::0::1::::<><>::uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
 ::res://windows/::1709151509

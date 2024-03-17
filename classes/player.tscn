@@ -22,11 +22,12 @@ var jump_power : float = 3.0
 
 var mouse_sensitivity : float = 1.0
 
+
+var velocity : Vector3
+
 var _anchored_shape : CollisionShape3D
 var _anchor_point_l : Vector3
 var _surface_normal : Vector3
-
-@export var velocity : Vector3
 
 var _up_vec := Vector3(0, 0.1, 0)
 var _height := 1.0
@@ -82,12 +83,10 @@ func _ready():
 			else:
 				rotate(global_basis.x, _angle)
 		
-		var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
-		inventory.append(ak)
-		var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
-		inventory.append(vector)
-		var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
-		inventory.append(glock)
+		
+		#if inventory.size() > 0:
+		#	active_item = inventory[0]
+		#	camera.add_child(active_item)
 		
 		hud.set_health(100)
 		hud.set_ammo(false, 0)
@@ -193,12 +192,12 @@ func _physics_process(delta : float):
 		
 		
 		# Move to follow our anchor
-		global_position = _anchored_shape.to_global(_anchor_point_l)
-		var _body = _anchored_shape.get_parent()
-		if !_body.angular_velocity.is_zero_approx():
-			rotate(_body.angular_velocity.normalized(), _body.angular_velocity.length() * delta)
-			_up_vec = _up_vec.rotated(_body.angular_velocity.normalized(), _body.angular_velocity.length() * delta)
-		
+		var newpos = _anchored_shape.to_global(_anchor_point_l)
+		global_position = newpos
+		if \"centrifuge_angular_velocity\" in _anchored_shape.get_parent():
+			var ang_vel : Vector3 = _anchored_shape.get_parent().centrifuge_angular_velocity
+			global_rotate(ang_vel.normalized(), ang_vel.length() * delta)
+			_surface_normal = _surface_normal.rotated(ang_vel.normalized(), ang_vel.length() * delta)
 		
 		# Adjust roll to avoid gimbal lock
 		if _reorient:
@@ -226,7 +225,7 @@ func _physics_process(delta : float):
 		_up_vec = lerp(_up_vec, -velocity, delta * 8).limit_length(_height)
 	
 	var collision = move_and_collide((camera.global_position - _up_vec) - global_position)
-	if collision and !_anchored_shape:
+	if collision and !_anchored_shape and \"get_is_grabbable\" in collision.get_collider() and collision.get_collider().get_is_grabbable():
 		attach(collision.get_collider_shape(), global_position, collision.get_normal())
 	camera.global_position = global_position + _up_vec
 	hitbox.global_position = global_position + _up_vec * 0.35
@@ -359,11 +358,12 @@ func _free_move(delta : float):
 		if _loops > 2: # prevents getting stuck in geometry
 			global_translate(_normal)
 		
-		_collision = move_and_collide(_collision.get_remainder().bounce(_normal) * 0.5)
-		velocity = velocity.bounce(_normal) * 0.5
+		_collision = move_and_collide(_collision.get_remainder().bounce(_normal) * 0.6)
+		velocity = velocity.bounce(_normal) * 0.6
 		
 		var _body = _shape.get_parent()
-		velocity += ((_body.global_position - global_position).cross(_body.angular_velocity) - velocity) * 0.5
+		if \"centrifuge_angular_velocity\" in _body:
+			velocity += ((_body.global_position - global_position).cross(_body.centrifuge_angular_velocity) - velocity) * 0.5
 		
 		_loops += 1
 #endregion
@@ -376,14 +376,11 @@ func attach(_shape : CollisionShape3D, _anchor_point_g : Vector3, _normal : Vect
 	_anchor_point_l = _anchored_shape.to_local(_anchor_point_g)
 	_surface_normal = _normal
 	
-	var _forward : Vector3 = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
-	var _side : Vector3 = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
-	
 	velocity = velocity - velocity.dot(_surface_normal) * _surface_normal
 	
 	var _body = _shape.get_parent()
-	var _body_motion = (_body.global_position - global_position).cross(_body.angular_velocity)
-	velocity -= _body_motion
+	if \"centrifuge_angular_velocity\" in _body:
+		velocity -= (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
 
 
 
@@ -394,7 +391,8 @@ func detach():
 	
 	var _body : RigidBody3D = _anchored_shape.get_parent()
 	
-	velocity += (_body.global_position - global_position).cross(_body.angular_velocity)
+	if \"centrifuge_angular_velocity\" in _body:
+		velocity += (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
 	
 	_anchored_shape = null
 	
@@ -407,6 +405,14 @@ func is_anchored() -> bool:
 		return true
 	else:
 		return false
+
+
+
+func get_velocity() -> Vector3:
+	var _body = _anchored_shape.get_parent()
+	if _anchored_shape and \"centrifuge_angular_velocity\" in _body:
+		return velocity + (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
+	return velocity
 
 
 
