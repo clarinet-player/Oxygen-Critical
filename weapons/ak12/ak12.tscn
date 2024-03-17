@@ -17,9 +17,9 @@ var muzzle_vel : float = 800
 var damage : float = 22
 var effective_range : float = 40.0
 var recovery : float = 2
-var recoil : float = 2.5
+var recoil : float = 3.5
 var jerk : float = 0.17
-var spray : float = 0.75
+var spray : float = 0.7
 var inventory_size : int = 2
 #endregion
 

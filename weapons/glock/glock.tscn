@@ -15,10 +15,10 @@ var reload_time : float = 1250
 var muzzle_vel : float = 350
 var damage : float = 22
 var effective_range : float = 30.0
-var recovery : float = 0.6
-var recoil : float = 2.5
+var recovery : float = 1.2
+var recoil : float = 2.25
 var jerk : float = 0.35
-var spray : float = 1
+var spray : float = 0.8
 var inventory_size : int = 1
 #endregion
 
