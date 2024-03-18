@@ -83,17 +83,16 @@ func _ready():
 			else:
 				rotate(global_basis.x, _angle)
 		
-		
-		var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
-		inventory.append(ak)
-		var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
-		inventory.append(vector)
-		var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
-		inventory.append(glock)
-		
 		hud.set_health(100)
-		active_item = ak
-		camera.add_child(active_item)
+		hud.set_ammo(false, 0)
+		
+		if Multiplayermanager.mp_active:
+			var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
+			inventory.append(ak)
+			var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
+			inventory.append(vector)
+			var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
+			inventory.append(glock)
 
 
 
@@ -171,6 +170,11 @@ func _process(delta):
 func _physics_process(delta : float):
 	if Multiplayermanager.mp_active and !is_multiplayer_authority():
 		return
+	
+	if !active_item:
+		if inventory.size() > 0:
+			active_item = inventory[0]
+			camera.add_child(active_item)
 	
 	if _anchored_shape:
 		
