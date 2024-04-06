@@ -417,9 +417,10 @@ func is_anchored() -> bool:
 
 
 func get_velocity() -> Vector3:
-	var _body = _anchored_shape.get_parent()
-	if _anchored_shape and \"centrifuge_angular_velocity\" in _body:
-		return velocity + (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
+	if _anchored_shape:
+		var _body = _anchored_shape.get_parent()
+		if \"centrifuge_angular_velocity\" in _body:
+			return velocity + (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
 	return velocity
 
 
@@ -439,16 +440,23 @@ func heal_health():
 
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func damage(amount : float):
-	if multiplayer.get_remote_sender_id() == 1:
-		health = clamp(health - amount, 0, 100)
-		breached = true
+	#if multiplayer.get_remote_sender_id() == 1:
+	#	return
+	
+	health = clamp(health - amount, 0, 100)
+	breached = true
+	print(\"damaged\")
 
 
 
-@rpc(\"authority\", \"call_local\", \"reliable\")
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
 func die():
+	#if !multiplayer.get_remote_sender_id() == 1:
+	#	return
+	
 	if is_multiplayer_authority():
 		UiManager.set_ui(0)
+	
 	death.emit(int(str(name)))
 	queue_free()
 "

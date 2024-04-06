@@ -1,4 +1,5 @@
 RigidBody3D
+Node3D
 MultiplayerSpawner
 AudioStreamPlayer3D
 MultiplayerSynchronizer
@@ -11,4 +12,3 @@ GPUParticles3D
 TextureRect
 Control
 BoxContainer
-Node3D
