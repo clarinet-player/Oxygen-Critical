@@ -10,17 +10,20 @@ signal death(id : int)
 
 
 #region Variables
-var walk_acceleration : float = 25.0
-var walk_friction : float = 35.0
-var walk_max_speed : float = 3
+const walk_acceleration : float = 25.0
+const walk_friction : float = 35.0
+const walk_max_speed : float = 3
 
-var sprint_acceleration : float = 35.0
-var sprint_max_speed : float = 6
-var slide_friction : float = 1.0
+const sprint_acceleration : float = 35.0
+const sprint_max_speed : float = 6
+const slide_friction : float = 1.0
 
-var jump_power : float = 3.0
+const jump_power : float = 3.0
 
-var mouse_sensitivity : float = 1.0
+const mouse_sensitivity : float = 1.0
+
+
+const timeout_time : int = 2000
 
 
 var velocity : Vector3
@@ -49,6 +52,8 @@ var inventory := Array()
 var active_item : Node3D
 
 
+var update_time : int
+
 
 @onready var camera := $Camera3D
 @onready var hitbox := $Hitbox
@@ -65,11 +70,13 @@ func _enter_tree():
 
 func _ready():
 	
+	update_time = Time.get_ticks_msec()
+	
 	if !Multiplayermanager.mp_active or is_multiplayer_authority():
 		$Camera3D.current = true
 		UiManager.set_ui(3)
 		
-		var spawnpoint = WorldState.find_spawnpoint()
+		var spawnpoint = WorldState.find_spawnpoint(self)
 		
 		if spawnpoint:
 			global_position = spawnpoint.global_position
@@ -168,6 +175,10 @@ func _process(delta):
 
 #region Physics Frame
 func _physics_process(delta : float):
+	if Multiplayermanager.mp_active and Time.get_ticks_msec() - update_time > timeout_time:
+		queue_free()
+		return
+	
 	if Multiplayermanager.mp_active and !is_multiplayer_authority():
 		return
 	
@@ -453,6 +464,10 @@ func die():
 	
 	death.emit(int(str(name)))
 	queue_free()
+
+
+func _on_synchronization():
+	update_time = Time.get_ticks_msec()
 "
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ufnhc"]
@@ -525,3 +540,5 @@ spawn_path = NodePath("../Camera3D")
 replication_config = SubResource("SceneReplicationConfig_0uupb")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+
+[connection signal="synchronized" from="MultiplayerSynchronizer" to="." method="_on_synchronization"]

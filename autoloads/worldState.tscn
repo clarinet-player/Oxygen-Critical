@@ -21,12 +21,15 @@ func get_gravity_vector() -> Vector3:
 
 
 
-func find_spawnpoint():
+func find_spawnpoint(exclude):
 	var best_point
 	var best_value := 0.0
 	
 	var players = get_tree().get_nodes_in_group(\"Players\")
+	players.erase(exclude)
 	var spawnpoints = get_tree().get_nodes_in_group(\"Spawnpoints\")
+	
+	print(players.size())
 	
 	if players.size() < 1:
 		return spawnpoints.pick_random()

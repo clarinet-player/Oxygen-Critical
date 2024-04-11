@@ -23,13 +23,6 @@ func _spawn_player(_id):
 	var player = preload(\"res://classes/player.tscn\").instantiate()
 	add_child(player)
 	player.death.connect(_spawn_player)
-	
-	#var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
-	#player.inventory.append(ak)
-	#var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
-	#player.inventory.append(vector)
-	#var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
-	#player.inventory.append(glock)
 "
 
 [sub_resource type="Environment" id="Environment_bpvko"]

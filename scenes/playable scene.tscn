@@ -10,6 +10,8 @@ script/source = "extends Node3D
 func _ready():
 	var area = AABB(Vector3(-30, -8, -30), Vector3(60, 16, 60))
 	WorldState.playable_area = area
+	
+	WorldState.gravity_state = \"zero\"
 "
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hjjoh"]

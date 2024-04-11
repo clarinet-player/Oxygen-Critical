@@ -7,19 +7,19 @@ script/source = "extends Node3D
 
 
 #region firing parameters
-var weapon_name = \"Glock-19\"
-var firerate : float = 16
-var firemode : int = 1
-var mag_size : int = 20
-var reload_time : float = 1250
-var muzzle_vel : float = 350
-var damage : float = 20
-var effective_range : float = 30.0
-var recovery : float = 1.2
-var recoil : float = 2.25
-var jerk : float = 0.35
-var spray : float = 0.8
-var inventory_size : int = 1
+const weapon_name = \"Glock-19\"
+const firerate := 16.0
+const firemode := 1
+const mag_size := 20
+const reload_time := 1250.0
+const muzzle_vel := 350.0
+const damage := 20.0
+const effective_range := 30.0
+const recovery := 1.2
+const recoil := 2.25
+const jerk := 0.35
+const spray := 0.8
+const inventory_size := 1
 #endregion
 
 

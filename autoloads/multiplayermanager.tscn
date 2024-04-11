@@ -53,18 +53,11 @@ func _on_connect(id : int):
 	
 	spawn_player(id)
 
-func _on_disconnect(id : int):
-	print(\"player disconnected: \", id)
-	if get_node_or_null(str(id)):
-		get_node(str(id)).queue_free()
-		remove_child(get_node(str(id)))
-
 
 
 # Executed on the client
 @rpc(\"any_peer\")
 func connected():
-	print(\"connected\")
 	mp_active = true
 	UiManager.set_ui(0)
 #endregion
