@@ -86,7 +86,7 @@ func _ready():
 		hud.set_health(100)
 		hud.set_ammo(false, 0)
 		
-		if Multiplayermanager.mp_active:
+		if !Multiplayermanager.mp_active or is_multiplayer_authority():
 			var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
 			inventory.append(ak)
 			var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
@@ -440,20 +440,14 @@ func heal_health():
 
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func damage(amount : float):
-	#if multiplayer.get_remote_sender_id() == 1:
-	#	return
-	
 	health = clamp(health - amount, 0, 100)
 	breached = true
-	print(\"damaged\")
+
 
 
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func die():
-	#if !multiplayer.get_remote_sender_id() == 1:
-	#	return
-	
 	if is_multiplayer_authority():
 		UiManager.set_ui(0)
 	

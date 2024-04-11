@@ -1,3 +1,8 @@
+Sprite3D
+OmniLight3D
+LightmapGI
+WorldEnvironment
+SpotLight3D
 RigidBody3D
 Node3D
 MultiplayerSpawner
@@ -8,7 +13,3 @@ MeshInstance3D
 StaticBody3D
 Button
 VBoxContainer
-GPUParticles3D
-TextureRect
-Control
-BoxContainer

@@ -1,19 +1,13 @@
-<<<<<<< Updated upstream
-C:/Users/caleb_w7331uj/Documents/GitHub/space-game/linux
-res://gamemodes
-C:/Users/caleb_w7331uj/Documents/GitHub/space-game/windows
-res://scenes
-=======
 C:/Users/caleb/OneDrive/Documents/space-game/linux
->>>>>>> Stashed changes
-res://scripts
+C:/Users/caleb/OneDrive/Documents/space-game/windows
 res://scenes
+res://
+res://scripts
 res://weapons/glock
 res://weapons/vector
 res://weapons/ak12
 res://autoloads
 res://ui
-res://
 res://classes
 res://weapons/AK12
 res://assets

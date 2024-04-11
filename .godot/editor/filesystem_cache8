@@ -1,56 +1,9 @@
 ea4bc82a6ad023ab7ee23ee620429895
-<<<<<<< Updated upstream
-::res://::1710784238
-export_presets.cfg::TextFile::-1::1710703669::0::1::::<><>::
-icon.svg::CompressedTexture2D::8724437967346365169::1702190669::1707257175::1::::<><>::
-::res://assets/::1707366152
-anchor.png::CompressedTexture2D::2750970278555625248::1707366152::1707366152::1::::<><>::
-anchor.svg::CompressedTexture2D::8320650414894412702::1707366152::1707366152::1::::<><>::
-breach.png::CompressedTexture2D::7942638279254933574::1707366152::1707366152::1::::<><>::
-crosshair.png::CompressedTexture2D::6813641984644282386::1705964072::1705964094::1::::<><>::
-metal.jpg::CompressedTexture2D::1970671546397719232::1704579424::1705090095::1::::<><>::
-pikachu.png::CompressedTexture2D::2987508511258098730::1705980385::1705980393::1::::<><>::
-ship1.obj::Mesh::1992452463883919187::1704225847::1707257175::1::::<><>::
-ship2.obj::Mesh::7790162301134781609::1704225847::1707257176::1::::<><>::
-ship2.tres::ConcavePolygonShape3D::1805536636470162589::1704486657::0::1::::<><>::
-testscene.tres::ConcavePolygonShape3D::8465421319000102396::1704579424::0::1::::<><>::
-thumbsup.jpg::CompressedTexture2D::3399232090794219126::1705980727::1705980727::1::::<><>::
-::res://autoloads/::1710784928
-multiplayermanager.tscn::PackedScene::3298394945087652991::1710784928::0::1::::<><>::
-ui manager.tscn::PackedScene::695190123698328647::1710784928::0::1::::<><>::uid://crovijoeg2hv::::res://ui/main menu.tscn<>uid://b6j6wnag62maf::::res://ui/pause menu.tscn<>uid://bw31ycr56hs2f::::res://ui/player hud.tscn
-worldState.tscn::PackedScene::890259437353000500::1710702950::0::1::::<><>::
-::res://classes/::1710784929
-bullet.tscn::PackedScene::4851513591805773323::1710784929::0::1::::<><>::
-gameSurface.tscn::PackedScene::9049239728378702472::1705872491::0::1::::<><>::
-player.tscn::PackedScene::104956028073985459::1710784929::0::1::::<><>::
-spawnpoint.tscn::PackedScene::7492970016331983388::1706384480::0::1::::<><>::
-::res://linux/::1710703650
-::res://scenes/::1710784929
-Empty scene.tscn::PackedScene::8376312248054403878::1710627134::0::1::::<><>::
-firing range.tscn::PackedScene::9024361267217318717::1710784929::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>uid://de0weem1pd67y::::res://classes/spawnpoint.tscn<>res://scripts/ship.gd<>uid://3nfnvsc74364::::res://assets/ship1.obj<>uid://di8u3ngubd882::::res://assets/ship2.obj
-playable scene.tscn::PackedScene::5664415139704904680::1710271888::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>uid://de0weem1pd67y::::res://classes/spawnpoint.tscn
-::res://scripts/::1710701876
-ship.gd::GDScript::-1::1710701876::0::1::::<>RigidBody3D<>::
-::res://ui/::1710784929
-main menu.tscn::PackedScene::176360083397563743::1710784929::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg<>uid://bitf3f8hujhok::::res://assets/pikachu.png
-pause menu.tscn::PackedScene::4582776433618976957::1710784929::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg
-player hud.tscn::PackedScene::3989999454422294155::1710784929::0::1::::<><>::uid://bfgucw27ut5l1::::res://assets/anchor.png
-::res://weapons/::1706659615
-::res://weapons/ak12/::1710784929
-ak12.tscn::PackedScene::6057950990840864630::1710784929::0::1::::<><>::uid://3cuw4l80rgui::::res://assets/metal.jpg<>uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
-ak47-sfx-3.wav::AudioStreamWAV::711929598220884928::1706385933::1706385933::1::::<><>::
-::res://weapons/glock/::1710784929
-glock.tscn::PackedScene::2398482040883963623::1710784929::0::1::::<><>::uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
-::res://weapons/vector/::1710784929
-vector.tscn::PackedScene::1985506697532872956::1710784929::0::1::::<><>::uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
-::res://windows/::1710703668
-=======
-::res://::1712375897
-export_presets.cfg::TextFile::-1::1706917120::0::1::::<><>::
-glock.glb::PackedScene::7469239456067592512::1712353297::1712353297::1::::<><>::
+::res://::1712804964
+export_presets.cfg::TextFile::-1::1712377587::0::1::::<><>::
 icon.svg::CompressedTexture2D::8724437967346365169::1704164277::1712352140::1::::<><>::
-vector.glb::PackedScene::6861066485279437168::1712353291::1712353292::1::::<><>::
-::res://assets/::1712375897
+::res://assets/::1712803765
+10_m_Air_Rifle_target.svg.png::CompressedTexture2D::2537508927825535489::1712802479::1712803765::1::::<><>::
 anchor.png::CompressedTexture2D::2750970278555625248::1707343539::1707343544::1::::<><>::
 anchor.svg::CompressedTexture2D::8320650414894412702::1707343769::1707343769::1::::<><>::
 breach.png::CompressedTexture2D::7942638279254933574::1707364812::1707364861::1::::<><>::
@@ -60,39 +13,37 @@ pikachu.png::CompressedTexture2D::2987508511258098730::1706320626::1706320626::1
 ship1.obj::Mesh::1992452463883919187::1704504474::1712352140::1::::<><>::
 ship2.obj::Mesh::7790162301134781609::1704504474::1712352140::1::::<><>::
 ship2.tres::ConcavePolygonShape3D::1805536636470162589::1704492982::0::1::::<><>::
-shooting range1.glb::PackedScene::6155268727043811951::1712375891::1712375897::1::::<><>::
-shooting range2.glb::PackedScene::369457460117749226::1712375891::1712375897::1::::<><>::
-shooting range.glb::PackedScene::7728207258784287746::1712375891::1712375897::1::::<><>::
+shooting range1.glb::PackedScene::6155268727043811951::1712377661::1712377661::1::::<><>::
+shooting range2.glb::PackedScene::369457460117749226::1712377661::1712377661::1::::<><>::
+shooting range.glb::PackedScene::7728207258784287746::1712377661::1712377661::1::::<><>::
 testscene.tres::ConcavePolygonShape3D::8465421319000102396::1704502364::0::1::::<><>::
 thumbsup.jpg::CompressedTexture2D::3399232090794219126::1706320626::1706320626::1::::<><>::
-::res://autoloads/::1712374865
-multiplayermanager.tscn::PackedScene::3298394945087652991::1712374865::0::1::::<><>::
-ui manager.tscn::PackedScene::695190123698328647::1712374865::0::1::::<><>::uid://crovijoeg2hv::::res://ui/main menu.tscn<>uid://b6j6wnag62maf::::res://ui/pause menu.tscn<>uid://bw31ycr56hs2f::::res://ui/player hud.tscn
+::res://autoloads/::1712377729
+multiplayermanager.tscn::PackedScene::3298394945087652991::1712377729::0::1::::<><>::
+ui manager.tscn::PackedScene::695190123698328647::1712377729::0::1::::<><>::uid://crovijoeg2hv::::res://ui/main menu.tscn<>uid://b6j6wnag62maf::::res://ui/pause menu.tscn<>uid://bw31ycr56hs2f::::res://ui/player hud.tscn
 worldState.tscn::PackedScene::890259437353000500::1710647501::0::1::::<><>::
-::res://classes/::1712374866
-bullet.tscn::PackedScene::4851513591805773323::1712374866::0::1::::<><>::
+::res://classes/::1712804950
+bullet.tscn::PackedScene::4851513591805773323::1712804950::0::1::::<><>::
 gameSurface.tscn::PackedScene::9049239728378702472::1704869424::0::1::::<><>::
-player.tscn::PackedScene::104956028073985459::1712374865::0::1::::<><>::
+player.tscn::PackedScene::104956028073985459::1712804950::0::1::::<><>::
 spawnpoint.tscn::PackedScene::7492970016331983388::1706751729::0::1::::<><>::
-::res://linux/::1710735733
-::res://scenes/::1712374866
-Empty scene.tscn::PackedScene::8376312248054403878::1710641400::0::1::::<><>::
-firing range.tscn::PackedScene::9024361267217318717::1712374866::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>uid://de0weem1pd67y::::res://classes/spawnpoint.tscn<>res://scripts/ship.gd<>uid://3nfnvsc74364::::res://assets/ship1.obj<>uid://di8u3ngubd882::::res://assets/ship2.obj
+::res://linux/::1712794438
+::res://scenes/::1712804949
+Empty scene.tscn::PackedScene::8376312248054403878::1712804949::0::1::::<><>::
+firing range.tscn::PackedScene::9024361267217318717::1712804949::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>uid://3cuw4l80rgui::::res://assets/metal.jpg<>uid://de0weem1pd67y::::res://classes/spawnpoint.tscn<>res://scripts/ship.gd<>uid://bcfgnv57pghjt::::res://assets/10_m_Air_Rifle_target.svg.png
 playable scene.tscn::PackedScene::5664415139704904680::1707365672::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>uid://de0weem1pd67y::::res://classes/spawnpoint.tscn
-::res://scenes/Firing Range/::1710647500
-::res://scripts/::1710735733
-ship.gd::GDScript::-1::1710735733::0::1::::<>RigidBody3D<>::
-::res://ui/::1712374866
-main menu.tscn::PackedScene::176360083397563743::1712374866::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg<>uid://bitf3f8hujhok::::res://assets/pikachu.png
-pause menu.tscn::PackedScene::4582776433618976957::1712374866::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg
-player hud.tscn::PackedScene::3989999454422294155::1712374866::0::1::::<><>::uid://bfgucw27ut5l1::::res://assets/anchor.png
+::res://scripts/::1712796894
+ship.gd::GDScript::-1::1712796894::0::1::::<>RigidBody3D<>::
+::res://ui/::1712377729
+main menu.tscn::PackedScene::176360083397563743::1712377729::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg<>uid://bitf3f8hujhok::::res://assets/pikachu.png
+pause menu.tscn::PackedScene::4582776433618976957::1712377729::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg
+player hud.tscn::PackedScene::3989999454422294155::1712377729::0::1::::<><>::uid://bfgucw27ut5l1::::res://assets/anchor.png
 ::res://weapons/::1706911527
-::res://weapons/ak12/::1712374865
-ak12.tscn::PackedScene::6057950990840864630::1712374865::0::1::::<><>::uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
+::res://weapons/ak12/::1712804950
+ak12.tscn::PackedScene::6057950990840864630::1712804950::0::1::::<><>::uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
 ak47-sfx-3.wav::AudioStreamWAV::711929598220884928::1706751731::1706751731::1::::<><>::
-::res://weapons/glock/::1712374866
-glock.tscn::PackedScene::2398482040883963623::1712374866::0::1::::<><>::uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
-::res://weapons/vector/::1712374866
-vector.tscn::PackedScene::1985506697532872956::1712374866::0::1::::<><>::uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
+::res://weapons/glock/::1712804950
+glock.tscn::PackedScene::2398482040883963623::1712804950::0::1::::<><>::uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
+::res://weapons/vector/::1712804950
+vector.tscn::PackedScene::1985506697532872956::1712804950::0::1::::<><>::uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
 ::res://windows/::1710735733
->>>>>>> Stashed changes

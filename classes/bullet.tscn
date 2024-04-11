@@ -88,13 +88,14 @@ func _physics_process(delta):
 "
 
 [sub_resource type="SphereMesh" id="SphereMesh_diy8k"]
-radius = 0.1
-height = 0.2
+radius = 0.07
+radial_segments = 16
+is_hemisphere = true
 
 [node name="bullet" type="Node3D"]
 top_level = true
 script = SubResource("GDScript_dlcs3")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+transform = Transform3D(-1, 8.74228e-08, -3.82137e-15, 0, -4.37114e-08, -1, -8.74228e-08, -1, 4.37114e-08, 0, 0, 0)
 mesh = SubResource("SphereMesh_diy8k")
