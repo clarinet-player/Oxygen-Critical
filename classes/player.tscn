@@ -176,6 +176,7 @@ func _process(delta):
 #region Physics Frame
 func _physics_process(delta : float):
 	if Multiplayermanager.mp_active and Time.get_ticks_msec() - update_time > timeout_time:
+		Multiplayermanager.timeout.rpc_id(int(str(name)))
 		queue_free()
 		return
 	
@@ -436,6 +437,11 @@ func get_velocity() -> Vector3:
 
 
 
+func _on_synchronization():
+	update_time = Time.get_ticks_msec()
+
+
+
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func heal_breach():
 	breached = false
@@ -464,10 +470,6 @@ func die():
 	
 	death.emit(int(str(name)))
 	queue_free()
-
-
-func _on_synchronization():
-	update_time = Time.get_ticks_msec()
 "
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ufnhc"]

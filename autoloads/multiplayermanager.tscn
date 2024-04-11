@@ -17,7 +17,6 @@ func _ready():
 		set_level(1)
 		
 		multiplayer.peer_connected.connect(_on_connect)
-		multiplayer.peer_disconnected.connect(_on_disconnect)
 		
 		peer.create_server(7777)
 		multiplayer.multiplayer_peer = peer
@@ -82,6 +81,12 @@ func on_player_death(id : int):
 func set_level(level : int):
 	if level == 1:
 		get_tree().change_scene_to_file(\"res://scenes/playable scene.tscn\")
+
+
+
+@rpc(\"any_peer\", \"call_remote\", \"unreliable\")
+func timeout():
+	disconnect_player()
 "
 
 [node name="MultiplayerManager" type="Node"]
