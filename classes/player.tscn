@@ -23,7 +23,7 @@ const jump_power : float = 3.0
 const mouse_sensitivity : float = 1.0
 
 
-const timeout_time : int = 2000
+const timeout_time : int = 1000
 
 
 var velocity : Vector3
@@ -177,6 +177,7 @@ func _process(delta):
 func _physics_process(delta : float):
 	if Multiplayermanager.mp_active and !is_multiplayer_authority() and Time.get_ticks_msec() - update_time > timeout_time:
 		Multiplayermanager.timeout.rpc_id(int(str(name)))
+		print(\"player disconnected: \", name)
 		queue_free()
 		return
 	
