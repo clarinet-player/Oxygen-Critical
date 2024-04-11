@@ -5,5 +5,6 @@ res://classes/bullet.tscn
 res://weapons/glock/glock.tscn
 res://weapons/vector/vector.tscn
 res://classes/player.tscn
-res://autoloads/multiplayermanager.tscn
 res://ui/main menu.tscn
+res://autoloads/worldState.tscn
+res://autoloads/multiplayermanager.tscn

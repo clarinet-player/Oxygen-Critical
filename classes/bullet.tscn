@@ -19,6 +19,10 @@ func _physics_process(delta):
 	if Multiplayermanager.mp_active and !is_multiplayer_authority():
 		global_translate(velocity * delta)
 		velocity += WorldState.get_gravity_vector() * delta
+		
+		# Remove ourself if necessary
+		if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
+			queue_free()
 		return
 	
 	
@@ -88,7 +92,8 @@ func _physics_process(delta):
 "
 
 [sub_resource type="SphereMesh" id="SphereMesh_diy8k"]
-radius = 0.07
+radius = 0.05
+height = 1.5
 radial_segments = 16
 is_hemisphere = true
 
@@ -97,5 +102,5 @@ top_level = true
 script = SubResource("GDScript_dlcs3")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(-1, 8.74228e-08, -3.82137e-15, 0, -4.37114e-08, -1, -8.74228e-08, -1, 4.37114e-08, 0, 0, 0)
+transform = Transform3D(-1, 8.74228e-08, -3.82137e-15, 0, -4.37114e-08, -1, -8.74228e-08, -1, 4.37114e-08, 0, 0, 0.413438)
 mesh = SubResource("SphereMesh_diy8k")

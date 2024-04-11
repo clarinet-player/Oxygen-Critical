@@ -55,15 +55,16 @@ func _on_connect(id : int):
 
 func _on_disconnect(id : int):
 	print(\"player disconnected: \", id)
-	#if get_node_or_null(str(id)):
-	#	get_node(str(id)).queue_free()
-	#	remove_child(get_node(str(id)))
+	if get_node_or_null(str(id)):
+		get_node(str(id)).queue_free()
+		remove_child(get_node(str(id)))
 
 
 
 # Executed on the client
 @rpc(\"any_peer\")
 func connected():
+	print(\"connected\")
 	mp_active = true
 	UiManager.set_ui(0)
 #endregion
@@ -96,3 +97,5 @@ script = SubResource("GDScript_w478l")
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://classes/player.tscn", "res://classes/bullet.tscn")
 spawn_path = NodePath("..")
+
+[connection signal="spawned" from="MultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]
