@@ -29,8 +29,6 @@ func find_spawnpoint(exclude):
 	players.erase(exclude)
 	var spawnpoints = get_tree().get_nodes_in_group(\"Spawnpoints\")
 	
-	print(players.size())
-	
 	if players.size() < 1:
 		return spawnpoints.pick_random()
 	
