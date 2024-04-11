@@ -175,7 +175,7 @@ func _process(delta):
 
 #region Physics Frame
 func _physics_process(delta : float):
-	if Multiplayermanager.mp_active and Time.get_ticks_msec() - update_time > timeout_time:
+	if Multiplayermanager.mp_active and !is_multiplayer_authority() and Time.get_ticks_msec() - update_time > timeout_time:
 		Multiplayermanager.timeout.rpc_id(int(str(name)))
 		queue_free()
 		return
@@ -459,7 +459,6 @@ func heal_health():
 func damage(amount : float):
 	health = clamp(health - amount, 0, 100)
 	breached = true
-
 
 
 

@@ -86,7 +86,15 @@ func set_level(level : int):
 
 @rpc(\"any_peer\", \"call_remote\", \"unreliable\")
 func timeout():
-	disconnect_player()
+	mp_active = false
+	for child in get_children():
+		if child.name == \"MultiplayerSpawner\":
+			continue
+		child.queue_free()
+		remove_child(child)
+	peer.close()
+	get_tree().change_scene_to_file(\"res://scenes/Empty scene.tscn\")
+	UiManager.set_ui(1)
 "
 
 [node name="MultiplayerManager" type="Node"]
