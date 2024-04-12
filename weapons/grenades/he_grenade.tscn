@@ -12,6 +12,7 @@ const blast_radius := 8.0
 const damage := 90.0
 
 var arm_time := 0
+var expended := false
 
 
 @onready var audio = $AudioStreamPlayer3D
@@ -26,13 +27,14 @@ func _ready():
 
 
 func _physics_process(delta):
-	if Time.get_ticks_msec() - arm_time > fuse_time and !audio.playing:
+	if Time.get_ticks_msec() - arm_time > fuse_time and !expended:
 		
 		if is_multiplayer_authority():
 			var players = get_tree().get_nodes_in_group(\"Players\")
 			for player in players:
 				_check_player(player)
 		
+		expended = true
 		freeze = true
 		
 		if get_node_or_null(\"Sphere\"):
@@ -45,7 +47,6 @@ func _physics_process(delta):
 
 
 func _check_player(player : Node3D):
-	print(\"checkingf player\")
 	if player.global_position.distance_to(global_position) > blast_radius:
 		return
 	
@@ -55,7 +56,6 @@ func _check_player(player : Node3D):
 	var _raycast = _space.intersect_ray(_ray)
 	
 	if _raycast.collider == player.hitbox:
-		print(\"hit feet\")
 		_damage(player)
 		return
 	
@@ -64,7 +64,6 @@ func _check_player(player : Node3D):
 	_raycast = _space.intersect_ray(_ray)
 	
 	if _raycast.collider == player.hitbox:
-		print(\"hit head\")
 		_damage(player)
 	
 
