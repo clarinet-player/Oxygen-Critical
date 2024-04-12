@@ -1,12 +1,11 @@
-res://classes/player.tscn
-res://weapons/vector/vector.tscn
-res://weapons/glock/glock.tscn
-res://weapons/ak12/ak12.tscn
-res://scenes/playable scene.tscn
-res://scenes/firing range.tscn
-res://scenes/Empty scene.tscn
-res://classes/bullet.tscn
-res://ui/main menu.tscn
+res://weapons/grenades/he_grenade.tscn
 res://autoloads/worldState.tscn
 res://autoloads/multiplayermanager.tscn
-res://ui/pause menu.tscn
+res://scenes/playable scene.tscn
+res://scenes/firing range.tscn
+res://classes/player.tscn
+res://weapons/ak12/ak12.tscn
+res://weapons/glock/glock.tscn
+res://weapons/vector/vector.tscn
+res://classes/bullet.tscn
+res://weapons/grenades/he_display.tscn

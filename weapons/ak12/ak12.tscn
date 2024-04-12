@@ -90,7 +90,7 @@ func _physics_process(delta):
 	
 	
 	# Trigger Input
-	if Input.is_action_pressed(\"Mouse1\") and !_mouse_down and !UiManager.paused:
+	if Input.is_action_just_pressed(\"Mouse1\") and !UiManager.paused:
 		_mouse_down = true
 		if time > _fire_time_ms + _firedelay * firemode:
 			_burst = firemode

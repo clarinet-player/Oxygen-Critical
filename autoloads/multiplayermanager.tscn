@@ -77,13 +77,6 @@ func on_player_death(id : int):
 
 
 
-@rpc(\"authority\", \"call_remote\", \"reliable\")
-func set_level(level : int):
-	if level == 1:
-		get_tree().change_scene_to_file(\"res://scenes/playable scene.tscn\")
-
-
-
 @rpc(\"any_peer\", \"call_remote\", \"unreliable\")
 func timeout():
 	mp_active = false
@@ -95,6 +88,24 @@ func timeout():
 	peer.close()
 	get_tree().change_scene_to_file(\"res://scenes/Empty scene.tscn\")
 	UiManager.set_ui(1)
+
+
+
+@rpc(\"authority\", \"call_remote\", \"reliable\")
+func set_level(level : int):
+	if level == 1:
+		get_tree().change_scene_to_file(\"res://scenes/playable scene.tscn\")
+
+
+
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
+func throw_grenade(type : int, position : Vector3, velocity : Vector3):
+	if type == 1:
+		var grenade : RigidBody3D = preload(\"res://weapons/grenades/he_grenade.tscn\").instantiate()
+		
+		add_child(grenade)
+		grenade.global_position = position
+		grenade.apply_impulse(velocity)
 "
 
 [node name="MultiplayerManager" type="Node"]
