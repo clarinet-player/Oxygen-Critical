@@ -28,7 +28,7 @@ func _ready():
 func _physics_process(delta):
 	if Time.get_ticks_msec() - arm_time > fuse_time and !audio.playing:
 		
-		if !Multiplayermanager.mp_active or multiplayer.get_unique_id() == 1:
+		if is_multiplayer_authority():
 			var players = get_tree().get_nodes_in_group(\"Players\")
 			for player in players:
 				_check_player(player)
@@ -69,6 +69,7 @@ func _check_player(player : Node3D):
 
 func _damage(player):
 	var actual_damage = damage * (1 - player.global_position.distance_to(global_position) / blast_radius)
+	print(\"damageing player: \", actual_damage)
 	
 	if actual_damage > 5:
 		if Multiplayermanager.mp_active:
