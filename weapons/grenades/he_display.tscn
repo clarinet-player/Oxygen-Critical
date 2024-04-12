@@ -5,7 +5,7 @@ script/source = "extends Node3D
 
 
 
-const throw_velocity := 20.0
+const throw_velocity := 10.0
 
 @onready var hud = UiManager.playerhud
 
@@ -33,7 +33,7 @@ func _physics_process(delta):
 	if Multiplayermanager.mp_active and !is_multiplayer_authority():
 		return
 	
-	if Input.is_action_just_pressed(\"Mouse1\"):
+	if Input.is_action_just_released(\"Mouse1\"):
 		var player = get_parent().get_parent()
 	
 		var velocity = -global_basis.z * throw_velocity + player.get_velocity()

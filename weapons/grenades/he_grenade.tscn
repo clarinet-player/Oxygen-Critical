@@ -54,7 +54,8 @@ func _calculate_damage(player : Node3D):
 		damage_dealt += damage
 	
 	
-	player.rpc_id(int(str(player.name)), \"damage\", damage_dealt)"
+	player.rpc_id(int(str(player.name)), \"damage\", damage_dealt)
+"
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k2ba4"]
 resource_name = "Body"
@@ -138,6 +139,7 @@ radius = 0.15
 
 [node name="HeGrenade" type="RigidBody3D"]
 collision_layer = 0
+mass = 0.25
 gravity_scale = 0.0
 script = SubResource("GDScript_6vkc7")
 
