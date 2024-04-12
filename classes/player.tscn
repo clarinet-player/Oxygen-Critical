@@ -537,7 +537,7 @@ mesh = SubResource("CapsuleMesh_r400h")
 skeleton = NodePath("../../PlayerBody")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("res://weapons/ak12/ak12.tscn", "res://weapons/vector/vector.tscn", "res://weapons/glock/glock.tscn")
+_spawnable_scenes = PackedStringArray("res://weapons/ak12/ak12.tscn", "res://weapons/vector/vector.tscn", "res://weapons/glock/glock.tscn", "res://weapons/grenades/he_display.tscn")
 spawn_path = NodePath("../Camera3D")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]

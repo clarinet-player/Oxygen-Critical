@@ -163,17 +163,18 @@ albedo_color = Color(0.74902, 0.74902, 0.74902, 1)
 metallic = 0.76
 
 [node name="HeDisplay" type="Node3D"]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
 script = SubResource("GDScript_gf578")
 
 [node name="Sphere" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.00730387, 0, 0.126634, 0, 0.126845, 0, -0.126634, 0, -0.00730387, 0.763713, -0.299144, -0.704711)
+transform = Transform3D(0.00846172, 0, 0.126562, 0, 0.126845, 0, -0.126562, 0, 0.00846172, 0.905817, -0.365678, -0.808374)
 mesh = SubResource("ArrayMesh_ysjm0")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_ynf1o")
 surface_material_override/1 = SubResource("StandardMaterial3D_rli6m")
 
 [node name="Cube" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.0575814, 0, 0.998341, 0, 1, 0, -0.998341, 0, -0.0575814, 0.768791, -0.250704, -0.616662)
+transform = Transform3D(0.0667093, 0, 0.997773, 0, 1, 0, -0.997773, 0, 0.0667093, 0.899934, -0.317238, -0.720375)
 mesh = SubResource("ArrayMesh_y0hof")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_5lfyk")

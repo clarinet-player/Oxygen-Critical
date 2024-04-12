@@ -92,7 +92,7 @@ func _physics_process(delta):
 "
 
 [sub_resource type="SphereMesh" id="SphereMesh_diy8k"]
-radius = 0.05
+radius = 0.03
 height = 2.0
 radial_segments = 16
 is_hemisphere = true

@@ -1,3 +1,4 @@
+FogVolume
 AudioStreamPlayer3D
 CollisionShape3D
 RigidBody3D
@@ -11,4 +12,3 @@ MultiplayerSpawner
 MultiplayerSynchronizer
 Node
 MeshInstance3D
-StaticBody3D

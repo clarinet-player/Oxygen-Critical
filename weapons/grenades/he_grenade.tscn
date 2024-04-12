@@ -1,4 +1,6 @@
-[gd_scene load_steps=9 format=3 uid="uid://l7ky6urme3jk"]
+[gd_scene load_steps=10 format=3 uid="uid://l7ky6urme3jk"]
+
+[ext_resource type="AudioStream" uid="uid://ke4m2gyndm6k" path="res://weapons/ak12/ak47-sfx-3.wav" id="1_f5adt"]
 
 [sub_resource type="GDScript" id="GDScript_6vkc7"]
 script/source = "extends RigidBody3D
@@ -6,26 +8,38 @@ script/source = "extends RigidBody3D
 
 
 const fuse_time := 2500
-const blast_radius := 10.0
-const damage := 100.0
+const blast_radius := 8.0
+const damage := 90.0
 
 var arm_time := 0
+
+
+@onready var audio = $AudioStreamPlayer3D
 
 
 
 func _ready():
 	arm_time = Time.get_ticks_msec()
+	audio.volume_db = -10
+	audio.pitch_scale = 0.8
 
 
 
 func _physics_process(delta):
-	if Time.get_ticks_msec() - arm_time > fuse_time:
+	if Time.get_ticks_msec() - arm_time > fuse_time and !audio.playing:
 		
 		if !Multiplayermanager.mp_active or multiplayer.get_unique_id() == 1:
 			var players = get_tree().get_nodes_in_group(\"Players\")
 			for player in players:
 				_check_player(player)
 		
+		freeze = true
+		
+		if get_node_or_null(\"Sphere\"):
+			get_node(\"Sphere\").queue_free()
+		
+		audio.play()
+		await audio.finished
 		queue_free()
 
 
@@ -141,7 +155,7 @@ albedo_color = Color(0.654902, 0.654902, 0.654902, 1)
 metallic = 0.74
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_em8ar"]
-radius = 0.15
+radius = 0.08
 
 [node name="HeGrenade" type="RigidBody3D"]
 collision_layer = 0
@@ -150,7 +164,7 @@ gravity_scale = 0.0
 script = SubResource("GDScript_6vkc7")
 
 [node name="Sphere" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.126845, 0, 0, 0, 0.126845, 0, 0, 0, 0.126845, 0, 0, 0)
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, 0)
 mesh = SubResource("ArrayMesh_sf8ip")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_x4xf8")
@@ -158,3 +172,6 @@ surface_material_override/1 = SubResource("StandardMaterial3D_2p6vr")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_em8ar")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("1_f5adt")
