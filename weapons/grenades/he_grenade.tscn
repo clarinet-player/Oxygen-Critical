@@ -41,16 +41,16 @@ func _calculate_damage(player : Node3D):
 	var _space = get_world_3d().direct_space_state
 	var _ray = PhysicsRayQueryParameters3D.create(global_position, player.global_position)
 	var _raycast = _space.intersect_ray(_ray)
-	print(_raycast.collider)
-	if _raycast.collider == player:
+	
+	if _raycast.collider == player.hitbox:
 		damage_dealt += damage
 	
 	
 	# Raycast to player's head
 	_ray = PhysicsRayQueryParameters3D.create(global_position, player.camera.global_position)
 	_raycast = _space.intersect_ray(_ray)
-	print(_raycast.collider)
-	if _raycast.collider == player:
+	
+	if _raycast.collider == player.hitbox:
 		damage_dealt += damage
 	
 	
