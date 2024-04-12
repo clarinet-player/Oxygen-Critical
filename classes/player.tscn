@@ -80,7 +80,7 @@ func _ready():
 		
 		if spawnpoint:
 			global_position = spawnpoint.global_position
-			velocity = spawnpoint.to_global(spawnpoint.down) * 10
+			velocity = spawnpoint.down * 10
 		
 			var _axis = spawnpoint.down.cross(global_basis.y * -1)
 			var _angle = acos(spawnpoint.down.dot(global_basis.y * -1))

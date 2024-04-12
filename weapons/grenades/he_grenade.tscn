@@ -45,6 +45,7 @@ func _physics_process(delta):
 
 
 func _check_player(player : Node3D):
+	print(\"checkingf player\")
 	if player.global_position.distance_to(global_position) > blast_radius:
 		return
 	
@@ -54,6 +55,7 @@ func _check_player(player : Node3D):
 	var _raycast = _space.intersect_ray(_ray)
 	
 	if _raycast.collider == player.hitbox:
+		print(\"hit feet\")
 		_damage(player)
 		return
 	
@@ -62,6 +64,7 @@ func _check_player(player : Node3D):
 	_raycast = _space.intersect_ray(_ray)
 	
 	if _raycast.collider == player.hitbox:
+		print(\"hit head\")
 		_damage(player)
 	
 
@@ -69,7 +72,6 @@ func _check_player(player : Node3D):
 
 func _damage(player):
 	var actual_damage = damage * (1 - player.global_position.distance_to(global_position) / blast_radius)
-	print(\"damageing player: \", actual_damage)
 	
 	if actual_damage > 5:
 		if Multiplayermanager.mp_active:
