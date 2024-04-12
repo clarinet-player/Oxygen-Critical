@@ -5,8 +5,8 @@ script/source = "extends RigidBody3D
 
 
 
-const fuse_time := 2000
-const blast_radius := 10.0
+const fuse_time := 2500
+const blast_radius := 15.0
 const damage := 30.0
 
 var arm_time := 0
@@ -41,7 +41,7 @@ func _calculate_damage(player : Node3D):
 	var _space = get_world_3d().direct_space_state
 	var _ray = PhysicsRayQueryParameters3D.create(global_position, player.global_position)
 	var _raycast = _space.intersect_ray(_ray)
-	
+	print(_raycast.collider)
 	if _raycast.collider == player:
 		damage_dealt += damage
 	
@@ -49,7 +49,7 @@ func _calculate_damage(player : Node3D):
 	# Raycast to player's head
 	_ray = PhysicsRayQueryParameters3D.create(global_position, player.camera.global_position)
 	_raycast = _space.intersect_ray(_ray)
-	
+	print(_raycast.collider)
 	if _raycast.collider == player:
 		damage_dealt += damage
 	
