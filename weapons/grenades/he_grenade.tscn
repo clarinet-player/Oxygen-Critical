@@ -77,9 +77,9 @@ func _damage(player):
 	
 	if actual_damage > 5:
 		if Multiplayermanager.mp_active:
-			player.rpc_id(int(str(player.name)), \"damage\", actual_damage)
+			player.rpc_id(int(str(player.name)), \"damage\", actual_damage, tearing)
 		else:
-			player.damage(actual_damage)
+			player.damage(actual_damage, tearing)
 "
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k2ba4"]

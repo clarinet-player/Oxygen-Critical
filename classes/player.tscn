@@ -463,10 +463,10 @@ func heal_health():
 
 
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
-func damage(base : float, suit : float):
+func damage(base : float, tearing : float):
 	health = clamp(health - base, 0, 100)
-	if suit > breach:
-		breach = suit
+	if tearing > breach:
+		breach = tearing
 
 
 
