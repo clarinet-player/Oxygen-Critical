@@ -10,6 +10,7 @@ script/source = "extends RigidBody3D
 const fuse_time := 2500
 const blast_radius := 8.0
 const damage := 90.0
+const tearing := 12.0
 
 var arm_time := 0
 var expended := false

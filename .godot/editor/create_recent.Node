@@ -1,3 +1,7 @@
+Sprite2D
+MeshInstance2D
+TextureRect
+Polygon2D
 GPUParticles3D
 FogVolume
 AudioStreamPlayer3D
@@ -8,8 +12,3 @@ Sprite3D
 OmniLight3D
 LightmapGI
 WorldEnvironment
-SpotLight3D
-MultiplayerSpawner
-MultiplayerSynchronizer
-Node
-MeshInstance3D

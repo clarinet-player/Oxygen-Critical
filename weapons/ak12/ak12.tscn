@@ -14,11 +14,12 @@ const mag_size := 20
 const reload_time := 3000.0
 const muzzle_vel := 800.0
 const damage := 20.0
+const tearing := 4.0
 const effective_range := 40.0
 const recovery := 2.0
 const recoil := 3.5
-const jerk := 0.17
-const spray := 0.7
+const jerk := 0.15
+const spray := 0.45
 const inventory_size := 2
 #endregion
 
@@ -113,14 +114,13 @@ func _physics_process(delta):
 	# Firing
 	if _burst > 0 and time > _fire_time_ms + _firedelay:
 		
-		var inaccuracy : float
-		if $\"../..\".is_anchored():
-			inaccuracy = min($\"../..\".velocity.length(), 6) * 10
-		else:
-			inaccuracy = 30
+		var inaccuracy := 0.0
+		var player = $\"../..\"
+		if !player.is_anchored() or player.velocity.length() > 2:
+			inaccuracy = 10
 		inaccuracy = (inaccuracy + _c_heat) * spray / 1000
 		
-		fire.rpc(global_position, $\"../..\".get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy).rotated(global_basis.z.normalized(), randf_range(0, TAU))))
+		fire.rpc(global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy).rotated(global_basis.z.normalized(), randf_range(0, TAU))))
 		
 		get_parent().rotate(basis.x.normalized(), recoil / 400)
 		rotate(basis.x.normalized(), recoil / 400)
@@ -156,6 +156,7 @@ func fire(position : Vector3, velocity : Vector3):
 	_bullet.global_position = position + velocity.normalized()
 	_bullet.velocity = velocity
 	_bullet.mass = damage
+	_bullet.tearing = tearing
 	_bullet.effective_range = effective_range
 "
 

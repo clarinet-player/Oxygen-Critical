@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c67skss10c7mf"
-path="res://.godot/imported/anchor.png-571d8c46f0d14abc512756a17b106696.ctex"
+uid="uid://vyjwe05dj6hf"
+path="res://.godot/imported/indicator.png-740da2a3433db51a7f665c61673dc201.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/anchor.png"
-dest_files=["res://.godot/imported/anchor.png-571d8c46f0d14abc512756a17b106696.ctex"]
+source_file="res://assets/indicator.png"
+dest_files=["res://.godot/imported/indicator.png-740da2a3433db51a7f665c61673dc201.ctex"]
 
 [params]
 

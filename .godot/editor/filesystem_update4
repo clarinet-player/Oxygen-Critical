@@ -1,3 +1,4 @@
+res://ui/player hud.tscn
 res://autoloads/worldState.tscn
 res://autoloads/multiplayermanager.tscn
 res://scenes/playable scene.tscn

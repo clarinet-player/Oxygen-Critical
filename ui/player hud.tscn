@@ -1,6 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://bw31ycr56hs2f"]
+[gd_scene load_steps=6 format=3 uid="uid://bw31ycr56hs2f"]
 
-[ext_resource type="Texture2D" uid="uid://bfgucw27ut5l1" path="res://assets/anchor.png" id="1_xoek8"]
+[ext_resource type="Texture2D" uid="uid://c67skss10c7mf" path="res://assets/anchor.png" id="1_xoek8"]
+[ext_resource type="Texture2D" uid="uid://chgg0w0akk1ch" path="res://assets/crosshair.png" id="2_h03sm"]
+[ext_resource type="Texture2D" uid="uid://vyjwe05dj6hf" path="res://assets/indicator.png" id="3_tdxfv"]
 
 [sub_resource type="GDScript" id="GDScript_wnrnt"]
 script/source = "extends Control
@@ -13,7 +15,10 @@ var progress_speed : float
 
 @onready var progress := $\"Progress Bar\"
 @onready var crosshair := $Crosshair
-@onready var hud_anchor := $Anchor
+
+@onready var wheel := $Wheel
+@onready var anchor := $\"Wheel/Anchor\"
+@onready var indicator := $\"Wheel/Indicator\"
 
 
 
@@ -28,15 +33,25 @@ func set_ammo(vis : bool, ammo : int):
 
 
 
-func set_hud_anchor(visibility : bool, rotation_rad : float = 0):
-	hud_anchor.visible = visibility
-	hud_anchor.rotation = rotation_rad
+func set_hud_anchor(mode : int, rotation_rad : float = 0):
+	wheel.rotation = rotation_rad
+	
+	if mode == 0:
+		anchor.hide()
+		indicator.hide()
+	
+	elif mode == 1:
+		indicator.show()
+		anchor.hide()
+	
+	elif mode == 2:
+		anchor.show()
+		indicator.hide()
 
 
 
 func start_progress(secs : float, task_name : String):
 	progress.visible = true
-	crosshair.visible = false
 	progress.value = 0
 	progress_speed = 100 / secs
 	progress_name = task_name
@@ -46,7 +61,7 @@ func start_progress(secs : float, task_name : String):
 func stop_progress(task_name : String):
 	if task_name == progress_name:
 		progress.visible = false
-		crosshair.visible = true
+
 
 
 
@@ -55,7 +70,6 @@ func _process(delta):
 		progress.value += delta * progress_speed
 		if progress.value == 100:
 			progress.visible = false
-			crosshair.visible = true
 "
 
 [sub_resource type="Theme" id="Theme_s0mw5"]
@@ -85,49 +99,22 @@ grow_vertical = 0
 theme = SubResource("Theme_s0mw5")
 show_percentage = false
 
-[node name="Crosshair" type="Control" parent="."]
+[node name="Crosshair" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
 grow_horizontal = 2
 grow_vertical = 2
+texture = ExtResource("2_h03sm")
 
-[node name="Panel" type="Panel" parent="Crosshair"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -2.0
-offset_top = -12.5
-offset_right = 2.0
-offset_bottom = 12.5
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Panel2" type="Panel" parent="Crosshair"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -12.5
-offset_top = -2.0
-offset_right = 12.5
-offset_bottom = 2.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Anchor" type="Control" parent="."]
+[node name="Wheel" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -137,36 +124,41 @@ anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="TextureRect" type="TextureRect" parent="Anchor"]
+[node name="Anchor" type="TextureRect" parent="Wheel"]
+visible = false
 layout_mode = 1
-anchors_preset = 8
+anchors_preset = 5
 anchor_left = 0.5
-anchor_top = 0.5
 anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -24.0
-offset_top = 90.0
-offset_right = 776.0
-offset_bottom = 1059.0
+offset_left = -16.0
+offset_top = 27.0
+offset_right = 16.0
+offset_bottom = 59.0
 grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(0.06, 0.06)
 texture = ExtResource("1_xoek8")
+
+[node name="Indicator" type="TextureRect" parent="Wheel"]
+layout_mode = 0
+offset_left = -16.0
+offset_top = 27.0
+offset_right = 16.0
+offset_bottom = 59.0
+texture = ExtResource("3_tdxfv")
 
 [node name="Progress Bar" type="ProgressBar" parent="."]
 visible = false
 layout_mode = 1
-anchors_preset = 8
+anchors_preset = 7
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 1.0
 anchor_right = 0.5
-anchor_bottom = 0.5
+anchor_bottom = 1.0
 offset_left = -78.0
-offset_top = -13.5
+offset_top = -94.0
 offset_right = 78.0
-offset_bottom = 13.5
+offset_bottom = -67.0
 grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
 show_percentage = false
 
 [node name="Panel" type="Panel" parent="."]

@@ -46,7 +46,7 @@ enum move_type {
 var _movement_state : move_type = move_type.IDLE
 
 var health : float = 100
-var breached := false
+var breach : float = 0
 
 var inventory := Array()
 var active_item : Node3D
@@ -129,8 +129,7 @@ func _process(delta):
 	if Multiplayermanager.mp_active and !is_multiplayer_authority():
 		return
 	
-	if breached:
-		health -= 10 * delta
+	health -= breach * delta
 	if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
 		health -= 100 * delta
 	hud.set_health(health)
@@ -138,15 +137,20 @@ func _process(delta):
 		die.rpc()
 	
 	# update anchor gui
-	if _anchored_shape:
-		if _reorient:
-			hud.set_hud_anchor(true, 0)
-		elif acos(_surface_normal.dot(global_basis.x)) < PI / 2:
-			hud.set_hud_anchor(true, acos(_surface_normal.dot(global_basis.y)))
-		else:
-			hud.set_hud_anchor(true, acos(_surface_normal.dot(-global_basis.y)) + PI)
+	var mode = 0
+	if !_anchored_shape:
+		mode = 0
+	elif velocity.length() > 2:
+		mode = 1
 	else:
-		hud.set_hud_anchor(false)
+		mode = 2
+	
+	if _reorient:
+		hud.set_hud_anchor(mode, 0)
+	elif acos(_surface_normal.dot(global_basis.x)) < PI / 2:
+		hud.set_hud_anchor(mode, acos(_surface_normal.dot(global_basis.y)))
+	else:
+		hud.set_hud_anchor(mode, acos(_surface_normal.dot(-global_basis.y)) + PI)
 	
 	
 	if Input.is_action_just_pressed(\"1\") and inventory.size() > 0 and inventory[0] != active_item:
@@ -447,7 +451,7 @@ func _on_synchronization():
 
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func heal_breach():
-	breached = false
+	breach = 0
 
 
 
@@ -459,9 +463,10 @@ func heal_health():
 
 
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
-func damage(amount : float):
-	health = clamp(health - amount, 0, 100)
-	breached = true
+func damage(base : float, suit : float):
+	health = clamp(health - base, 0, 100)
+	if suit > breach:
+		breach = suit
 
 
 
