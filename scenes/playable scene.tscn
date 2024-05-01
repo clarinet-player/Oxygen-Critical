@@ -10,7 +10,7 @@ script/source = "extends Node3D
 
 
 func _ready():
-	var area = AABB(Vector3(-30, -8, -30), Vector3(60, 16, 60))
+	var area = AABB(Vector3(-30, -5, -80), Vector3(30, 10, 90))
 	WorldState.playable_area = area
 	
 	WorldState.gravity_state = \"zero\"

@@ -413,7 +413,7 @@ func detach():
 	var _forward : Vector3 = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
 	var _side : Vector3 = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
 	
-	var _body : RigidBody3D = _anchored_shape.get_parent()
+	var _body = _anchored_shape.get_parent()
 	
 	if \"centrifuge_angular_velocity\" in _body:
 		velocity += (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
