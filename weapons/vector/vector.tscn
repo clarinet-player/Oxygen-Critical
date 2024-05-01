@@ -11,15 +11,15 @@ const weapon_name = \"KRISS Vector\"
 const firerate := 21
 const firemode := 0
 const mag_size := 30
-const reload_time := 2000.0
+const reload_time := 2250.0
 const muzzle_vel := 400.0
 const damage := 14.0
 const tearing := 8.0
 const effective_range := 18.0
 const recovery := 2.5
-const recoil := 0.82
-const jerk := 0.17
-const spray := 0.72
+const recoil := 0.85
+const jerk := 0.2
+const spray := 0.75
 const inventory_size := 2
 #endregion
 
@@ -117,7 +117,7 @@ func _physics_process(delta):
 		var inaccuracy := 0.0
 		var player = $\"../..\"
 		if !player.is_anchored() or player.velocity.length() > 2:
-			inaccuracy = 10
+			inaccuracy = 20
 		inaccuracy = (inaccuracy + _c_heat) * spray / 1000
 		
 		fire.rpc(global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy).rotated(global_basis.z.normalized(), randf_range(0, TAU))))

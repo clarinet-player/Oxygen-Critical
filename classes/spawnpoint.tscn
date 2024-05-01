@@ -4,6 +4,8 @@
 script/source = "extends Node3D
 
 @export var down : Vector3 = Vector3(0, -1, 0)
+
+@export var team := 0
 "
 
 [node name="Spawnpoint" type="Node3D" groups=["Spawnpoints"]]
