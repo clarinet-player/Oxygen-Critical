@@ -370,7 +370,6 @@ func _free_move(delta : float):
 	
 	# Try to move to our new position
 	var _collision = move_and_collide(velocity * delta)
-	var _loops = 0
 	
 	while _collision:
 		
@@ -382,17 +381,15 @@ func _free_move(delta : float):
 			_anchored_move(_collision.get_remainder().length()/velocity.length())
 			return
 		
-		if _loops > 2: # prevents getting stuck in geometry
+		if _collision.get_travel().length_squared() < 0.1:
 			global_translate(_normal)
-		
-		_collision = move_and_collide(_collision.get_remainder().bounce(_normal) * 0.6)
-		velocity = velocity.bounce(_normal) * 0.6
 		
 		var _body = _shape.get_parent()
 		if \"centrifuge_angular_velocity\" in _body:
-			velocity += ((_body.global_position - global_position).cross(_body.centrifuge_angular_velocity) - velocity) * 0.5
+			velocity = lerp(velocity, (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity), 0.5)
 		
-		_loops += 1
+		_collision = move_and_collide(_collision.get_remainder().bounce(_normal) * 0.5)
+		velocity = velocity.bounce(_normal) * 0.5
 #endregion
 
 

@@ -1,4 +1,3 @@
-res://ui/player hud.tscn
 res://autoloads/worldState.tscn
 res://autoloads/multiplayermanager.tscn
 res://scenes/playable scene.tscn
@@ -10,3 +9,4 @@ res://weapons/vector/vector.tscn
 res://classes/bullet.tscn
 res://weapons/grenades/he_display.tscn
 res://weapons/grenades/he_grenade.tscn
+res://ui/player hud.tscn
