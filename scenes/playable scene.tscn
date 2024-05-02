@@ -10,7 +10,7 @@ script/source = "extends Node3D
 
 
 func _ready():
-	var area = AABB(Vector3(-30, -3, -80), Vector3(80, 10, 90))
+	var area = AABB(Vector3(-40, 0, -60), Vector3(90, 10, 100))
 	WorldState.playable_area = area
 	
 	WorldState.gravity_state = \"zero\"
@@ -81,6 +81,7 @@ size = Vector3(2, 1, 1)
 size = Vector3(2, 1, 1)
 
 [node name="PlayableScene" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 2, 22)
 script = SubResource("GDScript_e5p08")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
