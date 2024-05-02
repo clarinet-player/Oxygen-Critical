@@ -129,7 +129,11 @@ func _physics_process(delta):
 			inaccuracy = 20
 		inaccuracy = (inaccuracy + _c_heat) * spray / 1000
 		
-		fire.rpc(global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy).rotated(global_basis.z.normalized(), randf_range(0, TAU))))
+		if Multiplayermanager.mp_active:
+			fire.rpc(global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy).rotated(global_basis.z.normalized(), randf_range(0, TAU))))
+		else:
+			fire(global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy).rotated(global_basis.z.normalized(), randf_range(0, TAU))))
+		
 		
 		get_parent().rotate(basis.x.normalized(), recoil / 400)
 		rotate(basis.x.normalized(), recoil / 400)
