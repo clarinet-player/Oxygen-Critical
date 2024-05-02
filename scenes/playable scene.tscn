@@ -41,6 +41,9 @@ glow_enabled = true
 volumetric_fog_enabled = true
 volumetric_fog_density = 0.1
 volumetric_fog_albedo = Color(0.243137, 0.243137, 0.27451, 1)
+volumetric_fog_emission = Color(0, 0, 0.00784314, 1)
+volumetric_fog_gi_inject = 0.0
+volumetric_fog_length = 32.0
 volumetric_fog_temporal_reprojection_enabled = false
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h3tll"]
@@ -303,31 +306,31 @@ shape = SubResource("BoxShape3D_63agg")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.5, 0)
-omni_range = 20.0
+omni_range = 25.0
 
 [node name="OmniLight3D2" type="OmniLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2.5, -12)
-omni_range = 20.0
+omni_range = 25.0
 
 [node name="OmniLight3D3" type="OmniLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 2.5, -44)
-omni_range = 20.0
+omni_range = 25.0
 
 [node name="OmniLight3D4" type="OmniLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 2.5, -60)
-omni_range = 20.0
+omni_range = 25.0
 
 [node name="OmniLight3D5" type="OmniLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 2.5, -44)
-omni_range = 20.0
+omni_range = 25.0
 
 [node name="OmniLight3D6" type="OmniLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 2.5, -60)
-omni_range = 20.0
+omni_range = 25.0
 
 [node name="OmniLight3D7" type="OmniLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.5, -22)
-omni_range = 20.0
+omni_range = 25.0
 
 [node name="Spawnpoint" parent="." instance=ExtResource("2_7pod8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0.5, 0)
