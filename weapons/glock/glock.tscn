@@ -38,6 +38,7 @@ var reload_start_time := 0
 
 @onready var audio := $AudioStreamPlayer3D
 @onready var hud = UiManager.playerhud
+@onready var light = $Skeleton3D/SpotLight3D
 
 
 
@@ -69,6 +70,14 @@ func _exit_tree():
 
 
 
+func _process(delta):
+	if Time.get_ticks_msec() > _fire_time_ms + _firedelay * 0.5:
+		light.light_energy = 0
+	else:
+		light.light_energy = 0.2
+
+
+
 func _physics_process(delta):
 	if Multiplayermanager.mp_active and !is_multiplayer_authority():
 		return
@@ -91,7 +100,7 @@ func _physics_process(delta):
 	
 	
 	# Trigger Input
-	if Input.is_action_pressed(\"Mouse1\") and !_mouse_down and !UiManager.paused:
+	if Input.is_action_just_pressed(\"Mouse1\") and !UiManager.paused:
 		_mouse_down = true
 		if time > _fire_time_ms + _firedelay * firemode:
 			_burst = firemode
@@ -126,9 +135,6 @@ func _physics_process(delta):
 		rotate(basis.x.normalized(), recoil / 400)
 		rotate(basis.y.normalized(), jerk * _c_heat * (randf_range(-0.01, 0.01) - rotation.y * jerk))
 		
-		_fire_time_ms -= _firedelay
-		if time > _fire_time_ms + _firedelay:
-			_fire_time_ms = time
 		_heat += 1
 		_burst -= 1
 		magazine -= 1
@@ -151,9 +157,13 @@ func fire(position : Vector3, velocity : Vector3):
 	audio.pitch_scale = randf_range(0.95, 1.05)
 	audio.play()
 	
+	_fire_time_ms -= _firedelay
+	if Time.get_ticks_msec() > _fire_time_ms + _firedelay:
+		_fire_time_ms = Time.get_ticks_msec()
+	
 	var _bullet = preload(\"res://classes/bullet.tscn\").instantiate()
 	add_child(_bullet)
-	_bullet.global_position = position + velocity.normalized()
+	_bullet.global_position = position + velocity.normalized() * 2
 	_bullet.velocity = velocity
 	_bullet.mass = damage
 	_bullet.tearing = tearing
@@ -238,6 +248,16 @@ bones/3/scale = Vector3(1, 1, 1)
 mesh = SubResource("ArrayMesh_m887v")
 skin = SubResource("Skin_vxbal")
 surface_material_override/0 = SubResource("StandardMaterial3D_6y1rc")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Skeleton3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0.0319681, -3.71408, 0.849422)
+light_color = Color(1, 0.796078, 0.407843, 1)
+light_energy = 0.0
+light_volumetric_fog_energy = 5.0
+spot_range = 15.0
+spot_attenuation = -0.5
+spot_angle = 100.0
+spot_angle_attenuation = 1.8025
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("1_iwpcx")

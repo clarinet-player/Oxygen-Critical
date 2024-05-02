@@ -10,7 +10,7 @@ script/source = "extends Node3D
 
 
 func _ready():
-	var area = AABB(Vector3(-30, -5, -80), Vector3(30, 10, 90))
+	var area = AABB(Vector3(-30, -3, -80), Vector3(80, 10, 90))
 	WorldState.playable_area = area
 	
 	WorldState.gravity_state = \"zero\"
@@ -31,6 +31,7 @@ glow_enabled = true
 volumetric_fog_enabled = true
 volumetric_fog_density = 0.1
 volumetric_fog_albedo = Color(0.243137, 0.243137, 0.27451, 1)
+volumetric_fog_temporal_reprojection_enabled = false
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h3tll"]
 albedo_texture = ExtResource("1_lf3af")
@@ -324,3 +325,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 0.5, -44)
 [node name="Spawnpoint4" parent="." instance=ExtResource("2_7pod8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 0.5, -60)
 team = 2
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-0.611383, -0.288273, 0.736959, -0.00623605, 0.933013, 0.359789, -0.79131, 0.215373, -0.572226, 36.8734, 5.59225, -62.8537)

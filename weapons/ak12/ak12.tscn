@@ -13,7 +13,7 @@ const firemode := 0
 const mag_size := 20
 const reload_time := 2500.0
 const muzzle_vel := 800.0
-const damage := 20.0
+const damage := 22.0
 const tearing := 4.0
 const effective_range := 40.0
 const recovery := 2.0
@@ -38,6 +38,7 @@ var reload_start_time := 0
 
 @onready var audio := $AudioStreamPlayer3D
 @onready var hud = UiManager.playerhud
+@onready var light = $Skeleton3D2/SpotLight3D
 
 
 
@@ -66,6 +67,14 @@ func _exit_tree():
 	
 	request_ready()
 #endregion
+
+
+
+func _process(delta):
+	if Time.get_ticks_msec() > _fire_time_ms + _firedelay * 0.5:
+		light.light_energy = 0
+	else:
+		light.light_energy = 0.2
 
 
 
@@ -126,9 +135,6 @@ func _physics_process(delta):
 		rotate(basis.x.normalized(), recoil / 400)
 		rotate(basis.y.normalized(), jerk * _c_heat * (randf_range(-0.01, 0.01) - rotation.y * jerk))
 		
-		_fire_time_ms -= _firedelay
-		if time > _fire_time_ms + _firedelay:
-			_fire_time_ms = time
 		_heat += 1
 		_burst -= 1
 		magazine -= 1
@@ -151,9 +157,13 @@ func fire(position : Vector3, velocity : Vector3):
 	audio.pitch_scale = randf_range(0.95, 1.05)
 	audio.play()
 	
+	_fire_time_ms -= _firedelay
+	if Time.get_ticks_msec() > _fire_time_ms + _firedelay:
+		_fire_time_ms = Time.get_ticks_msec()
+	
 	var _bullet = preload(\"res://classes/bullet.tscn\").instantiate()
 	add_child(_bullet)
-	_bullet.global_position = position + velocity.normalized()
+	_bullet.global_position = position + velocity.normalized() * 2
 	_bullet.velocity = velocity
 	_bullet.mass = damage
 	_bullet.tearing = tearing
@@ -281,6 +291,16 @@ bones/3/scale = Vector3(1, 1, 1)
 [node name="AK12" type="MeshInstance3D" parent="Skeleton3D2"]
 mesh = SubResource("ArrayMesh_f8dac")
 skin = SubResource("Skin_acbdr")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Skeleton3D2"]
+transform = Transform3D(0.903215, 0.42789, 0.0333728, 0.42789, -0.9038, 0.00750314, 0.0333729, 0.00750293, -0.999415, 0.0618081, -0.0245492, 7.51529)
+light_color = Color(1, 0.796078, 0.407843, 1)
+light_energy = 0.0
+light_volumetric_fog_energy = 5.0
+spot_range = 15.0
+spot_attenuation = -0.5
+spot_angle = 100.0
+spot_angle_attenuation = 1.8025
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("2_nnjmr")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://l7ky6urme3jk"]
+[gd_scene load_steps=14 format=3 uid="uid://l7ky6urme3jk"]
 
 [ext_resource type="AudioStream" uid="uid://ke4m2gyndm6k" path="res://weapons/ak12/ak47-sfx-3.wav" id="1_f5adt"]
 
@@ -18,6 +18,7 @@ var expended := false
 
 @onready var audio = $AudioStreamPlayer3D
 @onready var particles = $GPUParticles3D
+@onready var light = $OmniLight3D
 
 
 
@@ -25,6 +26,12 @@ func _ready():
 	arm_time = Time.get_ticks_msec()
 	audio.volume_db = -10
 	audio.pitch_scale = 0.8
+
+
+
+func _process(delta):
+	if expended and Time.get_ticks_msec() - arm_time > max(50, delta):
+		light.light_energy = 0
 
 
 
@@ -37,6 +44,7 @@ func _physics_process(delta):
 				_check_player(player)
 		
 		expended = true
+		arm_time = Time.get_ticks_msec()
 		freeze = true
 		
 		if get_node_or_null(\"Sphere\"):
@@ -44,7 +52,9 @@ func _physics_process(delta):
 		
 		audio.play()
 		particles.emitting = true
-		await get_tree().create_timer(3.0).timeout
+		light.light_energy = 0.2
+		
+		await get_tree().create_timer(5.0).timeout
 		queue_free()
 
 
@@ -165,15 +175,21 @@ radius = 0.08
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_24xpk"]
 lifetime_randomness = 0.51
 spread = 180.0
-initial_velocity_min = 0.25
-initial_velocity_max = 2.0
+initial_velocity_min = 15.0
+initial_velocity_max = 35.0
 gravity = Vector3(0, 0, 0)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1tjlc"]
+albedo_color = Color(0.376471, 0.376471, 0.376471, 1)
+metallic = 0.62
+roughness = 0.67
+
 [sub_resource type="SphereMesh" id="SphereMesh_bl6n2"]
-radius = 0.05
-height = 0.1
-radial_segments = 8
-rings = 4
+material = SubResource("StandardMaterial3D_1tjlc")
+radius = 0.04
+height = 0.06
+radial_segments = 4
+rings = 2
 
 [sub_resource type="Skin" id="Skin_j3ngg"]
 
@@ -181,6 +197,7 @@ rings = 4
 collision_layer = 0
 mass = 0.25
 gravity_scale = 0.0
+continuous_cd = true
 script = SubResource("GDScript_6vkc7")
 
 [node name="Sphere" type="MeshInstance3D" parent="."]
@@ -198,12 +215,18 @@ stream = ExtResource("1_f5adt")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="."]
 emitting = false
-amount = 32
-lifetime = 16.11
+amount = 64
+lifetime = 0.6
 one_shot = true
-speed_scale = 64.0
 explosiveness = 1.0
 fixed_fps = 60
 process_material = SubResource("ParticleProcessMaterial_24xpk")
 draw_pass_1 = SubResource("SphereMesh_bl6n2")
 draw_skin = SubResource("Skin_j3ngg")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+light_color = Color(1, 0.796078, 0.407843, 1)
+light_energy = 0.0
+light_volumetric_fog_energy = 5.0
+omni_range = 15.0
+omni_attenuation = -0.5

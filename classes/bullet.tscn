@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://cbedyqmsdeuql"]
+[gd_scene load_steps=4 format=3 uid="uid://cbedyqmsdeuql"]
 
 [sub_resource type="GDScript" id="GDScript_dlcs3"]
 resource_name = "bullet"
@@ -92,16 +92,21 @@ func _physics_process(delta):
 		return
 "
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_m7s0v"]
+albedo_color = Color(0.368627, 0.368627, 0.368627, 1)
+emission_enabled = true
+emission = Color(0.945098, 0.721569, 0.309804, 1)
+
 [sub_resource type="SphereMesh" id="SphereMesh_diy8k"]
-radius = 0.03
-height = 2.0
+material = SubResource("StandardMaterial3D_m7s0v")
+radius = 0.015
+height = 3.0
 radial_segments = 16
-is_hemisphere = true
 
 [node name="bullet" type="Node3D"]
 top_level = true
 script = SubResource("GDScript_dlcs3")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(-1, 8.74228e-08, -3.82137e-15, 0, -4.37114e-08, -1, -8.74228e-08, -1, 4.37114e-08, 0, 0, 0.688387)
+transform = Transform3D(-1, 8.74228e-08, -3.82137e-15, 0, -4.37114e-08, -1, -8.74228e-08, -1, 4.37114e-08, 0, 0, -0.806377)
 mesh = SubResource("SphereMesh_diy8k")

@@ -45,8 +45,9 @@ func disconnect_player():
 func _on_connect(id : int):
 	print(\"player connected: \", id)
 	
-	rpc_id(id, \"connected\")
 	rpc_id(id, \"set_level\", 1)
+	await get_tree().create_timer(0.1).timeout
+	rpc_id(id, \"connected\")
 	
 	await get_tree().create_timer(1.0).timeout
 	
@@ -72,7 +73,7 @@ func spawn_player(id : int):
 
 
 func on_player_death(id : int):
-	await get_tree().create_timer(3.0).timeout
+	await get_tree().create_timer(1.0).timeout
 	spawn_player(id)
 
 

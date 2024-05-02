@@ -38,6 +38,7 @@ var reload_start_time := 0
 
 @onready var audio := $AudioStreamPlayer3D
 @onready var hud = UiManager.playerhud
+@onready var light = $Vector/SpotLight3D
 
 
 
@@ -69,6 +70,14 @@ func _exit_tree():
 
 
 
+func _process(delta):
+	if Time.get_ticks_msec() > _fire_time_ms + _firedelay * 0.5:
+		light.light_energy = 0
+	else:
+		light.light_energy = 0.2
+
+
+
 func _physics_process(delta):
 	if Multiplayermanager.mp_active and !is_multiplayer_authority():
 		return
@@ -91,7 +100,7 @@ func _physics_process(delta):
 	
 	
 	# Trigger Input
-	if Input.is_action_pressed(\"Mouse1\") and !_mouse_down and !UiManager.paused:
+	if Input.is_action_just_pressed(\"Mouse1\") and !UiManager.paused:
 		_mouse_down = true
 		if time > _fire_time_ms + _firedelay * firemode:
 			_burst = firemode
@@ -126,9 +135,6 @@ func _physics_process(delta):
 		rotate(basis.x.normalized(), recoil / 400)
 		rotate(basis.y.normalized(), jerk * _c_heat * (randf_range(-0.01, 0.01) - rotation.y * jerk))
 		
-		_fire_time_ms -= _firedelay
-		if time > _fire_time_ms + _firedelay:
-			_fire_time_ms = time
 		_heat += 1
 		_burst -= 1
 		magazine -= 1
@@ -151,9 +157,13 @@ func fire(position : Vector3, velocity : Vector3):
 	audio.pitch_scale = randf_range(0.95, 1.05)
 	audio.play()
 	
+	_fire_time_ms -= _firedelay
+	if Time.get_ticks_msec() > _fire_time_ms + _firedelay:
+		_fire_time_ms = Time.get_ticks_msec()
+	
 	var _bullet = preload(\"res://classes/bullet.tscn\").instantiate()
 	add_child(_bullet)
-	_bullet.global_position = position + velocity.normalized()
+	_bullet.global_position = position + velocity.normalized() * 2
 	_bullet.velocity = velocity
 	_bullet.mass = damage
 	_bullet.tearing = tearing
@@ -202,6 +212,16 @@ script = SubResource("GDScript_pnbwi")
 transform = Transform3D(-0.0751914, 0.586317, -0.10285, -0.00577601, 0.102944, 0.591075, 0.595242, 0.075063, -0.00725657, 0.412081, -0.156862, -0.394809)
 mesh = SubResource("ArrayMesh_mpyhx")
 skeleton = NodePath("")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Vector"]
+transform = Transform3D(-4.37114e-08, 1.78814e-08, 1, -2.08151e-08, 1, -1.78814e-08, -1, -2.08151e-08, -4.37114e-08, -0.468707, -0.000670195, 0.0202953)
+light_color = Color(1, 0.796078, 0.407843, 1)
+light_energy = 0.0
+light_volumetric_fog_energy = 5.0
+spot_range = 15.0
+spot_attenuation = -0.5
+spot_angle = 100.0
+spot_angle_attenuation = 1.8025
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("1_8un07")
