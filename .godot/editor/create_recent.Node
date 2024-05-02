@@ -1,8 +1,8 @@
+Node3D
 FogVolume
 OmniLight3D
 SpotLight3D
 Camera3D
-Node3D
 CollisionShape3D
 MeshInstance3D
 StaticBody3D

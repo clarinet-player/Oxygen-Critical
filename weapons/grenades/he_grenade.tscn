@@ -9,8 +9,8 @@ script/source = "extends RigidBody3D
 
 const fuse_time := 2500
 const blast_radius := 8.0
-const damage := 90.0
-const tearing := 12.0
+const damage := 80.0
+const tearing := 11.0
 
 var arm_time := 0
 var expended := false
@@ -55,9 +55,9 @@ func _physics_process(delta):
 		light.light_energy = 0.2
 		
 		var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()
-		_smoke.size = Vector3(3, 3, 3)
-		_smoke.fade_speed = 0.25
-		_smoke.start_density = 1
+		_smoke.size = Vector3(1, 1, 1)
+		_smoke.fade_speed = 0.3
+		_smoke.start_density = 0.2
 		Multiplayermanager.add_child(_smoke)
 		_smoke.global_position = global_position
 		
@@ -182,8 +182,8 @@ radius = 0.06
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_24xpk"]
 lifetime_randomness = 0.51
 spread = 180.0
-initial_velocity_min = 15.0
-initial_velocity_max = 35.0
+initial_velocity_min = 10.0
+initial_velocity_max = 30.0
 gravity = Vector3(0, 0, 0)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1tjlc"]
@@ -224,8 +224,8 @@ stream = ExtResource("1_f5adt")
 [node name="GPUParticles3D" type="GPUParticles3D" parent="."]
 cast_shadow = 0
 emitting = false
-amount = 75
-lifetime = 0.6
+amount = 64
+lifetime = 0.8
 one_shot = true
 explosiveness = 1.0
 fixed_fps = 60
@@ -236,7 +236,7 @@ draw_skin = SubResource("Skin_j3ngg")
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
 light_color = Color(1, 0.796078, 0.407843, 1)
 light_energy = 0.0
-light_volumetric_fog_energy = 15.0
+light_volumetric_fog_energy = 10.0
 shadow_enabled = true
 omni_range = 15.0
 omni_attenuation = -0.5

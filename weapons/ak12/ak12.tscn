@@ -14,7 +14,7 @@ const mag_size := 20
 const reload_time := 2500.0
 const muzzle_vel := 800.0
 const damage := 22.0
-const tearing := 4.0
+const tearing := 5.0
 const effective_range := 40.0
 const recovery := 2.0
 const recoil := 3.5
@@ -170,11 +170,11 @@ func fire(position : Vector3, velocity : Vector3):
 	_bullet.effective_range = effective_range
 	
 	var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()
-	_smoke.size = Vector3(0.1, 0.1, 3)
-	_smoke.fade_speed = 0.35
-	_smoke.start_density = recoil * 0.02
+	_smoke.size = Vector3(0.01, 0.01, 4)
+	_smoke.fade_speed = 0.1
+	_smoke.start_density = 0.005
 	Multiplayermanager.add_child(_smoke)
-	_smoke.global_position = light.global_position + velocity.normalized()
+	_smoke.global_position = light.global_position + velocity.normalized() * 4
 	_smoke.look_at(light.global_position)
 "
 
@@ -304,11 +304,11 @@ skin = SubResource("Skin_acbdr")
 transform = Transform3D(0.903215, 0.42789, 0.0333728, 0.42789, -0.9038, 0.00750314, 0.0333729, 0.00750293, -0.999415, 0.0618081, -0.0245492, 7.51529)
 light_color = Color(1, 0.796078, 0.407843, 1)
 light_energy = 0.0
-light_volumetric_fog_energy = 15.0
+light_volumetric_fog_energy = 10.0
 shadow_enabled = true
 spot_range = 15.0
 spot_attenuation = -0.5
-spot_angle = 70.0
+spot_angle = 75.0
 spot_angle_attenuation = 1.8025
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]

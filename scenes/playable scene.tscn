@@ -14,6 +14,16 @@ func _ready():
 	WorldState.playable_area = area
 	
 	WorldState.gravity_state = \"zero\"
+	
+	if !Multiplayermanager.mp_active:
+		_spawn_player(1)
+
+
+
+func _spawn_player(_id):
+	var player = preload(\"res://classes/player.tscn\").instantiate()
+	add_child(player)
+	player.death.connect(_spawn_player)
 "
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hjjoh"]
@@ -289,29 +299,35 @@ mesh = SubResource("BoxMesh_mqhcj")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Boxes/Box19"]
 shape = SubResource("BoxShape3D_63agg")
 
-[node name="OmniLight3D" type="OmniLight3D" parent="."]
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.5, 0)
-omni_range = 100.0
+omni_range = 20.0
 
-[node name="OmniLight3D2" type="OmniLight3D" parent="."]
+[node name="OmniLight3D2" type="OmniLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2.5, -12)
-omni_range = 100.0
+omni_range = 20.0
 
-[node name="OmniLight3D3" type="OmniLight3D" parent="."]
+[node name="OmniLight3D3" type="OmniLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 2.5, -44)
-omni_range = 100.0
+omni_range = 20.0
 
-[node name="OmniLight3D4" type="OmniLight3D" parent="."]
+[node name="OmniLight3D4" type="OmniLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 2.5, -60)
-omni_range = 100.0
+omni_range = 20.0
 
-[node name="OmniLight3D5" type="OmniLight3D" parent="."]
+[node name="OmniLight3D5" type="OmniLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 2.5, -44)
-omni_range = 100.0
+omni_range = 20.0
 
-[node name="OmniLight3D6" type="OmniLight3D" parent="."]
+[node name="OmniLight3D6" type="OmniLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 2.5, -60)
-omni_range = 100.0
+omni_range = 20.0
+
+[node name="OmniLight3D7" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.5, -22)
+omni_range = 20.0
 
 [node name="Spawnpoint" parent="." instance=ExtResource("2_7pod8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0.5, 0)
