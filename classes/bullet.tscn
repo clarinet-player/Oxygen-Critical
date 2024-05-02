@@ -109,4 +109,5 @@ script = SubResource("GDScript_dlcs3")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(-1, 8.74228e-08, -3.82137e-15, 0, -4.37114e-08, -1, -8.74228e-08, -1, 4.37114e-08, 0, 0, -0.806377)
+cast_shadow = 0
 mesh = SubResource("SphereMesh_diy8k")

@@ -1,0 +1,34 @@
+[gd_scene load_steps=3 format=3 uid="uid://n6ut2npeygk2"]
+
+[sub_resource type="FogMaterial" id="FogMaterial_qoom0"]
+
+[sub_resource type="GDScript" id="GDScript_xsm31"]
+script/source = "extends FogVolume
+
+
+var start_density := 1.0
+var fade_speed := 1.0
+
+var mat
+
+
+func _ready():
+	mat = FogMaterial.new()
+	mat.density = start_density
+	material = mat
+
+
+func _process(delta):
+	mat.density = lerp(mat.density, 0.0, delta * fade_speed)
+	size.x += delta * fade_speed * 2.5
+	size.y += delta * fade_speed * 2.5
+	size.z += delta * fade_speed * 2.5
+	
+	if mat.density < 0.001:
+		queue_free()
+"
+
+[node name="Smoke" type="FogVolume"]
+shape = 0
+material = SubResource("FogMaterial_qoom0")
+script = SubResource("GDScript_xsm31")

@@ -30,7 +30,7 @@ func _ready():
 
 
 func _process(delta):
-	if expended and Time.get_ticks_msec() - arm_time > max(50, delta):
+	if expended and Time.get_ticks_msec() - arm_time > max(60, delta):
 		light.light_energy = 0
 
 
@@ -53,6 +53,13 @@ func _physics_process(delta):
 		audio.play()
 		particles.emitting = true
 		light.light_energy = 0.2
+		
+		var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()
+		_smoke.size = Vector3(3, 3, 3)
+		_smoke.fade_speed = 0.25
+		_smoke.start_density = 1
+		Multiplayermanager.add_child(_smoke)
+		_smoke.global_position = global_position
 		
 		await get_tree().create_timer(5.0).timeout
 		queue_free()
@@ -170,7 +177,7 @@ albedo_color = Color(0.654902, 0.654902, 0.654902, 1)
 metallic = 0.74
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_em8ar"]
-radius = 0.08
+radius = 0.06
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_24xpk"]
 lifetime_randomness = 0.51
@@ -208,14 +215,16 @@ surface_material_override/0 = SubResource("StandardMaterial3D_x4xf8")
 surface_material_override/1 = SubResource("StandardMaterial3D_2p6vr")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00272486, 0)
 shape = SubResource("SphereShape3D_em8ar")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("1_f5adt")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+cast_shadow = 0
 emitting = false
-amount = 64
+amount = 75
 lifetime = 0.6
 one_shot = true
 explosiveness = 1.0
@@ -227,6 +236,7 @@ draw_skin = SubResource("Skin_j3ngg")
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
 light_color = Color(1, 0.796078, 0.407843, 1)
 light_energy = 0.0
-light_volumetric_fog_energy = 5.0
+light_volumetric_fog_energy = 15.0
+shadow_enabled = true
 omni_range = 15.0
 omni_attenuation = -0.5
