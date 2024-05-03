@@ -56,8 +56,8 @@ func _physics_process(delta):
 		
 		var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()
 		_smoke.size = Vector3(0.8, 0.8, 0.8)
-		_smoke.fade_speed = 0.3
-		_smoke.start_density = 0.18
+		_smoke.fade_speed = 0.25
+		_smoke.start_density = 0.15
 		Multiplayermanager.add_child(_smoke)
 		_smoke.global_position = global_position
 		
@@ -83,7 +83,7 @@ func _check_player(player : Node3D):
 	_ray = PhysicsRayQueryParameters3D.create(global_position, player.camera.global_position)
 	_raycast = _space.intersect_ray(_ray)
 	
-	if _raycast.collider == player.hitbox:
+	if _raycast.has(\"collider\") and _raycast.collider == player.hitbox:
 		_damage(player)
 	
 
@@ -224,7 +224,7 @@ stream = ExtResource("1_f5adt")
 [node name="GPUParticles3D" type="GPUParticles3D" parent="."]
 cast_shadow = 0
 emitting = false
-amount = 50
+amount = 40
 lifetime = 0.8
 one_shot = true
 explosiveness = 1.0
