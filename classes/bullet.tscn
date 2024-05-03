@@ -17,16 +17,6 @@ var dist_travelled : float = 0.0
 
 func _physics_process(delta):
 	
-	if Multiplayermanager.mp_active and !is_multiplayer_authority():
-		global_translate(velocity * delta)
-		velocity += WorldState.get_gravity_vector() * delta
-		
-		# Remove ourself if necessary
-		if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
-			queue_free()
-		return
-	
-	
 	var _time = delta
 	var _target_pos = global_position + (velocity * _time)
 	var _space = get_world_3d().direct_space_state
@@ -59,12 +49,35 @@ func _physics_process(delta):
 			queue_free()
 			return
 		
-		# Actual collision handling
+		
 		if \"strength\" in _shape:
 			effective_range -= _shape.strength
+			var impact = preload(\"res://classes/bullet impact.tscn\").instantiate()
+			Multiplayermanager.add_child(impact)
+			impact.global_position = global_position
+			if impact.global_basis.y.cross(_normal).is_zero_approx():
+				impact.rotate(global_basis.x, acos(impact.global_basis.y.dot(_normal)))
+			impact.rotate(impact.global_basis.y.cross(_normal).normalized(), acos(impact.global_basis.y.dot(_normal)))
+			
+			var smoke = preload(\"res://classes/smoke.tscn\").instantiate()
+			smoke.size = Vector3(0.2, 0.2, 0.2)
+			smoke.fade_speed = 0.18
+			smoke.start_density = 0.008
+			Multiplayermanager.add_child(smoke)
+			smoke.global_position = global_position + _normal * 0.25
+		
+		
 		if \"player\" in _shape:
-			var _player = _shape.player
-			_player.rpc_id(int(str(_player.name)), \"damage\", min(mass * (1 - ((dist_travelled - effective_range) / effective_range)), mass), tearing)
+			effective_range -= 10
+			if is_multiplayer_authority():
+				var _player = _shape.player
+				_player.rpc_id(int(str(_player.name)), \"damage\", min(mass * (1 - ((dist_travelled - effective_range) / effective_range)), mass), tearing)
+			
+			var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
+			Multiplayermanager.add_child(blood)
+			blood.global_position = global_position
+			blood.rotate(blood.global_basis.y.cross(_normal), acos(blood.global_basis.y.dot(_normal)))
+		
 		
 		# Move through the surface so we don't collide with it again
 		global_translate(_normal * -0.01)
@@ -108,6 +121,6 @@ top_level = true
 script = SubResource("GDScript_dlcs3")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(-1, 8.74228e-08, -3.82137e-15, 0, -4.37114e-08, -1, -8.74228e-08, -1, 4.37114e-08, 0, 0, -0.806377)
+transform = Transform3D(-1, 8.74228e-08, -3.82137e-15, 0, -4.37114e-08, -1, -8.74228e-08, -1, 4.37114e-08, 0, 0, -1.49898)
 cast_shadow = 0
 mesh = SubResource("SphereMesh_diy8k")

@@ -72,6 +72,8 @@ func _ready():
 	
 	update_time = Time.get_ticks_msec()
 	
+	camera.fov = Settings.fov
+	
 	if !Multiplayermanager.mp_active or is_multiplayer_authority():
 		$Camera3D.current = true
 		UiManager.set_ui(3)

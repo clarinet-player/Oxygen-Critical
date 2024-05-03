@@ -1,0 +1,62 @@
+[gd_scene load_steps=2 format=3 uid="uid://o08p2kot83ge"]
+
+[sub_resource type="GDScript" id="GDScript_wdita"]
+script/source = "extends Node
+
+
+
+var fov : float
+#var volume : float
+var shadows_enabled : bool
+var volumetrics_enabled : bool
+
+
+
+func _ready():
+	read_file()
+
+
+
+func read_file():
+	if not FileAccess.file_exists(\"user://usersettings.json\"):
+		create_file()
+		return
+	
+	var file = FileAccess.open(\"user://usersettings.json\", FileAccess.READ)
+	var string = file.get_line()
+	var json = JSON.new()
+	file.close()
+	
+	if json.parse(string) != OK:
+		create_file()
+		return
+	
+	var data = json.get_data()
+	fov = data[\"fov\"]
+	#volume = data[\"volume\"]
+	shadows_enabled = data[\"shadows_enabled\"]
+	volumetrics_enabled = data[\"volumetrics_enabled\"]
+
+
+
+func create_file():
+	fov = 75
+	shadows_enabled = true
+	volumetrics_enabled = true
+	write_file()
+
+
+
+func write_file():
+	var file = FileAccess.open(\"user://usersettings.json\", FileAccess.WRITE)
+	var data = {
+		\"fov\": fov,
+		\"shadows_enabled\": shadows_enabled,
+		\"volumetrics_enabled\": volumetrics_enabled
+	}
+	file.store_line(JSON.stringify(data))
+	file.close()
+"
+
+[node name="Settings" type="Node"]
+script = SubResource("GDScript_wdita")

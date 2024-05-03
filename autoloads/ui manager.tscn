@@ -1,23 +1,26 @@
-[gd_scene load_steps=5 format=3 uid="uid://j50xd2vp8mfv"]
-
-[ext_resource type="PackedScene" uid="uid://crovijoeg2hv" path="res://ui/main menu.tscn" id="1_ls3de"]
-[ext_resource type="PackedScene" uid="uid://b6j6wnag62maf" path="res://ui/pause menu.tscn" id="2_iqb27"]
-[ext_resource type="PackedScene" uid="uid://bw31ycr56hs2f" path="res://ui/player hud.tscn" id="3_rnj3e"]
+[gd_scene load_steps=2 format=3 uid="uid://j50xd2vp8mfv"]
 
 [sub_resource type="GDScript" id="GDScript_noakj"]
 script/source = "extends Node
 
 
 
-@onready var mainmenu := $MainMenu
-@onready var pausemenu := $PauseMenu
-@onready var playerhud := $PlayerHud
+var mainmenu
+var pausemenu
+var playerhud
+var settingsmenu
+
+var active_menu
 
 var paused := true
 
 
 
 func _ready():
+	mainmenu = load(\"res://ui/main menu.tscn\").instantiate()
+	pausemenu = load(\"res://ui/pause menu.tscn\").instantiate()
+	playerhud = load(\"res://ui/player hud.tscn\").instantiate()
+	
 	if DisplayServer.get_name() == \"headless\":
 		set_process(false)
 	else:
@@ -27,9 +30,9 @@ func _ready():
 
 func _process(delta):
 	if Input.is_action_just_pressed(\"Escape\"):
-		if mainmenu.visible:
+		if active_menu == mainmenu:
 			get_tree().quit()
-		elif pausemenu.visible:
+		elif active_menu == pausemenu:
 			set_ui(3)
 		else:
 			set_ui(2)
@@ -39,32 +42,28 @@ func _process(delta):
 func set_ui(ui : int):
 	if DisplayServer.get_name() == \"headless\":
 		return
-	mainmenu.hide()
-	pausemenu.hide()
-	playerhud.hide()
+	
+	if active_menu:
+		remove_child(active_menu)
 	
 	if ui == 1:
-		mainmenu.show()
+		add_child(mainmenu)
+		active_menu = mainmenu
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		paused = true
 	
 	elif ui == 2:
-		pausemenu.show()
+		add_child(pausemenu)
+		active_menu = pausemenu
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		paused = true
 	
 	elif ui == 3:
-		playerhud.show()
+		add_child(playerhud)
+		active_menu = playerhud
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		paused = false
 "
 
 [node name="UiManager" type="Node"]
 script = SubResource("GDScript_noakj")
-
-[node name="MainMenu" parent="." instance=ExtResource("1_ls3de")]
-
-[node name="PauseMenu" parent="." instance=ExtResource("2_iqb27")]
-visible = true
-
-[node name="PlayerHud" parent="." instance=ExtResource("3_rnj3e")]

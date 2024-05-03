@@ -53,6 +53,7 @@ func _ready():
 		hud.set_ammo(true, magazine)
 	rotation = Vector3.ZERO
 	audio.volume_db = -110
+	light.shadow_enabled = Settings.shadows_enabled
 
 
 
@@ -166,7 +167,7 @@ func fire(position : Vector3, velocity : Vector3):
 	
 	var _bullet = preload(\"res://classes/bullet.tscn\").instantiate()
 	add_child(_bullet)
-	_bullet.global_position = position + velocity.normalized() * 2
+	_bullet.global_position = position + velocity.normalized()
 	_bullet.velocity = velocity
 	_bullet.mass = damage
 	_bullet.tearing = tearing

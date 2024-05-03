@@ -1,0 +1,67 @@
+[gd_scene load_steps=7 format=3 uid="uid://baxfwwtrgs0v8"]
+
+[ext_resource type="Texture2D" uid="uid://d2rm5f8ob43sy" path="res://assets/hole.png" id="1_4sb65"]
+
+[sub_resource type="GDScript" id="GDScript_qjops"]
+script/source = "extends Node3D
+
+
+var start_time : float
+var lifetime : float = 60000
+
+
+func _ready():
+	start_time = Time.get_ticks_msec()
+	$GPUParticles3D.emitting = true
+
+
+func _process(delta):
+	if Time.get_ticks_msec() - start_time > lifetime:
+		queue_free()
+	
+	else:
+		$Decal.albedo_mix = 1 - (Time.get_ticks_msec() - start_time) / lifetime
+"
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_wxg5k"]
+lifetime_randomness = 0.51
+angle_max = 180.0
+direction = Vector3(0, 1, 0)
+initial_velocity_min = 2.0
+initial_velocity_max = 10.0
+gravity = Vector3(0, 0, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_net1j"]
+albedo_color = Color(0.376471, 0.376471, 0.376471, 1)
+metallic = 0.62
+roughness = 0.67
+
+[sub_resource type="SphereMesh" id="SphereMesh_2m4c7"]
+material = SubResource("StandardMaterial3D_net1j")
+radius = 0.025
+height = 0.04
+radial_segments = 4
+rings = 2
+
+[sub_resource type="Skin" id="Skin_kcqmt"]
+
+[node name="BulletImpact" type="Node3D"]
+script = SubResource("GDScript_qjops")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 3
+lifetime = 0.25
+one_shot = true
+explosiveness = 1.0
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_wxg5k")
+draw_passes = 2
+draw_pass_1 = SubResource("SphereMesh_2m4c7")
+draw_pass_2 = null
+draw_skin = SubResource("Skin_kcqmt")
+
+[node name="Decal" type="Decal" parent="."]
+size = Vector3(0.25, 0.25, 0.25)
+texture_albedo = ExtResource("1_4sb65")

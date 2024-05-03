@@ -10,6 +10,8 @@ script/source = "extends Node3D
 
 
 func _ready():
+	$WorldEnvironment.environment.volumetric_fog_enabled = Settings.volumetrics_enabled
+	
 	var area = AABB(Vector3(-40, 0, -60), Vector3(90, 10, 100))
 	WorldState.playable_area = area
 	
@@ -109,6 +111,7 @@ skeleton = NodePath("")
 
 [node name="GameSurface" parent="Walls" instance=ExtResource("1_e0pjc")]
 shape = SubResource("ConcavePolygonShape3D_1jhqv")
+strength = 20.0
 
 [node name="Boxes" type="Node3D" parent="."]
 
