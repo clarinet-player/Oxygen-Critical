@@ -243,16 +243,16 @@ func _physics_process(delta : float):
 			detach()
 			_reorient = false
 			velocity += -global_basis.z * jump_power
+			
+			global_position = camera.global_position
 	
 	
 	if _anchored_shape:
-		_up_vec = lerp(_up_vec, _surface_normal, delta * 8).limit_length(1)
+		_up_vec = lerp(_up_vec, _surface_normal, delta * 8)
 	else:
-		_up_vec = lerp(_up_vec, -velocity, delta * 8).limit_length(1)
+		_up_vec = lerp(_up_vec, -velocity.normalized(), delta * 8)
 	
-	var collision = move_and_collide((camera.global_position - _up_vec) - global_position)
-	if collision and !_anchored_shape and \"get_is_grabbable\" in collision.get_collider() and collision.get_collider().get_is_grabbable():
-		attach(collision.get_collider_shape(), global_position, collision.get_normal())
+	
 	camera.global_position = global_position + _up_vec
 	hitbox.global_position = global_position + _up_vec * 0.35
 	
@@ -534,6 +534,7 @@ spot_angle = 70.0
 spot_angle_attenuation = 1.41421
 
 [node name="Hitbox" type="RigidBody3D" parent="."]
+visible = false
 collision_layer = 2
 collision_mask = 0
 can_sleep = false

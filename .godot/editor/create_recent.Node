@@ -1,10 +1,10 @@
-Node3D
+MeshInstance3D
 FogVolume
+Node3D
 OmniLight3D
 SpotLight3D
 Camera3D
 CollisionShape3D
-MeshInstance3D
 StaticBody3D
 LightmapGI
 Sprite2D
