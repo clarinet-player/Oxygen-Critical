@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://fx6g1ovon2x6"
-path="res://.godot/imported/levelone.glb-103e16b858358bb63e009d12d3228aa4.scn"
+uid="uid://dwacjaomo41xb"
+path="res://.godot/imported/healthkit.glb-93384eb4f67a4a3e6f04e386f5e34ef7.scn"
 
 [deps]
 
-source_file="res://levelone.glb"
-dest_files=["res://.godot/imported/levelone.glb-103e16b858358bb63e009d12d3228aa4.scn"]
+source_file="res://healthkit.glb"
+dest_files=["res://.godot/imported/healthkit.glb-93384eb4f67a4a3e6f04e386f5e34ef7.scn"]
 
 [params]
 

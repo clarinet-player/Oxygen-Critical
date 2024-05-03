@@ -7,6 +7,8 @@ script/source = "extends RigidBody3D
 
 signal death(id : int)
 
+signal damaged
+
 
 
 #region Variables
@@ -33,7 +35,6 @@ var _anchor_point_l : Vector3
 var _surface_normal : Vector3
 
 var _up_vec := Vector3(0, 0.1, 0)
-var _height := 1.0
 var _reorient := true
 
 enum move_type {
@@ -94,14 +95,14 @@ func _ready():
 		hud.set_ammo(false, 0)
 		
 		if !Multiplayermanager.mp_active or is_multiplayer_authority():
-			var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
-			inventory.append(ak)
-			var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
-			inventory.append(vector)
 			var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
 			inventory.append(glock)
 			var grenade = preload(\"res://weapons/grenades/he_display.tscn\").instantiate()
-			inventory.append(grenade )
+			inventory.append(grenade)
+			var sealant = preload(\"res://weapons/healing/sealant.tscn\").instantiate()
+			inventory.append(sealant)
+			var healthkit = preload(\"res://weapons/healing/healthkit.tscn\").instantiate()
+			inventory.append(healthkit)
 
 
 
@@ -199,13 +200,11 @@ func _physics_process(delta : float):
 		
 		# Modifying Movement State
 		if Input.is_action_pressed(\"Control\"):
-			_height = 0.6
 			if _movement_state != move_type.SLIDING:
 				_movement_state = move_type.SLIDING
 		else:
 			_reorient = true
 			if _movement_state == move_type.SLIDING:
-				_height = 1.0
 				_movement_state = move_type.IDLE
 			
 		if (Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\")) and !UiManager.paused:
@@ -247,9 +246,9 @@ func _physics_process(delta : float):
 	
 	
 	if _anchored_shape:
-		_up_vec = lerp(_up_vec, _surface_normal, delta * 8).limit_length(_height)
+		_up_vec = lerp(_up_vec, _surface_normal, delta * 8).limit_length(1)
 	else:
-		_up_vec = lerp(_up_vec, -velocity, delta * 8).limit_length(_height)
+		_up_vec = lerp(_up_vec, -velocity, delta * 8).limit_length(1)
 	
 	var collision = move_and_collide((camera.global_position - _up_vec) - global_position)
 	if collision and !_anchored_shape and \"get_is_grabbable\" in collision.get_collider() and collision.get_collider().get_is_grabbable():
@@ -453,8 +452,8 @@ func heal_breach():
 
 
 @rpc(\"authority\", \"call_local\", \"reliable\")
-func heal_health():
-	health = min(health + 26, 100)
+func heal_health(amount):
+	health = min(health + amount, 100)
 	hud.set_health(health)
 
 
@@ -462,6 +461,7 @@ func heal_health():
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func damage(base : float, tearing : float):
 	health = clamp(health - base, 0, 100)
+	damaged.emit()
 	if tearing > breach:
 		breach = tearing
 
@@ -548,7 +548,7 @@ mesh = SubResource("CapsuleMesh_r400h")
 skeleton = NodePath("../../PlayerBody")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("res://weapons/ak12/ak12.tscn", "res://weapons/vector/vector.tscn", "res://weapons/glock/glock.tscn", "res://weapons/grenades/he_display.tscn")
+_spawnable_scenes = PackedStringArray("res://weapons/ak12/ak12.tscn", "res://weapons/vector/vector.tscn", "res://weapons/glock/glock.tscn", "res://weapons/grenades/he_display.tscn", "res://weapons/healing/sealant.tscn", "res://weapons/healing/healthkit.tscn")
 spawn_path = NodePath("../Camera3D")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]

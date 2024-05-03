@@ -13,8 +13,8 @@ const firemode := 1
 const mag_size := 20
 const reload_time := 1000.0
 const muzzle_vel := 350.0
-const damage := 20.0
-const tearing := 6.5
+const damage := 18.0
+const tearing := 6.0
 const effective_range := 20.0
 const recovery := 1.2
 const recoil := 2.25
@@ -175,7 +175,7 @@ func fire(position : Vector3, velocity : Vector3):
 	var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()
 	_smoke.size = Vector3(0.01, 0.01, 4)
 	_smoke.fade_speed = 0.1
-	_smoke.start_density = 0.005
+	_smoke.start_density = 0.004
 	Multiplayermanager.add_child(_smoke)
 	_smoke.global_position = light.global_position + velocity.normalized() * 4
 	_smoke.look_at(light.global_position)

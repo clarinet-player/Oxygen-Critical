@@ -64,11 +64,10 @@ func stop_progress(task_name : String):
 
 
 
-
 func _process(delta):
 	if progress.visible == true:
 		progress.value += delta * progress_speed
-		if progress.value == 100:
+		if progress.value > 99:
 			progress.visible = false
 "
 
