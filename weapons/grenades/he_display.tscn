@@ -43,8 +43,8 @@ func _physics_process(delta):
 		else:
 			Multiplayermanager.throw_grenade(1, global_position, velocity)
 		
-		#player.inventory.erase(self)
-		#queue_free()
+		player.inventory.erase(self)
+		queue_free()
 "
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k2ba4"]

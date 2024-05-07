@@ -57,7 +57,7 @@ func _physics_process(delta):
 		
 		var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()
 		_smoke.size = Vector3(0.5, 0.5, 0.5)
-		_smoke.fade_speed = 0.25
+		_smoke.fade_speed = 0.15
 		_smoke.start_density = 0.125
 		Multiplayermanager.add_child(_smoke)
 		_smoke.global_position = global_position

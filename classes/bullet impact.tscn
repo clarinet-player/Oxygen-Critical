@@ -25,7 +25,6 @@ func _process(delta):
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_wxg5k"]
 lifetime_randomness = 0.51
-angle_max = 180.0
 direction = Vector3(0, 1, 0)
 initial_velocity_min = 2.0
 initial_velocity_max = 10.0
@@ -33,8 +32,8 @@ gravity = Vector3(0, 0, 0)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_net1j"]
 albedo_color = Color(0.376471, 0.376471, 0.376471, 1)
-metallic = 0.62
-roughness = 0.67
+metallic = 0.47
+roughness = 0.74
 
 [sub_resource type="SphereMesh" id="SphereMesh_2m4c7"]
 material = SubResource("StandardMaterial3D_net1j")
@@ -57,11 +56,9 @@ one_shot = true
 explosiveness = 1.0
 fixed_fps = 60
 process_material = SubResource("ParticleProcessMaterial_wxg5k")
-draw_passes = 2
 draw_pass_1 = SubResource("SphereMesh_2m4c7")
-draw_pass_2 = null
 draw_skin = SubResource("Skin_kcqmt")
 
 [node name="Decal" type="Decal" parent="."]
-size = Vector3(0.25, 0.25, 0.25)
+size = Vector3(0.2, 0.01, 0.2)
 texture_albedo = ExtResource("1_4sb65")

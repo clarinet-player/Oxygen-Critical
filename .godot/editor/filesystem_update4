@@ -3,16 +3,11 @@ res://autoloads/settings.tscn
 res://classes/player.tscn
 res://weapons/ak12/ak12.tscn
 res://weapons/glock/glock.tscn
-res://weapons/vector/vector.tscn
 res://classes/bullet.tscn
 res://weapons/grenades/he_display.tscn
 res://weapons/grenades/he_grenade.tscn
 res://classes/smoke.tscn
-res://autoloads/ui manager.tscn
-res://ui/settings menu.tscn
-res://ui/pause menu.tscn
-res://ui/main menu.tscn
-res://ui/player hud.tscn
 res://classes/bullet impact.tscn
 res://classes/blood spray.tscn
 res://scenes/playable scene.tscn
+res://weapons/vector/vector.tscn

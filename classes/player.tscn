@@ -98,10 +98,12 @@ func _ready():
 		if !Multiplayermanager.mp_active or is_multiplayer_authority():
 			var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
 			inventory.append(ak)
-			#var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
-			#inventory.append(glock)
-			var sealant = preload(\"res://weapons/healing/sealant.tscn\").instantiate()
-			inventory.append(sealant)
+			var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
+			inventory.append(vector)
+			var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
+			inventory.append(glock)
+			#var sealant = preload(\"res://weapons/healing/sealant.tscn\").instantiate()
+			#inventory.append(sealant)
 			var grenade = preload(\"res://weapons/grenades/he_display.tscn\").instantiate()
 			inventory.append(grenade)
 			#var healthkit = preload(\"res://weapons/healing/healthkit.tscn\").instantiate()
@@ -389,12 +391,12 @@ func _free_move(delta : float):
 		if _collision.get_travel().length_squared() < 0.1:
 			global_translate(_normal)
 		
-		var _body = _shape.get_parent()
-		if \"centrifuge_angular_velocity\" in _body:
-			velocity = lerp(velocity, (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity), 0.5)
+		#var _body = _shape.get_parent()
+		#if \"centrifuge_angular_velocity\" in _body:
+		#	velocity = lerp(velocity, (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity), 0.5)
 		
-		_collision = move_and_collide(_collision.get_remainder().bounce(_normal) * 0.5)
-		velocity = velocity.bounce(_normal) * 0.5
+		_collision = move_and_collide(_collision.get_remainder().bounce(_normal) * 0.3)
+		velocity = velocity.bounce(_normal) * 0.3
 #endregion
 
 

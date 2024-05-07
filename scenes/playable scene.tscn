@@ -111,7 +111,7 @@ skeleton = NodePath("")
 
 [node name="GameSurface" parent="Walls" instance=ExtResource("1_e0pjc")]
 shape = SubResource("ConcavePolygonShape3D_1jhqv")
-strength = 20.0
+strength = 15.0
 
 [node name="Boxes" type="Node3D" parent="."]
 

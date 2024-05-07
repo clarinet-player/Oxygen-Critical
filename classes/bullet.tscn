@@ -57,18 +57,19 @@ func _physics_process(delta):
 			impact.global_position = global_position
 			if impact.global_basis.y.cross(_normal).is_zero_approx():
 				impact.rotate(global_basis.x, acos(impact.global_basis.y.dot(_normal)))
-			impact.rotate(impact.global_basis.y.cross(_normal).normalized(), acos(impact.global_basis.y.dot(_normal)))
+			else:
+				impact.rotate(impact.global_basis.y.cross(_normal).normalized(), acos(impact.global_basis.y.dot(_normal)))
 			
 			var smoke = preload(\"res://classes/smoke.tscn\").instantiate()
 			smoke.size = Vector3(0.2, 0.2, 0.2)
-			smoke.fade_speed = 0.18
-			smoke.start_density = 0.008
+			smoke.fade_speed = 0.09
+			smoke.start_density = 0.006
 			Multiplayermanager.add_child(smoke)
 			smoke.global_position = global_position + _normal * 0.25
 		
 		
 		if \"player\" in _shape:
-			effective_range -= 10
+			effective_range -= 5
 			if is_multiplayer_authority():
 				var _player = _shape.player
 				_player.rpc_id(int(str(_player.name)), \"damage\", min(mass * (1 - ((dist_travelled - effective_range) / effective_range)), mass), tearing)
@@ -76,7 +77,10 @@ func _physics_process(delta):
 			var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
 			Multiplayermanager.add_child(blood)
 			blood.global_position = global_position
-			blood.rotate(blood.global_basis.y.cross(_normal), acos(blood.global_basis.y.dot(_normal)))
+			if blood.global_basis.y.cross(-velocity).is_zero_approx():
+				blood.rotate(global_basis.x, acos(blood.global_basis.y.dot(-velocity.normalized())))
+			else:
+				blood.rotate(blood.global_basis.y.cross(-velocity).normalized(), acos(blood.global_basis.y.dot(-velocity.normalized())))
 		
 		
 		# Move through the surface so we don't collide with it again

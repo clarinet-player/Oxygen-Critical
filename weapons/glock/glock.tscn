@@ -12,14 +12,14 @@ const firerate := 16.0
 const firemode := 1
 const mag_size := 20
 const reload_time := 1000.0
-const muzzle_vel := 350.0
+const muzzle_vel := 400.0
 const damage := 18.0
 const tearing := 6.0
-const effective_range := 20.0
-const recovery := 1.2
-const recoil := 2.25
-const jerk := 0.5
-const spray := 0.5
+const effective_range := 25.0
+const recovery := 1.0
+const recoil := 2.1
+const jerk := 0.6
+const spray := 0.55
 const inventory_size := 1
 #endregion
 
@@ -84,7 +84,6 @@ func _physics_process(delta):
 		return
 	
 	var time = Time.get_ticks_msec()
-	var _c_heat = min(12, _heat)
 	
 	
 	# Reloading
@@ -127,17 +126,18 @@ func _physics_process(delta):
 		var inaccuracy := 0.0
 		var player = $\"../..\"
 		if !player.is_anchored() or player.velocity.length() > 2:
-			inaccuracy = 20
-		inaccuracy = (inaccuracy + _c_heat) * spray / 1000
+			inaccuracy = 25
+		inaccuracy = (inaccuracy + _heat) * spray / 1000
 		
 		if Multiplayermanager.mp_active:
-			fire.rpc(global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy).rotated(global_basis.z.normalized(), randf_range(0, TAU))))
+			fire.rpc(global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy * randf()).rotated(global_basis.z.normalized(), randf_range(0, TAU))))
 		else:
-			fire(global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy).rotated(global_basis.z.normalized(), randf_range(0, TAU))))
+			fire(global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy * randf()).rotated(global_basis.z.normalized(), randf_range(0, TAU))))
+		
 		
 		get_parent().rotate(basis.x.normalized(), recoil / 400)
 		rotate(basis.x.normalized(), recoil / 400)
-		rotate(basis.y.normalized(), jerk * _c_heat * (randf_range(-0.01, 0.01) - rotation.y * jerk))
+		rotate(basis.y.normalized(), jerk * _heat * (randf_range(-0.01, 0.01) - rotation.y * jerk))
 		
 		_heat += 1
 		_burst -= 1
@@ -175,10 +175,10 @@ func fire(position : Vector3, velocity : Vector3):
 	
 	var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()
 	_smoke.size = Vector3(0.01, 0.01, 4)
-	_smoke.fade_speed = 0.1
+	_smoke.fade_speed = 0.08
 	_smoke.start_density = 0.004
 	Multiplayermanager.add_child(_smoke)
-	_smoke.global_position = light.global_position + velocity.normalized() * 4
+	_smoke.global_position = light.global_position + velocity.normalized() * 3
 	_smoke.look_at(light.global_position)
 "
 
