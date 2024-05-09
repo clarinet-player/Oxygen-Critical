@@ -14,13 +14,14 @@ signal damaged
 #region Variables
 const walk_acceleration : float = 25.0
 const walk_friction : float = 35.0
-const walk_max_speed : float = 3
+const walk_max_speed : float = 3.0
 
 const sprint_acceleration : float = 35.0
-const sprint_max_speed : float = 6
+const sprint_max_speed : float = 5.0
 const slide_friction : float = 1.0
 
-const jump_power : float = 3.0
+const jump_power : float = 2.0
+var jump_stamina : float = 1.0
 
 const mouse_sensitivity : float = 1.0
 
@@ -254,12 +255,20 @@ func _physics_process(delta : float):
 				rotate(_axis.normalized(), _roll_angle * 7 * delta)
 		
 		
+		# Regain stamina
+		if jump_stamina < 1:
+			jump_stamina += delta * 2
+			if jump_stamina > 1:
+				jump_stamina = 1
+		
+		
 		# Jumping
 		if Input.is_action_just_pressed(\"Space\"):
 			
 			detach()
 			_reorient = false
-			velocity += -global_basis.z * jump_power
+			velocity += -global_basis.z * jump_power * jump_stamina
+			jump_stamina = 0
 			
 			global_position = camera.global_position
 			move_and_collide(velocity.normalized())
@@ -428,6 +437,11 @@ func attach(_shape : CollisionShape3D, _normal : Vector3):
 	var _body = _shape.get_parent()
 	if \"centrifuge_angular_velocity\" in _body:
 		velocity -= (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
+	
+	if velocity.length() > sprint_max_speed:
+		velocity *= 0.8
+	elif velocity.length() > walk_max_speed:
+		velocity *= 0.9
 
 
 

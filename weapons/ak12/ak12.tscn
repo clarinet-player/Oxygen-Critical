@@ -16,10 +16,10 @@ const muzzle_vel := 600.0
 const damage := 22.0
 const tearing := 5.0
 const effective_range := 35.0
-const recovery := 2.1
-const recoil := 3.5
-const jerk := 0.25
-const spray := 0.6
+const recovery := 2.0
+const recoil := 3.8
+const jerk := 0.28
+const spray := 0.75
 const inventory_size := 2
 #endregion
 
@@ -126,7 +126,7 @@ func _physics_process(delta):
 		var inaccuracy := 0.0
 		var player = $\"../..\"
 		if !player.is_anchored() or player.velocity.length() > 2:
-			inaccuracy = 25
+			inaccuracy = 35
 		inaccuracy = (inaccuracy + _heat) * spray / 1000
 		
 		if Multiplayermanager.mp_active:
@@ -175,7 +175,7 @@ func fire(position : Vector3, velocity : Vector3):
 	
 	var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()
 	_smoke.size = Vector3(0.01, 0.01, 4)
-	_smoke.fade_speed = 0.08
+	_smoke.fade_speed = 0.1
 	_smoke.start_density = 0.003
 	Multiplayermanager.add_child(_smoke)
 	_smoke.global_position = light.global_position + velocity.normalized() * 3
