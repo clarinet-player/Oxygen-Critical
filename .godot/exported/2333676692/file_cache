@@ -1,31 +1,44 @@
 res://assets/metal.jpg::b01ab5af18e463b289a24fa80bb959c6adce6e623a7159ecfedc4b5096d5b9ea::1704579424::
 res://assets/pikachu.png::8b022b20c5dda80dbea3e23b3bd7c61c98822fc04e23427efd6c3d1710e6f74d::1705980385::
 res://assets/thumbsup.jpg::bde0f9bb4cc8c60e11f0bb745c809eb83dab898827ab92053cbd4e70acf5031a::1705980727::
-res://classes/bullet.tscn::ced7273b5a0a4d5aad649c0102e10eab::1714680304::res://.godot/exported/2333676692/export-7e8bc8cebabf63f9371b1a16f8f59add-bullet.scn
+res://classes/bullet.tscn::077abf0203552b1d10a93ae5789e03a8::1715224768::res://.godot/exported/2333676692/export-7e8bc8cebabf63f9371b1a16f8f59add-bullet.scn
 res://classes/gameSurface.tscn::7e0a25b9cf9f2d78cdad492cc7697cc8::1705872491::res://.godot/exported/2333676692/export-2ac207ac81a314f3a8823eb3c7f770e1-gameSurface.scn
-res://classes/player.tscn::d9ec042f319def0ea4ea7a5894f236e6::1714680304::res://.godot/exported/2333676692/export-7c2a214eafefb657c111b03b75e2ff9c-player.scn
+res://classes/player.tscn::368dcbad05a11c7921bee10ab538ea66::1715224767::res://.godot/exported/2333676692/export-7c2a214eafefb657c111b03b75e2ff9c-player.scn
 res://classes/spawnpoint.tscn::0d8b18a8fc8797f6fb0b3d176192dc73::1714617278::res://.godot/exported/2333676692/export-22e068601d610ac8bac5feb5e5a4c570-spawnpoint.scn
-res://scenes/playable scene.tscn::1e19eab647eca5a305b633c42bae7716::1714680304::res://.godot/exported/2333676692/export-b80ecf0e3d4f37c6a8561e79becb6cc6-playable scene.scn
+res://scenes/playable scene.tscn::29bfed74cbb7000191f33a1a77a1efcb::1715212881::res://.godot/exported/2333676692/export-b80ecf0e3d4f37c6a8561e79becb6cc6-playable scene.scn
 res://scripts/ship.gd::eacb1daf62693f5ff57105f767f31eeb::1712856696::
-res://ui/main menu.tscn::6354d14a0113a5db45a7012239fa6965::1714680305::res://.godot/exported/2333676692/export-ac370c915b9a9808b23d1c72500d5ed8-main menu.scn
-res://ui/pause menu.tscn::0849fdc06774ae04d0dd1e69d60b8ab9::1712869763::res://.godot/exported/2333676692/export-5dbb7bc84dd8f472bc1296af9922e6bb-pause menu.scn
-res://ui/player hud.tscn::d4c323292ca96012e2b6c9541a89046d::1714680025::res://.godot/exported/2333676692/export-4d31b53f1fb3f4c08c0288ad64c2abeb-player hud.scn
-res://weapons/ak12/ak12.tscn::148131cccbbc571d7df46dac0e75b140::1714680304::res://.godot/exported/2333676692/export-e72754b32714f05f9f2cd80727ced35b-ak12.scn
+res://ui/main menu.tscn::482f536f70600251ae955cdada681f7b::1714944443::res://.godot/exported/2333676692/export-ac370c915b9a9808b23d1c72500d5ed8-main menu.scn
+res://ui/pause menu.tscn::6502a1e7e2f9cd5f8f96c7489f07d3d8::1715224768::res://.godot/exported/2333676692/export-5dbb7bc84dd8f472bc1296af9922e6bb-pause menu.scn
+res://ui/player hud.tscn::4d09c8bffbad13cb0ca9766a9c950fee::1714944443::res://.godot/exported/2333676692/export-4d31b53f1fb3f4c08c0288ad64c2abeb-player hud.scn
+res://weapons/ak12/ak12.tscn::719ea2a46f5f6048b89fa146e9ec5170::1715224995::res://.godot/exported/2333676692/export-e72754b32714f05f9f2cd80727ced35b-ak12.scn
 res://weapons/ak12/ak47-sfx-3.wav::8701380432e1c79ef6a2e1647ed5c6515cc0e84c5f0fe41daba09d32dafb31a4::1706385933::
-res://weapons/glock/glock.tscn::c7413e5f037fa9725836fe0faac63204::1714680304::res://.godot/exported/2333676692/export-22687b07d07f8016b33d2ba4a19cde9c-glock.scn
-res://weapons/vector/vector.tscn::2d60b5c812238339c11cc3e58dba558a::1714680304::res://.godot/exported/2333676692/export-cef3a89f5f672ed1aacbe33ef34bebad-vector.scn
+res://weapons/glock/glock.tscn::e65e3800aeb306549b5c209865a2eb8f::1715224768::res://.godot/exported/2333676692/export-22687b07d07f8016b33d2ba4a19cde9c-glock.scn
+res://weapons/vector/vector.tscn::cd9842c58fbfb3c5e7b2078d8b164b28::1715224768::res://.godot/exported/2333676692/export-cef3a89f5f672ed1aacbe33ef34bebad-vector.scn
 res://icon.svg::43b305bd3d55f8faec5e5175cbe35533cb18fa55fc8b9652d6f645004a3e02a2::1702190669::
 res://assets/anchor.png::350a8d020763de453a081d79802bc72721f834c0667f71d855c9d1b3920f2130::1713208956::
-res://autoloads/multiplayermanager.tscn::34f1134d6040b33b239542525c6c3883::1714680411::res://.godot/exported/2333676692/export-ce4c4af0f3a68f809e443bdfa696f42a-multiplayermanager.scn
-res://autoloads/worldState.tscn::5ad9822e4eae2c6d9f20cc8f873371cc::1714680304::res://.godot/exported/2333676692/export-bab67ad3e40bbab0b389cfae720ce2c9-worldState.scn
+res://autoloads/multiplayermanager.tscn::6f47981534235528251d3260f9451f51::1715224768::res://.godot/exported/2333676692/export-ce4c4af0f3a68f809e443bdfa696f42a-multiplayermanager.scn
+res://autoloads/worldState.tscn::5ad9822e4eae2c6d9f20cc8f873371cc::1715210630::res://.godot/exported/2333676692/export-bab67ad3e40bbab0b389cfae720ce2c9-worldState.scn
 res://scenes/firing range.tscn::6b34efddcec1b76620a4c1ea406f42c8::1714680025::res://.godot/exported/2333676692/export-49f17315c3716c0ffc586a85bad48d2d-firing range.scn
-res://autoloads/ui manager.tscn::e4b9ed16d4a96296c7b7692b92b036ec::1712344884::res://.godot/exported/2333676692/export-a398260ea3bacbe78eb8373561bfb43d-ui manager.scn
+res://autoloads/ui manager.tscn::cb31bc97e697d1faf4307841dde79207::1715224768::res://.godot/exported/2333676692/export-a398260ea3bacbe78eb8373561bfb43d-ui manager.scn
 res://scenes/Empty scene.tscn::40e40500c99021e362bcdb4ef7d43b7e::1712869762::res://.godot/exported/2333676692/export-bbcc8519a9ac92e8b5c748bd734d3ceb-Empty scene.scn
 res://assets/10_m_Air_Rifle_target.svg.png::2672aec6a41b20d7f448803804d5d2bd9681ea3a95d1816f863708c08b9ab7d4::1712856696::
-res://weapons/grenades/he_display.tscn::db503b6683834908d1ca58d45b911864::1714680304::res://.godot/exported/2333676692/export-bbe6c334767df48e37a5c76ba491dd9d-he_display.scn
-res://weapons/grenades/he_grenade.tscn::887981803cd437151fd4dc0c951b41b9::1714680304::res://.godot/exported/2333676692/export-28cdac8e72ad932808e93348cb51afa9-he_grenade.scn
+res://weapons/grenades/he_display.tscn::5deaa63cbe08d46a5772d212cd76fccc::1715224768::res://.godot/exported/2333676692/export-bbe6c334767df48e37a5c76ba491dd9d-he_display.scn
+res://weapons/grenades/he_grenade.tscn::9381eaa314d7e651ba4d6de10c7d8bef::1715224769::res://.godot/exported/2333676692/export-28cdac8e72ad932808e93348cb51afa9-he_grenade.scn
 res://assets/crosshair.png::3a489c02ea6279f0ae5d36de96bed726679e0ee7a49571acd2a58f26bd7e9449::1713208956::
 res://assets/indicator.png::68486cb06b043180540b338c5a9d0672b3c26810577a7d0e6b111269078ee072::1713208956::
 res://assets/metal2.jpg::c1c9c08e223c58dbf1ab82de9d7dac5bb967a0ee94dc3fd43587ffd6a9c0006b::1714617278::
-res://levelone.glb::121188e56d0cbd5acd26535b6a42d3c4127b94eba863d24c70b9691d13e97689::1714617278::res://.godot/exported/2333676692/export-103e16b858358bb63e009d12d3228aa4-levelone.scn
-res://classes/smoke.tscn::43f0b8057881d2b7f84554b3ea9682e3::1714680304::res://.godot/exported/2333676692/export-d9bae704644bea1cec0919bb57aa2ee2-smoke.scn
+res://classes/smoke.tscn::43f0b8057881d2b7f84554b3ea9682e3::1715212881::res://.godot/exported/2333676692/export-d9bae704644bea1cec0919bb57aa2ee2-smoke.scn
+res://assets/blud.png::5cc70727f2039c02cf4c033cffc941beec69ffb81b5501098063d38d61ce0e53::1714775783::
+res://assets/hole.png::0089c216732c0881355e7da37ed49c38e20bf4b8d967cab520fd47b1e7471bad::1714775783::
+res://autoloads/settings.tscn::2490d209d91e9b33491f64d2abaf60db::1715224768::res://.godot/exported/2333676692/export-f5e3b2746b61eac28455be9ddf61c579-settings.scn
+res://classes/blood spray.tscn::89771606ceb5e801496061475bf3d923::1715210631::res://.godot/exported/2333676692/export-b4623be2f7c5f84a00752f0fb707f4db-blood spray.scn
+res://classes/bullet impact.tscn::261075dd27f03713f303bdf2a4543813::1715224769::res://.godot/exported/2333676692/export-db594fd27cdf91b0d9c991f929152dcd-bullet impact.scn
+res://ui/buy menu.tscn::6c055a6738b1cd5786262132231a114a::1715224768::res://.godot/exported/2333676692/export-b3541a847c83695f44543cb0a8413bc6-buy menu.scn
+res://ui/settings menu.tscn::fe4b0ad6ce76e94c24229603b206021d::1714944443::res://.godot/exported/2333676692/export-a5a10801d7f938825fd07f61da1de1f0-settings menu.scn
+res://weapons/grenades/flash_display.tscn::2ffda0139e76e3c9afdf146b8f907113::1714775783::res://.godot/exported/2333676692/export-6fc64af24727c2416c9c6fbd76233dc2-flash_display.scn
+res://weapons/grenades/flash_grenade.tscn::3bab1c1db6544fd5204bf6a56bbccdc7::1714775783::res://.godot/exported/2333676692/export-e9021a699a2d79a67e87310a099df17b-flash_grenade.scn
+res://weapons/grenades/smoke_display.tscn::2f4c3cbdde9019fa185fa11b2233860f::1714775783::res://.godot/exported/2333676692/export-54adb913afb9fc20fbc50596cb0ba4c3-smoke_display.scn
+res://weapons/grenades/smoke_grenade.tscn::cfa83afdde45146f3aeb36d178ed679c::1714775783::res://.godot/exported/2333676692/export-0427403ba13ab90282f94a5ba5fffeb0-smoke_grenade.scn
+res://weapons/healing/healthkit.tscn::f6a84f351ca996911e0edfa7309d3f07::1715224768::res://.godot/exported/2333676692/export-7e2643565d36b59ca066cdf909d30b08-healthkit.scn
+res://weapons/healing/sealant.tscn::5c1f058694530878bca9339f732b657b::1715224768::res://.godot/exported/2333676692/export-e941722aba24bbf98348e9139482b93a-sealant.scn
+res://healthkit.glb::28791a02e8d23d08ad6ecae8e6ad7357e2759a035ee706c19910a790b5fec6cf::1714775783::res://.godot/exported/2333676692/export-93384eb4f67a4a3e6f04e386f5e34ef7-healthkit.scn

@@ -78,6 +78,8 @@ func _ready():
 		$Camera3D.current = true
 		UiManager.set_ui(3)
 		
+		Multiplayermanager.local_player = self
+		
 		var spawnpoint = WorldState.find_spawnpoint(self)
 		
 		if spawnpoint:
@@ -96,18 +98,25 @@ func _ready():
 		hud.set_ammo(false, 0)
 		
 		if !Multiplayermanager.mp_active or is_multiplayer_authority():
-			var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
-			inventory.append(ak)
-			var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
-			inventory.append(vector)
-			var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
-			inventory.append(glock)
-			#var sealant = preload(\"res://weapons/healing/sealant.tscn\").instantiate()
-			#inventory.append(sealant)
-			var grenade = preload(\"res://weapons/grenades/he_display.tscn\").instantiate()
-			inventory.append(grenade)
-			#var healthkit = preload(\"res://weapons/healing/healthkit.tscn\").instantiate()
-			#inventory.append(healthkit)
+			for item in Settings.saved_inventory:
+				if item == 1:
+					var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
+					inventory.append(ak)
+				elif item == 2:
+					var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
+					inventory.append(vector)
+				elif item == 3:
+					var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
+					inventory.append(glock)
+				elif item == 4:
+					var grenade = preload(\"res://weapons/grenades/he_display.tscn\").instantiate()
+					inventory.append(grenade)
+				elif item == 5:
+					var sealant = preload(\"res://weapons/healing/sealant.tscn\").instantiate()
+					inventory.append(sealant)
+				elif item == 6:
+					var healthkit = preload(\"res://weapons/healing/healthkit.tscn\").instantiate()
+					inventory.append(healthkit)
 
 
 
@@ -159,25 +168,28 @@ func _process(delta):
 		hud.set_hud_anchor(mode, acos(_surface_normal.dot(-global_basis.y)) + PI)
 	
 	
-	if Input.is_action_just_pressed(\"1\") and inventory.size() > 0 and inventory[0] != active_item:
+	if Input.is_action_just_pressed(\"B\") and !UiManager.paused:
+		UiManager.set_ui(4)
+	
+	if Input.is_action_just_pressed(\"1\") and inventory.size() > 0 and inventory[0] != active_item and !UiManager.paused:
 		if active_item:
 			camera.remove_child(active_item)
 		active_item = inventory[0]
 		camera.add_child(active_item)
 	
-	if Input.is_action_just_pressed(\"2\") and inventory.size() > 1 and inventory[1] != active_item:
+	if Input.is_action_just_pressed(\"2\") and inventory.size() > 1 and inventory[1] != active_item and !UiManager.paused:
 		if active_item:
 			camera.remove_child(active_item)
 		active_item = inventory[1]
 		camera.add_child(active_item)
 	
-	if Input.is_action_just_pressed(\"3\") and inventory.size() > 2 and inventory[2] != active_item:
+	if Input.is_action_just_pressed(\"3\") and inventory.size() > 2 and inventory[2] != active_item and !UiManager.paused:
 		if active_item:
 			camera.remove_child(active_item)
 		active_item = inventory[2]
 		camera.add_child(active_item)
 	
-	if Input.is_action_just_pressed(\"4\")and inventory.size() > 3 and inventory[3] != active_item:
+	if Input.is_action_just_pressed(\"4\")and inventory.size() > 3 and inventory[3] != active_item and !UiManager.paused:
 		if active_item:
 			camera.remove_child(active_item)
 		active_item = inventory[3]
@@ -460,6 +472,7 @@ func _on_synchronization():
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func heal_breach():
 	breach = 0
+	health = min(health + 5, 100)
 
 
 

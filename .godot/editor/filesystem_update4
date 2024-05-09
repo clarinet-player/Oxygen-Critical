@@ -1,13 +1,1 @@
-res://autoloads/worldState.tscn
-res://autoloads/settings.tscn
-res://classes/player.tscn
 res://weapons/ak12/ak12.tscn
-res://weapons/glock/glock.tscn
-res://classes/bullet.tscn
-res://weapons/grenades/he_display.tscn
-res://weapons/grenades/he_grenade.tscn
-res://classes/smoke.tscn
-res://classes/bullet impact.tscn
-res://classes/blood spray.tscn
-res://scenes/playable scene.tscn
-res://weapons/vector/vector.tscn

@@ -5,10 +5,10 @@ script/source = "extends Node
 
 
 
-var fov : float
-#var volume : float
-var shadows_enabled : bool
-var volumetrics_enabled : bool
+var fov := 75.0
+var saved_inventory := [1, 5, 4]
+var shadows_enabled := true
+var volumetrics_enabled := true
 
 
 
@@ -19,7 +19,7 @@ func _ready():
 
 func read_file():
 	if not FileAccess.file_exists(\"user://usersettings.json\"):
-		create_file()
+		write_file()
 		return
 	
 	var file = FileAccess.open(\"user://usersettings.json\", FileAccess.READ)
@@ -28,22 +28,18 @@ func read_file():
 	file.close()
 	
 	if json.parse(string) != OK:
-		create_file()
+		write_file()
 		return
 	
-	var data = json.get_data()
-	fov = data[\"fov\"]
-	#volume = data[\"volume\"]
-	shadows_enabled = data[\"shadows_enabled\"]
-	volumetrics_enabled = data[\"volumetrics_enabled\"]
-
-
-
-func create_file():
-	fov = 75
-	shadows_enabled = true
-	volumetrics_enabled = true
-	write_file()
+	var data : Dictionary = json.get_data()
+	if data.has(\"fov\"):
+		fov = data[\"fov\"]
+	if data.has(\"saved_inventory\"):
+		saved_inventory = data[\"saved_inventory\"]
+	if data.has(\"shadows_enabled\"):
+		shadows_enabled = data[\"shadows_enabled\"]
+	if data.has(\"volumetrics_enabled\"):
+		volumetrics_enabled = data[\"volumetrics_enabled\"]
 
 
 
@@ -52,7 +48,8 @@ func write_file():
 	var data = {
 		\"fov\": fov,
 		\"shadows_enabled\": shadows_enabled,
-		\"volumetrics_enabled\": volumetrics_enabled
+		\"volumetrics_enabled\": volumetrics_enabled,
+		\"saved_inventory\": saved_inventory
 	}
 	file.store_line(JSON.stringify(data))
 	file.close()

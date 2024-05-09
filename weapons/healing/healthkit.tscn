@@ -3,6 +3,8 @@
 [sub_resource type="GDScript" id="GDScript_xkkah"]
 script/source = "extends Node3D
 
+const item_id := 6
+const inventory_size := 1
 
 const healing := 50
 
@@ -26,9 +28,10 @@ func _enter_tree():
 func _ready():
 	if !Multiplayermanager.mp_active or is_multiplayer_authority():
 		hud.set_ammo(false, 0)
-		in_use = true
-		start_time = Time.get_ticks_msec()
-		hud.start_progress(2.2, \"healing\")
+		if player.health < 100:
+			in_use = true
+			start_time = Time.get_ticks_msec()
+			hud.start_progress(2.2, \"healing\")
 		
 		player.damaged.connect(_cancel)
 
@@ -47,7 +50,7 @@ func _physics_process(delta):
 		return
 	
 	# Reloading
-	if Input.is_action_just_pressed(\"Mouse1\") and !in_use and !UiManager.paused:
+	if Input.is_action_just_pressed(\"Mouse1\") and !in_use and player.health < 100 and !UiManager.paused:
 		in_use = true
 		start_time = Time.get_ticks_msec()
 		hud.start_progress(2.2, \"healing\")

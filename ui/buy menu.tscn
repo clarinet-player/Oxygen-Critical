@@ -1,0 +1,214 @@
+[gd_scene load_steps=2 format=3 uid="uid://ebt1bha4aed3"]
+
+[sub_resource type="GDScript" id="GDScript_d3kdi"]
+script/source = "extends Control
+
+
+var inv
+var warningtime := 0
+
+
+func _exit_tree():
+	$spacewarning.hide()
+	save_inventory()
+
+
+func _process(delta):
+	if Input.is_action_just_pressed(\"B\"):
+		UiManager.call_deferred(\"set_ui\", 3)
+	if Time.get_ticks_msec() - warningtime > 750:
+		$spacewarning.hide()
+
+
+func save_inventory():
+	if !inv:
+		inv = Multiplayermanager.local_player.inventory
+	
+	var save = Array()
+	for item in inv:
+		save.append(item.item_id)
+	
+	Settings.saved_inventory = save
+	Settings.write_file()
+
+
+func _buy_ak():
+	if !inv:
+		inv = Multiplayermanager.local_player.inventory
+	
+	var size := 0
+	for item in inv:
+		size += item.inventory_size
+	if size < 3:
+		var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
+		inv.append(ak)
+	else:
+		warningtime = Time.get_ticks_msec()
+		$spacewarning.show()
+
+
+func _buy_vector():
+	if !inv:
+		inv = Multiplayermanager.local_player.inventory
+	
+	var size := 0
+	for item in inv:
+		size += item.inventory_size
+	if size < 3:
+		var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
+		inv.append(vector)
+	else:
+		warningtime = Time.get_ticks_msec()
+		$spacewarning.show()
+
+
+func _buy_glock():
+	if !inv:
+		inv = Multiplayermanager.local_player.inventory
+	
+	var size := 0
+	for item in inv:
+		size += item.inventory_size
+	if size < 4:
+		var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
+		inv.append(glock)
+	else:
+		warningtime = Time.get_ticks_msec()
+		$spacewarning.show()
+
+
+func _buy_HE():
+	if !inv:
+		inv = Multiplayermanager.local_player.inventory
+	
+	var size := 0
+	for item in inv:
+		size += item.inventory_size
+	if size < 4:
+		var he = preload(\"res://weapons/grenades/he_display.tscn\").instantiate()
+		inv.append(he)
+	else:
+		warningtime = Time.get_ticks_msec()
+		$spacewarning.show()
+
+
+func _buy_sealant():
+	if !inv:
+		inv = Multiplayermanager.local_player.inventory
+	
+	var size := 0
+	for item in inv:
+		size += item.inventory_size
+	if size < 4:
+		var sealant = preload(\"res://weapons/healing/sealant.tscn\").instantiate()
+		inv.append(sealant)
+	else:
+		warningtime = Time.get_ticks_msec()
+		$spacewarning.show()
+
+
+func _buy_healthkit():
+	if !inv:
+		inv = Multiplayermanager.local_player.inventory
+	
+	var size := 0
+	for item in inv:
+		size += item.inventory_size
+	if size < 4:
+		var health = preload(\"res://weapons/healing/healthkit.tscn\").instantiate()
+		inv.append(health)
+	else:
+		warningtime = Time.get_ticks_msec()
+		$spacewarning.show()
+
+
+func _clear_inventory():
+	if !inv:
+		inv = Multiplayermanager.local_player.inventory
+	
+	for item in inv:
+		item.queue_free()
+	inv.clear()
+"
+
+[node name="BuyMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_d3kdi")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -329.0
+offset_top = -213.0
+offset_right = 329.0
+offset_bottom = 213.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Button" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "Buy AK"
+
+[node name="Button2" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "Buy Vector"
+
+[node name="Button3" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "Buy Glock"
+
+[node name="Button4" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "Buy HE Grenade"
+
+[node name="Button5" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "Buy Sealant"
+
+[node name="Button6" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "Buy Healthkit"
+
+[node name="Button7" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "Clear Inventory"
+
+[node name="spacewarning" type="RichTextLabel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -242.0
+offset_top = 25.0
+offset_right = 241.0
+offset_bottom = 98.0
+grow_horizontal = 2
+theme_override_colors/default_color = Color(1, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 50
+text = "Not enough space!"
+
+[connection signal="button_down" from="VBoxContainer/Button" to="." method="_buy_ak"]
+[connection signal="button_down" from="VBoxContainer/Button2" to="." method="_buy_vector"]
+[connection signal="button_down" from="VBoxContainer/Button3" to="." method="_buy_glock"]
+[connection signal="button_down" from="VBoxContainer/Button4" to="." method="_buy_HE"]
+[connection signal="button_down" from="VBoxContainer/Button5" to="." method="_buy_sealant"]
+[connection signal="button_down" from="VBoxContainer/Button6" to="." method="_buy_healthkit"]
+[connection signal="button_down" from="VBoxContainer/Button7" to="." method="_clear_inventory"]

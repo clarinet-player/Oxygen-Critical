@@ -5,6 +5,8 @@ script/source = "extends Node
 
 var peer = ENetMultiplayerPeer.new()
 
+var local_player
+
 var mp_active = false
 
 

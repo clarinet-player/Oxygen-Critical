@@ -9,6 +9,7 @@ var mainmenu
 var pausemenu
 var playerhud
 var settingsmenu
+var buymenu
 
 var active_menu
 
@@ -20,6 +21,7 @@ func _ready():
 	mainmenu = load(\"res://ui/main menu.tscn\").instantiate()
 	pausemenu = load(\"res://ui/pause menu.tscn\").instantiate()
 	playerhud = load(\"res://ui/player hud.tscn\").instantiate()
+	buymenu = load(\"res://ui/buy menu.tscn\").instantiate()
 	
 	if DisplayServer.get_name() == \"headless\":
 		set_process(false)
@@ -33,6 +35,8 @@ func _process(delta):
 		if active_menu == mainmenu:
 			get_tree().quit()
 		elif active_menu == pausemenu:
+			set_ui(3)
+		elif active_menu == buymenu:
 			set_ui(3)
 		else:
 			set_ui(2)
@@ -63,6 +67,12 @@ func set_ui(ui : int):
 		active_menu = playerhud
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		paused = false
+	
+	elif ui == 4:
+		add_child(buymenu)
+		active_menu = buymenu
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		paused = true
 "
 
 [node name="UiManager" type="Node"]

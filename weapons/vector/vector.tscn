@@ -7,7 +7,7 @@ script/source = "extends Node3D
 
 
 #region firing parameters
-const weapon_name = \"KRISS Vector\"
+const item_id := 2
 const firerate := 21
 const firemode := 0
 const mag_size := 30
@@ -18,8 +18,8 @@ const tearing := 6.0
 const effective_range := 18.0
 const recovery := 1.5
 const recoil := 0.87
-const jerk := 0.12
-const spray := 0.85
+const jerk := 0.10
+const spray := 0.87
 const inventory_size := 2
 #endregion
 

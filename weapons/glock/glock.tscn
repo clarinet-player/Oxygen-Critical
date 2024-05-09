@@ -7,7 +7,7 @@ script/source = "extends Node3D
 
 
 #region firing parameters
-const weapon_name = \"Glock-19\"
+const item_id := 3
 const firerate := 16.0
 const firemode := 1
 const mag_size := 20
