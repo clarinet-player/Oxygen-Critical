@@ -12,7 +12,8 @@ var lifetime : float = 60000
 
 func _ready():
 	start_time = Time.get_ticks_msec()
-	$GPUParticles3D.emitting = true
+	if Settings.particles_enabled:
+		$GPUParticles3D.emitting = true
 
 
 func _process(delta):

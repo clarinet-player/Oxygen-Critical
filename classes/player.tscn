@@ -20,10 +20,10 @@ const sprint_acceleration : float = 35.0
 const sprint_max_speed : float = 5.0
 const slide_friction : float = 1.0
 
-const jump_power : float = 2.0
+const jump_power : float = 2.5
 var jump_stamina : float = 1.0
 
-const mouse_sensitivity : float = 1.0
+var mouse_sensitivity : float
 
 
 const timeout_time : int = 1000
@@ -74,6 +74,7 @@ func _ready():
 	update_time = Time.get_ticks_msec()
 	
 	camera.fov = Settings.fov
+	mouse_sensitivity = Settings.mouse_sensitivity
 	
 	if !Multiplayermanager.mp_active or is_multiplayer_authority():
 		$Camera3D.current = true
@@ -439,9 +440,9 @@ func attach(_shape : CollisionShape3D, _normal : Vector3):
 		velocity -= (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
 	
 	if velocity.length() > sprint_max_speed:
-		velocity *= 0.8
-	elif velocity.length() > walk_max_speed:
 		velocity *= 0.9
+	elif velocity.length() > walk_max_speed:
+		velocity *= 0.95
 
 
 

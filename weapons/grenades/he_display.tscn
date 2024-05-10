@@ -45,7 +45,8 @@ func _physics_process(delta):
 			Multiplayermanager.throw_grenade(1, global_position, velocity)
 		
 		player.inventory.erase(self)
-		queue_free()
+		get_parent().remove_child(self)
+		player.active_item = null
 	
 	if Input.is_action_just_pressed(\"Mouse2\") and !UiManager.paused:
 		var player = get_parent().get_parent()
@@ -58,7 +59,8 @@ func _physics_process(delta):
 			Multiplayermanager.throw_grenade(1, global_position, velocity)
 		
 		player.inventory.erase(self)
-		queue_free()
+		get_parent().remove_child(self)
+		player.active_item = null
 "
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k2ba4"]

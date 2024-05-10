@@ -1,16 +1,18 @@
-res://weapons/vector/vector.tscn
-res://weapons/ak12/ak12.tscn
-res://weapons/glock/glock.tscn
-res://classes/player.tscn
-res://ui/buy menu.tscn
-res://autoloads/multiplayermanager.tscn
-res://autoloads/ui manager.tscn
-res://weapons/grenades/he_display.tscn
-res://weapons/healing/healthkit.tscn
-res://weapons/healing/sealant.tscn
 res://autoloads/settings.tscn
+res://autoloads/multiplayermanager.tscn
+res://classes/player.tscn
+res://weapons/grenades/he_display.tscn
+res://weapons/grenades/he_grenade.tscn
+res://weapons/ak12/ak12.tscn
+res://weapons/vector/vector.tscn
+res://weapons/glock/glock.tscn
+res://weapons/healing/sealant.tscn
+res://weapons/healing/healthkit.tscn
+res://classes/bullet impact.tscn
+res://classes/smoke.tscn
+res://classes/blood spray.tscn
+res://ui/buy menu.tscn
+res://ui/settings menu.tscn
+res://autoloads/ui manager.tscn
 res://ui/pause menu.tscn
 res://classes/bullet.tscn
-res://classes/bullet impact.tscn
-res://weapons/grenades/he_grenade.tscn
-res://classes/smoke.tscn

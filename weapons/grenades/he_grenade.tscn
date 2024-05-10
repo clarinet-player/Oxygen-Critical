@@ -31,7 +31,7 @@ func _ready():
 
 
 func _process(delta):
-	if expended and Time.get_ticks_msec() - arm_time > max(60, delta):
+	if expended and Time.get_ticks_msec() - arm_time > 50:
 		light.light_energy = 0
 
 
@@ -52,7 +52,8 @@ func _physics_process(delta):
 			get_node(\"Sphere\").queue_free()
 		
 		audio.play()
-		particles.emitting = true
+		if Settings.particles_enabled:
+			particles.emitting = true
 		light.light_energy = 0.2
 		
 		var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()

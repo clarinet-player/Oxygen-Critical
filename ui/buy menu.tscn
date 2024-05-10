@@ -10,17 +10,7 @@ var warningtime := 0
 
 func _exit_tree():
 	$spacewarning.hide()
-	save_inventory()
-
-
-func _process(_delta):
-	if Input.is_action_just_pressed(\"B\"):
-		UiManager.call_deferred(\"set_ui\", 3)
-	if Time.get_ticks_msec() - warningtime > 750:
-		$spacewarning.hide()
-
-
-func save_inventory():
+	
 	if !inv:
 		inv = Multiplayermanager.local_player.inventory
 	
@@ -32,6 +22,14 @@ func save_inventory():
 	Settings.write_file()
 
 
+func _process(_delta):
+	if Input.is_action_just_pressed(\"B\"):
+		UiManager.call_deferred(\"set_ui\", 3)
+	if Time.get_ticks_msec() - warningtime > 750:
+		$spacewarning.hide()
+
+
+#region buying
 func _buy_ak():
 	if !inv:
 		inv = Multiplayermanager.local_player.inventory
@@ -120,6 +118,7 @@ func _buy_healthkit():
 	else:
 		warningtime = Time.get_ticks_msec()
 		$spacewarning.show()
+#endregion
 
 
 func _clear_inventory():

@@ -6,9 +6,13 @@ script/source = "extends Node
 
 
 var fov := 75.0
+var mouse_sensitivity := 1.0
+
 var saved_inventory := [1, 5, 4]
+
 var shadows_enabled := true
 var volumetrics_enabled := true
+var particles_enabled := true
 
 
 
@@ -34,12 +38,16 @@ func read_file():
 	var data : Dictionary = json.get_data()
 	if data.has(\"fov\"):
 		fov = data[\"fov\"]
+	if data.has(\"mouse_sensitivity\"):
+		mouse_sensitivity = data[\"mouse_sensitivity\"]
 	if data.has(\"saved_inventory\"):
 		saved_inventory = data[\"saved_inventory\"]
 	if data.has(\"shadows_enabled\"):
 		shadows_enabled = data[\"shadows_enabled\"]
 	if data.has(\"volumetrics_enabled\"):
 		volumetrics_enabled = data[\"volumetrics_enabled\"]
+	if data.has(\"particles_enabled\"):
+		particles_enabled = data[\"particles_enabled\"]
 
 
 
@@ -47,9 +55,11 @@ func write_file():
 	var file = FileAccess.open(\"user://usersettings.json\", FileAccess.WRITE)
 	var data = {
 		\"fov\": fov,
+		\"mouse_sensitivity\": mouse_sensitivity,
+		\"saved_inventory\": saved_inventory,
 		\"shadows_enabled\": shadows_enabled,
 		\"volumetrics_enabled\": volumetrics_enabled,
-		\"saved_inventory\": saved_inventory
+		\"particles_enabled\": particles_enabled
 	}
 	file.store_line(JSON.stringify(data))
 	file.close()

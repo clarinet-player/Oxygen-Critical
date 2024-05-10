@@ -20,6 +20,10 @@ func _disconnect():
 	
 	get_tree().change_scene_to_file(\"res://scenes/Empty scene.tscn\")
 	UiManager.set_ui(1)
+
+
+func _on_settings_button_down():
+	UiManager.set_ui(5)
 "
 
 [node name="PauseMenu" type="Control"]
@@ -95,6 +99,11 @@ theme_override_font_sizes/font_size = 70
 text = "Buy Menu
 "
 
+[node name="Settings" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 70
+text = "Settings"
+
 [node name="Disconnect" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 70
@@ -103,4 +112,5 @@ text = "Disconnect
 
 [connection signal="button_down" from="VBoxContainer/Unpause" to="." method="_unpause"]
 [connection signal="button_down" from="VBoxContainer/Buy Menu" to="." method="_buy_menu"]
+[connection signal="button_down" from="VBoxContainer/Settings" to="." method="_on_settings_button_down"]
 [connection signal="button_down" from="VBoxContainer/Disconnect" to="." method="_disconnect"]

@@ -1,4 +1,73 @@
-[gd_scene format=3 uid="uid://bmyu45y7ul7tn"]
+[gd_scene load_steps=2 format=3 uid="uid://bmyu45y7ul7tn"]
+
+[sub_resource type="GDScript" id="GDScript_7luhb"]
+script/source = "extends Control
+
+
+var changed := false
+
+
+@onready var fovlabel := $VBoxContainer/FovLabel
+@onready var fovslider := $VBoxContainer/FovSlider
+@onready var sensitivitylabel := $VBoxContainer/SensitivityLabel
+@onready var sensitivityslider := $VBoxContainer/SensitivitySlider
+
+@onready var volumetrics := $VBoxContainer2/Volumetrics
+@onready var shadows := $VBoxContainer2/Shadows
+@onready var particles := $VBoxContainer2/Particles
+
+
+func _ready():
+	changed = false
+	
+	fovlabel.text = \"FOV: \" + str(Settings.fov)
+	fovslider.value = Settings.fov
+	
+	sensitivitylabel.text = \"Mouse Sensitivity: \" + str(Settings.mouse_sensitivity)
+	sensitivityslider.value = Settings.mouse_sensitivity
+	
+	volumetrics.button_pressed = Settings.volumetrics_enabled
+	shadows.button_pressed = Settings.shadows_enabled
+	particles.button_pressed = Settings.particles_enabled
+
+
+func _exit_tree():
+	request_ready()
+	
+	if changed:
+		Settings.write_file()
+
+
+func _fov_slider_changed(value):
+	changed = true
+	fovlabel.text = \"FOV: \" + str(value)
+	Settings.fov = value
+
+
+func _sensitivity_slider_changed(value):
+	changed = true
+	sensitivitylabel.text = \"Mouse Sensitivity: \" + str(value)
+	Settings.mouse_sensitivity = value
+
+
+func _on_volumetrics_toggled(toggled_on):
+	changed = true
+	Settings.volumetrics_enabled = toggled_on
+
+
+func _on_shadows_toggled(toggled_on):
+	changed = true
+	Settings.shadows_enabled = toggled_on
+
+
+func _on_particles_toggled(toggled_on):
+	changed = true
+	Settings.particles_enabled = toggled_on
+
+
+func _on_return_button_down():
+	UiManager.set_ui(2)
+"
 
 [node name="SettingsMenu" type="Control"]
 layout_mode = 3
@@ -7,6 +76,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = SubResource("GDScript_7luhb")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
 layout_mode = 1
@@ -37,8 +107,7 @@ offset_bottom = -100.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_font_sizes/font_size = 70
-text = "Return
-"
+text = "Accept"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -47,20 +116,42 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -226.0
-offset_top = -229.0
-offset_right = -1.0
-offset_bottom = 229.0
+offset_left = -929.0
+offset_top = -476.0
+offset_right = -36.0
+offset_bottom = 475.0
 grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer"]
+[node name="FovLabel" type="RichTextLabel" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/normal_font_size = 80
-text = "FOV"
+text = "FOV: 75"
 fit_content = true
 scroll_active = false
+autowrap_mode = 0
+
+[node name="FovSlider" type="HSlider" parent="VBoxContainer"]
+layout_mode = 2
+min_value = 50.0
+max_value = 90.0
+value = 50.0
+
+[node name="SensitivityLabel" type="RichTextLabel" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 80
+text = "Mouse Sensitivity: 1.0
+"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="SensitivitySlider" type="HSlider" parent="VBoxContainer"]
+layout_mode = 2
+max_value = 5.0
+step = 0.05
+value = 1.0
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -69,22 +160,33 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -1.0
-offset_top = -229.0
-offset_right = 224.0
-offset_bottom = 229.0
+offset_left = 180.0
+offset_top = -476.0
+offset_right = 825.0
+offset_bottom = 475.0
 grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="HSlider" type="HSlider" parent="VBoxContainer2"]
+[node name="Volumetrics" type="CheckButton" parent="VBoxContainer2"]
 layout_mode = 2
-min_value = 50.0
-value = 75.0
+theme_override_font_sizes/font_size = 80
+text = "Volumetrics"
 
-[node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer2"]
+[node name="Shadows" type="CheckButton" parent="VBoxContainer2"]
 layout_mode = 2
-theme_override_font_sizes/normal_font_size = 40
-text = "75"
-fit_content = true
-scroll_active = false
+theme_override_font_sizes/font_size = 80
+text = "Shadows"
+
+[node name="Particles" type="CheckButton" parent="VBoxContainer2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "Particles
+"
+
+[connection signal="button_down" from="Return" to="." method="_on_return_button_down"]
+[connection signal="value_changed" from="VBoxContainer/FovSlider" to="." method="_fov_slider_changed"]
+[connection signal="value_changed" from="VBoxContainer/SensitivitySlider" to="." method="_sensitivity_slider_changed"]
+[connection signal="toggled" from="VBoxContainer2/Volumetrics" to="." method="_on_volumetrics_toggled"]
+[connection signal="toggled" from="VBoxContainer2/Shadows" to="." method="_on_shadows_toggled"]
+[connection signal="toggled" from="VBoxContainer2/Particles" to="." method="_on_particles_toggled"]
