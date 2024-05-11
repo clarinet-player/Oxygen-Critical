@@ -1,13 +1,53 @@
-[gd_scene load_steps=6 format=3 uid="uid://1caosknu2da0"]
+[gd_scene load_steps=7 format=3 uid="uid://1caosknu2da0"]
+
+[ext_resource type="Texture2D" uid="uid://b3bnmu5sdenad" path="res://assets/blud.png" id="1_1sorc"]
 
 [sub_resource type="GDScript" id="GDScript_up0eg"]
 script/source = "extends Node3D
 
+
+
+var start_time : float
+var lifetime : float = 60000
+
+var first_frame := true
+
+
+
 func _ready():
 	if Settings.particles_enabled:
 		$GPUParticles3D.emitting = true
-		await get_tree().create_timer(6.0).timeout
-	queue_free()
+
+
+
+func _physics_process(delta):
+	
+	if first_frame:
+		first_frame = false
+		
+		var _space = get_world_3d().direct_space_state
+		var _ray = PhysicsRayQueryParameters3D.create(global_position - global_basis.y * 0.5, global_position - global_basis.y * 10)
+		var _raycast = _space.intersect_ray(_ray)
+		
+		if _raycast.is_empty():
+			$Decal.queue_free()
+		else:
+			$Decal.global_position = _raycast.position
+			var _up : Vector3 = $Decal.global_basis.y
+			var _angle : float = acos(_up.dot(_raycast.normal))
+			var _axis = _up.cross(_raycast.normal)
+			$Decal.global_rotate(_axis.normalized(), _angle)
+			start_time = Time.get_ticks_msec() - global_position.distance_squared_to(_raycast.position)
+
+
+func _process(delta):
+	if first_frame:
+		return
+	
+	if Time.get_ticks_msec() - start_time > lifetime:
+		queue_free()
+	elif get_node_or_null(\"Decal\"):
+		$Decal.albedo_mix = 1 - (Time.get_ticks_msec() - start_time) / lifetime
 "
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_de4mi"]
@@ -22,15 +62,15 @@ collision_mode = 2
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1tjlc"]
 albedo_color = Color(0.490196, 0.0156863, 0, 1)
-metallic_specular = 0.44
-roughness = 0.43
+metallic_specular = 0.6
+roughness = 0.4
 
 [sub_resource type="SphereMesh" id="SphereMesh_mxkmi"]
 material = SubResource("StandardMaterial3D_1tjlc")
-radius = 0.03
-height = 0.06
-radial_segments = 8
-rings = 5
+radius = 0.035
+height = 0.07
+radial_segments = 10
+rings = 6
 
 [sub_resource type="Skin" id="Skin_vw6ja"]
 
@@ -41,10 +81,15 @@ script = SubResource("GDScript_up0eg")
 cast_shadow = 0
 emitting = false
 amount = 4
-lifetime = 6.0
+lifetime = 7.0
 one_shot = true
 explosiveness = 0.95
 fixed_fps = 60
 process_material = SubResource("ParticleProcessMaterial_de4mi")
 draw_pass_1 = SubResource("SphereMesh_mxkmi")
 draw_skin = SubResource("Skin_vw6ja")
+
+[node name="Decal" type="Decal" parent="."]
+size = Vector3(1.5, 0.01, 1.5)
+texture_albedo = ExtResource("1_1sorc")
+albedo_mix = 0.0

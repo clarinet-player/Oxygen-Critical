@@ -10,7 +10,8 @@ script/source = "extends Node3D
 
 
 func _ready():
-	$WorldEnvironment.environment.volumetric_fog_enabled = Settings.volumetrics_enabled
+	Settings.settings_changed.connect(_load_settings)
+	_load_settings()
 	
 	var area = AABB(Vector3(-40, 0, -60), Vector3(90, 10, 100))
 	WorldState.playable_area = area
@@ -22,8 +23,15 @@ func _ready():
 
 
 
+func _load_settings():
+	$WorldEnvironment.environment.volumetric_fog_enabled = Settings.volumetrics_enabled
+	$WorldEnvironment.environment.fog_enabled = !Settings.volumetrics_enabled
+
+
+
 func _spawn_player(_id):
 	var player = preload(\"res://classes/player.tscn\").instantiate()
+	player.team = 0
 	add_child(player)
 	player.death.connect(_spawn_player)
 "
@@ -40,7 +48,9 @@ background_mode = 1
 sky = SubResource("Sky_554fn")
 tonemap_mode = 2
 glow_enabled = true
-volumetric_fog_enabled = true
+fog_light_color = Color(0.145098, 0.145098, 0.180392, 1)
+fog_light_energy = 0.11
+fog_density = 0.09
 volumetric_fog_density = 0.1
 volumetric_fog_albedo = Color(0.243137, 0.243137, 0.27451, 1)
 volumetric_fog_emission = Color(0, 0, 0.00784314, 1)
@@ -226,7 +236,7 @@ mesh = SubResource("BoxMesh_mqhcj")
 shape = SubResource("BoxShape3D_63agg")
 
 [node name="Box12" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(0.0786331, 0, 0.996904, 0, 1, 0, -0.996904, 0, 0.0786331, 1.36455, 2.5361, -51.1761)
+transform = Transform3D(0.0786331, 0, 0.996904, 0, 1, 0, -0.996904, 0, 0.0786331, -10.5999, 2.5361, -14.519)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Boxes/Box12"]
 material_override = SubResource("StandardMaterial3D_4fn4j")
@@ -266,7 +276,7 @@ mesh = SubResource("BoxMesh_mqhcj")
 shape = SubResource("BoxShape3D_63agg")
 
 [node name="Box16" type="StaticBody3D" parent="Boxes"]
-transform = Transform3D(-0.150674, -0.988583, 0, 0.988583, -0.150674, 0, 0, 0, 1, 16.8584, 1.78724, -40.4884)
+transform = Transform3D(0.97486, -0.0105152, 0.22257, 0.0107858, 0.999941, 0, -0.222556, 0.00240058, 0.974917, 13.0761, 2.53182, -40.3755)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Boxes/Box16"]
 material_override = SubResource("StandardMaterial3D_4fn4j")
@@ -305,6 +315,26 @@ mesh = SubResource("BoxMesh_mqhcj")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Boxes/Box19"]
 shape = SubResource("BoxShape3D_63agg")
 
+[node name="Box20" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.980704, 0, 0.195501, 0, 1, 0, -0.195501, 0, 0.980704, -0.000842571, 2.52044, -3.23937)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Boxes/Box20"]
+material_override = SubResource("StandardMaterial3D_4fn4j")
+mesh = SubResource("BoxMesh_mqhcj")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Boxes/Box20"]
+shape = SubResource("BoxShape3D_63agg")
+
+[node name="Box21" type="StaticBody3D" parent="Boxes"]
+transform = Transform3D(0.986836, 0, 0.161724, 0, 1, 0, -0.161724, 0, 0.986836, 7.00416, 0.488001, 1.29676)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Boxes/Box21"]
+material_override = SubResource("StandardMaterial3D_4fn4j")
+mesh = SubResource("BoxMesh_mqhcj")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Boxes/Box21"]
+shape = SubResource("BoxShape3D_63agg")
+
 [node name="Lights" type="Node3D" parent="."]
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Lights"]
@@ -341,12 +371,15 @@ team = 1
 
 [node name="Spawnpoint2" parent="." instance=ExtResource("2_7pod8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.5, -12)
+facing = Vector3(-1, 0, 0)
 
 [node name="Spawnpoint3" parent="." instance=ExtResource("2_7pod8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 0.5, -44)
+facing = Vector3(-1, 0, 0)
 
 [node name="Spawnpoint4" parent="." instance=ExtResource("2_7pod8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 0.5, -60)
+facing = Vector3(-1, 0, 0)
 team = 2
 
 [node name="Camera3D" type="Camera3D" parent="."]

@@ -5,6 +5,9 @@ script/source = "extends Node
 
 
 
+signal settings_changed
+
+
 var fov := 75.0
 var mouse_sensitivity := 1.0
 
@@ -63,6 +66,11 @@ func write_file():
 	}
 	file.store_line(JSON.stringify(data))
 	file.close()
+
+
+
+func on_changed():
+	settings_changed.emit()
 "
 
 [node name="Settings" type="Node"]

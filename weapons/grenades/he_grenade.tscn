@@ -26,6 +26,13 @@ func _ready():
 	arm_time = Time.get_ticks_msec()
 	audio.volume_db = -10
 	audio.pitch_scale = 0.8
+	
+	Settings.settings_changed.connect(_load_settings)
+	_load_settings()
+
+
+
+func _load_settings():
 	light.shadow_enabled = Settings.shadows_enabled
 
 

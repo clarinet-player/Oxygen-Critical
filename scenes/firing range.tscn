@@ -1,9 +1,8 @@
-[gd_scene load_steps=28 format=3 uid="uid://d1tp582ly7ap6"]
+[gd_scene load_steps=27 format=3 uid="uid://d1tp582ly7ap6"]
 
 [ext_resource type="PackedScene" uid="uid://d16rwkt574n4s" path="res://classes/gameSurface.tscn" id="1_erh0q"]
 [ext_resource type="Texture2D" uid="uid://3cuw4l80rgui" path="res://assets/metal.jpg" id="2_r8nw0"]
 [ext_resource type="PackedScene" uid="uid://de0weem1pd67y" path="res://classes/spawnpoint.tscn" id="2_vig8a"]
-[ext_resource type="Script" path="res://scripts/ship.gd" id="3_in0r1"]
 [ext_resource type="Texture2D" uid="uid://bcfgnv57pghjt" path="res://assets/10_m_Air_Rifle_target.svg.png" id="5_4x0km"]
 
 [sub_resource type="GDScript" id="GDScript_wrxwh"]
@@ -192,7 +191,6 @@ environment = SubResource("Environment_bpvko")
 
 [node name="Centrifuge" type="RigidBody3D" parent="."]
 freeze = true
-script = ExtResource("3_in0r1")
 
 [node name="Circle_001" type="MeshInstance3D" parent="Centrifuge"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0)

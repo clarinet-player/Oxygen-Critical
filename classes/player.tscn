@@ -23,6 +23,10 @@ const slide_friction : float = 1.0
 const jump_power : float = 2.5
 var jump_stamina : float = 1.0
 
+const grapple_range : float = 100.0
+const grapple_acceleration : float = 10.0
+const grapple_max_speed : float = 7
+
 var mouse_sensitivity : float
 
 
@@ -33,6 +37,7 @@ var velocity : Vector3
 
 var _anchored_shape : CollisionShape3D
 var _anchor_point_l : Vector3
+var _grapple_point : Vector3
 var _surface_normal : Vector3
 
 var _reorient := true
@@ -51,6 +56,9 @@ var breach : float = 0
 
 var inventory := Array()
 var active_item : Node3D
+
+
+var team := 0
 
 
 var update_time : int
@@ -73,31 +81,52 @@ func _ready():
 	
 	update_time = Time.get_ticks_msec()
 	
-	camera.fov = Settings.fov
-	mouse_sensitivity = Settings.mouse_sensitivity
+	Settings.settings_changed.connect(_load_settings)
+	_load_settings()
+	
+	if team == 1:
+		var mat = StandardMaterial3D.new()
+		mat.albedo_color = Color(0.6, 0, 0)
+		$Hitbox/MeshInstance3D.material = mat
+	
+	if team == 2:
+		var mat = StandardMaterial3D.new()
+		mat.albedo_color = Color(0, 0, 0.6)
+		$Hitbox/MeshInstance3D.material = mat
+		
 	
 	if !Multiplayermanager.mp_active or is_multiplayer_authority():
+		
 		$Camera3D.current = true
 		UiManager.set_ui(3)
 		
 		Multiplayermanager.local_player = self
 		
-		var spawnpoint = WorldState.find_spawnpoint(self)
+		
+		var spawnpoint = WorldState.find_spawnpoint(self, team)
 		
 		if spawnpoint:
 			global_position = spawnpoint.global_position
 			velocity = spawnpoint.down * 10
 		
-			var _axis = spawnpoint.down.cross(global_basis.y * -1)
-			var _angle = acos(spawnpoint.down.dot(global_basis.y * -1))
-			
+			var _axis = spawnpoint.down.cross(-global_basis.y)
+			var _angle = acos(spawnpoint.down.dot(-global_basis.y))
 			if !_axis.is_zero_approx():
 				rotate(_axis.normalized(), _angle)
 			else:
 				rotate(global_basis.x, _angle)
+			
+			_axis = spawnpoint.facing.cross(global_basis.z)
+			_angle = acos(spawnpoint.down.dot(global_basis.z))
+			if !_axis.is_zero_approx():
+				rotate(_axis.normalized(), _angle)
+			else:
+				rotate(global_basis.y, _angle)
+		
 		
 		hud.set_health(100)
 		hud.set_ammo(false, 0)
+		
 		
 		if !Multiplayermanager.mp_active or is_multiplayer_authority():
 			for item in Settings.saved_inventory:
@@ -119,6 +148,12 @@ func _ready():
 				elif item == 6:
 					var healthkit = preload(\"res://weapons/healing/healthkit.tscn\").instantiate()
 					inventory.append(healthkit)
+
+
+
+func _load_settings():
+	camera.fov = Settings.fov
+	mouse_sensitivity = Settings.mouse_sensitivity
 
 
 
@@ -215,6 +250,14 @@ func _physics_process(delta : float):
 			active_item = inventory[0]
 			camera.add_child(active_item)
 	
+	
+	# Regain stamina
+	if jump_stamina < 1:
+		jump_stamina += delta * 2
+		if jump_stamina > 1:
+			jump_stamina = 1
+	
+	
 	if _anchored_shape:
 		
 		# Modifying Movement State
@@ -254,13 +297,8 @@ func _physics_process(delta : float):
 			
 			if !_axis.is_zero_approx():
 				rotate(_axis.normalized(), _roll_angle * 7 * delta)
-		
-		
-		# Regain stamina
-		if jump_stamina < 1:
-			jump_stamina += delta * 2
-			if jump_stamina > 1:
-				jump_stamina = 1
+			else:
+				rotate(global_basis.z, _roll_angle * 7 * delta)
 		
 		
 		# Jumping
@@ -268,11 +306,26 @@ func _physics_process(delta : float):
 			
 			detach()
 			_reorient = false
-			velocity += -global_basis.z * jump_power * jump_stamina
+			velocity += (_surface_normal - global_basis.z).normalized() * jump_power * jump_stamina
 			jump_stamina = 0
 			
 			global_position = camera.global_position
 			move_and_collide(velocity.normalized())
+	
+	
+	# Grappling
+	if Input.is_action_just_pressed(\"Q\"):
+		if !_anchored_shape or acos(_surface_normal.dot(global_basis.z)) > 1.25:
+			var _space = get_world_3d().direct_space_state
+			var _ray = PhysicsRayQueryParameters3D.create(camera.global_position, camera.global_position - global_basis.z * grapple_range)
+			var _raycast = _space.intersect_ray(_ray)
+			
+			if !_raycast.is_empty():
+				if _anchored_shape:
+					global_position = camera.global_position
+					move_and_collide(-global_basis.z)
+				detach()
+				_grapple_point = _raycast.position
 	
 	
 	if _anchored_shape:
@@ -283,7 +336,7 @@ func _physics_process(delta : float):
 		var _axis = _up.cross(_surface_normal)
 		if !_axis.is_zero_approx():
 			hitbox.global_rotate(_axis.normalized(), _angle)
-			
+	
 	else:
 		camera.global_position = global_position - velocity.normalized()
 		hitbox.global_position = global_position - velocity.normalized() * 0.35
@@ -397,6 +450,12 @@ func _free_move(delta : float):
 	# Apply gravity, if any
 	velocity += WorldState.get_gravity_vector() * delta
 	
+	
+	# Grapple
+	if _grapple_point != Vector3.ZERO:
+		velocity = (velocity + global_position.direction_to(_grapple_point) * grapple_acceleration * delta).limit_length(grapple_max_speed)
+	
+	
 	# Try to move to our new position
 	var _collision = move_and_collide(velocity * delta)
 	
@@ -409,6 +468,9 @@ func _free_move(delta : float):
 			attach(_shape, _normal)
 			_anchored_move(_collision.get_remainder().length()/velocity.length())
 			return
+		
+		else:
+			_grapple_point = Vector3.ZERO
 		
 		if _collision.get_travel().length_squared() < 0.1:
 			global_translate(_normal)
@@ -433,20 +495,26 @@ func attach(_shape : CollisionShape3D, _normal : Vector3):
 	_anchor_point_l = _anchored_shape.to_local(global_position)
 	_surface_normal = _normal
 	
-	velocity = velocity - velocity.dot(_surface_normal) * _surface_normal
-	
-	var _body = _shape.get_parent()
-	if \"centrifuge_angular_velocity\" in _body:
-		velocity -= (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
-	
-	if velocity.length() > sprint_max_speed:
-		velocity *= 0.9
-	elif velocity.length() > walk_max_speed:
-		velocity *= 0.95
+	if _grapple_point != Vector3.ZERO:
+		_grapple_point = Vector3.ZERO
+		velocity = Vector3.ZERO
+	else:
+		velocity = velocity - velocity.dot(_surface_normal) * _surface_normal
+		
+		var _body = _shape.get_parent()
+		if \"centrifuge_angular_velocity\" in _body:
+			velocity -= (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
+		
+		if velocity.length() > sprint_max_speed:
+			velocity *= 0.9
+		elif velocity.length() > walk_max_speed:
+			velocity *= 0.95
 
 
 
 func detach():
+	if !_anchored_shape:
+		return
 	
 	var _forward : Vector3 = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
 	var _side : Vector3 = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()

@@ -42,27 +42,32 @@ func _fov_slider_changed(value):
 	changed = true
 	fovlabel.text = \"FOV: \" + str(value)
 	Settings.fov = value
+	Settings.on_changed()
 
 
 func _sensitivity_slider_changed(value):
 	changed = true
 	sensitivitylabel.text = \"Mouse Sensitivity: \" + str(value)
 	Settings.mouse_sensitivity = value
+	Settings.on_changed()
 
 
 func _on_volumetrics_toggled(toggled_on):
 	changed = true
 	Settings.volumetrics_enabled = toggled_on
+	Settings.on_changed()
 
 
 func _on_shadows_toggled(toggled_on):
 	changed = true
 	Settings.shadows_enabled = toggled_on
+	Settings.on_changed()
 
 
 func _on_particles_toggled(toggled_on):
 	changed = true
 	Settings.particles_enabled = toggled_on
+	Settings.on_changed()
 
 
 func _on_return_button_down():
