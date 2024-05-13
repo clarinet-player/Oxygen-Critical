@@ -575,6 +575,9 @@ func damage(base : float, tearing : float):
 		breach = tearing
 	
 	damage_buffer.append(Vector3(base, tearing, Time.get_ticks_msec()))
+	
+	if multiplayer.get_unique_id() == 1:
+		set_damage.rpc_id(int(str(name)), health, breach, [Vector2(base, tearing)])
 
 
 

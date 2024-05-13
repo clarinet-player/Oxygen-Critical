@@ -60,7 +60,7 @@ func _physics_process(delta):
 				effective_range -= 5
 				if is_multiplayer_authority():
 					var _player = _shape.player
-					_player.rpc_id(int(str(_player.name)), \"damage\", min(mass * (1 - ((dist_travelled - effective_range) / effective_range)), mass), tearing)
+					_player.damage(min(mass * (1 - ((dist_travelled - effective_range) / effective_range)), mass), tearing)
 				
 				var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
 				Gamemanager.add_child(blood)
