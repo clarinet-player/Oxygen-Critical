@@ -11,7 +11,7 @@ extends CollisionShape3D
 
 
 func get_is_grabbable():
-	if grabbable_states.find(WorldState.gravity_state) != -1:
+	if grabbable_states.find(Gamemanager.gravity_state) != -1:
 		return true
 	else:
 		return false

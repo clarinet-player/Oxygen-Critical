@@ -15,8 +15,8 @@ func _buy_menu():
 
 
 func _disconnect():
-	if Multiplayermanager.mp_active:
-		Multiplayermanager.disconnect_player()
+	if Gamemanager.mp_active:
+		Gamemanager.disconnect_player()
 	
 	get_tree().change_scene_to_file(\"res://scenes/Empty scene.tscn\")
 	UiManager.set_ui(1)

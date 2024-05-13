@@ -65,7 +65,7 @@ func _physics_process(delta):
 		_smoke.size = Vector3(0.4, 0.4, 0.4)
 		_smoke.fade_speed = 0.05
 		_smoke.start_density = 0.11
-		Multiplayermanager.add_child(_smoke)
+		Gamemanager.add_child(_smoke)
 		_smoke.global_position = global_position
 		
 		await get_tree().create_timer(5.0).timeout
@@ -99,7 +99,7 @@ func _check_player(player : Node3D):
 func _damage(player):
 	var multiplier = (1 - player.global_position.distance_to(global_position) / blast_radius)
 	
-	if Multiplayermanager.mp_active:
+	if Gamemanager.mp_active:
 		player.rpc_id(int(str(player.name)), \"damage\", damage * multiplier, tearing * multiplier + 3)
 	else:
 		player.damage(damage * multiplier, tearing * multiplier + 3)

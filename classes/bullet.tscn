@@ -42,12 +42,12 @@ func _physics_process(delta):
 		_time -= _passed
 		
 		# Update ourself
-		velocity += WorldState.get_gravity_vector() * _passed
+		velocity += Gamemanager.get_gravity_vector() * _passed
 		dist_travelled += _travelled
 		global_position = _point
 		
 		# Remove ourself if necessary
-		if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
+		if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):
 			queue_free()
 			return
 		if dist_travelled > 2 * effective_range:
@@ -63,7 +63,7 @@ func _physics_process(delta):
 					_player.rpc_id(int(str(_player.name)), \"damage\", min(mass * (1 - ((dist_travelled - effective_range) / effective_range)), mass), tearing)
 				
 				var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
-				Multiplayermanager.add_child(blood)
+				Gamemanager.add_child(blood)
 				blood.global_position = global_position
 				if blood.global_basis.y.cross(-velocity).is_zero_approx():
 					blood.rotate(global_basis.x, acos(blood.global_basis.y.dot(-velocity.normalized())))
@@ -76,7 +76,7 @@ func _physics_process(delta):
 			else:
 				effective_range -= 5
 			var impact = preload(\"res://classes/bullet impact.tscn\").instantiate()
-			Multiplayermanager.add_child(impact)
+			Gamemanager.add_child(impact)
 			impact.global_position = global_position
 			if impact.global_basis.y.cross(_normal).is_zero_approx():
 				impact.rotate(global_basis.x, acos(impact.global_basis.y.dot(_normal)))
@@ -87,7 +87,7 @@ func _physics_process(delta):
 			smoke.size = Vector3(0.2, 0.2, 0.2)
 			smoke.fade_speed = 0.1
 			smoke.start_density = 0.004
-			Multiplayermanager.add_child(smoke)
+			Gamemanager.add_child(smoke)
 			smoke.global_position = global_position + _normal * 0.25
 		
 		
@@ -103,13 +103,13 @@ func _physics_process(delta):
 	
 	
 	# Update ourself
-	velocity += WorldState.get_gravity_vector() * _time
+	velocity += Gamemanager.get_gravity_vector() * _time
 	dist_travelled += global_position.distance_to(_target_pos)
 	global_position = _target_pos
 	
 	
 	# Remove ourself if necessary
-	if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
+	if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):
 		queue_free()
 		return
 	if dist_travelled > 2 * effective_range:

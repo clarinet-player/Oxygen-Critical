@@ -8,7 +8,7 @@ script/source = "extends Control
 
 
 func _connect():
-	Multiplayermanager.connect_player()
+	Gamemanager.connect_player()
 
 
 func _singleplayer():

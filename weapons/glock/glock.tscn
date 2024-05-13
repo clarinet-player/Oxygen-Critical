@@ -185,7 +185,7 @@ func fire(position : Vector3, velocity : Vector3):
 	_smoke.size = Vector3(0.01, 0.01, 4)
 	_smoke.fade_speed = 0.1
 	_smoke.start_density = 0.004
-	Multiplayermanager.add_child(_smoke)
+	Gamemanager.add_child(_smoke)
 	_smoke.global_position = light.global_position + velocity.normalized() * 3
 	_smoke.look_at(light.global_position)
 "
