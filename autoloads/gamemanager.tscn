@@ -4,10 +4,16 @@
 script/source = "extends Node
 
 var peer = ENetMultiplayerPeer.new()
-
 var local_player
-
 var mp_active = false
+
+var gamemode
+
+# Gravity states: zero, thrust, spin
+var gravity_state : String = \"zero\"
+var gravity_strength : float = 9.8
+var playable_area : AABB
+
 
 
 func _ready():
@@ -25,8 +31,7 @@ func _ready():
 
 
 
-#region connection
-# Executed on the client
+#region Multiplayer
 func connect_player():
 	peer.close()
 	peer.create_client(\"66.179.249.44\", 7777)
@@ -43,7 +48,6 @@ func disconnect_player():
 
 
 
-# Executed on the server
 func _on_connect(id : int):
 	print(\"player connected: \", id)
 	
@@ -53,6 +57,41 @@ func _on_connect(id : int):
 	
 	spawn_player(id)
 #endregion
+
+
+
+func get_gravity_vector() -> Vector3:
+	if gravity_state == \"thrust\":
+		return Vector3(0, gravity_strength * -1, 0)
+	else:
+		return Vector3.ZERO
+
+
+
+func find_spawnpoint(exclude, player_team):
+	var best_point
+	var best_value := 0.0
+	
+	var players = get_tree().get_nodes_in_group(\"Players\")
+	players.erase(exclude)
+	var spawnpoints = get_tree().get_nodes_in_group(\"Spawnpoints\")
+	
+	
+	for point in spawnpoints:
+		var value := 0.0
+		
+		if player_team != 0 and point.team != player_team:
+			continue
+		
+		for player in players:
+			value += point.global_position.distance_to(player.global_position)
+		if players.size() < 1:
+			value = randf()
+		if value > best_value:
+			best_value = value
+			best_point = point
+	
+	return best_point
 
 
 
@@ -106,7 +145,7 @@ func throw_grenade(type : int, position : Vector3, velocity : Vector3):
 		grenade.apply_impulse(velocity)
 "
 
-[node name="MultiplayerManager" type="Node"]
+[node name="GameManager" type="Node"]
 script = SubResource("GDScript_w478l")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]

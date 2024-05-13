@@ -19,7 +19,7 @@ func _enter_tree():
 
 
 func _ready():
-	if !Multiplayermanager.mp_active or is_multiplayer_authority():
+	if !Gamemanager.mp_active or is_multiplayer_authority():
 		hud.set_ammo(false, 0)
 
 
@@ -31,7 +31,7 @@ func _exit_tree():
 
 
 func _physics_process(delta):
-	if Multiplayermanager.mp_active and !is_multiplayer_authority():
+	if Gamemanager.mp_active and !is_multiplayer_authority():
 		return
 	
 	if Input.is_action_just_pressed(\"Mouse1\") and !UiManager.paused:
@@ -39,10 +39,10 @@ func _physics_process(delta):
 	
 		var velocity = -global_basis.z * throw_velocity + player.get_velocity()
 		
-		if Multiplayermanager.mp_active:
-			Multiplayermanager.throw_grenade.rpc(1, global_position, velocity)
+		if Gamemanager.mp_active:
+			Gamemanager.throw_grenade.rpc(1, global_position, velocity)
 		else:
-			Multiplayermanager.throw_grenade(1, global_position, velocity)
+			Gamemanager.throw_grenade(1, global_position, velocity)
 		
 		player.inventory.erase(self)
 		get_parent().remove_child(self)
@@ -53,10 +53,10 @@ func _physics_process(delta):
 	
 		var velocity = -global_basis.z * throw_velocity * 0.65 + player.get_velocity()
 		
-		if Multiplayermanager.mp_active:
-			Multiplayermanager.throw_grenade.rpc(1, global_position, velocity)
+		if Gamemanager.mp_active:
+			Gamemanager.throw_grenade.rpc(1, global_position, velocity)
 		else:
-			Multiplayermanager.throw_grenade(1, global_position, velocity)
+			Gamemanager.throw_grenade(1, global_position, velocity)
 		
 		player.inventory.erase(self)
 		get_parent().remove_child(self)

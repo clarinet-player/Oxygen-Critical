@@ -14,11 +14,11 @@ func _ready():
 	_load_settings()
 	
 	var area = AABB(Vector3(-40, 0, -60), Vector3(90, 10, 100))
-	WorldState.playable_area = area
+	Gamemanager.playable_area = area
 	
-	WorldState.gravity_state = \"zero\"
+	Gamemanager.gravity_state = \"zero\"
 	
-	if !Multiplayermanager.mp_active:
+	if !Gamemanager.mp_active:
 		_spawn_player(1)
 
 

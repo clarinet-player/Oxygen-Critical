@@ -54,6 +54,8 @@ var _movement_state : move_type = move_type.IDLE
 var health : float = 100
 var breach : float = 0
 
+var damage_buffer : Array
+
 var inventory := Array()
 var active_item : Node3D
 
@@ -95,15 +97,15 @@ func _ready():
 		$Hitbox/MeshInstance3D.material = mat
 		
 	
-	if !Multiplayermanager.mp_active or is_multiplayer_authority():
+	if !Gamemanager.mp_active or is_multiplayer_authority():
 		
 		$Camera3D.current = true
 		UiManager.set_ui(3)
 		
-		Multiplayermanager.local_player = self
+		Gamemanager.local_player = self
 		
 		
-		var spawnpoint = WorldState.find_spawnpoint(self, team)
+		var spawnpoint = Gamemanager.find_spawnpoint(self, team)
 		
 		if spawnpoint:
 			global_position = spawnpoint.global_position
@@ -128,7 +130,7 @@ func _ready():
 		hud.set_ammo(false, 0)
 		
 		
-		if !Multiplayermanager.mp_active or is_multiplayer_authority():
+		if !Gamemanager.mp_active or is_multiplayer_authority():
 			for item in Settings.saved_inventory:
 				if item == 1:
 					var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
@@ -158,7 +160,7 @@ func _load_settings():
 
 
 func _input(event):
-	if Multiplayermanager.mp_active and !is_multiplayer_authority():
+	if Gamemanager.mp_active and !is_multiplayer_authority():
 		return
 	
 	if UiManager.paused:
@@ -178,11 +180,11 @@ func _input(event):
 
 
 func _process(delta):
-	if Multiplayermanager.mp_active and !is_multiplayer_authority():
+	if Gamemanager.mp_active and !is_multiplayer_authority():
 		return
 	
 	health -= breach * delta
-	if WorldState.playable_area and !WorldState.playable_area.has_point(global_position):
+	if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):
 		health -= 100 * delta
 	hud.set_health(health)
 	if health <= 0.1:
@@ -236,13 +238,13 @@ func _process(delta):
 
 #region Physics Frame
 func _physics_process(delta : float):
-	if Multiplayermanager.mp_active and !is_multiplayer_authority() and Time.get_ticks_msec() - update_time > timeout_time:
-		Multiplayermanager.timeout.rpc_id(int(str(name)))
+	if Gamemanager.mp_active and !is_multiplayer_authority() and Time.get_ticks_msec() - update_time > timeout_time:
+		Gamemanager.timeout.rpc_id(int(str(name)))
 		print(\"player disconnected: \", name)
 		queue_free()
 		return
 	
-	if Multiplayermanager.mp_active and !is_multiplayer_authority():
+	if Gamemanager.mp_active and !is_multiplayer_authority():
 		return
 	
 	if !active_item:
@@ -391,7 +393,7 @@ func _anchored_move(delta : float):
 		
 		move_type.SLIDING:
 			
-			velocity += _forward * _forward.dot(WorldState.get_gravity_vector()) + _side * _side.dot(WorldState.get_gravity_vector())
+			velocity += _forward * _forward.dot(Gamemanager.get_gravity_vector()) + _side * _side.dot(Gamemanager.get_gravity_vector())
 			if velocity.length() < slide_friction * delta:
 				velocity = Vector3.ZERO
 			else:
@@ -448,7 +450,7 @@ func _anchored_move(delta : float):
 func _free_move(delta : float):
 	
 	# Apply gravity, if any
-	velocity += WorldState.get_gravity_vector() * delta
+	velocity += Gamemanager.get_gravity_vector() * delta
 	
 	
 	# Grapple
@@ -566,12 +568,36 @@ func heal_health(amount):
 
 
 
-@rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func damage(base : float, tearing : float):
 	health = clamp(health - base, 0, 100)
 	damaged.emit()
 	if tearing > breach:
 		breach = tearing
+	
+	damage_buffer.append(Vector3(base, tearing, Time.get_ticks_msec()))
+
+
+
+@rpc(\"any_peer\", \"call_remote\", \"reliable\")
+func set_damage(new_health : float, new_breach : float, new_buffer : Array):
+	health = new_health
+	breach = new_breach
+	
+	for item1 in new_buffer:
+		for item2 in damage_buffer:
+			if (item1.x.is_equal_approx(item2.x) and item1.y.is_equal_approx(item2.y)):
+				damage_buffer.erase(item2)
+				break
+	
+	var time = Time.get_ticks_msec()
+	for item in damage_buffer:
+		if time - item.z > 500:
+			damage_buffer.erase(item)
+	
+	for item in damage_buffer:
+		health -= item.x
+		if item.y > breach:
+			breach = item.y
 
 
 

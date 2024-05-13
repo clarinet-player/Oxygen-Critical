@@ -1,21 +1,9 @@
-res://classes/spawnpoint.tscn
+res://autoloads/gamemanager.tscn
 res://classes/player.tscn
 res://scenes/playable scene.tscn
-res://autoloads/multiplayermanager.tscn
-res://autoloads/settings.tscn
 res://weapons/grenades/he_display.tscn
-res://weapons/grenades/he_grenade.tscn
 res://weapons/ak12/ak12.tscn
 res://weapons/vector/vector.tscn
 res://weapons/glock/glock.tscn
 res://weapons/healing/sealant.tscn
 res://weapons/healing/healthkit.tscn
-res://classes/bullet impact.tscn
-res://classes/blood spray.tscn
-res://ui/buy menu.tscn
-res://ui/settings menu.tscn
-res://ui/pause menu.tscn
-res://autoloads/ui manager.tscn
-res://classes/bullet.tscn
-res://autoloads/worldState.tscn
-res://scenes/firing range.tscn

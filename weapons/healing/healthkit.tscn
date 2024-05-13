@@ -26,7 +26,7 @@ func _enter_tree():
 
 
 func _ready():
-	if !Multiplayermanager.mp_active or is_multiplayer_authority():
+	if !Gamemanager.mp_active or is_multiplayer_authority():
 		hud.set_ammo(false, 0)
 		if player.health < 100:
 			in_use = true
@@ -46,7 +46,7 @@ func _exit_tree():
 
 
 func _physics_process(delta):
-	if Multiplayermanager.mp_active and !is_multiplayer_authority():
+	if Gamemanager.mp_active and !is_multiplayer_authority():
 		return
 	
 	# Reloading

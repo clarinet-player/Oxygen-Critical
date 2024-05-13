@@ -17,10 +17,9 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-WorldState="*res://autoloads/worldState.tscn"
 UiManager="*res://autoloads/ui manager.tscn"
-Multiplayermanager="*res://autoloads/multiplayermanager.tscn"
 Settings="*res://autoloads/settings.tscn"
+Gamemanager="*res://autoloads/gamemanager.tscn"
 
 [display]
 
