@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://baf3wcacoxjv8"]
 
-[ext_resource type="AudioStream" uid="uid://s48sgf80jqo1" path="res://weapons/glock/pistol_sfx_1.mp3" id="1_6qqve"]
+[ext_resource type="AudioStream" uid="uid://cpk5e0ghhpcw1" path="res://weapons/glock/pistol_sfx_1.mp3" id="1_6qqve"]
 
 [sub_resource type="GDScript" id="GDScript_regjm"]
 script/source = "extends Node3D
@@ -165,7 +165,7 @@ func _physics_process(delta):
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func fire(position : Vector3, velocity : Vector3):
-	audio.pitch_scale = randf_range(0.95, 1.05)
+	audio.pitch_scale = randf_range(0.94, 1.06)
 	audio.play()
 	
 	_fire_time_ms -= _firedelay

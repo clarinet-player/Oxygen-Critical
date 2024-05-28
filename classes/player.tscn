@@ -585,10 +585,9 @@ func damage(base : float, tearing : float):
 func set_damage(new_health : float, new_breach : float, new_buffer : Array):
 	health = new_health
 	breach = new_breach
-	
 	for item1 in new_buffer:
 		for item2 in damage_buffer:
-			if (item1.x.is_equal_approx(item2.x) and item1.y.is_equal_approx(item2.y)):
+			if (is_equal_approx(item1.x, item2.x) and is_equal_approx(item1.y, item2.y)):
 				damage_buffer.erase(item2)
 				break
 	

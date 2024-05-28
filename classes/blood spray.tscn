@@ -55,8 +55,8 @@ lifetime_randomness = 0.51
 angle_max = 180.0
 direction = Vector3(0, -1, 0)
 spread = 6.0
-initial_velocity_min = 0.5
-initial_velocity_max = 6.0
+initial_velocity_min = 0.8
+initial_velocity_max = 8.0
 gravity = Vector3(0, 0, 0)
 collision_mode = 2
 

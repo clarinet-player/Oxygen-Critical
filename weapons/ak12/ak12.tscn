@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://cskrtkkrkyd4q"]
 
-[ext_resource type="AudioStream" uid="uid://bhkh3hwf8ae5x" path="res://weapons/ak12/ak_sfx_2.mp3" id="1_t0sx5"]
+[ext_resource type="AudioStream" uid="uid://bym0np0bcaorr" path="res://weapons/ak12/ak_sfx_1.mp3" id="1_b1tva"]
 
 [sub_resource type="GDScript" id="GDScript_bxm1c"]
 script/source = "extends Node3D
@@ -165,7 +165,7 @@ func _physics_process(delta):
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func fire(position : Vector3, velocity : Vector3):
-	audio.pitch_scale = randf_range(0.95, 1.05)
+	audio.pitch_scale = randf_range(0.94, 1.06)
 	audio.play()
 	
 	_fire_time_ms -= _firedelay
@@ -325,4 +325,4 @@ spot_angle = 75.0
 spot_angle_attenuation = 1.8025
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
-stream = ExtResource("1_t0sx5")
+stream = ExtResource("1_b1tva")
