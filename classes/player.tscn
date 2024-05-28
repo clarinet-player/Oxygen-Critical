@@ -568,6 +568,7 @@ func heal_health(amount):
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func damage(dmg : float, tearing : float):
+	print(dmg)
 	health = clamp(health - dmg, 0, 100)
 	damaged.emit()
 	if tearing > breach:

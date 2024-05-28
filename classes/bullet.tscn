@@ -59,6 +59,7 @@ func _physics_process(delta):
 			if _shape.player != owning_player:
 				effective_range -= 5
 				var _player = _shape.player
+				print(mass, \",  \", 1 - ((dist_travelled - effective_range) / effective_range), \",  \", min(mass * (1 - ((dist_travelled - effective_range) / effective_range)), mass))
 				_player.damage.rpc_id(int(str(_shape.player.name)), min(mass * (1 - ((dist_travelled - effective_range) / effective_range)), mass), tearing)
 				
 				var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
