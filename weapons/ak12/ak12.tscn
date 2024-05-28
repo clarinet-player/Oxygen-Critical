@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://cskrtkkrkyd4q"]
 
-[ext_resource type="AudioStream" uid="uid://bym0np0bcaorr" path="res://weapons/ak12/ak_sfx_1.mp3" id="1_b1tva"]
+[ext_resource type="AudioStream" uid="uid://bvrbi4j40jude" path="res://weapons/ak12/ak_sfx_1.mp3" id="1_b1tva"]
 
 [sub_resource type="GDScript" id="GDScript_bxm1c"]
 script/source = "extends Node3D
@@ -11,14 +11,14 @@ const item_id := 1
 const firerate := 9.0
 const firemode := 0
 const mag_size := 20
-const reload_time := 2500.0
+const reload_time := 2000.0
 const muzzle_vel := 600.0
-const damage := 22.0
-const tearing := 5.0
+const damage := 25.0
+const tearing := 4.5
 const effective_range := 35.0
 const recovery := 2.0
 const recoil := 3.8
-const jerk := 0.28
+const jerk := 0.27
 const spray := 0.75
 const inventory_size := 2
 #endregion
