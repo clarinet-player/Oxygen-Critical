@@ -54,8 +54,6 @@ var _movement_state : move_type = move_type.IDLE
 var health : float = 100
 var breach : float = 0
 
-var damage_buffer : Array
-
 var inventory := Array()
 var active_item : Node3D
 
@@ -568,38 +566,12 @@ func heal_health(amount):
 
 
 
-func damage(base : float, tearing : float):
-	health = clamp(health - base, 0, 100)
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
+func damage(dmg : float, tearing : float):
+	health = clamp(health - dmg, 0, 100)
 	damaged.emit()
 	if tearing > breach:
 		breach = tearing
-	
-	damage_buffer.append(Vector3(base, tearing, Time.get_ticks_msec()))
-	
-	if multiplayer.get_unique_id() == 1:
-		set_damage.rpc_id(int(str(name)), health, breach, [Vector2(base, tearing)])
-
-
-
-@rpc(\"any_peer\", \"call_remote\", \"reliable\")
-func set_damage(new_health : float, new_breach : float, new_buffer : Array):
-	health = new_health
-	breach = new_breach
-	for item1 in new_buffer:
-		for item2 in damage_buffer:
-			if (is_equal_approx(item1.x, item2.x) and is_equal_approx(item1.y, item2.y)):
-				damage_buffer.erase(item2)
-				break
-	
-	var time = Time.get_ticks_msec()
-	for item in damage_buffer:
-		if time - item.z > 500:
-			damage_buffer.erase(item)
-	
-	for item in damage_buffer:
-		health -= item.x
-		if item.y > breach:
-			breach = item.y
 
 
 
