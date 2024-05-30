@@ -20,3 +20,5 @@ res://ui/player hud.tscn
 res://ui/settings menu.tscn
 res://weapons/gun.tscn
 res://weapons/ak12.tres
+res://classes/Hitbox.tscn
+res://classes/hitbox.tscn

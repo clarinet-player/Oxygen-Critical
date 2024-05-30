@@ -15,7 +15,7 @@ const reload_time := 2000.0
 const muzzle_vel := 600.0
 const damage := 25.0
 const tearing := 4.0
-const effective_range := 35.0
+const effective_range := 40.0
 const recovery := 2.0
 const recoil := 3.8
 const jerk := 0.27
@@ -280,7 +280,7 @@ bind/3/pose = Transform3D(7.62132e-07, 0, 10.0947, 0, 10.0947, 0, -10.0947, 0, 7
 script = SubResource("GDScript_bxm1c")
 
 [node name="Skeleton3D2" type="Skeleton3D" parent="."]
-transform = Transform3D(-0.0219696, 0.0967311, 0.0126661, 0.0975504, 0.0219317, 0.00171054, -0.00112326, 0.0127316, -0.0991799, 0.416, -0.119657, -0.306)
+transform = Transform3D(-0.0183442, 0.0962014, 0.0202184, 0.0979866, 0.0195432, -0.00408535, -0.00788148, 0.0190619, -0.0978496, 0.247558, -0.146334, -0.127278)
 bones/0/name = "AK12"
 bones/0/parent = -1
 bones/0/rest = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0)

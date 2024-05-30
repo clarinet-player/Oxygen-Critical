@@ -1,3 +1,6 @@
+CollisionShape3D
+RigidBody3D
+Camera3D
 MeshInstance3D
 OmniLight3D
 CheckButton
@@ -10,5 +13,3 @@ HBoxContainer
 TextEdit
 TextureRect
 Button
-RayCast3D
-Decal
