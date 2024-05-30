@@ -11,6 +11,8 @@ var changed := false
 @onready var fovslider := $VBoxContainer/FovSlider
 @onready var sensitivitylabel := $VBoxContainer/SensitivityLabel
 @onready var sensitivityslider := $VBoxContainer/SensitivitySlider
+@onready var jumplabel := $VBoxContainer/JumpLabel
+@onready var jumpslider := $VBoxContainer/JumpSlider
 
 @onready var volumetrics := $VBoxContainer2/Volumetrics
 @onready var shadows := $VBoxContainer2/Shadows
@@ -25,6 +27,9 @@ func _ready():
 	
 	sensitivitylabel.text = \"Mouse Sensitivity: \" + str(Settings.mouse_sensitivity)
 	sensitivityslider.value = Settings.mouse_sensitivity
+	
+	jumplabel.text = \"Jump Angle: \" + str(Settings.jump_angle)
+	jumpslider.value = Settings.jump_angle
 	
 	volumetrics.button_pressed = Settings.volumetrics_enabled
 	shadows.button_pressed = Settings.shadows_enabled
@@ -49,6 +54,13 @@ func _sensitivity_slider_changed(value):
 	changed = true
 	sensitivitylabel.text = \"Mouse Sensitivity: \" + str(value)
 	Settings.mouse_sensitivity = value
+	Settings.on_changed()
+
+
+func _on_jump_slider_value_changed(value):
+	changed = true
+	jumplabel.text = \"Jump Angle: \" + str(value)
+	Settings.jump_angle = value
 	Settings.on_changed()
 
 
@@ -158,6 +170,20 @@ max_value = 5.0
 step = 0.05
 value = 1.0
 
+[node name="JumpLabel" type="RichTextLabel" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 80
+text = "Jump Angle: 0.5"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="JumpSlider" type="HSlider" parent="VBoxContainer"]
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 0.5
+
 [node name="VBoxContainer2" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 8
@@ -193,6 +219,7 @@ text = "Particles
 [connection signal="button_down" from="Return" to="." method="_on_return_button_down"]
 [connection signal="value_changed" from="VBoxContainer/FovSlider" to="." method="_fov_slider_changed"]
 [connection signal="value_changed" from="VBoxContainer/SensitivitySlider" to="." method="_sensitivity_slider_changed"]
+[connection signal="value_changed" from="VBoxContainer/JumpSlider" to="." method="_on_jump_slider_value_changed"]
 [connection signal="toggled" from="VBoxContainer2/Volumetrics" to="." method="_on_volumetrics_toggled"]
 [connection signal="toggled" from="VBoxContainer2/Shadows" to="." method="_on_shadows_toggled"]
 [connection signal="toggled" from="VBoxContainer2/Particles" to="." method="_on_particles_toggled"]

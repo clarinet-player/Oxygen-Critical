@@ -8,13 +8,13 @@ script/source = "extends Node3D
 
 #region firing parameters
 const item_id := 2
-const firerate := 23
+const firerate := 23.0
 const firemode := 0
 const mag_size := 30
 const reload_time := 2250.0
 const muzzle_vel := 300.0
 const damage := 12.0
-const tearing := 6.0
+const tearing := 7.0
 const effective_range := 20.0
 const recovery := 1.3
 const recoil := 0.875
@@ -143,7 +143,10 @@ func _physics_process(delta):
 		
 		
 		get_parent().rotate(basis.x.normalized(), recoil / 400)
-		rotate(basis.x.normalized(), recoil / 400)
+		if !player.is_anchored() or player.velocity.length() > 1:
+			rotate(basis.x.normalized(), recoil * 0.006)
+		else:
+			rotate(basis.x.normalized(), recoil * 0.004)
 		rotate(basis.y.normalized(), jerk * _heat * (randf_range(-0.01, 0.01) - rotation.y * 0.1))
 		
 		_heat += 1

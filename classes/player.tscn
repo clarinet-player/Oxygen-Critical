@@ -66,6 +66,7 @@ var update_time : int
 
 @onready var camera := $Camera3D
 @onready var hitbox := $Hitbox
+@onready var audio := $AudioStreamPlayer3D
 @onready var hud = UiManager.playerhud
 #endregion
 
@@ -306,7 +307,7 @@ func _physics_process(delta : float):
 			
 			detach()
 			_reorient = false
-			velocity += (_surface_normal - global_basis.z).normalized() * jump_power * jump_stamina
+			velocity += lerp(-global_basis.z, _surface_normal, Settings.jump_angle).normalized() * jump_power * jump_stamina
 			jump_stamina = 0
 			
 			global_position = camera.global_position
@@ -400,6 +401,7 @@ func _anchored_move(delta : float):
 	
 	if velocity.is_zero_approx():
 		return
+	
 	
 	# Applying movement
 	var _time = delta
@@ -568,7 +570,6 @@ func heal_health(amount):
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func damage(dmg : float, tearing : float):
-	print(dmg)
 	health = clamp(health - dmg, 0, 100)
 	damaged.emit()
 	if tearing > breach:

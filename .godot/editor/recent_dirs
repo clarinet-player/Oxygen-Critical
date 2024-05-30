@@ -1,4 +1,6 @@
 C:/Users/caleb/OneDrive/Documents/space-game/linux
+res://weapons
+res://assets
 res://autoloads
 res://weapons/healing
 res://weapons/grenades
@@ -10,4 +12,3 @@ res://weapons/ak12
 res://ui
 res://classes
 res://weapons/AK12
-res://assets
