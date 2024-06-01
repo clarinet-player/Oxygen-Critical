@@ -1,3 +1,22 @@
 res://classes/player.tscn
 res://weapons/grenades/he_grenade.tscn
 res://classes/bullet.tscn
+res://autoloads/gamemanager.tscn
+res://autoloads/settings.tscn
+res://weapons/grenades/he_display.tscn
+res://weapons/ak12/ak12.tscn
+res://weapons/vector/vector.tscn
+res://weapons/glock/glock.tscn
+res://weapons/healing/sealant.tscn
+res://weapons/healing/healthkit.tscn
+res://classes/bullet impact.tscn
+res://classes/blood spray.tscn
+res://autoloads/ui manager.tscn
+res://classes/spawnpoint.tscn
+res://scenes/playable scene.tscn
+res://classes/gameSurface.tscn
+res://ui/buy menu.tscn
+res://ui/player hud.tscn
+res://ui/settings menu.tscn
+res://classes/hitbox.tscn
+res://autoloads/audiomanager.tscn

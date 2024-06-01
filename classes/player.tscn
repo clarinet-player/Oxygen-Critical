@@ -589,10 +589,11 @@ func damage(dmg : float, tearing : float, type : int):
 		breach = tearing
 		if type == 1:
 			Audiomanager.play(\"res://assets/bullet_breach.mp3\")
-	elif type == 2:
-		Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
 	elif health < 0.1:
-		Audiomanager.play(\"res://assets/bullet_death.mp3\")
+		if type == 2:
+			Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
+		else:
+			Audiomanager.play(\"res://assets/bullet_death.mp3\")
 	else:
 		Audiomanager.play(\"res://assets/bullet_hit.mp3\")
 
