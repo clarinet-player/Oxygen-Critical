@@ -1,22 +1,35 @@
-[gd_scene load_steps=7 format=3 uid="uid://1caosknu2da0"]
+[gd_scene load_steps=8 format=3 uid="uid://1caosknu2da0"]
 
-[ext_resource type="Texture2D" uid="uid://b3bnmu5sdenad" path="res://assets/blud.png" id="1_1sorc"]
+[ext_resource type="Texture2D" uid="uid://cyb4x1ggl8d7h" path="res://assets/ink-303244_1920.png" id="1_7w4ty"]
+[ext_resource type="AudioStream" uid="uid://bfubc6kn5rflu" path="res://assets/bullet_hit.mp3" id="2_6ltsr"]
 
 [sub_resource type="GDScript" id="GDScript_up0eg"]
 script/source = "extends Node3D
 
 
 
+var type : int
+
 var start_time : float
 var lifetime : float = 60000
 
 var first_frame := true
 
+@onready var audio := $AudioStreamPlayer3D
+@onready var decal := $Decal
 
 
 func _ready():
 	if Settings.particles_enabled:
 		$GPUParticles3D.emitting = true
+	
+	if type == 1:
+		audio.stream = preload(\"res://assets/bullet_headshot.mp3\")
+	if type == 2:
+		audio.stream = preload(\"res://assets/bullet_breach.mp3\")
+	if type == 3:
+		audio.stream = preload(\"res://assets/bullet_death.mp3\")
+	audio.play()
 
 
 
@@ -26,18 +39,21 @@ func _physics_process(delta):
 		first_frame = false
 		
 		var _space = get_world_3d().direct_space_state
-		var _ray = PhysicsRayQueryParameters3D.create(global_position - global_basis.y * 0.5, global_position - global_basis.y * 10)
+		var _ray = PhysicsRayQueryParameters3D.create(global_position - global_basis.y * 0.5, global_position - global_basis.y * 15)
 		var _raycast = _space.intersect_ray(_ray)
 		
 		if _raycast.is_empty():
-			$Decal.queue_free()
+			decal.queue_free()
 		else:
-			$Decal.global_position = _raycast.position
-			var _up : Vector3 = $Decal.global_basis.y
+			decal.global_position = _raycast.position
+			var _up : Vector3 = decal.global_basis.y
 			var _angle : float = acos(_up.dot(_raycast.normal))
 			var _axis = _up.cross(_raycast.normal)
-			$Decal.global_rotate(_axis.normalized(), _angle)
-			start_time = Time.get_ticks_msec() - global_position.distance_squared_to(_raycast.position)
+			decal.global_rotate(_axis.normalized(), _angle)
+			decal.global_rotate(_raycast.normal, randf_range(0, PI))
+			decal.size.x = clamp(global_position.distance_to(_raycast.position) * 0.5, 1.0, 2.5)
+			decal.size.z = clamp(global_position.distance_to(_raycast.position) * 0.5, 1.0, 2.5)
+			start_time = Time.get_ticks_msec() - global_position.distance_squared_to(_raycast.position) * 250
 
 
 func _process(delta):
@@ -55,7 +71,6 @@ lifetime_randomness = 0.51
 angle_max = 180.0
 direction = Vector3(0, -1, 0)
 spread = 6.0
-initial_velocity_min = 0.8
 initial_velocity_max = 8.0
 gravity = Vector3(0, 0, 0)
 collision_mode = 2
@@ -78,18 +93,23 @@ rings = 6
 script = SubResource("GDScript_up0eg")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
 cast_shadow = 0
 emitting = false
-amount = 4
-lifetime = 7.0
+amount = 3
+lifetime = 6.0
 one_shot = true
 explosiveness = 0.95
-fixed_fps = 60
+fixed_fps = 120
 process_material = SubResource("ParticleProcessMaterial_de4mi")
 draw_pass_1 = SubResource("SphereMesh_mxkmi")
 draw_skin = SubResource("Skin_vw6ja")
 
 [node name="Decal" type="Decal" parent="."]
-size = Vector3(1.5, 0.01, 1.5)
-texture_albedo = ExtResource("1_1sorc")
+size = Vector3(1, 0.01, 1)
+texture_albedo = ExtResource("1_7w4ty")
 albedo_mix = 0.0
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("2_6ltsr")
+attenuation_model = 1

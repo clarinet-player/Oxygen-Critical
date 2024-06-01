@@ -87,16 +87,25 @@ func _ready():
 	Settings.settings_changed.connect(_load_settings)
 	_load_settings()
 	
-	if team == 1:
-		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0.6, 0, 0)
-		$Hitbox/MeshInstance3D.material = mat
+	if is_multiplayer_authority():
+		$Hitbox/Hitbox.queue_free()
+		$Hitbox/MeshInstance3D.queue_free()
+		$Hitbox/Hitbox2.queue_free()
+		$Hitbox/MeshInstance3D2.queue_free()
 	
-	if team == 2:
-		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0, 0, 0.6)
-		$Hitbox/MeshInstance3D.material = mat
+	else:
+		if team == 1:
+			var mat = StandardMaterial3D.new()
+			mat.albedo_color = Color(0.6, 0, 0)
+			$Hitbox/MeshInstance3D.material = mat
+			$Hitbox/MeshInstance3D2.material = mat
 		
+		if team == 2:
+			var mat = StandardMaterial3D.new()
+			mat.albedo_color = Color(0, 0, 0.6)
+			$Hitbox/MeshInstance3D.material = mat
+			$Hitbox/MeshInstance3D2.material = mat
+	
 	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
 		
@@ -247,6 +256,7 @@ func _physics_process(delta : float):
 	
 	if Gamemanager.mp_active and !is_multiplayer_authority():
 		return
+	
 	
 	if !active_item:
 		if inventory.size() > 0:
@@ -571,11 +581,20 @@ func heal_health(amount):
 
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
-func damage(dmg : float, tearing : float):
+func damage(dmg : float, tearing : float, type : int):
 	health = clamp(health - dmg, 0, 100)
 	damaged.emit()
+	
 	if tearing > breach:
 		breach = tearing
+		if type == 1:
+			Audiomanager.play(\"res://assets/bullet_breach.mp3\")
+	elif type == 2:
+		Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
+	elif health < 0.1:
+		Audiomanager.play(\"res://assets/bullet_death.mp3\")
+	else:
+		Audiomanager.play(\"res://assets/bullet_hit.mp3\")
 
 
 

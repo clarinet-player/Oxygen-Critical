@@ -7,7 +7,7 @@ script/source = "extends Node3D
 
 
 var start_time : float
-var lifetime : float = 60000
+var lifetime : float = 45000
 
 
 func _ready():
@@ -55,7 +55,7 @@ amount = 3
 lifetime = 0.25
 one_shot = true
 explosiveness = 1.0
-fixed_fps = 60
+fixed_fps = 120
 process_material = SubResource("ParticleProcessMaterial_wxg5k")
 draw_pass_1 = SubResource("SphereMesh_2m4c7")
 draw_skin = SubResource("Skin_kcqmt")

@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://beh6luon8ni6c"]
+
+[sub_resource type="GDScript" id="GDScript_va2ql"]
+script/source = "extends Node
+
+func play(filepath : String):
+	var audio = load(filepath)
+	if audio:
+		var player = AudioStreamPlayer.new()
+		add_child(player)
+		player.stream = audio
+		player.play()
+		player.finished.connect(player.queue_free)
+"
+
+[node name="Audiomanager" type="Node"]
+script = SubResource("GDScript_va2ql")

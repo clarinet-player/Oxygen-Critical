@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 UiManager="*res://autoloads/ui manager.tscn"
 Settings="*res://autoloads/settings.tscn"
 Gamemanager="*res://autoloads/gamemanager.tscn"
+Audiomanager="*res://autoloads/audiomanager.tscn"
 
 [display]
 

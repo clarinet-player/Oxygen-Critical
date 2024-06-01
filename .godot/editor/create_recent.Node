@@ -1,7 +1,9 @@
-CollisionShape3D
-RigidBody3D
 Camera3D
+CollisionShape3D
 MeshInstance3D
+StaticBody3D
+AudioStreamPlayer3D
+RigidBody3D
 OmniLight3D
 CheckButton
 CheckBox
@@ -10,6 +12,3 @@ VBoxContainer
 RichTextLabel
 Panel
 HBoxContainer
-TextEdit
-TextureRect
-Button

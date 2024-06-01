@@ -132,9 +132,9 @@ func _physics_process(delta):
 		
 		var inaccuracy := 0.0
 		var player = $\"../..\"
-		if !player.is_anchored() or player.velocity.length() > 1:
-			inaccuracy = 35
-		inaccuracy = (inaccuracy + _heat) * spray / 1000
+		if !player.is_anchored() or player.velocity.length() > 0.1:
+			inaccuracy = 7
+		inaccuracy = (inaccuracy + _heat) * spray / 500
 		
 		if Gamemanager.mp_active:
 			fire.rpc(global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy * randf()).rotated(global_basis.z.normalized(), randf_range(0, TAU))))

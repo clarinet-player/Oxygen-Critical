@@ -104,9 +104,9 @@ func _check_player(player : Node3D):
 func _damage(player):
 	var multiplier = (1 - player.global_position.distance_to(global_position) / blast_radius)
 	if Gamemanager.mp_active:
-		player.damage.rpc_id(int(str(player.name)), damage * multiplier, tearing * multiplier + 3)
+		player.damage.rpc_id(int(str(player.name)), damage * multiplier, tearing * multiplier + 3, 0)
 	else:
-		player.damage(damage * multiplier, tearing * multiplier + 3)
+		player.damage(damage * multiplier, tearing * multiplier + 3, 0)
 "
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k2ba4"]
