@@ -1,196 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://baf3wcacoxjv8"]
 
+[ext_resource type="Script" path="res://classes/weaponbase.gd" id="1_1us34"]
 [ext_resource type="AudioStream" uid="uid://wflo0sb33gra" path="res://weapons/glock/pistol_sfx_1.mp3" id="1_6qqve"]
-
-[sub_resource type="GDScript" id="GDScript_regjm"]
-script/source = "extends Node3D
-
-
-#region firing parameters
-const item_id := 3
-const firerate := 20.0
-const firemode := 3
-const mag_size := 18
-const reload_time := 900.0
-const muzzle_vel := 400.0
-const damage := 17.0
-const tearing := 6.0
-const effective_range := 28.0
-const recovery := 1.5
-const recoil := 1.75
-const jerk := 0.6
-const spray := 0.55
-const inventory_size := 1
-#endregion
-
-
-var _mouse_down := false
-var _fire_time_ms := 0
-var _firedelay = 1000 / firerate
-
-var _heat := 0.0
-var _burst := 0
-var magazine := mag_size
-
-var reloading := false
-var reload_start_time := 0
-
-
-@onready var audio := $AudioStreamPlayer3D
-@onready var hud = UiManager.playerhud
-@onready var light = $Skeleton3D/SpotLight3D
-
-
-
-#region entry/exit
-func _enter_tree():
-	set_multiplayer_authority(get_parent().get_multiplayer_authority())
-
-
-
-func _ready():
-	if !Gamemanager.mp_active or is_multiplayer_authority():
-		hud.set_ammo(true, magazine)
-	rotation = Vector3.ZERO
-	
-	Settings.settings_changed.connect(_load_settings)
-	_load_settings()
-
-
-
-func _exit_tree():
-	reloading = false
-	_heat = 0
-	_burst = 0
-	_mouse_down = false
-	
-	hud.stop_progress(\"reloading\")
-	audio.stop()
-	
-	request_ready()
-#endregion
-
-
-
-func _load_settings():
-	light.shadow_enabled = Settings.shadows_enabled
-
-
-
-func _process(delta):
-	if Time.get_ticks_msec() > _fire_time_ms + 35:
-		light.light_energy = 0
-	else:
-		light.light_energy = 0.2
-
-
-
-func _physics_process(delta):
-	if Gamemanager.mp_active and !is_multiplayer_authority():
-		return
-	
-	var time = Time.get_ticks_msec()
-	
-	
-	# Reloading
-	if Input.is_action_just_pressed(\"R\") and !reloading and !UiManager.paused:
-		if magazine < mag_size and _burst == 0:
-			reloading = true
-			reload_start_time = time
-			hud.start_progress(reload_time / 1000, \"reloading\")
-	
-	if reloading and time - reload_start_time > reload_time:
-		reloading = false
-		magazine = mag_size
-		hud.set_ammo(true, magazine)
-	
-	
-	# Trigger Input
-	if Input.is_action_just_pressed(\"Mouse1\") and !UiManager.paused:
-		_mouse_down = true
-		if time > _fire_time_ms + _firedelay * firemode:
-			_burst = firemode
-	
-	if !Input.is_action_pressed(\"Mouse1\") and _mouse_down:
-		_mouse_down = false
-	
-	if firemode == 0:
-		if _mouse_down and !UiManager.paused:
-			_burst = 1
-		else:
-			_burst = 0
-	
-	
-	# Checking for remaining ammo
-	if magazine < 1 or reloading:
-		_burst = 0
-	
-	
-	# Firing
-	if _burst > 0 and time > _fire_time_ms + _firedelay:
-		
-		var inaccuracy := 0.0
-		var player = $\"../..\"
-		if !player.is_anchored() or player.velocity.length() > 0.1:
-			inaccuracy = 7
-		inaccuracy = (inaccuracy + _heat) * spray / 500
-		
-		if Gamemanager.mp_active:
-			fire.rpc(global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy * randf()).rotated(global_basis.z.normalized(), randf_range(0, TAU))))
-		else:
-			fire(global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy * randf()).rotated(global_basis.z.normalized(), randf_range(0, TAU))))
-		
-		
-		get_parent().rotate(basis.x.normalized(), recoil / 400)
-		if !player.is_anchored() or player.velocity.length() > 1:
-			rotate(basis.x.normalized(), recoil * 0.006)
-		else:
-			rotate(basis.x.normalized(), recoil * 0.004)
-		rotate(basis.y.normalized(), jerk * _heat * (randf_range(-0.01, 0.01) - rotation.y * 0.1))
-		
-		_heat += 1
-		_burst -= 1
-		magazine -= 1
-		
-		hud.set_ammo(true, magazine)
-	
-	
-	# Recovering heat after firing
-	if time - _fire_time_ms > _firedelay:
-		rotation = lerp(rotation, Vector3.ZERO, recovery * delta)
-		
-		if _heat > 0:
-			_heat = max(_heat - (delta * firerate * recovery), 0)
-			get_parent().rotate(basis.x.normalized(), -recoil * delta * firerate * recovery / 400)
-
-
-
-@rpc(\"any_peer\", \"call_local\", \"reliable\")
-func fire(position : Vector3, velocity : Vector3):
-	audio.pitch_scale = randf_range(0.94, 1.06)
-	audio.play()
-	
-	_fire_time_ms -= _firedelay
-	if Time.get_ticks_msec() > _fire_time_ms + _firedelay:
-		_fire_time_ms = Time.get_ticks_msec()
-	
-	var _bullet = preload(\"res://classes/bullet.tscn\").instantiate()
-	add_child(_bullet)
-	_bullet.global_position = position
-	_bullet.velocity = velocity
-	_bullet.mass = damage
-	_bullet.tearing = tearing
-	_bullet.effective_range = effective_range
-	_bullet.owning_player = get_parent().get_parent()
-	
-	var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()
-	_smoke.size = Vector3(0.01, 0.01, 4)
-	_smoke.fade_speed = 0.1
-	_smoke.start_density = 0.004
-	Gamemanager.add_child(_smoke)
-	_smoke.global_position = light.global_position + velocity.normalized() * 3
-	_smoke.look_at(light.global_position)
-"
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dshu0"]
 
@@ -232,11 +43,26 @@ bind/3/pose = Transform3D(26.5951, 0, -1.03565e-05, 0, -26.5951, 0, -1.03565e-05
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6y1rc"]
 albedo_color = Color(0.309804, 0.32549, 0.368627, 1)
 
-[node name="glock" type="Node3D"]
-script = SubResource("GDScript_regjm")
+[node name="glock" type="Node3D" node_paths=PackedStringArray("audio", "light")]
+script = ExtResource("1_1us34")
+item_id = 3
+firerate = [16.0, 20.0]
+shots = [1, 3]
+mag_size = 18
+reload_time = 900.0
+muzzle_vel = 400.0
+damage = 17.0
+tearing = 6.0
+effective_range = 28.0
+recovery = 1.5
+recoil = 1.75
+spray = 0.75
+inventory_size = 1
+audio = NodePath("AudioStreamPlayer3D")
+light = NodePath("Skeleton3D/SpotLight3D")
 
 [node name="Skeleton3D" type="Skeleton3D" parent="."]
-transform = Transform3D(-0.037858, 0.000519022, -0.00324109, -0.00326377, -0.00196192, 0.0378087, 0.000349075, 0.0379458, 0.00199916, 0.42213, -0.126318, -0.374888)
+transform = Transform3D(-0.038, -3.32207e-09, 1.66103e-09, 1.66103e-09, 7.26061e-17, 0.038, -3.32207e-09, 0.038, 7.2606e-17, 0, -0.0344486, -0.131933)
 bones/0/name = "Root"
 bones/0/parent = -1
 bones/0/rest = Transform3D(1, 0, -1.34309e-06, 0, -1, 0, -1.34309e-06, 0, -1, -5.35479e-16, 2.03217, 0.912508)

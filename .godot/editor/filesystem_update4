@@ -21,3 +21,4 @@ res://ui/settings menu.tscn
 res://classes/hitbox.tscn
 res://autoloads/audiomanager.tscn
 res://classes/weaponbase.tscn
+res://classes/weaponbase.gd

@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bq3u0xb10re6"]
+[gd_scene load_steps=11 format=3 uid="uid://bq3u0xb10re6"]
 
 [ext_resource type="PackedScene" uid="uid://c2hluyirbi4rf" path="res://classes/hitbox.tscn" id="1_2yv3f"]
 
@@ -144,12 +144,15 @@ func _ready():
 			for item in Settings.saved_inventory:
 				if item == 1:
 					var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
+					ak.magazine = ak.mag_size
 					inventory.append(ak)
 				elif item == 2:
 					var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
+					vector.magazine = vector.mag_size
 					inventory.append(vector)
 				elif item == 3:
 					var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
+					glock.magazine = glock.mag_size
 					inventory.append(glock)
 				elif item == 4:
 					var grenade = preload(\"res://weapons/grenades/he_display.tscn\").instantiate()
@@ -353,7 +356,7 @@ func _physics_process(delta : float):
 	else:
 		camera.global_position = global_position - velocity.normalized()
 		hitbox.global_position = global_position - velocity.normalized() * 0.35
-		var _up : Vector3 = hitbox.global_basis.y
+		var _up : Vector3 = -hitbox.global_basis.y
 		var _angle : float = acos(_up.dot(velocity.normalized()))
 		var _axis = _up.cross(velocity.normalized())
 		if !_axis.is_zero_approx():
@@ -608,19 +611,27 @@ func die():
 [sub_resource type="SphereShape3D" id="SphereShape3D_ufnhc"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jomgw"]
-radius = 0.3
-height = 1.2
+radius = 0.25
+height = 0.8
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_r400h"]
-radius = 0.3
-height = 1.2
+radius = 0.25
+height = 0.8
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_p56ql"]
-radius = 0.25
+radius = 0.2
 
 [sub_resource type="SphereMesh" id="SphereMesh_lmg7g"]
-radius = 0.25
-height = 0.5
+radius = 0.2
+height = 0.4
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_307kt"]
+radius = 0.2
+height = 0.6
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_2lawk"]
+radius = 0.2
+height = 0.6
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_0uupb"]
 properties/0/path = NodePath(".:position")
@@ -653,6 +664,7 @@ script = SubResource("GDScript_qj47s")
 shape = SubResource("SphereShape3D_ufnhc")
 
 [node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
 [node name="SpotLight3D" type="SpotLight3D" parent="Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0406958)
@@ -670,25 +682,36 @@ can_sleep = false
 freeze = true
 
 [node name="Hitbox" parent="Hitbox" node_paths=PackedStringArray("player") instance=ExtResource("1_2yv3f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.197961, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.100597, 0)
 shape = SubResource("CapsuleShape3D_jomgw")
 player = NodePath("../..")
 damage = 1.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Hitbox"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.19927, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.100844, 0)
 mesh = SubResource("CapsuleMesh_r400h")
 skeleton = NodePath("../../PlayerBody")
 
 [node name="Hitbox2" parent="Hitbox" node_paths=PackedStringArray("player") instance=ExtResource("1_2yv3f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.658613, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6533, 0)
 shape = SubResource("SphereShape3D_p56ql")
 player = NodePath("../..")
 damage = 2.0
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="Hitbox"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.658835, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.653123, 0)
 mesh = SubResource("SphereMesh_lmg7g")
+skeleton = NodePath("../../PlayerBody")
+
+[node name="Hitbox3" parent="Hitbox" node_paths=PackedStringArray("player") instance=ExtResource("1_2yv3f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00251937, -0.463443, 0.00129771)
+shape = SubResource("CapsuleShape3D_307kt")
+player = NodePath("../..")
+damage = 0.6
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.463664, 0)
+mesh = SubResource("CapsuleMesh_2lawk")
 skeleton = NodePath("../../PlayerBody")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]

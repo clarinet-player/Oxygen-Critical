@@ -39,6 +39,7 @@ func _buy_ak():
 		size += item.inventory_size
 	if size < 3:
 		var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
+		ak.magazine = ak.mag_size
 		inv.append(ak)
 	else:
 		warningtime = Time.get_ticks_msec()
@@ -54,6 +55,7 @@ func _buy_vector():
 		size += item.inventory_size
 	if size < 3:
 		var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
+		vector.magazine = vector.mag_size
 		inv.append(vector)
 	else:
 		warningtime = Time.get_ticks_msec()
@@ -69,6 +71,7 @@ func _buy_glock():
 		size += item.inventory_size
 	if size < 4:
 		var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
+		glock.magazine = glock.mag_size
 		inv.append(glock)
 	else:
 		warningtime = Time.get_ticks_msec()

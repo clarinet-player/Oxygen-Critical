@@ -1,4 +1,5 @@
 C:/Users/caleb/OneDrive/Documents/space-game/linux
+res://classes
 res://autoloads
 res://weapons
 res://assets
@@ -10,5 +11,4 @@ res://weapons/glock
 res://weapons/vector
 res://weapons/ak12
 res://ui
-res://classes
 res://weapons/AK12
