@@ -58,19 +58,14 @@ func _physics_process(delta):
 		if \"player\" in _shape:
 			if _shape.player != owning_player:
 				var _player = _shape.player
-				var type := 1
 				if _shape.damage == 2:
-					type = 2
+					Audiomanager.play(\"res://assets/headshot.mp3\")
 				
 				if multiplayer.get_unique_id() == 1:
-					_player.damage.rpc_id(int(str(_shape.player.name)), min(mass * (1 - ((dist_travelled - effective_range) / effective_range)), mass) * _shape.damage, tearing, type)
+					_player.damage.rpc_id(int(str(_shape.player.name)), min(mass * (1 - ((dist_travelled - effective_range) / effective_range)), mass) * _shape.damage, tearing, _shape.damage)
 				effective_range -= 5
 				
 				var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
-				if _shape.damage == 2:
-					blood.type = 1
-				if _shape.player == Gamemanager.local_player and tearing > Gamemanager.local_player.breach:
-					blood.type = 2
 				Gamemanager.add_child(blood)
 				blood.global_position = global_position
 				if blood.global_basis.y.cross(-velocity).is_zero_approx():
