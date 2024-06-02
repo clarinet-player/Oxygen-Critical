@@ -65,7 +65,7 @@ func _physics_process(delta):
 				
 				if multiplayer.get_unique_id() == 1:
 					_player.damage.rpc_id(int(str(_shape.player.name)), min(mass * (1 - ((dist_travelled - effective_range) / effective_range)), mass) * _shape.damage, tearing, _shape.damage)
-				effective_range -= 5
+				effective_range -= 8
 				
 				var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
 				Gamemanager.add_child(blood)
