@@ -6,7 +6,7 @@ script/source = "extends Node3D
 const item_id = 4
 const inventory_size := 1
 
-const throw_velocity := 15.0
+const throw_velocity := 18.0
 
 @onready var hud = UiManager.playerhud
 

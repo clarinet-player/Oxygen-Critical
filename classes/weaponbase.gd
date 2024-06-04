@@ -168,7 +168,7 @@ func _physics_process(delta):
 		rotation = lerp(rotation, Vector3.ZERO, recovery * delta)
 		
 		if _heat > 0:
-			_heat = max(_heat - (delta * firerate[firemode] * recovery), 0)
+			_heat = max(_heat - (delta * firerate[firemode] * recovery), 0) 
 			get_parent().rotate(basis.x.normalized(), -recoil * delta * firerate[firemode] * recovery / 400)
 
 
@@ -199,3 +199,12 @@ func fire(pos : Vector3, velocity : Vector3):
 	Gamemanager.add_child(_smoke)
 	_smoke.global_position = light.global_position + velocity.normalized() * 3
 	_smoke.look_at(light.global_position)
+	
+	#var _smoke = preload("res://classes/smoke.tscn").instantiate()
+	#_smoke.size = Vector3(0.05, 0.05, 10)
+	#_smoke.fade_speed = 0.15
+	#_smoke.start_density = -1.0
+	#_smoke.type = 2
+	#Gamemanager.add_child(_smoke)
+	#_smoke.global_position = light.global_position + velocity.normalized() * 10
+	#_smoke.look_at(light.global_position)

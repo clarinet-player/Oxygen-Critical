@@ -6,7 +6,7 @@ script/source = "extends RigidBody3D
 
 
 const fuse_time := 1800
-const blast_radius := 8.0
+const blast_radius := 10.0
 const damage := 50.0
 const tearing := 14.0
 
@@ -88,7 +88,7 @@ func _check_player(player : Node3D):
 	var _ray = PhysicsRayQueryParameters3D.create(global_position, player.global_position)
 	var _raycast = _space.intersect_ray(_ray)
 	
-	if _raycast.collider == player.hitbox:
+	if _raycast.has(\"collider\") and _raycast.collider == player.hitbox:
 		_damage(player)
 		return
 	

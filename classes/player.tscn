@@ -23,17 +23,16 @@ const sprint_max_speed : float = 5.0
 const slide_friction : float = 1.0
 
 const jump_power : float = 2.5
-var jump_stamina : float = 1.0
 
 const grapple_range : float = 100.0
 const grapple_acceleration : float = 10.0
 const grapple_max_speed : float = 7
 
-var mouse_sensitivity : float
-
-
 const timeout_time : int = 1000
 
+var mouse_sensitivity : float
+
+var jump_stamina : float = 1.0
 
 var velocity : Vector3
 
@@ -60,7 +59,7 @@ var inventory := Array()
 var active_item : Node3D
 
 
-var team := 0
+@export var team := 0
 
 
 var update_time : int
@@ -90,21 +89,18 @@ func _ready():
 	if is_multiplayer_authority():
 		$Hitbox/Hitbox.queue_free()
 		$Hitbox/MeshInstance3D.queue_free()
-		$Hitbox/Hitbox2.queue_free()
-		$Hitbox/MeshInstance3D2.queue_free()
 	
-	else:
-		if team == 1:
-			var mat = StandardMaterial3D.new()
-			mat.albedo_color = Color(0.6, 0, 0)
-			$Hitbox/MeshInstance3D.material = mat
-			$Hitbox/MeshInstance3D2.material = mat
-		
-		if team == 2:
-			var mat = StandardMaterial3D.new()
-			mat.albedo_color = Color(0, 0, 0.6)
-			$Hitbox/MeshInstance3D.material = mat
-			$Hitbox/MeshInstance3D2.material = mat
+	elif team == 1:
+		var mat = StandardMaterial3D.new()
+		mat.albedo_color = Color(0.6, 0, 0)
+		$Hitbox/MeshInstance3D.material = mat
+		$Hitbox/MeshInstance3D2.material = mat
+	
+	elif team == 2:
+		var mat = StandardMaterial3D.new()
+		mat.albedo_color = Color(0, 0, 0.6)
+		$Hitbox/MeshInstance3D.material = mat
+		$Hitbox/MeshInstance3D2.material = mat
 	
 	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
@@ -644,6 +640,9 @@ properties/4/replication_mode = 1
 properties/5/path = NodePath("Camera3D:rotation")
 properties/5/spawn = true
 properties/5/replication_mode = 1
+properties/6/path = NodePath(".:team")
+properties/6/spawn = true
+properties/6/replication_mode = 1
 
 [node name="Player" type="RigidBody3D" groups=["Players"]]
 top_level = true
@@ -656,7 +655,6 @@ script = SubResource("GDScript_qj47s")
 shape = SubResource("SphereShape3D_ufnhc")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
 [node name="SpotLight3D" type="SpotLight3D" parent="Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0406958)
