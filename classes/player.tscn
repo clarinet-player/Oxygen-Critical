@@ -198,7 +198,7 @@ func _process(delta):
 	if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):
 		health -= 100 * delta
 	hud.set_health(health)
-	if health <= 0.1:
+	if multiplayer.get_unique_id() == 1 and health <= 0.1:
 		die.rpc()
 	
 	# update anchor gui
@@ -581,19 +581,24 @@ func heal_health(amount):
 
 
 
+func damage(dmg, tearing, headshot):
+	health = max(health - dmg, 0)
+	breach = max(breach, tearing)
+	set_health.rpc_id(int(str(name)), health, tearing, headshot)
+
+
+
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
-func damage(new_health : float, new_breach : float, headshot : bool):
+func set_health(new_health : float, new_breach : float, headshot : bool):
 	if new_health < health:
 		damaged.emit()
+		if headshot:
+			Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
+		elif new_breach > breach:
+			Audiomanager.play(\"res://assets/bullet_breach.mp3\")
+		else:
+			Audiomanager.play(\"res://assets/bullet_hit.mp3\")
 	health = new_health
-	
-	if headshot:
-		Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
-	elif new_breach > breach:
-		Audiomanager.play(\"res://assets/bullet_breach.mp3\")
-	else:
-		Audiomanager.play(\"res://assets/bullet_hit.mp3\")
-	
 	breach = new_breach
 	
 
