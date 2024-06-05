@@ -80,7 +80,6 @@ func _enter_tree():
 
 
 func _ready():
-	
 	update_time = Time.get_ticks_msec()
 	
 	Settings.settings_changed.connect(_load_settings)
@@ -575,9 +574,10 @@ func damage(dmg, tearing, headshot):
 
 
 
-@rpc(\"any_peer\", \"call_local\", \"reliable\")
+@rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func set_health(new_health : float, new_breach : float, headshot : bool):
 	if new_health < health:
+		print(\"damaged\")
 		damaged.emit()
 		if headshot:
 			Audiomanager.play(\"res://assets/bullet_headshot.mp3\")

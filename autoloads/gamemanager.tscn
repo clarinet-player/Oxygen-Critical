@@ -37,6 +37,10 @@ func connect_player():
 	peer.create_client(\"66.179.249.44\", 7777)
 	multiplayer.multiplayer_peer = peer
 
+func cancel_connect():
+	peer.close()
+	mp_active = false
+
 func disconnect_player():
 	mp_active = false
 	for child in get_children():
