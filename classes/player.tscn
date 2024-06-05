@@ -603,7 +603,7 @@ func set_health(new_health : float, new_breach : float, headshot : bool):
 	health = new_health
 	breach = new_breach
 	
-	hud.set_health = health
+	hud.set_health(health)
 	
 
 
