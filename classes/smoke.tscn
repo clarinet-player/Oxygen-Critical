@@ -1,13 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://n6ut2npeygk2"]
-
-[sub_resource type="FogMaterial" id="FogMaterial_nj26y"]
-edge_fade = 1e-05
+[gd_scene load_steps=2 format=3 uid="uid://n6ut2npeygk2"]
 
 [sub_resource type="GDScript" id="GDScript_xsm31"]
 script/source = "extends FogVolume
 
 
-var type := 1
 var start_density := 1.0
 var fade_speed := 1.0
 
@@ -17,15 +13,11 @@ var mat
 func _ready():
 	mat = FogMaterial.new()
 	mat.density = start_density
-	
-	if type == 1:
-		shape = RenderingServer.FOG_VOLUME_SHAPE_ELLIPSOID
-		mat.edge_fade = 1.0
-	if type == 2:
-		shape = RenderingServer.FOG_VOLUME_SHAPE_CYLINDER
-		mat.edge_fade = 0.0
-	
+	mat.edge_fade = 1.0
 	material = mat
+	
+	shape = RenderingServer.FOG_VOLUME_SHAPE_ELLIPSOID
+	
 
 
 func _process(delta):
@@ -40,6 +32,4 @@ func _process(delta):
 "
 
 [node name="Smoke" type="FogVolume"]
-shape = 0
-material = SubResource("FogMaterial_nj26y")
 script = SubResource("GDScript_xsm31")

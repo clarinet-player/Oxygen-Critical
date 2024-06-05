@@ -129,7 +129,7 @@ func _ready():
 			if !_axis.is_zero_approx():
 				rotate(_axis.normalized(), _angle)
 			else:
-				rotate(global_basis.y, _angle)
+				rotate(-global_basis.y, _angle)
 		
 		
 		hud.set_health(100)

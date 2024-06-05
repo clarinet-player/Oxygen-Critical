@@ -23,3 +23,5 @@ res://classes/hitbox.tscn
 res://scenes/barrel.tscn
 res://classes/smoke.tscn
 res://classes/weaponbase.gd
+res://ui/buy menu.tscn
+res://assets/new_standard_material_3d.tres

@@ -194,17 +194,9 @@ func fire(pos : Vector3, velocity : Vector3):
 	
 	var _smoke = preload("res://classes/smoke.tscn").instantiate()
 	_smoke.size = Vector3(0.01, 0.01, 4)
-	_smoke.fade_speed = 0.1
+	_smoke.fade_speed = 0.2
 	_smoke.start_density = 0.003
 	Gamemanager.add_child(_smoke)
 	_smoke.global_position = light.global_position + velocity.normalized() * 3
 	_smoke.look_at(light.global_position)
 	
-	#var _smoke = preload("res://classes/smoke.tscn").instantiate()
-	#_smoke.size = Vector3(0.05, 0.05, 10)
-	#_smoke.fade_speed = 0.15
-	#_smoke.start_density = -1.0
-	#_smoke.type = 2
-	#Gamemanager.add_child(_smoke)
-	#_smoke.global_position = light.global_position + velocity.normalized() * 10
-	#_smoke.look_at(light.global_position)
