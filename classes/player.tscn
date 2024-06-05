@@ -585,7 +585,7 @@ func heal_health(amount):
 func damage(dmg, tearing, headshot):
 	health = max(health - dmg, 0)
 	breach = max(breach, tearing)
-	set_health.rpc_id(int(str(name)), health, tearing, headshot)
+	set_health.rpc_id(int(str(name)), health, breach, headshot)
 
 
 
@@ -599,8 +599,11 @@ func set_health(new_health : float, new_breach : float, headshot : bool):
 			Audiomanager.play(\"res://assets/bullet_breach.mp3\")
 		else:
 			Audiomanager.play(\"res://assets/bullet_hit.mp3\")
+	
 	health = new_health
 	breach = new_breach
+	
+	hud.set_health = health
 	
 
 
