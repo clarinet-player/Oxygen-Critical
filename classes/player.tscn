@@ -568,20 +568,6 @@ func _on_synchronization():
 
 
 
-@rpc(\"authority\", \"call_local\", \"reliable\")
-func heal_breach():
-	breach = 0
-	health = min(health + 5, 100)
-
-
-
-@rpc(\"authority\", \"call_local\", \"reliable\")
-func heal_health(amount):
-	health = min(health + amount, 100)
-	hud.set_health(health)
-
-
-
 func damage(dmg, tearing, headshot):
 	health = max(health - dmg, 0)
 	breach = max(breach, tearing)
@@ -604,7 +590,6 @@ func set_health(new_health : float, new_breach : float, headshot : bool):
 	breach = new_breach
 	
 	hud.set_health(health)
-	
 
 
 
