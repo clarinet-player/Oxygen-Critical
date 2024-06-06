@@ -85,23 +85,27 @@ func _ready():
 	Settings.settings_changed.connect(_load_settings)
 	_load_settings()
 	
+	
+	if Gamemanager.mp_active and is_multiplayer_authority() and Gamemanager.gamemode == 1:
+		var team1 := 0
+		var team2 := 0
+		for player in get_tree().get_nodes_in_group(\"Players\"):
+			if player.team == 1:
+				team1 += 1
+			elif player.team == 2:
+				team2 += 1
+		
+		if team1 > team2:
+			set_team.rpc(2)
+		else:
+			set_team.rpc(1)
+	
+	
 	if is_multiplayer_authority() or !Gamemanager.mp_active:
 		$Hitbox/Hitbox.queue_free()
 		$Hitbox/MeshInstance3D.queue_free()
 		$Hitbox/Hitbox2.queue_free()
 		$Hitbox/MeshInstance3D2.queue_free()
-	
-	elif team == 1:
-		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0.6, 0, 0)
-		$Hitbox/MeshInstance3D.material = mat
-		$Hitbox/MeshInstance3D2.material = mat
-	
-	elif team == 2:
-		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0, 0, 0.6)
-		$Hitbox/MeshInstance3D.material = mat
-		$Hitbox/MeshInstance3D2.material = mat
 	
 	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
@@ -241,19 +245,21 @@ func _process(delta):
 
 #region Physics Frame
 func _physics_process(delta : float):
-	health -= breach * delta
-	if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):
-		health -= 100 * delta
-	hud.set_health(health)
+	if !Gamemanager.mp_active or is_multiplayer_authority():
+		health -= breach * delta
+		if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):
+			health -= 100 * delta
+		hud.set_health(health)
+		if !Gamemanager.mp_active and health < 0.1:
+			die()
 	
-	if Gamemanager.mp_active and !is_multiplayer_authority():
+	else:
 		if Time.get_ticks_msec() - update_time > timeout_time:
 			Gamemanager.timeout.rpc_id(int(str(name)))
 			print(\"player disconnected: \", name)
 			queue_free()
-			return
 		
-		if health <= 0.1:
+		if health < 0.1:
 			die.rpc()
 		
 		return
@@ -564,6 +570,24 @@ func get_velocity() -> Vector3:
 
 func _on_synchronization():
 	update_time = Time.get_ticks_msec()
+
+
+
+@rpc(\"authority\", \"call_local\", \"reliable\")
+func set_team(teamnum : int):
+	team = teamnum
+	
+	if team == 1:
+		var mat = StandardMaterial3D.new()
+		mat.albedo_color = Color(0.6, 0, 0)
+		$Hitbox/MeshInstance3D.material = mat
+		$Hitbox/MeshInstance3D2.material = mat
+	
+	elif team == 2:
+		var mat = StandardMaterial3D.new()
+		mat.albedo_color = Color(0, 0, 0.6)
+		$Hitbox/MeshInstance3D.material = mat
+		$Hitbox/MeshInstance3D2.material = mat
 
 
 

@@ -58,7 +58,7 @@ func _physics_process(delta):
 		
 		
 		if \"player\" in _shape:
-			if _shape.player != owning_player:
+			if _shape.player.team != owning_player.team:
 				var _player = _shape.player
 				if _shape.damage == 2:
 					Audiomanager.play(\"res://assets/headshot.mp3\")

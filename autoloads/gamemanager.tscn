@@ -7,7 +7,7 @@ var peer = ENetMultiplayerPeer.new()
 var local_player
 var mp_active = false
 
-var gamemode
+var gamemode : int
 
 # Gravity states: zero, thrust, spin
 var gravity_state : String = \"zero\"
@@ -22,7 +22,7 @@ func _ready():
 	if DisplayServer.get_name() == \"headless\":
 		
 		mp_active = true
-		set_level(1)
+		sync_gamemode(1, 0)
 		
 		multiplayer.peer_connected.connect(_on_connect)
 		
@@ -128,8 +128,10 @@ func timeout():
 
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
-func set_level(level : int):
+func sync_gamemode(level : int, mode : int):
 	mp_active = true
+	
+	gamemode = mode
 	
 	if level == 1:
 		get_tree().change_scene_to_file(\"res://scenes/playable scene.tscn\")
