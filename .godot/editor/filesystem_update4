@@ -15,3 +15,5 @@ res://scenes/barrel.tscn
 res://classes/bullet.tscn
 res://ui/buy menu.tscn
 res://ui/player hud.tscn
+res://classes/smoke.tscn
+res://classes/weaponbase.gd

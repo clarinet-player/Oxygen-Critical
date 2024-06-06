@@ -101,6 +101,9 @@ func _physics_process(delta):
 			hud.start_progress(reload_time / 1000, "reloading")
 	
 	if reloading and time - reload_start_time > reload_time:
+		$"../..".sound_time = Time.get_ticks_msec() + 500
+		$"../..".play_sound.rpc(4)
+		
 		reloading = false
 		magazine = mag_size
 		hud.set_ammo(true, magazine)
@@ -196,8 +199,8 @@ func fire(pos : Vector3, velocity : Vector3):
 	
 	var _smoke = preload("res://classes/smoke.tscn").instantiate()
 	_smoke.size = Vector3(0.01, 0.01, 4)
-	_smoke.fade_speed = 0.2
-	_smoke.start_density = 0.003
+	_smoke.fade_speed = 0.15
+	_smoke.start_density = 0.002
 	Gamemanager.add_child(_smoke)
 	_smoke.global_position = light.global_position + velocity.normalized() * 3
 	_smoke.look_at(light.global_position)

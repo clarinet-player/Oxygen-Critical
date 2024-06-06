@@ -131,6 +131,8 @@ func _clear_inventory():
 	for item in inv:
 		item.queue_free()
 	inv.clear()
+	
+	UiManager.playerhud.set_ammo(false, 0)
 "
 
 [node name="BuyMenu" type="Control"]
