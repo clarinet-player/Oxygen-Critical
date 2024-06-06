@@ -48,6 +48,7 @@ func _enter_tree():
 func _ready():
 	if !Gamemanager.mp_active or is_multiplayer_authority():
 		hud.set_ammo(true, magazine)
+		hud.alt_fire(shots[0])
 	
 	rotation = Vector3.ZERO
 	position = Vector3(0.207, -0.15, -0.205)
@@ -111,6 +112,7 @@ func _physics_process(delta):
 		if firemode >= firerate.size():
 			firemode = 0
 		
+		hud.alt_fire(shots[firemode])
 		Audiomanager.play("res://assets/alt_fire.mp3")
 	
 	

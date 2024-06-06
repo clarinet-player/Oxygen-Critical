@@ -22,7 +22,7 @@ func _ready():
 	if DisplayServer.get_name() == \"headless\":
 		
 		mp_active = true
-		sync_gamemode(1, 0)
+		sync_gamemode(1, 1)
 		
 		multiplayer.peer_connected.connect(_on_connect)
 		
@@ -36,6 +36,7 @@ func connect_player():
 	peer.close()
 	peer.create_client(\"66.179.249.44\", 7777)
 	multiplayer.multiplayer_peer = peer
+	mp_active = true
 
 func cancel_connect():
 	peer.close()
@@ -55,7 +56,7 @@ func disconnect_player():
 func _on_connect(id : int):
 	print(\"player connected: \", id)
 	
-	sync_gamemode.rpc_id(id, 1, 0)
+	sync_gamemode.rpc_id(id, 1, 1)
 	
 	await get_tree().create_timer(1.0).timeout
 	
@@ -129,8 +130,6 @@ func timeout():
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
 func sync_gamemode(level : int, mode : int):
-	mp_active = true
-	
 	gamemode = mode
 	
 	if level == 1:
