@@ -101,7 +101,7 @@ func _ready():
 			set_team.rpc(1)
 	
 	
-	if is_multiplayer_authority() or !Gamemanager.mp_active:
+	if !Gamemanager.mp_active or is_multiplayer_authority():
 		$Hitbox/Hitbox.queue_free()
 		$Hitbox/MeshInstance3D.queue_free()
 		$Hitbox/Hitbox2.queue_free()
@@ -259,6 +259,7 @@ func _physics_process(delta : float):
 			print(\"player disconnected: \", name)
 			queue_free()
 		
+		health -= breach * delta
 		if health < 0.1:
 			die.rpc()
 		
