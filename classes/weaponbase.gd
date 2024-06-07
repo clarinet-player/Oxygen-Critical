@@ -99,11 +99,10 @@ func _physics_process(delta):
 			reloading = true
 			reload_start_time = time
 			hud.start_progress(reload_time / 1000, "reloading")
+			$"../..".sound_time = Time.get_ticks_msec() + 300
+			$"../..".play_sound.rpc(4)
 	
 	if reloading and time - reload_start_time > reload_time:
-		$"../..".sound_time = Time.get_ticks_msec() + 500
-		$"../..".play_sound.rpc(4)
-		
 		reloading = false
 		magazine = mag_size
 		hud.set_ammo(true, magazine)

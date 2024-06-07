@@ -11,6 +11,7 @@ signal settings_changed
 var fov := 75.0
 var mouse_sensitivity := 1.0
 var jump_angle := 0.0
+var volume := 75
 
 var saved_inventory := [1, 5, 4]
 
@@ -22,6 +23,8 @@ var particles_enabled := true
 
 func _ready():
 	read_file()
+	AudioServer.set_bus_volume_db(0, -sqrt(100 - volume))
+	
 
 
 
@@ -46,6 +49,8 @@ func read_file():
 		mouse_sensitivity = data[\"mouse_sensitivity\"]
 	if data.has(\"jump_angle\"):
 		jump_angle = data[\"jump_angle\"]
+	if data.has(\"volume\"):
+		volume = data[\"volume\"]
 	if data.has(\"saved_inventory\"):
 		saved_inventory = data[\"saved_inventory\"]
 	if data.has(\"shadows_enabled\"):
@@ -63,6 +68,7 @@ func write_file():
 		\"fov\": fov,
 		\"mouse_sensitivity\": mouse_sensitivity,
 		\"jump_angle\": jump_angle,
+		\"volume\": volume,
 		\"saved_inventory\": saved_inventory,
 		\"shadows_enabled\": shadows_enabled,
 		\"volumetrics_enabled\": volumetrics_enabled,
@@ -75,6 +81,11 @@ func write_file():
 
 func on_changed():
 	settings_changed.emit()
+	if !volume:
+		AudioServer.set_bus_mute(0, true)
+	else:
+		AudioServer.set_bus_mute(0, false)
+		AudioServer.set_bus_volume_db(0, -sqrt(100 - volume) * 2)
 "
 
 [node name="Settings" type="Node"]

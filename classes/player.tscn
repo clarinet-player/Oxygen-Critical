@@ -69,7 +69,7 @@ var update_time : int
 
 @onready var camera := $Camera3D
 @onready var hitbox := $Hitbox
-@onready var audio := $AudioStreamPlayer3D
+@onready var audio := $Camera3D/AudioStreamPlayer3D
 @onready var hud = UiManager.playerhud
 #endregion
 
@@ -388,12 +388,9 @@ func _physics_process(delta : float):
 
 func _anchored_move(delta : float):
 	
-	if velocity.length() > 4 and Time.get_ticks_msec() - sound_time > 450:
+	if velocity.length() > 3.5 and Time.get_ticks_msec() - sound_time > 500:
 		sound_time = Time.get_ticks_msec()
 		play_sound.rpc(1)
-	elif velocity.length() > 1 and Time.get_ticks_msec() - sound_time > 650:
-		sound_time = Time.get_ticks_msec()
-		play_sound.rpc(0)
 	
 	# Calculating movement direction along the ground
 	var _forward : Vector3 = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
@@ -623,25 +620,17 @@ func damage(dmg, tearing, headshot):
 @rpc(\"authority\", \"call_local\", \"unreliable\")
 func play_sound(sound : int):
 	audio.pitch_scale = randf_range(0.95, 1.05)
-	if sound == 0:
-		audio.stream = [preload(\"res://assets/footstep_sfx_1.mp3\"), preload(\"res://assets/footstep_sfx_2.mp3\"), preload(\"res://assets/footstep_sfx_3.mp3\"), preload(\"res://assets/footstep_sfx_4.mp3\"), preload(\"res://assets/footstep_sfx_5.mp3\")].pick_random()
-		audio.volume_db = -30
-		audio.play()
 	if sound == 1:
 		audio.stream = [preload(\"res://assets/footstep_sfx_1.mp3\"), preload(\"res://assets/footstep_sfx_2.mp3\"), preload(\"res://assets/footstep_sfx_3.mp3\"), preload(\"res://assets/footstep_sfx_4.mp3\"), preload(\"res://assets/footstep_sfx_5.mp3\")].pick_random()
-		audio.volume_db = -24
 		audio.play()
 	elif sound == 2:
 		audio.stream = preload(\"res://assets/footstep_sfx_6.mp3\")
-		audio.volume_db = 0
 		audio.play()
 	elif sound == 3:
 		audio.stream = preload(\"res://assets/grappling-hook-14680.mp3\")
-		audio.volume_db = 0
 		audio.play()
 	elif sound == 4:
 		audio.stream = preload(\"res://assets/1911-reload-6248.mp3\")
-		audio.volume_db = -23
 		audio.play()
 
 
@@ -737,6 +726,10 @@ spot_range = 10.0
 spot_angle = 70.0
 spot_angle_attenuation = 1.41421
 
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Camera3D"]
+attenuation_model = 1
+max_distance = 30.0
+
 [node name="Hitbox" type="RigidBody3D" parent="."]
 collision_layer = 2
 collision_mask = 0
@@ -771,7 +764,5 @@ spawn_path = NodePath("../Camera3D")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_0uupb")
-
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 
 [connection signal="synchronized" from="MultiplayerSynchronizer" to="." method="_on_synchronization"]

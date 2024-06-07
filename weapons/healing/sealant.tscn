@@ -57,7 +57,8 @@ func _physics_process(delta):
 	
 	if in_use and Time.get_ticks_msec() - start_time > use_time:
 		in_use = false
-		player.heal_breach()
+		player.breach = 0
+		player.health = min(100, player.health + 10)
 
 
 
