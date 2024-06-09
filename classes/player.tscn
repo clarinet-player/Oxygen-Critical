@@ -618,7 +618,6 @@ func set_team(teamnum : int):
 
 
 func damage(dmg, tearing, headshot):
-	print(\"damage\")
 	health = max(health - dmg, 0)
 	breach = max(breach, tearing)
 	set_health.rpc_id(int(str(name)), health, breach, true, headshot)
@@ -626,12 +625,11 @@ func damage(dmg, tearing, headshot):
 
 
 
-func heal(healing : float, tearing : bool):
-	print(\"heal\")
+@rpc(\"authority\", \"call_remote\", \"reliable\")
+func heal(healing, tearing):
 	health = min(health + healing, 100)
 	if tearing:
-		breach = 0.0
-	set_health.rpc_id(int(str(name)), health, breach, false, false)
+		breach = 0
 
 
 
