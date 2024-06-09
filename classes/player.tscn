@@ -24,7 +24,7 @@ const slide_friction : float = 1.0
 
 const jump_power : float = 2.5
 
-const grapple_range : float = 25.0
+const grapple_range : float = 30.0
 const grapple_acceleration : float = 10.0
 const grapple_max_speed : float = 7
 

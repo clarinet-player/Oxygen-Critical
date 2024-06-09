@@ -60,14 +60,14 @@ func _physics_process(delta):
 	if in_use and Time.get_ticks_msec() - start_time > use_time:
 		in_use = false
 		player.breach = 0
-		player.health = min(100, player.health + 10)
+		#player.health = min(100, player.health + 10)
 
 
 
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func _use():
 	in_use = true
-	start_time = Time.get_ticks_msec() - 50
+	start_time = Time.get_ticks_msec() - 100
 
 
 
