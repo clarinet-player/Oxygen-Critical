@@ -618,6 +618,7 @@ func set_team(teamnum : int):
 
 
 func damage(dmg, tearing, headshot):
+	print(\"damage\")
 	health = max(health - dmg, 0)
 	breach = max(breach, tearing)
 	set_health.rpc_id(int(str(name)), health, breach, true, headshot)
@@ -626,6 +627,7 @@ func damage(dmg, tearing, headshot):
 
 
 func heal(healing : float, tearing : bool):
+	print(\"heal\")
 	health = min(health + healing, 100)
 	if tearing:
 		breach = 0.0
@@ -653,6 +655,7 @@ func play_sound(sound : int):
 
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func set_health(new_health : float, new_breach : float, damage : bool, headshot : bool):
+	print(\"set health\")
 	if damage:
 		damaged.emit()
 		if headshot:
