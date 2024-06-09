@@ -625,6 +625,14 @@ func damage(dmg, tearing, headshot):
 
 
 
+func heal(healing : float, tearing : bool):
+	health = min(health + healing, 100)
+	if tearing:
+		breach = 0.0
+	set_health.rpc_id(int(str(name)), health, breach, false, false)
+
+
+
 @rpc(\"authority\", \"call_local\", \"unreliable\")
 func play_sound(sound : int):
 	audio.pitch_scale = randf_range(0.95, 1.05)

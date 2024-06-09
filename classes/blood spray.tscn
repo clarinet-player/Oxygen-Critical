@@ -70,8 +70,6 @@ collision_mode = 2
 albedo_color = Color(0.490196, 0.0156863, 0, 1)
 metallic_specular = 0.6
 roughness = 0.4
-emission_enabled = true
-emission = Color(0.196078, 0, 0, 1)
 
 [sub_resource type="SphereMesh" id="SphereMesh_mxkmi"]
 material = SubResource("StandardMaterial3D_1tjlc")
