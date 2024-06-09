@@ -24,7 +24,7 @@ const slide_friction : float = 1.0
 
 const jump_power : float = 2.5
 
-const grapple_range : float = 100.0
+const grapple_range : float = 25.0
 const grapple_acceleration : float = 10.0
 const grapple_max_speed : float = 7
 
@@ -102,6 +102,9 @@ func _ready():
 			set_team.rpc(2)
 		else:
 			set_team.rpc(1)
+	
+	elif team != 0:
+		set_team(team)
 	
 	
 	if !Gamemanager.mp_active or is_multiplayer_authority():

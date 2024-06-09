@@ -26,6 +26,8 @@ func _enter_tree():
 
 
 func _ready():
+	position = Vector3(0.207, -0.15, -0.205)
+	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
 		hud.set_ammo(false, 0)
 		if player.health < 100:
@@ -107,7 +109,7 @@ albedo_color = Color(0.67451, 0.67451, 0.67451, 1)
 script = SubResource("GDScript_xkkah")
 
 [node name="Cube_003" type="MeshInstance3D" parent="."]
-transform = Transform3D(-5.23402, 0, 1.90204, 0, 4.52722, 0, -4.8926, 0, -2.03477, 0.528577, -0.20777, -0.529459)
+transform = Transform3D(-0.957613, 0, 2.76034, 0, 4.52722, 0, -7.10039, 0, -0.37228, 0.0145229, 0, -0.113293)
 mesh = SubResource("ArrayMesh_mdfms")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_wc2g5")
