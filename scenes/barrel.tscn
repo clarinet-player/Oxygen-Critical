@@ -1196,3 +1196,6 @@ transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 43.979
 material_override = SubResource("StandardMaterial3D_ko2vu")
 mesh = SubResource("CylinderMesh_58k41")
 skeleton = NodePath("")
+
+[node name="Default Camera" type="Camera3D" parent="."]
+transform = Transform3D(0.951819, 0.123849, -0.280537, 0, 0.914819, 0.403865, 0.306659, -0.384406, 0.870742, -7.0712, 7.23078, 55.4566)

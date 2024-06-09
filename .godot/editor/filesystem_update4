@@ -1,9 +1,9 @@
-res://weapons/ak12/ak12.tscn
-res://classes/player.tscn
+res://weapons/grenades/he_display.tscn
 res://autoloads/gamemanager.tscn
+res://classes/player.tscn
+res://weapons/ak12/ak12.tscn
 res://weapons/vector/vector.tscn
 res://weapons/glock/glock.tscn
-res://weapons/grenades/he_display.tscn
 res://weapons/grenades/he_grenade.tscn
 res://weapons/healing/sealant.tscn
 res://weapons/healing/healthkit.tscn
@@ -13,10 +13,6 @@ res://scenes/playable scene.tscn
 res://classes/gameSurface.tscn
 res://scenes/barrel.tscn
 res://classes/bullet.tscn
-res://ui/buy menu.tscn
-res://ui/player hud.tscn
 res://classes/smoke.tscn
-res://classes/weaponbase.gd
-res://ui/settings menu.tscn
 res://autoloads/settings.tscn
-res://weapons/glock/glock drop.tscn
+res://ui/buy menu.tscn

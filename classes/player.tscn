@@ -263,6 +263,10 @@ func _physics_process(delta : float):
 			print(\"player disconnected: \", name)
 			queue_free()
 		
+		#if multiplayer.get_unique_id() == 1 and Time.get_ticks_msec() - health_update_time > 1000:
+		#	set_health.rpc_id(int(str(name)), health, breach, false)
+		#	health_update_time = Time.get_ticks_msec()
+		
 		health -= breach * delta
 		if health < 0.1:
 			die.rpc()
@@ -614,6 +618,7 @@ func damage(dmg, tearing, headshot):
 	health = max(health - dmg, 0)
 	breach = max(breach, tearing)
 	set_health.rpc_id(int(str(name)), health, breach, headshot)
+	damaged.emit()
 
 
 
@@ -638,7 +643,6 @@ func play_sound(sound : int):
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func set_health(new_health : float, new_breach : float, headshot : bool):
 	if new_health < health:
-		print(\"damaged\")
 		damaged.emit()
 		if headshot:
 			Audiomanager.play(\"res://assets/bullet_headshot.mp3\")

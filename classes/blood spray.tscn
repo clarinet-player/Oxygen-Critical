@@ -39,8 +39,8 @@ func _physics_process(delta):
 			var _axis = _up.cross(_raycast.normal)
 			decal.global_rotate(_axis.normalized(), _angle)
 			decal.global_rotate(_raycast.normal, randf_range(0, PI))
-			decal.size.x = clamp(global_position.distance_to(_raycast.position) * 0.5, 1.0, 2.5)
-			decal.size.z = clamp(global_position.distance_to(_raycast.position) * 0.5, 1.0, 2.5)
+			decal.size.x = clamp(global_position.distance_to(_raycast.position) * 0.5, 1.5, 2.5)
+			decal.size.z = clamp(global_position.distance_to(_raycast.position) * 0.5, 1.5, 2.5)
 			start_time = Time.get_ticks_msec() - global_position.distance_squared_to(_raycast.position) * 250
 
 

@@ -51,14 +51,20 @@ func _physics_process(delta):
 	
 	# Reloading
 	if Input.is_action_just_pressed(\"Mouse1\") and !in_use and player.breach > 0 and !UiManager.paused:
-		in_use = true
-		start_time = Time.get_ticks_msec()
+		_use.rpc_id(1)
 		hud.start_progress(1.3, \"healing\")
 	
 	if in_use and Time.get_ticks_msec() - start_time > use_time:
 		in_use = false
 		player.breach = 0
 		player.health = min(100, player.health + 10)
+
+
+
+@rpc(\"authority\", \"call_local\", \"reliable\")
+func _use():
+	in_use = true
+	start_time = Time.get_ticks_msec() - 50
 
 
 
