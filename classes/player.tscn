@@ -620,7 +620,7 @@ func set_team(teamnum : int):
 func damage(dmg, tearing, headshot):
 	health = max(health - dmg, 0)
 	breach = max(breach, tearing)
-	set_health.rpc_id(int(str(name)), health, breach, headshot)
+	set_health.rpc_id(int(str(name)), health, breach, true, headshot)
 	damaged.emit()
 
 
@@ -644,8 +644,8 @@ func play_sound(sound : int):
 
 
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
-func set_health(new_health : float, new_breach : float, headshot : bool):
-	if new_health < health:
+func set_health(new_health : float, new_breach : float, damage : bool, headshot : bool):
+	if damage:
 		damaged.emit()
 		if headshot:
 			Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
