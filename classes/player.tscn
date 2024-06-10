@@ -84,7 +84,6 @@ func _enter_tree():
 
 func _ready():
 	update_time = Time.get_ticks_msec()
-	team = 2
 	
 	Settings.settings_changed.connect(_load_settings)
 	_load_settings()
@@ -797,6 +796,7 @@ _spawnable_scenes = PackedStringArray("res://weapons/ak12/ak12.tscn", "res://wea
 spawn_path = NodePath("../Camera3D")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_interval = 0.05
 replication_config = SubResource("SceneReplicationConfig_0uupb")
 
 [connection signal="synchronized" from="MultiplayerSynchronizer" to="." method="_on_synchronization"]
