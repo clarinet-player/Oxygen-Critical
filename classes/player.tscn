@@ -90,7 +90,7 @@ func _ready():
 	
 	
 	
-	if Gamemanager.gamemode == 1:
+	if Gamemanager.gamemode == 1 and is_multiplayer_authority():
 		var team1 := 0
 		var team2 := 0
 		for player in get_tree().get_nodes_in_group(\"Players\"):
@@ -99,23 +99,23 @@ func _ready():
 			elif player.team == 2:
 				team2 += 1
 		if team1 > team2:
+			print(\"setting team 2\")
 			team = 2
 			hud.set_team(2)
+			
+			var mat = StandardMaterial3D.new()
+			mat.albedo_color = Color(0, 0, 0.6)
+			$Hitbox/MeshInstance3D.mesh.material = mat
+			$Hitbox/MeshInstance3D2.mesh.material = mat
 		else:
+			print(\"setting team 1\")
 			team = 1
 			hud.set_team(1)
-	
-	if team == 1:
-		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0.6, 0, 0)
-		$Hitbox/MeshInstance3D.mesh.material = mat
-		$Hitbox/MeshInstance3D2.mesh.material = mat
-	
-	elif team == 2:
-		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0, 0, 0.6)
-		$Hitbox/MeshInstance3D.mesh.material = mat
-		$Hitbox/MeshInstance3D2.mesh.material = mat
+			
+			var mat = StandardMaterial3D.new()
+			mat.albedo_color = Color(0.6, 0, 0)
+			$Hitbox/MeshInstance3D.mesh.material = mat
+			$Hitbox/MeshInstance3D2.mesh.material = mat
 	
 	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
