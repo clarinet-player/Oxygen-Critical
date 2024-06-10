@@ -89,7 +89,6 @@ func _ready():
 	_load_settings()
 	
 	
-	
 	if is_multiplayer_authority() and Gamemanager.gamemode == 1:
 		var team1 := 0
 		var team2 := 0
