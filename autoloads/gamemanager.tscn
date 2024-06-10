@@ -92,15 +92,15 @@ func game_loop():
 			if players.size() < 2:
 				round_running = false
 			
-			#var team1 := true
-			#var team2 := true
-			#for player in get_tree().get_nodes_in_group(\"Players\"):
-			#	if player.team == 1:
-			#		team1 = false
-			#	elif player.team == 2:
-			#		team2 = false
-			#if team1 or team2:
-			#	round_running = false
+			var team1 := true
+			var team2 := true
+			for player in get_tree().get_nodes_in_group(\"Players\"):
+				if player.team == 1:
+					team1 = false
+				elif player.team == 2:
+					team2 = false
+			if team1 or team2:
+				round_running = false
 		
 		
 		for player in get_tree().get_nodes_in_group(\"Players\"):
