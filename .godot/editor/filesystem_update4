@@ -1,5 +1,6 @@
-res://classes/player.tscn
+res://classes/blood spray.tscn
 res://autoloads/gamemanager.tscn
+res://classes/player.tscn
 res://weapons/ak12/ak12.tscn
 res://weapons/vector/vector.tscn
 res://weapons/glock/glock.tscn
@@ -8,12 +9,13 @@ res://weapons/grenades/he_grenade.tscn
 res://weapons/healing/sealant.tscn
 res://weapons/healing/healthkit.tscn
 res://classes/bullet impact.tscn
-res://classes/blood spray.tscn
 res://scenes/playable scene.tscn
 res://classes/gameSurface.tscn
 res://scenes/barrel.tscn
 res://classes/bullet.tscn
 res://classes/smoke.tscn
 res://autoloads/settings.tscn
+res://ui/buy menu.tscn
 res://ui/player hud.tscn
+res://classes/weaponbase.gd
 res://weapons/bomb/bomb.tscn

@@ -61,10 +61,11 @@ func disconnect_player():
 func _on_connect(id : int):
 	print(\"player connected: \", id)
 	players.append(id)
+	print(players)
 	
 	sync_gamemode.rpc_id(id, 1, 1)
 	
-	if players.size() >= 2 and !game_running:
+	if players.size() >= 4 and !game_running:
 		print(\"starting game loop\")
 		game_loop()
 
@@ -106,9 +107,7 @@ func game_loop():
 		for player in get_tree().get_nodes_in_group(\"Players\"):
 			player.die.rpc()
 		
-		await get_tree().create_timer(0.1).timeout
-		
-		if players.size() < 2:
+		if players.size() < 4:
 			game_running = false
 
 
