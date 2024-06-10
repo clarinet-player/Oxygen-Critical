@@ -104,17 +104,17 @@ func _ready():
 			team = 1
 			hud.set_team(1)
 	
-	#if team == 1:
-	#	var mat = StandardMaterial3D.new()
-	#	mat.albedo_color = Color(0.6, 0, 0)
-	#	$Hitbox/MeshInstance3D.mesh.material = mat
-	#	$Hitbox/MeshInstance3D2.mesh.material = mat
+	if team == 1:
+		var mat = StandardMaterial3D.new()
+		mat.albedo_color = Color(0.6, 0, 0)
+		$Hitbox/MeshInstance3D.mesh.material = mat
+		$Hitbox/MeshInstance3D2.mesh.material = mat
 	
-	#elif team == 2:
-	#	var mat = StandardMaterial3D.new()
-	#	mat.albedo_color = Color(0, 0, 0.6)
-	#	$Hitbox/MeshInstance3D.mesh.material = mat
-	#	$Hitbox/MeshInstance3D2.mesh.material = mat
+	elif team == 2:
+		var mat = StandardMaterial3D.new()
+		mat.albedo_color = Color(0, 0, 0.6)
+		$Hitbox/MeshInstance3D.mesh.material = mat
+		$Hitbox/MeshInstance3D2.mesh.material = mat
 	
 	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
@@ -812,8 +812,6 @@ _spawnable_scenes = PackedStringArray("res://weapons/ak12/ak12.tscn", "res://wea
 spawn_path = NodePath("../Camera3D")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_interval = 0.1
-delta_interval = 0.1
 replication_config = SubResource("SceneReplicationConfig_0uupb")
 
 [connection signal="synchronized" from="MultiplayerSynchronizer" to="." method="_on_synchronization"]
