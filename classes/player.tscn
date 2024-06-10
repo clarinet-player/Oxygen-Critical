@@ -89,6 +89,20 @@ func _ready():
 	_load_settings()
 	
 	
+	
+	if Gamemanager.gamemode == 1:
+		var team1 := 0
+		var team2 := 0
+		for player in get_tree().get_nodes_in_group(\"Players\"):
+			if player.team == 1:
+				team1 += 1
+			elif player.team == 2:
+				team2 += 1
+		if team1 > team2:
+			team = 2
+		else:
+			team = 1
+	
 	if team == 1:
 		var mat = StandardMaterial3D.new()
 		mat.albedo_color = Color(0.6, 0, 0)
@@ -796,7 +810,8 @@ _spawnable_scenes = PackedStringArray("res://weapons/ak12/ak12.tscn", "res://wea
 spawn_path = NodePath("../Camera3D")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_interval = 0.05
+replication_interval = 0.1
+delta_interval = 0.1
 replication_config = SubResource("SceneReplicationConfig_0uupb")
 
 [connection signal="synchronized" from="MultiplayerSynchronizer" to="." method="_on_synchronization"]

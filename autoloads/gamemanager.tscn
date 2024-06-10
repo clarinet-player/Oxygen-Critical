@@ -136,21 +136,6 @@ func spawn_player(id : int):
 	var new_player = preload(\"res://classes/player.tscn\").instantiate()
 	new_player.name = str(id)
 	
-	#if gamemode == 1:
-	#	var team1 := 0
-	#	var team2 := 0
-	#	for player in get_tree().get_nodes_in_group(\"Players\"):
-	#		if player.team == 1:
-	#			team1 += 1
-	#		elif player.team == 2:
-	#			team2 += 1
-	#	if team1 > team2:
-	#		new_player.team = 2
-	#	else:
-	#		new_player.team = 1
-	
-	new_player.team = 1
-	
 	add_child(new_player)
 
 
