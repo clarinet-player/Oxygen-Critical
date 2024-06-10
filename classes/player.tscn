@@ -100,8 +100,10 @@ func _ready():
 				team2 += 1
 		if team1 > team2:
 			team = 2
+			hud.set_team(2)
 		else:
 			team = 1
+			hud.set_team(1)
 	
 	if team == 1:
 		var mat = StandardMaterial3D.new()
