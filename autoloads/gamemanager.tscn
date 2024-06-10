@@ -165,7 +165,7 @@ func sync_gamemode(level : int, mode : int):
 	gamemode = mode
 	
 	if level == 1:
-		get_tree().change_scene_to_file(\"res://scenes/playable scene.tscn\")
+		get_tree().change_scene_to_file(\"res://scenes/barrel.tscn\")
 	
 	await get_tree().create_timer(0.1).timeout
 	UiManager.set_ui(0)
