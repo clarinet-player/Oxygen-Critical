@@ -61,6 +61,7 @@ func disconnect_player():
 func _on_connect(id : int):
 	print(\"player connected: \", id)
 	players.append(id)
+	print(players)
 	
 	sync_gamemode.rpc_id(id, 1, 1)
 	
