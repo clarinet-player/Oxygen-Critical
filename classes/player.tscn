@@ -90,7 +90,7 @@ func _ready():
 	
 	
 	
-	if Gamemanager.gamemode == 1:
+	if is_multiplayer_authority() and Gamemanager.gamemode == 1:
 		var team1 := 0
 		var team2 := 0
 		for player in get_tree().get_nodes_in_group(\"Players\"):
