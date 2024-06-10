@@ -61,7 +61,6 @@ func disconnect_player():
 func _on_connect(id : int):
 	print(\"player connected: \", id)
 	players.append(id)
-	print(players)
 	
 	sync_gamemode.rpc_id(id, 1, 1)
 	
@@ -109,7 +108,7 @@ func game_loop():
 		
 		await get_tree().create_timer(0.1).timeout
 		
-		if players.size() < 4:
+		if players.size() < 2:
 			game_running = false
 
 
