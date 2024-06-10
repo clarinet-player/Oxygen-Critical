@@ -105,17 +105,17 @@ func _ready():
 			team = 1
 			hud.set_team(1)
 	
-	if team == 1:
-		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0.6, 0, 0)
-		$Hitbox/MeshInstance3D.mesh.material = mat
-		$Hitbox/MeshInstance3D2.mesh.material = mat
+	#if team == 1:
+	#	var mat = StandardMaterial3D.new()
+	#	mat.albedo_color = Color(0.6, 0, 0)
+	#	$Hitbox/MeshInstance3D.mesh.material = mat
+	#	$Hitbox/MeshInstance3D2.mesh.material = mat
 	
-	elif team == 2:
-		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0, 0, 0.6)
-		$Hitbox/MeshInstance3D.mesh.material = mat
-		$Hitbox/MeshInstance3D2.mesh.material = mat
+	#elif team == 2:
+	#	var mat = StandardMaterial3D.new()
+	#	mat.albedo_color = Color(0, 0, 0.6)
+	#	$Hitbox/MeshInstance3D.mesh.material = mat
+	#	$Hitbox/MeshInstance3D2.mesh.material = mat
 	
 	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
