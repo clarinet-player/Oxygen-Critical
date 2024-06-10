@@ -705,6 +705,7 @@ func set_health(new_health : float, new_breach : float, damage : bool, headshot 
 func die():
 	if is_multiplayer_authority():
 		UiManager.set_ui(0)
+		Gamemanager.local_player = null
 	
 	death.emit(int(str(name)))
 	queue_free()
