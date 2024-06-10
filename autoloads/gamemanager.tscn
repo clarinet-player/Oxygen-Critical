@@ -8,11 +8,15 @@ var local_player
 var mp_active = false
 
 var gamemode : int
+var players := Array()
+var game_running : bool
+var round_running : bool
 
 # Gravity states: zero, thrust, spin
 var gravity_state : String = \"zero\"
 var gravity_strength : float = 9.8
 var playable_area : AABB
+var bombsite : Area3D
 
 
 
@@ -25,6 +29,7 @@ func _ready():
 		sync_gamemode(1, 1)
 		
 		multiplayer.peer_connected.connect(_on_connect)
+		multiplayer.peer_disconnected.connect(_on_disconnect)
 		
 		peer.create_server(7777)
 		multiplayer.multiplayer_peer = peer
@@ -55,13 +60,38 @@ func disconnect_player():
 
 func _on_connect(id : int):
 	print(\"player connected: \", id)
+	players.append(id)
 	
 	sync_gamemode.rpc_id(id, 1, 1)
 	
-	await get_tree().create_timer(1.0).timeout
-	
-	spawn_player(id)
+	if players.size() >= 4 and !game_running:
+		pass
+
+func _on_disconnect(id : int):
+	players.erase(id)
 #endregion
+
+
+
+func game_loop():
+	game_running = true
+	while game_running:
+		
+		# Start of round
+		
+		# Spawn players
+		for player in players:
+			spawn_player(player)
+		
+		round_running = true
+		while round_running:
+			await get_tree().create_timer(0.1).timeout
+		
+		for player in get_tree().get_nodes_in_group(\"Players\"):
+			player.die.rpc()
+		
+		if players.size() < 4:
+			game_running = false
 
 
 
@@ -101,10 +131,23 @@ func find_spawnpoint(exclude, player_team):
 
 
 func spawn_player(id : int):
-	var player = preload(\"res://classes/player.tscn\").instantiate()
-	player.name = str(id)
-	add_child(player)
-	player.death.connect(on_player_death)
+	var new_player = preload(\"res://classes/player.tscn\").instantiate()
+	new_player.name = str(id)
+	
+	if gamemode == 1:
+		var team1 := 0
+		var team2 := 0
+		for player in get_tree().get_nodes_in_group(\"Players\"):
+			if player.team == 1:
+				team1 += 1
+			elif player.team == 2:
+				team2 += 1
+		if team1 > team2:
+			new_player.team = 2
+		else:
+			new_player.team = 1
+		
+	add_child(new_player)
 
 
 
@@ -148,6 +191,20 @@ func throw_grenade(type : int, position : Vector3, velocity : Vector3):
 		add_child(grenade)
 		grenade.global_position = position
 		grenade.apply_impulse(velocity)
+
+
+
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
+func plant_bomb(pos : Vector3):
+	var bomb = preload(\"res://weapons/bomb/beep.mp3\").instantiate()
+	add_child(bomb)
+	bomb.global_position = pos
+
+
+
+@rpc(\"any_peer\", \"call_remote\", \"reliable\")
+func end_round(winner : int):
+	round_running = false
 "
 
 [node name="GameManager" type="Node"]

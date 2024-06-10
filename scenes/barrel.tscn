@@ -1,10 +1,11 @@
-[gd_scene load_steps=28 format=3 uid="uid://bm4y00xpeft1o"]
+[gd_scene load_steps=31 format=3 uid="uid://bm4y00xpeft1o"]
 
 [ext_resource type="Texture2D" uid="uid://c41i6fxrb8j4d" path="res://assets/pexels-scottwebb-2117937.jpg" id="1_esggs"]
 [ext_resource type="PackedScene" uid="uid://de0weem1pd67y" path="res://classes/spawnpoint.tscn" id="2_gj8ax"]
 [ext_resource type="PackedScene" uid="uid://d16rwkt574n4s" path="res://classes/gameSurface.tscn" id="2_w57ty"]
 [ext_resource type="Texture2D" uid="uid://c6xp3un77ongj" path="res://assets/metal2.jpg" id="4_v4002"]
 [ext_resource type="Texture2D" uid="uid://3cuw4l80rgui" path="res://assets/metal.jpg" id="5_y6xa0"]
+[ext_resource type="Texture2D" uid="uid://c7qwlpa75x88c" path="res://assets/a.png" id="6_ytyoj"]
 
 [sub_resource type="GDScript" id="GDScript_uisem"]
 script/source = "extends Node3D
@@ -16,6 +17,8 @@ func _ready():
 	
 	var area = AABB(Vector3(-40, -60, -40), Vector3(100, 120, 100))
 	Gamemanager.playable_area = area
+	
+	Gamemanager.bombsite = $\"Site A\"
 	
 	Gamemanager.gravity_state = \"zero\"
 	
@@ -191,6 +194,20 @@ height = 30.0
 top_radius = 0.2
 bottom_radius = 0.2
 height = 13.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ak8tp"]
+size = Vector3(9.21484, 4.02686, 20.0582)
+
+[sub_resource type="GDScript" id="GDScript_6xsow"]
+script/source = "extends Sprite3D
+
+
+func _process(delta):
+	if Gamemanager.local_player and Gamemanager.local_player.global_position.distance_to(global_position) < 20:
+		hide()
+	else:
+		show()
+"
 
 [node name="Barrel" type="Node3D"]
 script = SubResource("GDScript_uisem")
@@ -1196,6 +1213,27 @@ transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 43.979
 material_override = SubResource("StandardMaterial3D_ko2vu")
 mesh = SubResource("CylinderMesh_58k41")
 skeleton = NodePath("")
+
+[node name="Site A" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49.0741, -22.3406, 26.8495)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Site A"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.328125, 0.330322, 1.15656)
+shape = SubResource("BoxShape3D_ak8tp")
+
+[node name="Decal" type="Decal" parent="Site A"]
+transform = Transform3D(0.120137, 0, -0.992757, 0, 1, 0, 0.992757, 0, 0.120137, 0.17802, -1.65251, 2.59748)
+size = Vector3(8.43262, 0.1, 8)
+texture_albedo = ExtResource("6_ytyoj")
+
+[node name="Sprite3D" type="Sprite3D" parent="Site A"]
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0.175694, 0, 2.60767)
+billboard = 1
+no_depth_test = true
+fixed_size = true
+alpha_cut = 1
+texture = ExtResource("6_ytyoj")
+script = SubResource("GDScript_6xsow")
 
 [node name="Default Camera" type="Camera3D" parent="."]
 transform = Transform3D(0.951819, 0.123849, -0.280537, 0, 0.914819, 0.403865, 0.306659, -0.384406, 0.870742, -7.0712, 7.23078, 55.4566)

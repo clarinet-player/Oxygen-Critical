@@ -15,6 +15,7 @@ extends Node3D
 @export var recoil : float
 @export var spray : float
 @export var inventory_size : int
+@export var handling_time : float
 
 @export var audio : AudioStreamPlayer3D
 @export var light : SpotLight3D
@@ -49,6 +50,8 @@ func _ready():
 	if !Gamemanager.mp_active or is_multiplayer_authority():
 		hud.set_ammo(true, magazine)
 		hud.alt_fire(shots[0])
+		get_parent().get_parent().using_bomb = false
+		hud.stop_progress("Planting")
 	
 	rotation = Vector3.ZERO
 	position = Vector3(0.207, -0.15, -0.205)
@@ -64,8 +67,9 @@ func _exit_tree():
 	_heat = 0
 	_burst = 0
 	_mouse_down = false
-	
-	hud.stop_progress("reloading")
+	if is_multiplayer_authority():
+		hud.stop_progress("reloading")
+		hud.set_ammo(0, false)
 	audio.stop()
 	
 	request_ready()
@@ -114,6 +118,7 @@ func _physics_process(delta):
 		if firemode >= firerate.size():
 			firemode = 0
 		
+		_firedelay = 1000 / firerate[firemode]
 		hud.alt_fire(shots[firemode])
 		Audiomanager.play("res://assets/alt_fire.mp3")
 	
@@ -154,11 +159,13 @@ func _physics_process(delta):
 			fire(get_parent().global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy * randf()).rotated(global_basis.z.normalized(), randf_range(0, TAU))))
 		
 		
-		get_parent().rotate(basis.x.normalized(), recoil / 400)
+		
 		if !player.is_anchored() or player.velocity.length() > 1:
 			rotate(basis.x.normalized(), recoil * 0.006)
+			get_parent().rotate(basis.x.normalized(), recoil * 0.006)
 		else:
 			rotate(basis.x.normalized(), recoil * 0.004)
+			get_parent().rotate(basis.x.normalized(), recoil * 0.004)
 		
 		_heat += 1
 		_burst -= 1
@@ -169,12 +176,9 @@ func _physics_process(delta):
 	
 	# Recovering heat after firing
 	if time - _fire_time_ms > _firedelay:
-		rotation = lerp(rotation, Vector3.ZERO, recovery * delta)
-		
-		if _heat > 0:
-			_heat = max(_heat - (delta * firerate[firemode] * recovery), 0) 
-			get_parent().rotate(basis.x.normalized(), -recoil * delta * firerate[firemode] * recovery / 400)
-
+		rotation.x = move_toward(rotation.x, 0.0, recovery * delta)
+		get_parent().rotation.x = move_toward(rotation.x, 0.0, recovery * delta)
+		_heat = move_toward(_heat, 0.0, recovery * delta * 100)
 
 
 @rpc("any_peer", "call_local", "reliable")

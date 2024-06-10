@@ -60,10 +60,11 @@ var active_item : Node3D
 
 
 @export var team := 0
+var using_bomb := false
+var bomb_time : int
 
 
 var sound_time : int
-
 var update_time : int
 
 
@@ -83,28 +84,23 @@ func _enter_tree():
 
 func _ready():
 	update_time = Time.get_ticks_msec()
+	team = 2
 	
 	Settings.settings_changed.connect(_load_settings)
 	_load_settings()
 	
 	
-	# Assign team
-	if Gamemanager.mp_active and is_multiplayer_authority() and Gamemanager.gamemode == 1:
-		var team1 := 0
-		var team2 := 0
-		for player in get_tree().get_nodes_in_group(\"Players\"):
-			if player.team == 1:
-				team1 += 1
-			elif player.team == 2:
-				team2 += 1
-		
-		if team1 > team2:
-			set_team.rpc(2)
-		else:
-			set_team.rpc(1)
+	if team == 1:
+		var mat = StandardMaterial3D.new()
+		mat.albedo_color = Color(0.6, 0, 0)
+		$Hitbox/MeshInstance3D.mesh.material = mat
+		$Hitbox/MeshInstance3D2.mesh.material = mat
 	
-	elif team != 0:
-		set_team(team)
+	elif team == 2:
+		var mat = StandardMaterial3D.new()
+		mat.albedo_color = Color(0, 0, 0.6)
+		$Hitbox/MeshInstance3D.mesh.material = mat
+		$Hitbox/MeshInstance3D2.mesh.material = mat
 	
 	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
@@ -204,48 +200,92 @@ func _process(delta):
 	if Gamemanager.mp_active and !is_multiplayer_authority():
 		return
 	
-	# update anchor gui
-	var mode = 0
-	if !_anchored_shape:
-		mode = 0
-	elif velocity.length() > 2:
-		mode = 1
-	else:
-		mode = 2
 	
-	if _reorient:
-		hud.set_hud_anchor(mode, 0)
-	elif acos(_surface_normal.dot(global_basis.x)) < PI / 2:
-		hud.set_hud_anchor(mode, acos(_surface_normal.dot(global_basis.y)))
+	if _anchored_shape:
+		if _reorient:
+			hud.set_hud_anchor(true, 0)
+		elif acos(_surface_normal.dot(global_basis.x)) < PI / 2:
+			hud.set_hud_anchor(true, acos(_surface_normal.dot(global_basis.y)))
+		else:
+			hud.set_hud_anchor(true, acos(_surface_normal.dot(-global_basis.y)) + PI)
 	else:
-		hud.set_hud_anchor(mode, acos(_surface_normal.dot(-global_basis.y)) + PI)
+		hud.set_hud_anchor(false, 0)
 	
 	
 	if Input.is_action_just_pressed(\"B\") and !UiManager.paused:
 		UiManager.set_ui(4)
 	
+	
+	if Input.is_action_just_pressed(\"E\") and team == 2 and Gamemanager.bombsite.get_overlapping_bodies().has(self):
+		using_bomb = true
+		bomb_time = Time.get_ticks_msec()
+		hud.start_progress(3.0, \"Bomb\")
+		if active_item:
+			camera.remove_child(active_item)
+			active_item = null
+	
+	elif Input.is_action_just_pressed(\"E\") and team == 1 and Gamemanager.get_node_or_null(\"Bomb\") and Gamemanager.get_node(\"Bomb\").area.get_overlapping_bodies().has(self):
+		using_bomb = true
+		bomb_time = Time.get_ticks_msec()
+		hud.start_progress(5.0, \"Bomb\")
+		if active_item:
+			camera.remove_child(active_item)
+			active_item = null
+	
+	elif Input.is_action_just_pressed(\"E\"):
+		if health < 100.0:
+			for item in inventory:
+				if item.item_id == 6:
+					if active_item:
+						camera.remove_child(active_item)
+					active_item = item
+					camera.add_child(active_item)
+					break
+		if breach > 0.0:
+			for item in inventory:
+				if item.item_id == 5:
+					if active_item:
+						camera.remove_child(active_item)
+					active_item = item
+					camera.add_child(active_item)
+					break
+	
+	
+	if using_bomb and team == 2 and Time.get_ticks_msec() - bomb_time > 3000:
+		using_bomb = false
+		Gamemanager.plant_bomb.rpc(global_position - global_basis.y * 0.5)
+	
+	
 	if Input.is_action_just_pressed(\"1\") and inventory.size() > 0 and inventory[0] != active_item and !UiManager.paused:
 		if active_item:
 			camera.remove_child(active_item)
 		active_item = inventory[0]
+		if \"handling_time\" in active_item:
+			await get_tree().create_timer(active_item.handling_time).timeout
 		camera.add_child(active_item)
 	
-	if Input.is_action_just_pressed(\"2\") and inventory.size() > 1 and inventory[1] != active_item and !UiManager.paused:
+	elif Input.is_action_just_pressed(\"2\") and inventory.size() > 1 and inventory[1] != active_item and !UiManager.paused:
 		if active_item:
 			camera.remove_child(active_item)
 		active_item = inventory[1]
+		if \"handling_time\" in active_item:
+			await get_tree().create_timer(active_item.handling_time).timeout
 		camera.add_child(active_item)
 	
-	if Input.is_action_just_pressed(\"3\") and inventory.size() > 2 and inventory[2] != active_item and !UiManager.paused:
+	elif Input.is_action_just_pressed(\"3\") and inventory.size() > 2 and inventory[2] != active_item and !UiManager.paused:
 		if active_item:
 			camera.remove_child(active_item)
 		active_item = inventory[2]
+		if \"handling_time\" in active_item:
+			await get_tree().create_timer(active_item.handling_time).timeout
 		camera.add_child(active_item)
 	
-	if Input.is_action_just_pressed(\"4\")and inventory.size() > 3 and inventory[3] != active_item and !UiManager.paused:
+	elif Input.is_action_just_pressed(\"4\")and inventory.size() > 3 and inventory[3] != active_item and !UiManager.paused:
 		if active_item:
 			camera.remove_child(active_item)
 		active_item = inventory[3]
+		if \"handling_time\" in active_item:
+			await get_tree().create_timer(active_item.handling_time).timeout
 		camera.add_child(active_item)
 
 
@@ -261,6 +301,7 @@ func _physics_process(delta : float):
 			die()
 	
 	else:
+		
 		if Time.get_ticks_msec() - update_time > timeout_time:
 			Gamemanager.timeout.rpc_id(int(str(name)))
 			print(\"player disconnected: \", name)
@@ -273,11 +314,10 @@ func _physics_process(delta : float):
 		health -= breach * delta
 		if health < 0.1:
 			die.rpc()
-		
 		return
 	
 	
-	if !active_item:
+	if !active_item and !using_bomb:
 		if inventory.size() > 0:
 			active_item = inventory[0]
 			camera.add_child(active_item)
@@ -301,7 +341,7 @@ func _physics_process(delta : float):
 			if _movement_state == move_type.SLIDING:
 				_movement_state = move_type.IDLE
 			
-		if (Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\")) and !UiManager.paused:
+		if (Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\")) and !UiManager.paused and !using_bomb:
 			if _movement_state == move_type.IDLE:
 				_movement_state = move_type.WALKING
 		elif _movement_state != move_type.SLIDING:
@@ -334,7 +374,7 @@ func _physics_process(delta : float):
 		
 		
 		# Jumping
-		if Input.is_action_just_pressed(\"Space\"):
+		if Input.is_action_just_pressed(\"Space\") and !UiManager.paused and !using_bomb:
 			
 			detach()
 			_reorient = false
@@ -346,7 +386,7 @@ func _physics_process(delta : float):
 	
 	
 	# Grappling
-	if Input.is_action_just_pressed(\"Q\"):
+	if Input.is_action_just_pressed(\"Q\") and !UiManager.paused and !using_bomb:
 		if !_anchored_shape or acos(_surface_normal.dot(global_basis.z)) > 1.25:
 			var _space = get_world_3d().direct_space_state
 			var _ray = PhysicsRayQueryParameters3D.create(camera.global_position, camera.global_position - global_basis.z * grapple_range)
@@ -544,18 +584,12 @@ func attach(_shape : CollisionShape3D, _normal : Vector3):
 	
 	if _grapple_point != Vector3.ZERO:
 		_grapple_point = Vector3.ZERO
-		velocity = Vector3.ZERO
-	else:
-		velocity = velocity - velocity.dot(_surface_normal) * _surface_normal
-		
-		var _body = _shape.get_parent()
-		if \"centrifuge_angular_velocity\" in _body:
-			velocity -= (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
-		
-		if velocity.length() > sprint_max_speed:
-			velocity *= 0.9
-		elif velocity.length() > walk_max_speed:
-			velocity *= 0.95
+	
+	velocity = velocity - velocity.dot(_surface_normal) * _surface_normal
+	
+	var _body = _shape.get_parent()
+	if \"centrifuge_angular_velocity\" in _body:
+		velocity -= (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
 
 
 
@@ -599,24 +633,6 @@ func _on_synchronization():
 
 
 
-@rpc(\"authority\", \"call_local\", \"reliable\")
-func set_team(teamnum : int):
-	team = teamnum
-	
-	if team == 1:
-		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0.6, 0, 0)
-		$Hitbox/MeshInstance3D.mesh.material = mat
-		$Hitbox/MeshInstance3D2.mesh.material = mat
-	
-	elif team == 2:
-		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0, 0, 0.6)
-		$Hitbox/MeshInstance3D.mesh.material = mat
-		$Hitbox/MeshInstance3D2.mesh.material = mat
-
-
-
 func damage(dmg, tearing, headshot):
 	health = max(health - dmg, 0)
 	breach = max(breach, tearing)
@@ -648,12 +664,14 @@ func play_sound(sound : int):
 	elif sound == 4:
 		audio.stream = preload(\"res://assets/1911-reload-6248.mp3\")
 		audio.play()
+	elif sound == 5:
+		audio.stream = preload(\"res://weapons/bomb/beep.mp3\")
+		audio.play()
 
 
 
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func set_health(new_health : float, new_breach : float, damage : bool, headshot : bool):
-	print(\"set health\")
 	if damage:
 		damaged.emit()
 		if headshot:

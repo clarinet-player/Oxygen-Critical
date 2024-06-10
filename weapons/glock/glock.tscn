@@ -54,10 +54,11 @@ muzzle_vel = 400.0
 damage = 17.0
 tearing = 6.0
 effective_range = 28.0
-recovery = 1.5
-recoil = 1.75
+recovery = 0.3
+recoil = 2.5
 spray = 0.75
 inventory_size = 1
+handling_time = 0.05
 audio = NodePath("AudioStreamPlayer3D")
 light = NodePath("Skeleton3D/SpotLight3D")
 

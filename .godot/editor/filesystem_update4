@@ -16,3 +16,6 @@ res://classes/bullet.tscn
 res://classes/smoke.tscn
 res://autoloads/settings.tscn
 res://ui/buy menu.tscn
+res://ui/player hud.tscn
+res://classes/weaponbase.gd
+res://weapons/bomb/bomb.tscn

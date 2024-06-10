@@ -22,6 +22,19 @@ var progress_speed : float
 
 
 
+func set_team(team : int):
+	if team == 1:
+		$CT.show()
+		$T.hide()
+	elif team == 2:
+		$T.show()
+		$CT.hide()
+	else:
+		$T.hide()
+		$CT.hide()
+
+
+
 func set_health(new : float):
 	$\"Health Bar\".value = new
 
@@ -46,16 +59,10 @@ func alt_fire(type : int):
 func set_hud_anchor(mode : int, rotation_rad : float = 0):
 	wheel.rotation = rotation_rad
 	
-	if mode == 0:
-		anchor.hide()
-		indicator.hide()
-	
-	elif mode == 1:
+	if mode:
 		indicator.show()
 		anchor.hide()
-	
-	elif mode == 2:
-		anchor.show()
+	else:
 		indicator.hide()
 
 
@@ -212,3 +219,20 @@ offset_bottom = -38.5
 grow_horizontal = 0
 grow_vertical = 2
 theme_override_font_sizes/normal_font_size = 30
+
+[node name="T" type="RichTextLabel" parent="."]
+visible = false
+layout_mode = 1
+offset_left = 17.0
+offset_right = 800.0
+offset_bottom = 97.0
+theme_override_font_sizes/normal_font_size = 60
+text = "T: Plant the bomb"
+
+[node name="CT" type="RichTextLabel" parent="."]
+visible = false
+offset_left = 19.0
+offset_right = 802.0
+offset_bottom = 97.0
+theme_override_font_sizes/normal_font_size = 60
+text = "CT: Defend the site"
