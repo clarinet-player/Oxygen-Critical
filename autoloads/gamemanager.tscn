@@ -89,8 +89,8 @@ func game_loop():
 		while round_running:
 			await get_tree().create_timer(0.1).timeout
 			
-			#if players.size() < 2:
-			#	round_running = false
+			if players.size() < 2:
+				round_running = false
 			
 			#var team1 := true
 			#var team2 := true
