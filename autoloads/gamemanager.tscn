@@ -65,6 +65,7 @@ func _on_connect(id : int):
 	sync_gamemode.rpc_id(id, 1, 1)
 	
 	if players.size() >= 4 and !game_running:
+		print(\"starting game loop\")
 		game_loop()
 
 func _on_disconnect(id : int):
@@ -78,7 +79,7 @@ func game_loop():
 	while game_running:
 		
 		# Start of round
-		
+		print(\"round start\")
 		# Spawn players
 		for player in players:
 			spawn_player(player)
@@ -205,6 +206,7 @@ func plant_bomb(pos : Vector3):
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func end_round(winner : int):
 	round_running = false
+	print(\"round over: \", winner, \" victory\")
 "
 
 [node name="GameManager" type="Node"]
