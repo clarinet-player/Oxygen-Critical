@@ -210,7 +210,7 @@ func sync_gamemode(level : int, mode : int):
 
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
-func show_ui(ui : int):
+func ui_message(ui : int):
 	UiManager.set_ui(6)
 	UiManager.spechud.set_message(ui)
 
