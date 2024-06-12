@@ -153,6 +153,7 @@ grow_horizontal = 2
 texture = ExtResource("1_xoek8")
 
 [node name="Indicator" type="TextureRect" parent="Wheel"]
+visible = false
 layout_mode = 0
 offset_left = -16.0
 offset_top = 27.0
