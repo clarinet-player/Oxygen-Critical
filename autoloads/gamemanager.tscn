@@ -112,8 +112,7 @@ func game_loop():
 				ui_message.rpc(1)
 		
 		
-		for player in get_tree().get_nodes_in_group(\"Players\"):
-			player.die.rpc()
+		reset.rpc()
 		
 		await get_tree().create_timer(2.5).timeout
 		
@@ -235,6 +234,16 @@ func plant_bomb(pos : Vector3):
 	var bomb = preload(\"res://weapons/bomb/bomb.tscn\").instantiate()
 	add_child(bomb)
 	bomb.global_position = pos
+
+
+
+@rpc(\"authority\", \"call_local\", \"reliable\")
+func reset():
+	for child in get_children():
+		if child.name == \"MultiplayerSpawner\":
+			continue
+		child.queue_free()
+		remove_child(child)
 
 
 

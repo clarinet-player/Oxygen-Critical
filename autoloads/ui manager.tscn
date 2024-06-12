@@ -55,8 +55,6 @@ func set_ui(ui : int):
 	if DisplayServer.get_name() == \"headless\":
 		return
 	
-	print(\"set hud: \", ui)
-	
 	if active_menu:
 		remove_child(active_menu)
 	

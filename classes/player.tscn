@@ -221,6 +221,7 @@ func _process(delta):
 			Gamemanager.end_round.rpc(1)
 		else:
 			using_bomb = false
+			hud.stop_progress(\"Bomb\")
 	
 	
 	if Input.is_action_just_pressed(\"1\") and inventory.size() > 0 and inventory[0] != active_item and !UiManager.paused:
