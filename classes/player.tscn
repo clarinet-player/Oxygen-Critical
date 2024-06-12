@@ -59,7 +59,7 @@ var inventory := Array()
 var active_item : Node3D
 
 
-@export var team := 0
+var team := 0
 var using_bomb := false
 var bomb_time : int
 
@@ -89,34 +89,6 @@ func _ready():
 	_load_settings()
 	
 	
-	#if is_multiplayer_authority() and Gamemanager.gamemode == 1:
-	#	var team1 := 0
-	#	var team2 := 0
-	#	for player in get_tree().get_nodes_in_group(\"Players\"):
-	#		if player.team == 1:
-	#			team1 += 1
-	#		elif player.team == 2:
-	#			team2 += 1
-	#	if team1 > team2:
-	#		team = 2
-	#		hud.set_team(2)
-	#	else:
-	#		team = 1
-	#		hud.set_team(1)
-	#
-	#if team == 1:
-	#	var mat = StandardMaterial3D.new()
-	#	mat.albedo_color = Color(0.6, 0, 0)
-	#	$Hitbox/MeshInstance3D.mesh.material = mat
-	#	$Hitbox/MeshInstance3D2.mesh.material = mat
-	#
-	#elif team == 2:
-	#	var mat = StandardMaterial3D.new()
-	#	mat.albedo_color = Color(0, 0, 0.6)
-	#	$Hitbox/MeshInstance3D.mesh.material = mat
-	#	$Hitbox/MeshInstance3D2.mesh.material = mat
-	
-	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
 		$Hitbox/Hitbox.queue_free()
 		$Hitbox/MeshInstance3D.queue_free()
@@ -130,29 +102,6 @@ func _ready():
 		UiManager.set_ui(3)
 		
 		Gamemanager.local_player = self
-		
-		
-		# Find spawnpoint
-		var spawnpoint = Gamemanager.find_spawnpoint(self, team)
-		
-		if spawnpoint:
-			global_position = spawnpoint.global_position
-			velocity = spawnpoint.down * 10
-		
-			var _axis = spawnpoint.down.cross(-global_basis.y)
-			var _angle = acos(spawnpoint.down.dot(-global_basis.y))
-			if !_axis.is_zero_approx():
-				rotate(_axis.normalized(), _angle)
-			else:
-				rotate(global_basis.x, _angle)
-			
-			_axis = spawnpoint.facing.cross(global_basis.z)
-			_angle = acos(spawnpoint.down.dot(global_basis.z))
-			if !_axis.is_zero_approx():
-				rotate(_axis.normalized(), _angle)
-			else:
-				rotate(-global_basis.y, _angle)
-		
 		
 		hud.set_health(100)
 		hud.set_ammo(false, 0)
@@ -681,6 +630,48 @@ func play_sound(sound : int):
 	elif sound == 5:
 		audio.stream = preload(\"res://weapons/bomb/beep.mp3\")
 		audio.play()
+
+
+
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
+func set_team(new_team : int):
+	team = new_team
+	
+	if team == 1:
+		
+		var mat = StandardMaterial3D.new()
+		mat.albedo_color = Color(0.6, 0, 0)
+		$Hitbox/MeshInstance3D.mesh.material = mat
+		$Hitbox/MeshInstance3D2.mesh.material = mat
+	
+	elif team == 2:
+		var mat = StandardMaterial3D.new()
+		mat.albedo_color = Color(0, 0, 0.6)
+		$Hitbox/MeshInstance3D.mesh.material = mat
+		$Hitbox/MeshInstance3D2.mesh.material = mat
+	
+	if is_multiplayer_authority():
+		hud.set_team(team)
+	
+	
+	var spawnpoint = Gamemanager.find_spawnpoint(self, team)
+	if spawnpoint:
+		global_position = spawnpoint.global_position
+		velocity = spawnpoint.down * 10
+		
+		var _axis = spawnpoint.down.cross(-global_basis.y)
+		var _angle = acos(spawnpoint.down.dot(-global_basis.y))
+		if !_axis.is_zero_approx():
+			rotate(_axis.normalized(), _angle)
+		else:
+			rotate(global_basis.x, _angle)
+			
+		_axis = spawnpoint.facing.cross(global_basis.z)
+		_angle = acos(spawnpoint.down.dot(global_basis.z))
+		if !_axis.is_zero_approx():
+			rotate(_axis.normalized(), _angle)
+		else:
+			rotate(-global_basis.y, _angle)
 
 
 
