@@ -1,3 +1,4 @@
+Marker3D
 Camera3D
 RichTextLabel
 CollisionShape3D
@@ -9,6 +10,5 @@ Sprite3D
 Decal
 Node3D
 WorldEnvironment
-Marker3D
 CSGBox3D
 CSGCombiner3D

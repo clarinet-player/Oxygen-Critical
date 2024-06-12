@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://bm4y00xpeft1o"]
+[gd_scene load_steps=30 format=3 uid="uid://bm4y00xpeft1o"]
 
 [ext_resource type="Texture2D" uid="uid://c41i6fxrb8j4d" path="res://assets/pexels-scottwebb-2117937.jpg" id="1_esggs"]
 [ext_resource type="PackedScene" uid="uid://de0weem1pd67y" path="res://classes/spawnpoint.tscn" id="2_gj8ax"]
@@ -15,10 +15,9 @@ func _ready():
 	Settings.settings_changed.connect(_load_settings)
 	_load_settings()
 	
-	var area = AABB(Vector3(-40, -60, -40), Vector3(100, 120, 100))
-	Gamemanager.playable_area = area
+	Gamemanager.playable_area = AABB(Vector3(-40, -60, -40), Vector3(100, 120, 100))
 	
-	Gamemanager.bombsite = $\"Site A\"
+	Gamemanager.bombsite = AABB(Vector3(45, -24, 18), Vector3(9, 4, 20))
 	
 	Gamemanager.gravity_state = \"zero\"
 	
@@ -194,9 +193,6 @@ height = 30.0
 top_radius = 0.2
 bottom_radius = 0.2
 height = 13.0
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_ak8tp"]
-size = Vector3(9.21484, 4.02686, 20.0582)
 
 [sub_resource type="GDScript" id="GDScript_6xsow"]
 script/source = "extends Sprite3D
@@ -1214,20 +1210,13 @@ material_override = SubResource("StandardMaterial3D_ko2vu")
 mesh = SubResource("CylinderMesh_58k41")
 skeleton = NodePath("")
 
-[node name="Site A" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49.0741, -22.3406, 26.8495)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Site A"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.328125, 0.330322, 1.15656)
-shape = SubResource("BoxShape3D_ak8tp")
-
-[node name="Decal" type="Decal" parent="Site A"]
-transform = Transform3D(0.120137, 0, -0.992757, 0, 1, 0, 0.992757, 0, 0.120137, 0.17802, -1.65251, 2.59748)
+[node name="Decal" type="Decal" parent="."]
+transform = Transform3D(0.120137, 0, -0.992757, 0, 1, 0, 0.992757, 0, 0.120137, 49.2521, -23.9931, 29.447)
 size = Vector3(8.43262, 0.1, 8)
 texture_albedo = ExtResource("6_ytyoj")
 
-[node name="Sprite3D" type="Sprite3D" parent="Site A"]
-transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0.175694, 0, 2.60767)
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 49.2498, -22.3406, 29.4572)
 billboard = 1
 no_depth_test = true
 fixed_size = true
@@ -1237,3 +1226,6 @@ script = SubResource("GDScript_6xsow")
 
 [node name="Default Camera" type="Camera3D" parent="."]
 transform = Transform3D(0.951819, 0.123849, -0.280537, 0, 0.914819, 0.403865, 0.306659, -0.384406, 0.870742, -7.0712, 7.23078, 55.4566)
+
+[node name="Marker3D" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.9232, -20.0015, 38.0335)

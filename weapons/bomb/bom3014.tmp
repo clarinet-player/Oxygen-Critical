@@ -5,7 +5,7 @@
 [sub_resource type="GDScript" id="GDScript_c6p4e"]
 script/source = "extends Node3D
 
-const fuse_time := 25000
+const fuse_time := 40000
 
 var start_time := 0
 
@@ -33,7 +33,7 @@ func _process(delta):
 
 
 func _physics_process(delta):
-	if is_multiplayer_authority():
+	if multiplayer.get_unique_id() == 1:
 		if Time.get_ticks_msec() - start_time >= fuse_time:
 			Gamemanager.end_round.rpc(2)
 "
@@ -45,13 +45,11 @@ size = Vector3(0.3, 0.1, 0.2)
 script = SubResource("GDScript_c6p4e")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0303432, 0)
 mesh = SubResource("BoxMesh_2algb")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0962368, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12658, 0)
 light_color = Color(1, 0.0784314, 0.0784314, 1)
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0303432, 0)
 stream = ExtResource("1_nqxex")

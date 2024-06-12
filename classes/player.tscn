@@ -175,8 +175,7 @@ func _process(delta):
 	if Input.is_action_just_pressed(\"B\") and !UiManager.paused and Time.get_ticks_msec() - spawn_time < 20000:
 		UiManager.set_ui(4)
 	
-	
-	if Input.is_action_just_pressed(\"E\") and team == 2 and Gamemanager.bombsite.get_overlapping_bodies().has(self):
+	if Input.is_action_just_pressed(\"E\") and team == 2 and Gamemanager.bombsite.has_point(global_position):
 		print(\"Planting bomb\")
 		using_bomb = true
 		bomb_time = Time.get_ticks_msec()
@@ -185,7 +184,7 @@ func _process(delta):
 			camera.remove_child(active_item)
 			active_item = null
 	
-	elif Input.is_action_just_pressed(\"E\") and team == 1 and Gamemanager.get_node_or_null(\"Bomb\") and Gamemanager.get_node(\"Bomb\").area.get_overlapping_bodies().has(self):
+	elif Input.is_action_just_pressed(\"E\") and team == 1 and Gamemanager.get_node_or_null(\"Bomb\") and Gamemanager.get_node(\"Bomb\").global_position.distance_to(global_position) < 1.5:
 		print(\"Defusing bomb\")
 		using_bomb = true
 		bomb_time = Time.get_ticks_msec()
@@ -213,9 +212,15 @@ func _process(delta):
 					break
 	
 	
-	if using_bomb and team == 2 and Time.get_ticks_msec() - bomb_time > 3000:
-		using_bomb = false
-		Gamemanager.plant_bomb.rpc(global_position - global_basis.y * 0.5)
+	if using_bomb and !Input.is_action_pressed(\"E\"):
+		if team == 2 and Time.get_ticks_msec() - bomb_time > 3000:
+			using_bomb = false
+			Gamemanager.plant_bomb.rpc(global_position - global_basis.y * 0.5)
+		elif team == 1 and Time.get_ticks_msec() - bomb_time > 5000:
+			using_bomb = false
+			Gamemanager.end_round.rpc(1)
+		else:
+			using_bomb = false
 	
 	
 	if Input.is_action_just_pressed(\"1\") and inventory.size() > 0 and inventory[0] != active_item and !UiManager.paused:
