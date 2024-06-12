@@ -16,7 +16,8 @@ func _exit_tree():
 	
 	var save = Array()
 	for item in inv:
-		save.append(item.item_id)
+		if item != null:
+			save.append(item.item_id)
 	
 	Settings.saved_inventory = save
 	Settings.write_file()
@@ -36,7 +37,8 @@ func _buy_ak():
 	
 	var size := 0
 	for item in inv:
-		size += item.inventory_size
+		if item != null:
+			size += item.inventory_size
 	if size < 3:
 		var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
 		ak.magazine = ak.mag_size
@@ -52,7 +54,8 @@ func _buy_vector():
 	
 	var size := 0
 	for item in inv:
-		size += item.inventory_size
+		if item != null:
+			size += item.inventory_size
 	if size < 3:
 		var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
 		vector.magazine = vector.mag_size
@@ -68,7 +71,8 @@ func _buy_glock():
 	
 	var size := 0
 	for item in inv:
-		size += item.inventory_size
+		if item != null:
+			size += item.inventory_size
 	if size < 4:
 		var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
 		glock.magazine = glock.mag_size
@@ -84,7 +88,8 @@ func _buy_HE():
 	
 	var size := 0
 	for item in inv:
-		size += item.inventory_size
+		if item != null:
+			size += item.inventory_size
 	if size < 4:
 		var he = preload(\"res://weapons/grenades/he_display.tscn\").instantiate()
 		inv.append(he)
@@ -99,7 +104,8 @@ func _buy_sealant():
 	
 	var size := 0
 	for item in inv:
-		size += item.inventory_size
+		if item != null:
+			size += item.inventory_size
 	if size < 4:
 		var sealant = preload(\"res://weapons/healing/sealant.tscn\").instantiate()
 		inv.append(sealant)
@@ -114,7 +120,8 @@ func _buy_healthkit():
 	
 	var size := 0
 	for item in inv:
-		size += item.inventory_size
+		if item != null:
+			size += item.inventory_size
 	if size < 4:
 		var health = preload(\"res://weapons/healing/healthkit.tscn\").instantiate()
 		inv.append(health)
@@ -129,7 +136,8 @@ func _clear_inventory():
 		inv = Gamemanager.local_player.inventory
 	
 	for item in inv:
-		item.queue_free()
+		if item != null:
+			item.queue_free()
 	inv.clear()
 	
 	UiManager.playerhud.set_ammo(false, 0)

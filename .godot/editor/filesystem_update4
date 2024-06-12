@@ -20,3 +20,4 @@ res://weapons/bomb/bomb.tscn
 res://ui/spectator hud.tscn
 res://autoloads/ui manager.tscn
 res://autoloads/freecam.tscn
+res://ui/buy menu.tscn
