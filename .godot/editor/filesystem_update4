@@ -1,12 +1,12 @@
-res://autoloads/gamemanager.tscn
-res://classes/player.tscn
-res://weapons/ak12/ak12.tscn
 res://weapons/vector/vector.tscn
 res://weapons/glock/glock.tscn
-res://weapons/grenades/he_display.tscn
+res://weapons/ak12/ak12.tscn
 res://weapons/grenades/he_grenade.tscn
 res://weapons/healing/sealant.tscn
 res://weapons/healing/healthkit.tscn
+res://autoloads/gamemanager.tscn
+res://classes/player.tscn
+res://weapons/grenades/he_display.tscn
 res://classes/bullet impact.tscn
 res://classes/blood spray.tscn
 res://scenes/playable scene.tscn
@@ -15,9 +15,8 @@ res://scenes/barrel.tscn
 res://classes/bullet.tscn
 res://classes/smoke.tscn
 res://autoloads/settings.tscn
-res://ui/player hud.tscn
 res://weapons/bomb/bomb.tscn
-res://ui/spectator hud.tscn
 res://autoloads/ui manager.tscn
-res://autoloads/freecam.tscn
+res://ui/spectator hud.tscn
 res://ui/buy menu.tscn
+res://ui/player hud.tscn
