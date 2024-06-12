@@ -12,8 +12,6 @@ var start_time := 0
 var direction := true
 var value := 0.0
 
-@onready var area := $Area3D
-
 
 func _ready():
 	start_time = Time.get_ticks_msec()
