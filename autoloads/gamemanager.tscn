@@ -247,7 +247,7 @@ func reset():
 
 
 
-@rpc(\"any_peer\", \"call_remote\", \"reliable\")
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
 func end_round(winner : int):
 	round_running = false
 	ui_message(winner)

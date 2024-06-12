@@ -211,17 +211,15 @@ func _process(delta):
 					camera.add_child(active_item)
 					break
 	
-	
-	if using_bomb and !Input.is_action_pressed(\"E\"):
-		if team == 2 and Time.get_ticks_msec() - bomb_time > 3000:
-			using_bomb = false
-			Gamemanager.plant_bomb.rpc(global_position - global_basis.y * 0.5)
-		elif team == 1 and Time.get_ticks_msec() - bomb_time > 5000:
-			using_bomb = false
-			Gamemanager.end_round.rpc(1)
-		else:
-			using_bomb = false
-			hud.stop_progress(\"Bomb\")
+	if using_bomb and team == 2 and Time.get_ticks_msec() - bomb_time > 3000:
+		using_bomb = false
+		Gamemanager.plant_bomb.rpc(global_position - global_basis.y * 0.5)
+	elif using_bomb and team == 1 and Time.get_ticks_msec() - bomb_time > 5000:
+		using_bomb = false
+		Gamemanager.end_round.rpc(1)
+	elif using_bomb and !Input.is_action_pressed(\"E\"):
+		using_bomb = false
+		hud.stop_progress(\"Bomb\")
 	
 	
 	if Input.is_action_just_pressed(\"1\") and inventory.size() > 0 and inventory[0] != active_item and !UiManager.paused:
