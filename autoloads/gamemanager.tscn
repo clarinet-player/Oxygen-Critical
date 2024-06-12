@@ -238,7 +238,7 @@ func plant_bomb(pos : Vector3):
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func end_round(winner : int):
 	round_running = false
-	show_ui(winner)
+	ui_message(winner)
 "
 
 [node name="GameManager" type="Node"]

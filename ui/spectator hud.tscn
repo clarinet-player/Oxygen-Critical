@@ -11,12 +11,12 @@ func set_message(message : int):
 		$CT.hide()
 	elif message == 1:
 		$Player.hide()
-		$T.show()
-		$CT.hide()
-	elif message == 2:
-		$Player.hide()
 		$T.hide()
 		$CT.show()
+	elif message == 2:
+		$Player.hide()
+		$T.show()
+		$CT.hide()
 "
 
 [node name="SpectatorHud" type="Control"]
