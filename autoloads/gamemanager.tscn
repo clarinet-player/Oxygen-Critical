@@ -104,10 +104,10 @@ func game_loop():
 					team1 = false
 				elif player.team == 2:
 					team2 = false
-			if team1 and !find_child(\"Bomb\"):
+			if team1:
 				round_running = false
 				ui_message.rpc(2)
-			elif team2:
+			elif team2 and !find_child(\"Bomb\"):
 				round_running = false
 				ui_message.rpc(1)
 		
