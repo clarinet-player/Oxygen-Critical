@@ -76,42 +76,40 @@ func _on_disconnect(id : int):
 
 func game_loop():
 	game_running = true
-	for player in players:
-		spawn_player(player)
-	#while game_running:
-	#	
-	#	# Start of round
-	#	print(\"round start\")
-	#	# Spawn players
-	#	for player in players:
-	#		spawn_player(player)
-	#	
-	#	
-	#	round_running = true
-	#	while round_running:
-	#		await get_tree().create_timer(0.1).timeout
-	#		
-	#		if players.size() < 2:
-	#			round_running = false
-	#		
-	#		var team1 := true
-	#		var team2 := true
-	#		for player in get_tree().get_nodes_in_group(\"Players\"):
-	#			if player.team == 1:
-	#				team1 = false
-	#			elif player.team == 2:
-	#				team2 = false
-	#		if team1 or team2:
-	#			round_running = false
-	#	
-	#	
-	#	for player in get_tree().get_nodes_in_group(\"Players\"):
-	#		player.die.rpc()
-	#	
-	#	await get_tree().create_timer(0.1).timeout
-	#	
-	#	if players.size() < 2:
-	#		game_running = false
+	while game_running:
+		
+		# Start of round
+		print(\"round start\")
+		# Spawn players
+		for player in players:
+			spawn_player(player)
+		
+		
+		round_running = true
+		while round_running:
+			await get_tree().create_timer(0.1).timeout
+			
+			if players.size() < 2:
+				round_running = false
+			
+			var team1 := true
+			var team2 := true
+			for player in get_tree().get_nodes_in_group(\"Players\"):
+				if player.team == 1:
+					team1 = false
+				elif player.team == 2:
+					team2 = false
+			if team1 or team2:
+				round_running = false
+		
+		
+		for player in get_tree().get_nodes_in_group(\"Players\"):
+			player.die.rpc()
+		
+		await get_tree().create_timer(0.1).timeout
+		
+		if players.size() < 2:
+			game_running = false
 
 
 

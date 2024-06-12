@@ -58,6 +58,7 @@ var breach : float = 0
 var inventory := Array()
 var active_item : Node3D
 
+var spawn_time := 0
 
 var team := 0
 var using_bomb := false
@@ -84,6 +85,7 @@ func _enter_tree():
 
 func _ready():
 	update_time = Time.get_ticks_msec()
+	spawn_time = Time.get_ticks_msec()
 	
 	Settings.settings_changed.connect(_load_settings)
 	_load_settings()
@@ -175,7 +177,7 @@ func _process(delta):
 		hud.set_hud_anchor(false, 0)
 	
 	
-	if Input.is_action_just_pressed(\"B\") and !UiManager.paused:
+	if Input.is_action_just_pressed(\"B\") and !UiManager.paused and Time.get_ticks_msec() - spawn_time < 20000:
 		UiManager.set_ui(4)
 	
 	
@@ -637,8 +639,10 @@ func play_sound(sound : int):
 func set_team(new_team : int):
 	team = new_team
 	
-	if team == 1:
-		
+	if is_multiplayer_authority():
+		hud.set_team(team)
+	
+	elif team == 1:
 		var mat = StandardMaterial3D.new()
 		mat.albedo_color = Color(0.6, 0, 0)
 		$Hitbox/MeshInstance3D.mesh.material = mat
@@ -649,9 +653,6 @@ func set_team(new_team : int):
 		mat.albedo_color = Color(0, 0, 0.6)
 		$Hitbox/MeshInstance3D.mesh.material = mat
 		$Hitbox/MeshInstance3D2.mesh.material = mat
-	
-	if is_multiplayer_authority():
-		hud.set_team(team)
 	
 	
 	var spawnpoint = Gamemanager.find_spawnpoint(self, team)
