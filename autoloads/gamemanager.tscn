@@ -105,9 +105,11 @@ func game_loop():
 				elif player.team == 2:
 					team2 = false
 			if team1:
+				print(\"CTs eliminated\")
 				round_running = false
 				ui_message.rpc(2)
 			elif team2 and !find_child(\"Bomb\"):
+				print(\"Ts eliminated\")
 				round_running = false
 				ui_message.rpc(1)
 		
