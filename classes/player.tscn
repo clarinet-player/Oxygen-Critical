@@ -177,6 +177,7 @@ func _process(delta):
 	
 	
 	if Input.is_action_just_pressed(\"E\") and team == 2 and Gamemanager.bombsite.get_overlapping_bodies().has(self):
+		print(\"Planting bomb\")
 		using_bomb = true
 		bomb_time = Time.get_ticks_msec()
 		hud.start_progress(3.0, \"Bomb\")
@@ -185,6 +186,7 @@ func _process(delta):
 			active_item = null
 	
 	elif Input.is_action_just_pressed(\"E\") and team == 1 and Gamemanager.get_node_or_null(\"Bomb\") and Gamemanager.get_node(\"Bomb\").area.get_overlapping_bodies().has(self):
+		print(\"Defusing bomb\")
 		using_bomb = true
 		bomb_time = Time.get_ticks_msec()
 		hud.start_progress(5.0, \"Bomb\")
@@ -699,8 +701,9 @@ func set_health(new_health : float, new_breach : float, damage : bool, headshot 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func die():
 	if is_multiplayer_authority():
-		UiManager.set_ui(0)
 		Gamemanager.local_player = null
+		if UiManager.active_menu != UiManager.spechud:
+			UiManager.set_ui(0)
 	
 	death.emit(int(str(name)))
 	queue_free()

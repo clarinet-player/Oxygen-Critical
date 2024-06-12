@@ -64,11 +64,12 @@ func _on_connect(id : int):
 	players.append(id)
 	
 	sync_gamemode.rpc_id(id, 1, 1)
+	await get_tree().create_timer(0.1).timeout
 	
 	if players.size() >= 2 and !game_running:
 		print(\"starting game loop\")
 		game_loop()
-	else:
+	elif !game_running:
 		ui_message.rpc(0)
 
 func _on_disconnect(id : int):
@@ -94,6 +95,7 @@ func game_loop():
 			
 			if players.size() < 2:
 				round_running = false
+				ui_message.rpc(0)
 			
 			var team1 := true
 			var team2 := true
@@ -104,10 +106,10 @@ func game_loop():
 					team2 = false
 			if team1:
 				round_running = false
-				ui_message(2)
+				ui_message.rpc(2)
 			elif team2:
 				round_running = false
-				ui_message(1)
+				ui_message.rpc(1)
 		
 		
 		for player in get_tree().get_nodes_in_group(\"Players\"):
@@ -205,7 +207,8 @@ func sync_gamemode(level : int, mode : int):
 		get_tree().change_scene_to_file(\"res://scenes/barrel.tscn\")
 	
 	await get_tree().create_timer(0.1).timeout
-	UiManager.set_ui(0)
+	if UiManager.active_menu != UiManager.spechud:
+		UiManager.set_ui(0)
 
 
 

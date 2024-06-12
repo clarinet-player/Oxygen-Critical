@@ -35,9 +35,9 @@ func _load_settings():
 
 func _spawn_player(_id):
 	var player = preload(\"res://classes/player.tscn\").instantiate()
-	player.team = 0
 	add_child(player)
 	player.death.connect(_spawn_player)
+	player.set_team(0)
 "
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hjjoh"]
