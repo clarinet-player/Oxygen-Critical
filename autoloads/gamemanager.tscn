@@ -69,7 +69,7 @@ func _on_connect(id : int):
 		print(\"starting game loop\")
 		game_loop()
 	else:
-		show_ui.rpc(0)
+		ui_message.rpc(0)
 
 func _on_disconnect(id : int):
 	players.erase(id)
@@ -104,10 +104,10 @@ func game_loop():
 					team2 = false
 			if team1:
 				round_running = false
-				show_ui(2)
+				ui_message(2)
 			elif team2:
 				round_running = false
-				show_ui(1)
+				ui_message(1)
 		
 		
 		for player in get_tree().get_nodes_in_group(\"Players\"):
