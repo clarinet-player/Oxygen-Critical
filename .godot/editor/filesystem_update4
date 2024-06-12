@@ -17,3 +17,6 @@ res://classes/smoke.tscn
 res://autoloads/settings.tscn
 res://ui/player hud.tscn
 res://weapons/bomb/bomb.tscn
+res://ui/spectator hud.tscn
+res://autoloads/ui manager.tscn
+res://autoloads/freecam.tscn

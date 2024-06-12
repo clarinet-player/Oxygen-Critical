@@ -1,0 +1,26 @@
+[gd_scene load_steps=2 format=3 uid="uid://bfca2hly06kor"]
+
+[sub_resource type="GDScript" id="GDScript_f68m8"]
+script/source = "extends Camera3D
+
+
+
+func _ready():
+	UiManager.set_ui(6)
+	Gamemanager.freecam = self
+
+
+
+func _process(delta):
+	if Input.is_action_pressed(\"W\"):
+		global_translate(global_basis.z * -10)
+	if Input.is_action_pressed(\"S\"):
+		global_translate(global_basis.z * 10)
+	if Input.is_action_pressed(\"A\"):
+		global_translate(global_basis.x * -10)
+	if Input.is_action_pressed(\"D\"):
+		global_translate(global_basis.x * 10)
+"
+
+[node name="Freecam" type="Camera3D"]
+script = SubResource("GDScript_f68m8")

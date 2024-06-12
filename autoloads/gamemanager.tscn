@@ -5,6 +5,7 @@ script/source = "extends Node
 
 var peer = ENetMultiplayerPeer.new()
 var local_player
+var freecam
 var mp_active = false
 
 var gamemode : int
@@ -67,6 +68,8 @@ func _on_connect(id : int):
 	if players.size() >= 2 and !game_running:
 		print(\"starting game loop\")
 		game_loop()
+	else:
+		show_ui.rpc(0)
 
 func _on_disconnect(id : int):
 	players.erase(id)
@@ -99,14 +102,18 @@ func game_loop():
 					team1 = false
 				elif player.team == 2:
 					team2 = false
-			if team1 or team2:
+			if team1:
 				round_running = false
+				show_ui(2)
+			elif team2:
+				round_running = false
+				show_ui(1)
 		
 		
 		for player in get_tree().get_nodes_in_group(\"Players\"):
 			player.die.rpc()
 		
-		await get_tree().create_timer(0.1).timeout
+		await get_tree().create_timer(2.5).timeout
 		
 		if players.size() < 2:
 			game_running = false
@@ -202,6 +209,13 @@ func sync_gamemode(level : int, mode : int):
 
 
 
+@rpc(\"authority\", \"call_remote\", \"reliable\")
+func show_ui(ui : int):
+	UiManager.set_ui(6)
+	UiManager.spechud.set_message(ui)
+
+
+
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func throw_grenade(type : int, position : Vector3, velocity : Vector3):
 	if type == 1:
@@ -224,7 +238,7 @@ func plant_bomb(pos : Vector3):
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func end_round(winner : int):
 	round_running = false
-	print(\"round over: \", winner, \" victory\")
+	show_ui(winner)
 "
 
 [node name="GameManager" type="Node"]

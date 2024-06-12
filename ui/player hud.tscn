@@ -56,10 +56,9 @@ func alt_fire(type : int):
 
 
 
-func set_hud_anchor(mode : int, rotation_rad : float = 0):
-	wheel.rotation = rotation_rad
-	
-	if mode:
+func set_hud_anchor(show : bool, rotation_rad : float):
+	if show:
+		wheel.rotation = rotation_rad
 		indicator.show()
 		anchor.hide()
 	else:

@@ -8,6 +8,7 @@ script/source = "extends Node
 var mainmenu
 var pausemenu
 var playerhud
+var spechud
 var settingsmenu
 var buymenu
 
@@ -21,6 +22,7 @@ func _ready():
 	mainmenu = load(\"res://ui/main menu.tscn\").instantiate()
 	pausemenu = load(\"res://ui/pause menu.tscn\").instantiate()
 	playerhud = load(\"res://ui/player hud.tscn\").instantiate()
+	spechud = load(\"res://ui/spectator hud.tscn\").instantiate()
 	settingsmenu = load(\"res://ui/settings menu.tscn\").instantiate()
 	buymenu = load(\"res://ui/buy menu.tscn\").instantiate()
 	
@@ -36,7 +38,10 @@ func _process(delta):
 		if active_menu == mainmenu:
 			get_tree().quit()
 		elif active_menu == pausemenu:
-			set_ui(3)
+			if Gamemanager.local_player:
+				set_ui(3)
+			else:
+				set_ui(6)
 		elif active_menu == buymenu:
 			set_ui(3)
 		elif active_menu == settingsmenu:
@@ -80,6 +85,10 @@ func set_ui(ui : int):
 	elif ui == 5:
 		add_child(settingsmenu)
 		active_menu = settingsmenu
+	
+	elif ui == 6:
+		add_child(spechud)
+		active_menu = spechud
 "
 
 [node name="UiManager" type="Node"]

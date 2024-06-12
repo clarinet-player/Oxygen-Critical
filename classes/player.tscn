@@ -85,7 +85,6 @@ func _enter_tree():
 
 func _ready():
 	update_time = Time.get_ticks_msec()
-	spawn_time = Time.get_ticks_msec()
 	
 	Settings.settings_changed.connect(_load_settings)
 	_load_settings()
@@ -99,10 +98,6 @@ func _ready():
 	
 	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
-		
-		$Camera3D.current = true
-		UiManager.set_ui(3)
-		
 		Gamemanager.local_player = self
 		
 		hud.set_health(100)
@@ -166,15 +161,15 @@ func _process(delta):
 		return
 	
 	
-	if _anchored_shape:
-		if _reorient:
-			hud.set_hud_anchor(true, 0)
-		elif acos(_surface_normal.dot(global_basis.x)) < PI / 2:
-			hud.set_hud_anchor(true, acos(_surface_normal.dot(global_basis.y)))
-		else:
-			hud.set_hud_anchor(true, acos(_surface_normal.dot(-global_basis.y)) + PI)
-	else:
-		hud.set_hud_anchor(false, 0)
+	#if spawn_time != 0 and _anchored_shape:
+	#	if _reorient:
+	#		hud.set_hud_anchor(true, 0)
+	#	elif acos(_surface_normal.dot(global_basis.x)) < PI / 2:
+	#		hud.set_hud_anchor(true, acos(_surface_normal.dot(global_basis.y)))
+	#	else:
+	#		hud.set_hud_anchor(true, acos(_surface_normal.dot(-global_basis.y)) + PI)
+	#else:
+	#	hud.set_hud_anchor(false, 0)
 	
 	
 	if Input.is_action_just_pressed(\"B\") and !UiManager.paused and Time.get_ticks_msec() - spawn_time < 20000:
@@ -640,17 +635,22 @@ func set_team(new_team : int):
 	team = new_team
 	
 	if is_multiplayer_authority():
+		if Gamemanager.freecam:
+			Gamemanager.freecam.queue_free()
+		
+		$Camera3D.current = true
+		UiManager.set_ui(3)
 		hud.set_team(team)
 	
 	elif team == 1:
 		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0.6, 0, 0)
+		mat.albedo_color = Color(0, 0, 0.6)
 		$Hitbox/MeshInstance3D.mesh.material = mat
 		$Hitbox/MeshInstance3D2.mesh.material = mat
 	
 	elif team == 2:
 		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0, 0, 0.6)
+		mat.albedo_color = Color(0.6, 0, 0)
 		$Hitbox/MeshInstance3D.mesh.material = mat
 		$Hitbox/MeshInstance3D2.mesh.material = mat
 	
@@ -673,6 +673,8 @@ func set_team(new_team : int):
 			rotate(_axis.normalized(), _angle)
 		else:
 			rotate(-global_basis.y, _angle)
+	
+	spawn_time = Time.get_ticks_msec()
 
 
 
