@@ -71,6 +71,8 @@ func _on_connect(id : int):
 		game_loop()
 	elif !game_running:
 		ui_message.rpc(0)
+	else:
+		ui_message.rpc_id(id, 4)
 
 func _on_disconnect(id : int):
 	players.erase(id)

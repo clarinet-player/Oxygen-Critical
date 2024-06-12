@@ -705,7 +705,7 @@ func die():
 	if is_multiplayer_authority():
 		Gamemanager.local_player = null
 		if UiManager.active_menu != UiManager.spechud:
-			UiManager.set_ui(0)
+			Gamemanager.ui_message(3)
 	
 	death.emit(int(str(name)))
 	queue_free()

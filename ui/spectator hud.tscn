@@ -9,14 +9,32 @@ func set_message(message : int):
 		$Player.show()
 		$T.hide()
 		$CT.hide()
+		$Dead.hide()
+		$Spectating.hide()
 	elif message == 1:
 		$Player.hide()
 		$T.hide()
 		$CT.show()
+		$Dead.hide()
+		$Spectating.hide()
 	elif message == 2:
 		$Player.hide()
 		$T.show()
 		$CT.hide()
+		$Dead.hide()
+		$Spectating.hide()
+	elif message == 3:
+		$Player.hide()
+		$T.hide()
+		$CT.hide()
+		$Dead.show()
+		$Spectating.hide()
+	elif message == 4:
+		$Player.hide()
+		$T.hide()
+		$CT.hide()
+		$Dead.hide()
+		$Spectating.show()
 "
 
 [node name="SpectatorHud" type="Control"]
@@ -68,3 +86,29 @@ grow_horizontal = 2
 theme_override_font_sizes/normal_font_size = 60
 text = "CT side victory
 "
+
+[node name="Dead" type="RichTextLabel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -85.0
+offset_right = 85.0
+offset_bottom = 94.0
+grow_horizontal = 2
+theme_override_font_sizes/normal_font_size = 60
+text = "Dead"
+
+[node name="Spectating" type="RichTextLabel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -403.5
+offset_right = 403.5
+offset_bottom = 94.0
+grow_horizontal = 2
+theme_override_font_sizes/normal_font_size = 60
+text = "Spectating until next round"
