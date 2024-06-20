@@ -1,7 +1,7 @@
 [gd_scene load_steps=37 format=3 uid="uid://cmx5db1kixom7"]
 
 [ext_resource type="PackedScene" uid="uid://d16rwkt574n4s" path="res://classes/gameSurface.tscn" id="1_e0pjc"]
-[ext_resource type="Texture2D" uid="uid://3cuw4l80rgui" path="res://assets/metal.jpg" id="1_lf3af"]
+[ext_resource type="Texture2D" uid="uid://boixaq7472djr" path="res://assets/metal.jpg" id="1_lf3af"]
 [ext_resource type="PackedScene" uid="uid://de0weem1pd67y" path="res://classes/spawnpoint.tscn" id="2_7pod8"]
 [ext_resource type="Texture2D" uid="uid://c6xp3un77ongj" path="res://assets/metal2.jpg" id="3_8sd2t"]
 

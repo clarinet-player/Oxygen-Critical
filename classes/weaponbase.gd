@@ -35,7 +35,7 @@ var reloading := false
 var reload_start_time := 0
 
 
-@onready var _firedelay = 1000 / firerate[0]
+@onready var _firedelay = 1000 / firerate[firemode]
 @onready var hud = UiManager.playerhud
 
 
@@ -49,7 +49,7 @@ func _enter_tree():
 func _ready():
 	if !Gamemanager.mp_active or is_multiplayer_authority():
 		hud.set_ammo(true, magazine)
-		hud.alt_fire(shots[0])
+		hud.alt_fire(shots[firemode])
 		get_parent().get_parent().using_bomb = false
 		hud.stop_progress("Planting")
 	
@@ -151,7 +151,7 @@ func _physics_process(delta):
 		var player = $"../.."
 		if !player.is_anchored() or player.velocity.length() > 0.1:
 			inaccuracy = 7.0
-		inaccuracy = (inaccuracy + _heat) * spray / 500
+		inaccuracy = (inaccuracy + _heat) * spray / 490
 		
 		if Gamemanager.mp_active:
 			fire.rpc(get_parent().global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy * randf()).rotated(global_basis.z.normalized(), randf_range(0, TAU))).normalized())

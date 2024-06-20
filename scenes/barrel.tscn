@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://de0weem1pd67y" path="res://classes/spawnpoint.tscn" id="2_gj8ax"]
 [ext_resource type="PackedScene" uid="uid://d16rwkt574n4s" path="res://classes/gameSurface.tscn" id="2_w57ty"]
 [ext_resource type="Texture2D" uid="uid://c6xp3un77ongj" path="res://assets/metal2.jpg" id="4_v4002"]
-[ext_resource type="Texture2D" uid="uid://3cuw4l80rgui" path="res://assets/metal.jpg" id="5_y6xa0"]
+[ext_resource type="Texture2D" uid="uid://boixaq7472djr" path="res://assets/metal.jpg" id="5_y6xa0"]
 [ext_resource type="Texture2D" uid="uid://c7qwlpa75x88c" path="res://assets/a.png" id="6_ytyoj"]
 
 [sub_resource type="GDScript" id="GDScript_uisem"]

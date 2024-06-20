@@ -1,9 +1,10 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1718214661
+::res://::1718856563
 default_bus_layout.tres::AudioBusLayout::2643845262476249347::1717716591::0::1::::<><>::
-export_presets.cfg::TextFile::-1::1718166240::0::1::::<><>::
+export_presets.cfg::TextFile::-1::1718215546::0::1::::<><>::
 icon.svg::CompressedTexture2D::8724437967346365169::1704164277::1716937046::1::::<><>::
-::res://assets/::1717975613
+somnambulist.glb::PackedScene::1105849456152822390::1718225424::1718225425::1::::<><>::
+::res://assets/::1718227465
 10_m_Air_Rifle_target.svg.png::CompressedTexture2D::2537508927825535489::1712802479::1712803765::1::::<><>::
 1911-reload-6248.mp3::AudioStreamMP3::6287606057257744826::1717950022::1717950024::1::::<><>::
 a.png::CompressedTexture2D::7053270614787229952::1717975606::1717975613::1::::<><>::
@@ -28,66 +29,69 @@ hole.png::CompressedTexture2D::9090237743089439716::1714767271::1714767271::1:::
 indicator.png::CompressedTexture2D::1524096772977893095::1713043142::1713043143::1::::<><>::
 ink-303244_1920.png::CompressedTexture2D::6461241233667623243::1717100459::1717130952::1::::<><>::
 metal2.jpg::CompressedTexture2D::6997138037676137017::1717042670::1717042700::1::::<><>::
-metal.jpg::CompressedTexture2D::1970671546397719232::1706320626::1706320626::1::::<><>::
+metal.jpg::CompressedTexture2D::3386976898660459975::1718225982::1718225988::1::::<><>::
+MetalRusted0129_1_350.jpg::CompressedTexture2D::589841649079111646::1718226398::1718226406::1::::<><>::
 pexels-scottwebb-2117937.jpg::CompressedTexture2D::6862533048970178169::1717544709::1717544757::1::::<><>::
 pikachu.png::CompressedTexture2D::2987508511258098730::1706320626::1717555351::1::::<><>::
+rust.tres::StandardMaterial3D::5483791001278635752::1718227450::0::1::::<><>::uid://inyuujyffj5g::::res://assets/MetalRusted0129_1_350.jpg
 thumbsup.jpg::CompressedTexture2D::3399232090794219126::1706320626::1706320626::1::::<><>::
-::res://autoloads/::1718166166
+::res://autoloads/::1718657384
 audiomanager.tscn::PackedScene::2683529645761908824::1717386594::0::1::::<><>::
 freecam.tscn::PackedScene::2741542259608203357::1718159223::0::1::::<><>::
-gamemanager.tscn::PackedScene::3298394945087652991::1718166165::0::1::::<><>::
-settings.tscn::PackedScene::1036285136695128504::1718166166::0::1::::<><>::
-ui manager.tscn::PackedScene::695190123698328647::1718166166::0::1::::<><>::
-::res://classes/::1718166166
-blood spray.tscn::PackedScene::1829064652698428765::1718166166::0::1::::<><>::uid://cyb4x1ggl8d7h::::res://assets/ink-303244_1920.png
-bullet impact.tscn::PackedScene::2434245430112360351::1718166166::0::1::::<><>::uid://d2rm5f8ob43sy::::res://assets/hole.png
-bullet.tscn::PackedScene::4851513591805773323::1718166166::0::1::::<><>::
-gameSurface.tscn::PackedScene::9049239728378702472::1718166166::0::1::::<><>::
+gamemanager.tscn::PackedScene::3298394945087652991::1718657383::0::1::::<><>::
+settings.tscn::PackedScene::1036285136695128504::1718657384::0::1::::<><>::
+ui manager.tscn::PackedScene::695190123698328647::1718657384::0::1::::<><>::
+::res://classes/::1718657384
+blood spray.tscn::PackedScene::1829064652698428765::1718657384::0::1::::<><>::uid://cyb4x1ggl8d7h::::res://assets/ink-303244_1920.png
+bullet impact.tscn::PackedScene::2434245430112360351::1718657384::0::1::::<><>::uid://d2rm5f8ob43sy::::res://assets/hole.png
+bullet.tscn::PackedScene::4851513591805773323::1718657384::0::1::::<><>::
+gameSurface.tscn::PackedScene::9049239728378702472::1718657384::0::1::::<><>::
 hitbox.tscn::PackedScene::6683095666382949803::1717629882::0::1::::<><>::
-player.tscn::PackedScene::104956028073985459::1718166165::0::1::::<><>::uid://c2hluyirbi4rf::::res://classes/hitbox.tscn
-smoke.tscn::PackedScene::977700386510534951::1718166166::0::1::::<><>::
+player.tscn::PackedScene::104956028073985459::1718657383::0::1::::<><>::uid://c2hluyirbi4rf::::res://classes/hitbox.tscn
+smoke.tscn::PackedScene::977700386510534951::1718657384::0::1::::<><>::
 spawnpoint.tscn::PackedScene::7492970016331983388::1717524265::0::1::::<><>::
-weaponbase.gd::GDScript::-1::1717983886::0::1::::<>Node3D<>::
-::res://linux/::1718166126
-::res://scenes/::1718166166
-barrel.tscn::PackedScene::3290056964192591958::1718166166::0::1::::<><>::uid://c41i6fxrb8j4d::::res://assets/pexels-scottwebb-2117937.jpg<>uid://de0weem1pd67y::::res://classes/spawnpoint.tscn<>uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>uid://c6xp3un77ongj::::res://assets/metal2.jpg<>uid://3cuw4l80rgui::::res://assets/metal.jpg<>uid://c7qwlpa75x88c::::res://assets/a.png
+weaponbase.gd::GDScript::-1::1718216860::0::1::::<>Node3D<>::
+::res://linux/::1718215545
+::res://scenes/::1718657384
+barrel.tscn::PackedScene::3290056964192591958::1718657384::0::1::::<><>::uid://c41i6fxrb8j4d::::res://assets/pexels-scottwebb-2117937.jpg<>uid://de0weem1pd67y::::res://classes/spawnpoint.tscn<>uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>uid://c6xp3un77ongj::::res://assets/metal2.jpg<>uid://boixaq7472djr::::res://assets/metal.jpg<>uid://c7qwlpa75x88c::::res://assets/a.png
 Empty scene.tscn::PackedScene::8376312248054403878::1712806868::0::1::::<><>::
 firing range.tscn::PackedScene::9024361267217318717::1716937023::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>uid://3cuw4l80rgui::::res://assets/metal.jpg<>uid://de0weem1pd67y::::res://classes/spawnpoint.tscn<>uid://bcfgnv57pghjt::::res://assets/10_m_Air_Rifle_target.svg.png
 fuse.tscn::PackedScene::8509112059304360219::1717525684::0::1::::<><>::
-playable scene.tscn::PackedScene::5664415139704904680::1718166166::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>uid://3cuw4l80rgui::::res://assets/metal.jpg<>uid://de0weem1pd67y::::res://classes/spawnpoint.tscn<>uid://c6xp3un77ongj::::res://assets/metal2.jpg
-::res://ui/::1718166435
-buy menu.tscn::PackedScene::284019869186018978::1718166166::0::1::::<><>::
+playable scene.tscn::PackedScene::5664415139704904680::1718657384::0::1::::<><>::uid://d16rwkt574n4s::::res://classes/gameSurface.tscn<>uid://boixaq7472djr::::res://assets/metal.jpg<>uid://de0weem1pd67y::::res://classes/spawnpoint.tscn<>uid://c6xp3un77ongj::::res://assets/metal2.jpg
+somnambulist.tscn::PackedScene::6747091597729561642::1718657384::0::1::::<><>::uid://boixaq7472djr::::res://assets/metal.jpg<>uid://ckenibrj8p5ea::::res://assets/rust.tres<>uid://de0weem1pd67y::::res://classes/spawnpoint.tscn
+::res://ui/::1718657384
+buy menu.tscn::PackedScene::284019869186018978::1718657384::0::1::::<><>::
 main menu.tscn::PackedScene::176360083397563743::1717629882::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg<>uid://bitf3f8hujhok::::res://assets/pikachu.png
 pause menu.tscn::PackedScene::4582776433618976957::1716834221::0::1::::<><>::uid://boou4dol2b4v7::::res://assets/thumbsup.jpg
-player hud.tscn::PackedScene::3989999454422294155::1718166166::0::1::::<><>::uid://c67skss10c7mf::::res://assets/anchor.png<>uid://chgg0w0akk1ch::::res://assets/crosshair.png<>uid://vyjwe05dj6hf::::res://assets/indicator.png
+player hud.tscn::PackedScene::3989999454422294155::1718657384::0::1::::<><>::uid://c67skss10c7mf::::res://assets/anchor.png<>uid://chgg0w0akk1ch::::res://assets/crosshair.png<>uid://vyjwe05dj6hf::::res://assets/indicator.png
 settings menu.tscn::PackedScene::3279499615582436139::1717716446::0::1::::<><>::
-spectator hud.tscn::PackedScene::4159546957078101877::1718166435::0::1::::<><>::
+spectator hud.tscn::PackedScene::4159546957078101877::1718657384::0::1::::<><>::
 ::res://weapons/::1717978430
-::res://weapons/ak12/::1718166165
-ak12.tscn::PackedScene::6057950990840864630::1718166165::0::1::::<><>::uid://bvrbi4j40jude::::res://weapons/ak12/ak_sfx_1.mp3<>res://classes/weaponbase.gd
+::res://weapons/ak12/::1718657383
+ak12.tscn::PackedScene::6057950990840864630::1718657383::0::1::::<><>::uid://bvrbi4j40jude::::res://weapons/ak12/ak_sfx_1.mp3<>res://classes/weaponbase.gd
 ak drop.tscn::PackedScene::3076172708515409220::1717472135::0::1::::<><>::
 ak_sfx_1.mp3::AudioStreamMP3::3895557363686609522::1716937155::1716937162::1::::<><>::
-::res://weapons/bomb/::1718166166
+::res://weapons/bomb/::1718657384
 beep.mp3::AudioStreamMP3::4442345931121112982::1717978940::1717978941::1::::<><>::
-bomb.tscn::PackedScene::5341820895558890617::1718166166::0::1::::<><>::uid://b4j512pjb6rg5::::res://weapons/bomb/beep.mp3
-::res://weapons/glock/::1718166166
+bomb.tscn::PackedScene::5341820895558890617::1718657384::0::1::::<><>::uid://b4j512pjb6rg5::::res://weapons/bomb/beep.mp3
+::res://weapons/glock/::1718657383
 glock drop.tscn::PackedScene::7373723136645798360::1717716446::0::1::::<><>::
-glock.tscn::PackedScene::2398482040883963623::1718166166::0::1::::<><>::res://classes/weaponbase.gd<>uid://wflo0sb33gra::::res://weapons/glock/pistol_sfx_1.mp3
+glock.tscn::PackedScene::2398482040883963623::1718657383::0::1::::<><>::res://classes/weaponbase.gd<>uid://wflo0sb33gra::::res://weapons/glock/pistol_sfx_1.mp3
 pistol_sfx_1.mp3::AudioStreamMP3::1555170677816304922::1716937174::1716937174::1::::<><>::
-::res://weapons/grenades/::1718166166
+::res://weapons/grenades/::1718657384
 flash_display.tscn::PackedScene::4740242979182370962::1714692850::0::1::::<><>::
 flash_grenade.tscn::PackedScene::2145406054673336815::1714692866::0::1::::<><>::uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
 grenade_sfx_1.mp3::AudioStreamMP3::8088879216374641223::1716937029::1716937029::1::::<><>::
 grenade_sfx_2.mp3::AudioStreamMP3::3825601642566427207::1716937029::1716937029::1::::<><>::
-he_display.tscn::PackedScene::8290722578379632895::1718166166::0::1::::<><>::
-he_grenade.tscn::PackedScene::838789057038222124::1718166166::0::1::::<><>::
+he_display.tscn::PackedScene::8290722578379632895::1718657383::0::1::::<><>::
+he_grenade.tscn::PackedScene::838789057038222124::1718657384::0::1::::<><>::
 smoke_display.tscn::PackedScene::684961976811280766::1714692842::0::1::::<><>::
 smoke_grenade.tscn::PackedScene::5323641309905715103::1714692859::0::1::::<><>::uid://ke4m2gyndm6k::::res://weapons/ak12/ak47-sfx-3.wav
-::res://weapons/healing/::1718166166
-healthkit.tscn::PackedScene::5432237013671000286::1718166166::0::1::::<><>::
-sealant.tscn::PackedScene::4335281416155055252::1718166166::0::1::::<><>::
-::res://weapons/vector/::1718166166
+::res://weapons/healing/::1718657384
+healthkit.tscn::PackedScene::5432237013671000286::1718657384::0::1::::<><>::
+sealant.tscn::PackedScene::4335281416155055252::1718657384::0::1::::<><>::
+::res://weapons/vector/::1718657383
 smg_sfx_1.mp3::AudioStreamMP3::6971798867161072048::1716937186::1716937186::1::::<><>::
 vector drop.tscn::PackedScene::4819068018828275688::1717472158::0::1::::<><>::
-vector.tscn::PackedScene::1985506697532872956::1718166166::0::1::::<><>::uid://c6lgrkd5m54lw::::res://weapons/vector/smg_sfx_1.mp3<>res://classes/weaponbase.gd
+vector.tscn::PackedScene::1985506697532872956::1718657383::0::1::::<><>::uid://c6lgrkd5m54lw::::res://weapons/vector/smg_sfx_1.mp3<>res://classes/weaponbase.gd
 ::res://windows/::1718166355

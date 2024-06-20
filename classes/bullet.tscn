@@ -65,7 +65,7 @@ func _physics_process(delta):
 				
 				if multiplayer.get_unique_id() == 1:
 					_player.damage(min(mass * (1 - ((dist_travelled - effective_range) / effective_range)), mass) * _shape.damage, tearing, _shape.damage == 2)
-				effective_range -= 8
+				effective_range -= 10
 				
 				var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
 				Gamemanager.add_child(blood)
@@ -76,10 +76,6 @@ func _physics_process(delta):
 					blood.rotate(blood.global_basis.y.cross(-velocity).normalized(), acos(blood.global_basis.y.dot(-velocity.normalized())))
 		
 		else:
-			if \"strength\" in _shape:
-				effective_range -= _shape.strength
-			else:
-				effective_range -= 5
 			var impact = preload(\"res://classes/bullet impact.tscn\").instantiate()
 			Gamemanager.add_child(impact)
 			impact.global_position = global_position

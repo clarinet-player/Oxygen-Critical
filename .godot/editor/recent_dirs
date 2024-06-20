@@ -1,3 +1,4 @@
+res://scenes
 C:/Users/caleb/OneDrive/Documents/space-game/linux
 C:/Users/caleb/OneDrive/Documents/space-game/windows
 res://assets
@@ -7,7 +8,6 @@ res://autoloads
 res://weapons
 res://weapons/healing
 res://weapons/grenades
-res://scenes
 res://weapons/glock
 res://weapons/vector
 res://weapons/ak12
