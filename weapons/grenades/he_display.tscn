@@ -182,14 +182,14 @@ transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
 script = SubResource("GDScript_gf578")
 
 [node name="Sphere" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.00846172, 0, 0.126562, 0, 0.126845, 0, -0.126562, 0, 0.00846172, 0.905817, -0.365678, -0.808374)
+transform = Transform3D(-0.0438636, 0, 0.119019, 0, 0.126845, 0, -0.119019, 0, -0.0438636, 0.51428, -0.365678, -0.67945)
 mesh = SubResource("ArrayMesh_ysjm0")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_ynf1o")
 surface_material_override/1 = SubResource("StandardMaterial3D_rli6m")
 
 [node name="Cube" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.0667093, 0, 0.997773, 0, 1, 0, -0.997773, 0, 0.0667093, 0.899934, -0.317238, -0.720375)
+transform = Transform3D(-0.345806, 0, 0.938307, 0, 1, 0, -0.938307, 0, -0.345806, 0.544779, -0.317238, -0.596696)
 mesh = SubResource("ArrayMesh_y0hof")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_5lfyk")

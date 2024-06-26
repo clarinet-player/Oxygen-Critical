@@ -33,7 +33,7 @@ func _spawn_player(_id):
 
 [sub_resource type="Environment" id="Environment_0jl7m"]
 
-[node name="Fuse" type="Node3D"]
+[node name="Fuse" type="Node3D" groups=["Levels"]]
 script = SubResource("GDScript_1vli5")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]

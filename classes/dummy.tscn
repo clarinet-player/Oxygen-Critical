@@ -1,0 +1,61 @@
+[gd_scene load_steps=9 format=3 uid="uid://b1sfyblcbieuw"]
+
+[ext_resource type="PackedScene" uid="uid://c2hluyirbi4rf" path="res://classes/hitbox.tscn" id="1_km88m"]
+
+[sub_resource type="GDScript" id="GDScript_jdio7"]
+script/source = "extends RigidBody3D
+
+"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_yc38k"]
+radius = 0.25
+height = 1.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nd1o7"]
+albedo_color = Color(0.6, 0, 0, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_fd3gb"]
+resource_local_to_scene = true
+material = SubResource("StandardMaterial3D_nd1o7")
+radius = 0.25
+height = 1.2
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_rxust"]
+radius = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_e7w4k"]
+albedo_color = Color(0.6, 0, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_yehdv"]
+resource_local_to_scene = true
+material = SubResource("StandardMaterial3D_e7w4k")
+radius = 0.2
+height = 0.4
+
+[node name="Dummy" type="RigidBody3D"]
+collision_layer = 2
+collision_mask = 0
+freeze = true
+script = SubResource("GDScript_jdio7")
+
+[node name="Hitbox" parent="." node_paths=PackedStringArray("player") instance=ExtResource("1_km88m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.150896, 0)
+shape = SubResource("CapsuleShape3D_yc38k")
+player = NodePath("..")
+damage = 1.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.150347, 0)
+mesh = SubResource("CapsuleMesh_fd3gb")
+skeleton = NodePath("../../PlayerBody")
+
+[node name="Hitbox2" parent="." node_paths=PackedStringArray("player") instance=ExtResource("1_km88m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6533, 0)
+shape = SubResource("SphereShape3D_rxust")
+player = NodePath("..")
+damage = 2.0
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.653123, 0)
+mesh = SubResource("SphereMesh_yehdv")
+skeleton = NodePath("../../PlayerBody")

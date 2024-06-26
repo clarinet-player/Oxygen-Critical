@@ -113,7 +113,7 @@ func _physics_process(delta):
 	
 	
 	# Alt Fire
-	if Input.is_action_just_pressed("F"):
+	if Input.is_action_just_pressed("Mouse2"):
 		firemode += 1
 		if firemode >= firerate.size():
 			firemode = 0
@@ -147,17 +147,16 @@ func _physics_process(delta):
 	# Firing
 	if _burst > 0 and time > _fire_time_ms + _firedelay:
 		
-		var inaccuracy := 2.0
 		var player = $"../.."
-		if !player.is_anchored() or player.velocity.length() > 0.1:
-			inaccuracy = 7.0
-		inaccuracy = (inaccuracy + _heat) * spray / 490
+		var inaccuracy = player.velocity.length()
+		if !player.is_anchored():
+			inaccuracy = 3.0
+		inaccuracy = (inaccuracy + _heat) * spray / 400
 		
 		if Gamemanager.mp_active:
 			fire.rpc(get_parent().global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy * randf()).rotated(global_basis.z.normalized(), randf_range(0, TAU))).normalized())
 		else:
 			fire(get_parent().global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy * randf()).rotated(global_basis.z.normalized(), randf_range(0, TAU))))
-		
 		
 		
 		if !player.is_anchored() or player.velocity.length() > 1:

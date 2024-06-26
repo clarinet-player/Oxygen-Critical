@@ -191,7 +191,7 @@ top_radius = 0.4
 bottom_radius = 0.4
 height = 13.0
 
-[node name="Somnambulist" type="Node3D"]
+[node name="Somnambulist" type="Node3D" groups=["Levels"]]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_32rex")

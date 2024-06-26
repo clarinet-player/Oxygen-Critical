@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bq3u0xb10re6"]
+[gd_scene load_steps=10 format=3 uid="uid://bq3u0xb10re6"]
 
 [ext_resource type="PackedScene" uid="uid://c2hluyirbi4rf" path="res://classes/hitbox.tscn" id="1_2yv3f"]
 
@@ -14,17 +14,13 @@ signal damaged
 
 
 #region Variables
-const walk_acceleration : float = 25.0
+const walk_acceleration : float = 35.0
 const walk_friction : float = 35.0
-const walk_max_speed : float = 3.0
-
-const sprint_acceleration : float = 35.0
-const sprint_max_speed : float = 5.0
-const slide_friction : float = 1.0
+const walk_max_speed : float = 5.0
 
 const jump_power : float = 2.5
 
-const grapple_range : float = 30.0
+const grapple_range : float = 40.0
 const grapple_acceleration : float = 10.0
 const grapple_max_speed : float = 7
 
@@ -36,21 +32,14 @@ var jump_stamina : float = 1.0
 
 var velocity : Vector3
 
+var walking := false
+
+var oriented := true
+
 var _anchored_shape : CollisionShape3D
 var _anchor_point_l : Vector3
 var _grapple_point : Vector3
 var _surface_normal : Vector3
-
-var _reorient := true
-
-enum move_type {
-	IDLE,
-	WALKING,
-	SPRINTING,
-	SLIDING
-}
-
-var _movement_state : move_type = move_type.IDLE
 
 var health : float = 100
 var breach : float = 0
@@ -145,11 +134,9 @@ func _input(event):
 	
 	# Rotating to follow mouse
 	if event is InputEventMouseMotion:
-		if _anchored_shape and _reorient:
-			
+		if oriented and _anchored_shape:
 			rotate(_surface_normal, event.relative.x * mouse_sensitivity * -0.001)
 			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
-			
 		else:
 			rotate(global_transform.basis.y.normalized(), event.relative.x * mouse_sensitivity * -0.001)
 			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
@@ -160,16 +147,36 @@ func _process(delta):
 	if Gamemanager.mp_active and !is_multiplayer_authority():
 		return
 	
+	if Input.is_action_pressed(\"Control\"):
+		oriented = false
+	else:
+		oriented = _anchored_shape != null
 	
-	#if spawn_time != 0 and _anchored_shape:
-	#	if _reorient:
-	#		hud.set_hud_anchor(true, 0)
-	#	elif acos(_surface_normal.dot(global_basis.x)) < PI / 2:
-	#		hud.set_hud_anchor(true, acos(_surface_normal.dot(global_basis.y)))
-	#	else:
-	#		hud.set_hud_anchor(true, acos(_surface_normal.dot(-global_basis.y)) + PI)
-	#else:
-	#	hud.set_hud_anchor(false, 0)
+	
+	if _anchored_shape:
+		if oriented:
+			hud.set_hud_anchor(true, 0)
+		elif acos(_surface_normal.dot(global_basis.x)) < PI / 2:
+			hud.set_hud_anchor(true, acos(_surface_normal.dot(global_basis.y)))
+		else:
+			hud.set_hud_anchor(true, acos(_surface_normal.dot(-global_basis.y)) + PI)
+	else:
+		hud.set_hud_anchor(false, 0)
+	
+	
+	if _anchored_shape and oriented:
+		# Adjust roll to avoid gimbal lock
+		var _roll : Vector3 = global_transform.basis.z
+		var _up : Vector3 = global_transform.basis.y
+		var _target : Vector3 = (_surface_normal - _surface_normal.dot(_roll) * _roll).normalized()
+		var _angle : float = acos(_up.dot(_target))
+		var _axis = _up.cross(_target)
+		var _look_angle = _surface_normal.cross(-global_basis.z).length()
+			
+		if !_axis.is_zero_approx():
+			rotate(_axis.normalized(), _angle * _look_angle * 10 * delta)
+		else:
+			rotate(global_basis.z, _angle * _look_angle * 10 * delta)
 	
 	
 	if Input.is_action_just_pressed(\"B\") and !UiManager.paused and Time.get_ticks_msec() - spawn_time < 20000:
@@ -191,7 +198,7 @@ func _process(delta):
 			camera.remove_child(active_item)
 			active_item = null
 	
-	elif Input.is_action_just_pressed(\"E\"):
+	if Input.is_action_just_pressed(\"F\"):
 		if health < 100.0:
 			for item in inventory:
 				if item.item_id == 6:
@@ -271,10 +278,6 @@ func _physics_process(delta : float):
 			print(\"player disconnected: \", name)
 			queue_free()
 		
-		#if multiplayer.get_unique_id() == 1 and Time.get_ticks_msec() - health_update_time > 1000:
-		#	set_health.rpc_id(int(str(name)), health, breach, false)
-		#	health_update_time = Time.get_ticks_msec()
-		
 		health -= breach * delta
 		if health < 0.1:
 			die.rpc()
@@ -295,24 +298,10 @@ func _physics_process(delta : float):
 	
 	
 	if _anchored_shape:
-		
-		# Modifying Movement State
-		if Input.is_action_pressed(\"Control\"):
-			if _movement_state != move_type.SLIDING:
-				_movement_state = move_type.SLIDING
-		else:
-			_reorient = true
-			if _movement_state == move_type.SLIDING:
-				_movement_state = move_type.IDLE
-			
 		if (Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\")) and !UiManager.paused and !using_bomb:
-			if _movement_state == move_type.IDLE:
-				_movement_state = move_type.WALKING
-		elif _movement_state != move_type.SLIDING:
-			_movement_state = move_type.IDLE
-		
-		if Input.is_action_pressed(\"Shift\") and _movement_state == move_type.WALKING:
-			_movement_state = move_type.SPRINTING
+			walking = true
+		else:
+			walking = false
 		
 		
 		# Move to follow our anchor
@@ -323,29 +312,15 @@ func _physics_process(delta : float):
 			global_rotate(ang_vel.normalized(), ang_vel.length() * delta)
 			_surface_normal = _surface_normal.rotated(ang_vel.normalized(), ang_vel.length() * delta)
 		
-		# Adjust roll to avoid gimbal lock
-		if _reorient:
-			var _roll : Vector3 = global_transform.basis.z
-			var _up : Vector3 = global_transform.basis.y
-			var _adjusted_normal : Vector3 = (_surface_normal - _surface_normal.dot(_roll) * _roll).normalized()
-			var _roll_angle : float = acos(_up.dot(_adjusted_normal))
-			var _axis = _up.cross(_adjusted_normal)
-			
-			if !_axis.is_zero_approx():
-				rotate(_axis.normalized(), _roll_angle * 7 * delta)
-			else:
-				rotate(global_basis.z, _roll_angle * 7 * delta)
-		
 		
 		# Jumping
 		if Input.is_action_just_pressed(\"Space\") and !UiManager.paused and !using_bomb:
 			
 			detach()
-			_reorient = false
 			velocity += lerp(-global_basis.z, _surface_normal, Settings.jump_angle).normalized() * jump_power * jump_stamina
 			jump_stamina = 0
 			
-			global_position = camera.global_position
+			move_and_collide(camera.global_position - global_position)
 			move_and_collide(velocity.normalized())
 	
 	
@@ -362,12 +337,10 @@ func _physics_process(delta : float):
 					play_sound.rpc(3)
 				
 				if _anchored_shape:
-					global_position = camera.global_position
+					move_and_collide(camera.global_position - global_position)
 					move_and_collide(-global_basis.z)
 				detach()
 				_grapple_point = _raycast.position
-				
-				
 	
 	
 	if _anchored_shape:
@@ -399,7 +372,7 @@ func _physics_process(delta : float):
 
 func _anchored_move(delta : float):
 	
-	if velocity.length() > 3.5 and Time.get_ticks_msec() - sound_time > 500:
+	if walking and Time.get_ticks_msec() - sound_time > 500:
 		sound_time = Time.get_ticks_msec()
 		play_sound.rpc(1)
 	
@@ -410,38 +383,18 @@ func _anchored_move(delta : float):
 	var _input := Input.get_vector(\"A\", \"D\", \"S\", \"W\")
 	
 	# Getting movement input
-	match _movement_state:
+	if walking:
+		velocity += (((_side * _input.x) + (_forward * _input.y))).normalized() * delta * walk_acceleration
+		if velocity.length() > walk_max_speed + walk_friction * delta:
+			velocity = velocity.limit_length(velocity.length() - walk_friction * delta)
+		else:
+			velocity = velocity.limit_length(walk_max_speed)
 		
-		move_type.IDLE:
-			
-			if velocity.length() < walk_friction * delta:
-				velocity = Vector3.ZERO
-			else:
-				velocity = velocity.limit_length(velocity.length() - walk_friction * delta)
-		
-		move_type.WALKING:
-			
-			velocity += ((_side * _input.x) + (_forward * _input.y)) * delta * walk_acceleration
-			if velocity.length() > walk_max_speed + walk_friction * delta:
-				velocity = velocity.limit_length(velocity.length() - walk_friction * delta)
-			else:
-				velocity = velocity.limit_length(walk_max_speed)
-		
-		move_type.SPRINTING:
-			
-			velocity += ((_side * _input.x) + (_forward * _input.y)) * delta * sprint_acceleration
-			if velocity.length() > sprint_max_speed + walk_friction * delta:
-				velocity = velocity.limit_length(velocity.length() - walk_friction * delta)
-			else:
-				velocity = velocity.limit_length(sprint_max_speed)
-		
-		move_type.SLIDING:
-			
-			velocity += _forward * _forward.dot(Gamemanager.get_gravity_vector()) + _side * _side.dot(Gamemanager.get_gravity_vector())
-			if velocity.length() < slide_friction * delta:
-				velocity = Vector3.ZERO
-			else:
-				velocity = velocity.limit_length(velocity.length() - slide_friction * delta)
+	else:
+		if velocity.length() < walk_friction * delta:
+			velocity = Vector3.ZERO
+		else:
+			velocity = velocity.limit_length(velocity.length() - walk_friction * delta)
 	
 	
 	if velocity.is_zero_approx():
@@ -461,7 +414,6 @@ func _anchored_move(delta : float):
 		_time -= delta * (_collision.get_travel().length() / velocity.length())
 		
 		if _shape == _anchored_shape and acos(_surface_normal.dot(_normal)) <= 1.5:
-			
 			_surface_normal = _normal
 			_forward = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
 			_side = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
@@ -469,17 +421,14 @@ func _anchored_move(delta : float):
 		
 		
 		else:
-			velocity = velocity - velocity.dot(_normal) * _normal
+			velocity -= velocity.dot(_normal) * _normal
 		
 		
-		if _loops > 2:
-			global_translate(_surface_normal)
 		if _loops > 4:
 			break
 		
 		_loops += 1
 		_collision = move_and_collide(velocity * _time)
-	
 	
 	# Checking we're still on the ground
 	_collision = move_and_collide(_surface_normal * -100 * delta)
@@ -488,6 +437,7 @@ func _anchored_move(delta : float):
 		_anchor_point_l = _anchored_shape.to_local(self.global_position)
 		_surface_normal = _collision.get_normal()
 	else:
+		global_translate(_surface_normal * 100 * delta)
 		detach()
 
 
@@ -524,7 +474,7 @@ func _free_move(delta : float):
 			_grapple_point = Vector3.ZERO
 		
 		if _collision.get_travel().length_squared() < 0.1:
-			global_translate(_normal)
+			global_translate(_normal * 0.01)
 		
 		#var _body = _shape.get_parent()
 		#if \"centrifuge_angular_velocity\" in _body:
@@ -551,27 +501,21 @@ func attach(_shape : CollisionShape3D, _normal : Vector3):
 	
 	velocity = velocity - velocity.dot(_surface_normal) * _surface_normal
 	
-	var _body = _shape.get_parent()
-	if \"centrifuge_angular_velocity\" in _body:
-		velocity -= (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
+	#var _body = _shape.get_parent()
+	#if \"centrifuge_angular_velocity\" in _body:
+	#	velocity -= (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
 
 
 
 func detach():
-	if !_anchored_shape:
-		return
-	
-	var _forward : Vector3 = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
-	var _side : Vector3 = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
-	
-	var _body = _anchored_shape.get_parent()
-	
-	if \"centrifuge_angular_velocity\" in _body:
-		velocity += (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
+	#if !_anchored_shape:
+	#	return
+	#
+	#var _body = _anchored_shape.get_parent()
+	#if \"centrifuge_angular_velocity\" in _body:
+	#	velocity += (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
 	
 	_anchored_shape = null
-	
-	_movement_state = move_type.IDLE
 
 
 
@@ -649,12 +593,16 @@ func set_team(new_team : int):
 	elif team == 1:
 		var mat = StandardMaterial3D.new()
 		mat.albedo_color = Color(0, 0, 0.6)
+		mat.emission_enabled = true
+		mat.emission = Color(0, 0, 0.1)
 		$Hitbox/MeshInstance3D.mesh.material = mat
 		$Hitbox/MeshInstance3D2.mesh.material = mat
 	
 	elif team == 2:
 		var mat = StandardMaterial3D.new()
 		mat.albedo_color = Color(0.6, 0, 0)
+		mat.emission_enabled = true
+		mat.emission = Color(0.1, 0, 0)
 		$Hitbox/MeshInstance3D.mesh.material = mat
 		$Hitbox/MeshInstance3D2.mesh.material = mat
 	
@@ -717,8 +665,12 @@ func die():
 radius = 0.25
 height = 1.2
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b7v7a"]
+emission_enabled = true
+
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_r400h"]
 resource_local_to_scene = true
+material = SubResource("StandardMaterial3D_b7v7a")
 radius = 0.25
 height = 1.2
 
@@ -768,10 +720,10 @@ shape = SubResource("SphereShape3D_ufnhc")
 [node name="SpotLight3D" type="SpotLight3D" parent="Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0406958)
 light_color = Color(0.858824, 0.882353, 0.968627, 1)
-light_energy = 0.025
+light_energy = 0.04
 light_volumetric_fog_energy = 0.0
-spot_range = 10.0
-spot_angle = 70.0
+spot_range = 15.0
+spot_angle = 60.0
 spot_angle_attenuation = 1.41421
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Camera3D"]

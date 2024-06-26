@@ -9,6 +9,7 @@ script/source = "extends Control
 
 func _connect():
 	Gamemanager.connect_player()
+	$VBoxContainer/Multiplayer.text = \"Connecting..\"
 
 
 func _singleplayer():
@@ -18,6 +19,10 @@ func _singleplayer():
 
 func _quit():
 	get_tree().quit()
+
+
+func _set_multiplayer_label(new : String):
+	$VBoxContainer/Multiplayer.text = new
 "
 
 [node name="MainMenu" type="Control"]
