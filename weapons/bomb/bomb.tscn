@@ -50,7 +50,7 @@ func _process(delta):
 
 
 func _physics_process(delta):
-	if Time.get_ticks_msec() - start_time >= fuse_time:
+	if active and Time.get_ticks_msec() - start_time >= fuse_time:
 		Gamemanager.bombsites[site][1] = 2
 		active = false
 		$OmniLight3D.light_energy = 0

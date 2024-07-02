@@ -201,7 +201,7 @@ func _process(delta):
 		if bomb_site >= 0:
 			using_bomb = true
 			bomb_time = Time.get_ticks_msec()
-			hud.start_progress(3.0, \"Bomb\")
+			hud.start_progress(2.0, \"Bomb\")
 			if active_item:
 				camera.remove_child(active_item)
 				active_item = null
@@ -215,7 +215,7 @@ func _process(delta):
 		if bomb_site >= 0:
 			using_bomb = true
 			bomb_time = Time.get_ticks_msec()
-			hud.start_progress(5.0, \"Bomb\")
+			hud.start_progress(4.0, \"Bomb\")
 			if active_item:
 				camera.remove_child(active_item)
 				active_item = null
