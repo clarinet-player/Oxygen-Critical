@@ -65,12 +65,12 @@ func _physics_process(delta):
 		audio.play()
 		if Settings.particles_enabled:
 			particles.emitting = true
-		light.light_energy = 0.2
+		light.light_energy = 0.3
 		
 		var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()
 		_smoke.size = Vector3(0.4, 0.4, 0.4)
 		_smoke.fade_speed = 0.1
-		_smoke.start_density = 0.08
+		_smoke.start_density = 0.07
 		Gamemanager.add_child(_smoke)
 		_smoke.global_position = global_position
 		
@@ -258,5 +258,4 @@ light_energy = 0.0
 light_volumetric_fog_energy = 2.0
 shadow_enabled = true
 omni_range = 15.0
-omni_attenuation = -0.5
 omni_shadow_mode = 0

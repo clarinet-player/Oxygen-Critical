@@ -3,6 +3,8 @@
 [sub_resource type="GDScript" id="GDScript_w478l"]
 script/source = "extends Node
 
+
+
 var peer = ENetMultiplayerPeer.new()
 var local_player
 var freecam
@@ -13,7 +15,6 @@ var game_running := false
 var round_running := false
 
 var playable_area : AABB
-var bombsite : AABB
 
 
 
@@ -69,9 +70,9 @@ func _on_connect(id : int):
 		print(\"starting game loop\")
 		_game_loop()
 	elif !game_running:
-		Gamemanager.ui_message.rpc(0)
+		ui_message.rpc(0)
 	else:
-		Gamemanager.ui_message.rpc_id(id, 4)
+		ui_message.rpc_id(id, 4)
 
 func _on_disconnect(id):
 	print(\"player disconnected: \", id)
@@ -144,7 +145,7 @@ func _game_loop():
 		
 		if players.size() < 2:
 			game_running = false
-			ui_message(0)
+			ui_message.rpc(0)
 
 
 
@@ -172,20 +173,6 @@ func find_spawnpoint(exclude, player_team):
 			best_point = point
 	
 	return best_point
-
-
-
-#@rpc(\"any_peer\", \"call_remote\", \"unreliable\")
-#func timeout():
-#	mp_active = false
-#	for child in get_children():
-#		if child.name == \"MultiplayerSpawner\":
-#			continue
-#		child.queue_free()
-#		remove_child(child)
-#	peer.close()
-#	get_tree().change_scene_to_file(\"res://scenes/Empty scene.tscn\")
-#	UiManager.set_ui(1)
 
 
 
@@ -233,7 +220,6 @@ func reset():
 			continue
 		child.queue_free()
 		remove_child(child)
-
 "
 
 [node name="GameManager" type="Node"]

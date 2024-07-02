@@ -1,13 +1,14 @@
-[gd_scene load_steps=23 format=3 uid="uid://c3elu3pso7i6m"]
+[gd_scene load_steps=24 format=3 uid="uid://c3elu3pso7i6m"]
 
 [ext_resource type="Texture2D" uid="uid://boixaq7472djr" path="res://assets/metal.jpg" id="1_8njyx"]
 [ext_resource type="PackedScene" uid="uid://d16rwkt574n4s" path="res://classes/gameSurface.tscn" id="1_g1glh"]
 [ext_resource type="Material" uid="uid://dhs8hwst8a0pp" path="res://assets/metal_walls.tres" id="1_n7bg7"]
 [ext_resource type="PackedScene" uid="uid://de0weem1pd67y" path="res://classes/spawnpoint.tscn" id="3_evexw"]
 [ext_resource type="Material" uid="uid://y75gmnjjavok" path="res://assets/somnambulist.tres" id="4_xkskf"]
-[ext_resource type="Texture2D" uid="uid://c87t5y8rb02y4" path="res://assets/site.png" id="5_gw0wv"]
+[ext_resource type="Texture2D" uid="uid://5rsljlpagxub" path="res://assets/site.png" id="5_gw0wv"]
 [ext_resource type="Texture2D" uid="uid://drnhy025ddo1b" path="res://assets/b.png" id="6_ebsfm"]
 [ext_resource type="Texture2D" uid="uid://c7qwlpa75x88c" path="res://assets/a.png" id="6_rnt4a"]
+[ext_resource type="Texture2D" uid="uid://05ddnnkibkgu" path="res://assets/Untitled.png" id="6_s1cbm"]
 
 [sub_resource type="GDScript" id="GDScript_yshdq"]
 script/source = "extends Node3D
@@ -1136,9 +1137,10 @@ shape = SubResource("ConcavePolygonShape3D_ecdrf")
 [node name="Sites" type="Node3D" parent="."]
 
 [node name="Decal" type="Decal" parent="Sites"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.57956, 15.0378, 8.68646)
-size = Vector3(12.0717, 0.00714111, 12.0861)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.59728, 15.0378, 8.68646)
+size = Vector3(12.1071, 0.00714111, 12.0861)
 texture_albedo = ExtResource("5_gw0wv")
+texture_orm = ExtResource("6_s1cbm")
 
 [node name="Sprite3D" type="Sprite3D" parent="Sites"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.45088, 17.3517, 8.78756)
@@ -1151,9 +1153,10 @@ texture = ExtResource("6_ebsfm")
 script = SubResource("GDScript_ihsfg")
 
 [node name="Decal2" type="Decal" parent="Sites"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.4323, -4.96152, 5.68453)
-size = Vector3(12.0717, 0.00714111, 12.0476)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.4224, -4.96152, 5.70757)
+size = Vector3(12.1218, 0.00714111, 12.0558)
 texture_albedo = ExtResource("5_gw0wv")
+texture_orm = ExtResource("6_s1cbm")
 
 [node name="Sprite3D2" type="Sprite3D" parent="Sites"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.561, -2.64764, 5.78214)

@@ -18,3 +18,6 @@ res://scenes/parkour!.tscn
 res://ui/main menu.tscn
 res://classes/bullet impact.tscn
 res://classes/blood spray.tscn
+res://autoloads/ui manager.tscn
+res://ui/pause menu.tscn
+res://classes/gameSurface.tscn

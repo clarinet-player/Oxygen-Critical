@@ -13,6 +13,8 @@ var buymenu
 
 var active_menu
 
+var prev_menu := 6
+
 var paused := true
 
 
@@ -37,10 +39,7 @@ func _process(delta):
 		if active_menu == mainmenu:
 			get_tree().quit()
 		elif active_menu == pausemenu:
-			if Gamemanager.local_player:
-				set_ui(3)
-			else:
-				set_ui(6)
+			set_ui(prev_menu)
 		elif active_menu == buymenu:
 			set_ui(3)
 		elif active_menu == settingsmenu:
@@ -54,6 +53,10 @@ func set_ui(ui : int):
 	if DisplayServer.get_name() == \"headless\":
 		return
 	
+	if ui == 2 and active_menu == playerhud:
+		prev_menu = 3
+	elif ui == 2 and active_menu == spechud:
+		prev_menu = 6
 	if active_menu:
 		remove_child(active_menu)
 	
