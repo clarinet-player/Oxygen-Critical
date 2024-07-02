@@ -1,5 +1,7 @@
-res://scenes/barrel.tscn
 res://autoloads/gamemanager.tscn
+res://assets/metal_walls.tres
+res://assets/somnambulist.tres
+res://scenes/somnambulist.tscn
 res://classes/player.tscn
 res://weapons/ak12/ak12.tscn
 res://weapons/vector/vector.tscn
@@ -8,13 +10,11 @@ res://weapons/grenades/he_display.tscn
 res://weapons/grenades/he_grenade.tscn
 res://weapons/healing/sealant.tscn
 res://weapons/healing/healthkit.tscn
+res://scenes/barrel.tscn
 res://classes/bullet.tscn
 res://ui/player hud.tscn
 res://weapons/bomb/bomb.tscn
 res://scenes/parkour!.tscn
 res://ui/main menu.tscn
-res://scenes/somnambulist.tscn
-res://assets/metal_walls.tres
-res://assets/somnambulist.tres
 res://classes/bullet impact.tscn
 res://classes/blood spray.tscn

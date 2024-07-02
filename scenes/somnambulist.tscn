@@ -42,83 +42,11 @@ func _load_settings():
 			light.shadow_enabled = Settings.shadows_enabled
 
 
-
 func spawn_player(id : int):
 	var new_player = preload(\"res://classes/player.tscn\").instantiate()
-	new_player.name = str(id)
 	
 	add_child(new_player)
-	
-	await get_tree().create_timer(0.1).timeout
-	
-	var team1 := 0
-	var team2 := 0
-	for player in get_tree().get_nodes_in_group(\"Players\"):
-		if player.team == 1:
-			team1 += 1
-		elif player.team == 2:
-			team2 += 1
-	if team1 > team2:
-		new_player.set_team.rpc(2)
-	else:
-		new_player.set_team.rpc(1)
-
-
-
-func on_connect(id):
-	if players.size() >= 2 and !game_running:
-		print(\"starting game loop\")
-		_game_loop()
-	elif !game_running:
-		Gamemanager.ui_message.rpc(0)
-	else:
-		Gamemanager.ui_message.rpc_id(id, 4)
-
-func on_disconnect(id):
-	players.erase(id)
-
-
-
-func _game_loop():
-	game_running = true
-	while game_running:
-		
-		# Start of round
-		print(\"round start\")
-		# Spawn players
-		for player in players:
-			spawn_player(player)
-		
-		
-		round_running = true
-		while round_running:
-			await get_tree().create_timer(0.1).timeout
-			
-			if players.size() < 2:
-				round_running = false
-				Gamemanager.ui_message.rpc(0)
-			
-			var team1 := true
-			var team2 := true
-			for player in get_tree().get_nodes_in_group(\"Players\"):
-				if player.team == 1:
-					team1 = false
-				elif player.team == 2:
-					team2 = false
-			if team1:
-				round_running = false
-				Gamemanager.ui_message.rpc(2)
-			elif team2 and !get_node_or_null(\"Bomb\"):
-				round_running = false
-				Gamemanager.ui_message.rpc(1)
-		
-		
-		Gamemanager.reset.rpc()
-		
-		await get_tree().create_timer(2.5).timeout
-		
-		if players.size() < 2:
-			game_running = false
+	new_player.set_team(0)
 "
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hjjoh"]
