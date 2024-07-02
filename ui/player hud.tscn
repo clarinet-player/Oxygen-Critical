@@ -133,6 +133,7 @@ offset_bottom = 16.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("2_h03sm")
+expand_mode = 1
 
 [node name="Wheel" type="Control" parent="."]
 layout_mode = 1

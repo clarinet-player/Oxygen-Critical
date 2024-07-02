@@ -27,6 +27,10 @@ func _ready():
 	_load_settings()
 	
 	Gamemanager.playable_area = AABB(Vector3(-31, -22, -16), Vector3(55, 46, 33))
+	Gamemanager.bombsites = [
+		[AABB(Vector3(10, -3, 0), Vector3(13, 5, 12)), 0],
+		[AABB(Vector3(-12, 15, 3), Vector3(13, 5, 12)), 0]
+	]
 	
 	if !Gamemanager.mp_active:
 		spawn_player(1)
@@ -45,6 +49,7 @@ func spawn_player(id : int):
 	var new_player = preload(\"res://classes/player.tscn\").instantiate()
 	
 	add_child(new_player)
+	new_player.death.connect(spawn_player)
 	new_player.set_team(0)
 "
 
@@ -1236,3 +1241,6 @@ team = 2
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.943275, 0.332013, 0, -0.332013, 0.943275, 9.11422, 3.13464, 20.599)
+
+[node name="Marker3D" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 20.1092, 15)

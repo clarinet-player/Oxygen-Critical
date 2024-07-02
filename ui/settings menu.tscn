@@ -167,9 +167,8 @@ autowrap_mode = 0
 
 [node name="FovSlider" type="HSlider" parent="VBoxContainer"]
 layout_mode = 2
-min_value = 50.0
-max_value = 90.0
-value = 50.0
+min_value = 60.0
+value = 60.0
 
 [node name="SensitivityLabel" type="RichTextLabel" parent="VBoxContainer"]
 layout_mode = 2

@@ -7,7 +7,11 @@ script/source = "extends Node3D
 
 const fuse_time := 25000
 
+
+var site
+
 var start_time := 0
+var active := true
 
 var direction := true
 var value := 0.0
@@ -18,6 +22,9 @@ func _ready():
 
 
 func _process(delta):
+	if !active:
+		return
+	
 	if direction:
 		value += delta * 2
 		if Time.get_ticks_msec() - start_time > 15000:
@@ -42,6 +49,11 @@ func _physics_process(delta):
 	if is_multiplayer_authority():
 		if Time.get_ticks_msec() - start_time >= fuse_time:
 			Gamemanager.end_round.rpc(2)
+
+
+func defuse():
+	active = false
+	$OmniLight3D.light_energy = 0
 "
 
 [sub_resource type="BoxMesh" id="BoxMesh_2algb"]

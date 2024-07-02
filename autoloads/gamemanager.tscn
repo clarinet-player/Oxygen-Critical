@@ -15,6 +15,8 @@ var game_running := false
 var round_running := false
 
 var playable_area : AABB
+var bombsites : Array
+var bombs := Array()
 
 
 
@@ -124,6 +126,14 @@ func _game_loop():
 				round_running = false
 				ui_message.rpc(0)
 			
+			var sites_intact := 0
+			for site in bombsites:
+				if site[1] != 2:
+					sites_intact += 1
+			if sites_intact < bombsites.size() / 2:
+				round_running = false
+				ui_message(2)
+			
 			var team1 := true
 			var team2 := true
 			for player in get_tree().get_nodes_in_group(\"Players\"):
@@ -206,10 +216,20 @@ func throw_grenade(type : int, position : Vector3, velocity : Vector3):
 
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
-func plant_bomb(pos : Vector3):
+func plant_bomb(pos : Vector3, site : int):
 	var bomb = preload(\"res://weapons/bomb/bomb.tscn\").instantiate()
 	add_child(bomb)
 	bomb.global_position = pos
+	bomb.site = site
+	bombs.append(bomb)
+
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
+func defuse_bomb(site : int):
+	for bomb in bombs:
+		if bomb.site == site:
+			bomb.defuse()
+			bombsites[site][1] = 0
+			break
 
 
 

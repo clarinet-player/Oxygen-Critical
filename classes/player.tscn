@@ -52,6 +52,7 @@ var spawn_time := 0
 var team := 0
 var using_bomb := false
 var bomb_time : int
+var bomb_site
 
 
 var sound_time : int
@@ -188,21 +189,34 @@ func _process(delta):
 	if Input.is_action_just_pressed(\"B\") and !UiManager.paused and Time.get_ticks_msec() - spawn_time < 20000:
 		UiManager.set_ui(4)
 	
-	if Input.is_action_just_pressed(\"E\") and team == 2 and Gamemanager.bombsite.has_point(global_position):
-		using_bomb = true
-		bomb_time = Time.get_ticks_msec()
-		hud.start_progress(3.0, \"Bomb\")
-		if active_item:
-			camera.remove_child(active_item)
-			active_item = null
 	
-	elif Input.is_action_just_pressed(\"E\") and team == 1 and Gamemanager.get_node_or_null(\"Bomb\") and Gamemanager.get_node(\"Bomb\").global_position.distance_to(global_position) < 1.5:
-		using_bomb = true
-		bomb_time = Time.get_ticks_msec()
-		hud.start_progress(5.0, \"Bomb\")
-		if active_item:
-			camera.remove_child(active_item)
-			active_item = null
+	if Input.is_action_just_pressed(\"E\") and team == 2:
+		for site in Gamemanager.bombsites:
+			if site[0].has_point(global_position) and site[1] == 0:
+				bomb_site = Gamemanager.bombsites.find(site)
+				break
+		if bomb_site >= 0:
+			using_bomb = true
+			bomb_time = Time.get_ticks_msec()
+			hud.start_progress(3.0, \"Bomb\")
+			if active_item:
+				camera.remove_child(active_item)
+				active_item = null
+	
+	
+	elif Input.is_action_just_pressed(\"E\") and team == 1:
+		for bomb in Gamemanager.bombs:
+			if bomb.global_position.distance_to(global_position) < 1.5:
+				bomb_site = bomb.site
+				break
+		if bomb_site >= 0:
+			using_bomb = true
+			bomb_time = Time.get_ticks_msec()
+			hud.start_progress(5.0, \"Bomb\")
+			if active_item:
+				camera.remove_child(active_item)
+				active_item = null
+	
 	
 	if Input.is_action_just_pressed(\"F\"):
 		if health < 100.0:
@@ -222,14 +236,18 @@ func _process(delta):
 					camera.add_child(active_item)
 					break
 	
-	if using_bomb and team == 2 and Time.get_ticks_msec() - bomb_time > 3000:
+	
+	if using_bomb and team == 2 and Time.get_ticks_msec() - bomb_time > 2000:
 		using_bomb = false
-		Gamemanager.plant_bomb.rpc(global_position - global_basis.y * 0.5)
-	elif using_bomb and team == 1 and Time.get_ticks_msec() - bomb_time > 5000:
+		Gamemanager.plant_bomb.rpc(global_position - global_basis.y * 0.5, bomb_site)
+		bomb_site = -1
+	elif using_bomb and team == 1 and Time.get_ticks_msec() - bomb_time > 4000:
 		using_bomb = false
-		Gamemanager.end_round.rpc(1)
+		Gamemanager.defuse_bomb(bomb_site)
+		bomb_site = -1
 	elif using_bomb and !Input.is_action_pressed(\"E\"):
 		using_bomb = false
+		bomb_site = -1
 		hud.stop_progress(\"Bomb\")
 	
 	
@@ -420,7 +438,7 @@ func _anchored_move(delta : float):
 		
 		_time -= delta * (_collision.get_travel().length() / velocity.length())
 		
-		if _shape == _anchored_shape and acos(_surface_normal.dot(_normal)) <= 1.5:
+		if _shape == _anchored_shape and acos(_surface_normal.dot(_normal)) < 1.5:
 			_surface_normal = _normal
 			_forward = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
 			_side = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
@@ -742,6 +760,7 @@ script = SubResource("GDScript_qj47s")
 shape = SubResource("SphereShape3D_ufnhc")
 
 [node name="Camera3D" type="Camera3D" parent="."]
+fov = 9.3
 
 [node name="SpotLight3D" type="SpotLight3D" parent="Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0406958)
