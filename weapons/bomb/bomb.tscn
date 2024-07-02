@@ -46,14 +46,48 @@ func _process(delta):
 
 
 func _physics_process(delta):
+	if Time.get_ticks_msec() - start_time >= fuse_time:
+		Gamemanager.bombsites[site][1] = 2
+		active = false
+		$OmniLight3D.light_energy = 0
+		$AudioStreamPlayer3D.steam - preload(\"res://weapons/grenades/grenade_sfx_2.mp3\")
 	if is_multiplayer_authority():
-		if Time.get_ticks_msec() - start_time >= fuse_time:
-			Gamemanager.end_round.rpc(2)
+		for player in get_tree().get_nodes_in_group(\"Players\"):
+			_check_player(player)
 
 
 func defuse():
 	active = false
 	$OmniLight3D.light_energy = 0
+
+
+func _check_player(player : Node3D):
+	if player.global_position.distance_to(global_position) > 20:
+		return
+	
+	# Raycast to player's feet
+	var _space = get_world_3d().direct_space_state
+	var _ray = PhysicsRayQueryParameters3D.create(global_position, player.global_position)
+	var _raycast = _space.intersect_ray(_ray)
+	
+	if _raycast.has(\"collider\") and _raycast.collider == player.hitbox:
+		_damage(player)
+		return
+	
+	# Raycast to player's head
+	_ray = PhysicsRayQueryParameters3D.create(global_position, player.camera.global_position)
+	_raycast = _space.intersect_ray(_ray)
+	
+	if _raycast.has(\"collider\") and _raycast.collider == player.hitbox:
+		_damage(player)
+
+
+func _damage(player):
+	var multiplier = (1 - player.global_position.distance_to(global_position) / 20)
+	if Gamemanager.mp_active:
+		player.damage(50 * multiplier, 10 * multiplier + 3, false)
+	else:
+		player.damage(50 * multiplier, 10 * multiplier + 3, false)
 "
 
 [sub_resource type="BoxMesh" id="BoxMesh_2algb"]

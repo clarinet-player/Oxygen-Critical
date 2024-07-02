@@ -22,3 +22,4 @@ res://autoloads/ui manager.tscn
 res://ui/pause menu.tscn
 res://classes/gameSurface.tscn
 res://ui/settings menu.tscn
+res://ui/spectator hud.tscn
