@@ -27,8 +27,6 @@ func _ready():
 	
 	Gamemanager.playable_area = AABB(Vector3(-31, -22, -16), Vector3(55, 46, 33))
 	
-	Gamemanager.gravity_state = \"zero\"
-	
 	if !Gamemanager.mp_active:
 		spawn_player(1)
 

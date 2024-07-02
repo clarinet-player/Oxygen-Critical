@@ -451,7 +451,7 @@ func _anchored_move(delta : float):
 func _free_move(delta : float):
 	
 	# Apply gravity, if any
-	velocity += Gamemanager.get_gravity_vector() * delta
+	#velocity += Gamemanager.get_gravity_vector() * delta
 	
 	
 	# Grapple

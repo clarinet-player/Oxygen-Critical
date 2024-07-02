@@ -44,7 +44,7 @@ func _physics_process(delta):
 		_time -= _passed
 		
 		# Update ourself
-		velocity += Gamemanager.get_gravity_vector() * _passed
+		#velocity += Gamemanager.get_gravity_vector() * _passed
 		dist_travelled += _travelled
 		global_position = _point
 		
@@ -102,7 +102,7 @@ func _physics_process(delta):
 	
 	
 	# Update ourself
-	velocity += Gamemanager.get_gravity_vector() * _time
+	#velocity += Gamemanager.get_gravity_vector() * _time
 	dist_travelled += global_position.distance_to(_target_pos)
 	global_position = _target_pos
 	

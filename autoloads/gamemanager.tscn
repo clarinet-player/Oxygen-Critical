@@ -12,9 +12,6 @@ var players := Array()
 var game_running := false
 var round_running := false
 
-# Gravity states: zero, thrust, spin
-var gravity_state : String = \"zero\"
-var gravity_strength : float = 9.8
 var playable_area : AABB
 var bombsite : AABB
 
@@ -84,6 +81,7 @@ func _on_disconnect(id):
 #endregion
 
 
+
 func spawn_player(id : int):
 	var new_player = preload(\"res://classes/player.tscn\").instantiate()
 	new_player.name = str(id)
@@ -103,7 +101,6 @@ func spawn_player(id : int):
 		new_player.set_team.rpc(2)
 	else:
 		new_player.set_team.rpc(1)
-
 
 
 
@@ -141,20 +138,13 @@ func _game_loop():
 				ui_message.rpc(1)
 		
 		
+		await get_tree().create_timer(2.0).timeout
 		reset.rpc()
-		
-		await get_tree().create_timer(2.5).timeout
+		await get_tree().create_timer(0.1).timeout
 		
 		if players.size() < 2:
 			game_running = false
-
-
-
-func get_gravity_vector() -> Vector3:
-	if gravity_state == \"thrust\":
-		return Vector3(0, gravity_strength * -1, 0)
-	else:
-		return Vector3.ZERO
+			ui_message(0)
 
 
 
