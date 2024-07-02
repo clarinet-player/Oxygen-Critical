@@ -108,6 +108,10 @@ func spawn_player(id : int):
 
 
 func _game_loop():
+	bombs = Array()
+	for site in bombsites:
+		site[1] = 0
+	
 	game_running = true
 	while game_running:
 		

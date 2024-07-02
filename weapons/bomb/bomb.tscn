@@ -28,6 +28,7 @@ func _process(delta):
 	if !active:
 		if Time.get_ticks_msec() - start_time > 25075:
 			$OmniLight3D2.light_energy = 0
+		return
 	
 	if direction:
 		value += delta * 2
