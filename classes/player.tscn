@@ -246,7 +246,7 @@ func _process(delta):
 		bomb_site = -1
 	elif using_bomb and team == 1 and Time.get_ticks_msec() - bomb_time > 4000:
 		using_bomb = false
-		Gamemanager.defuse_bomb(bomb_site)
+		Gamemanager.defuse_bomb.rpc(bomb_site)
 		bomb_site = -1
 	elif using_bomb and !Input.is_action_pressed(\"E\"):
 		using_bomb = false
