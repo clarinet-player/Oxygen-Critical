@@ -62,8 +62,8 @@ func disconnect_player():
 
 func _on_connect(id : int):
 	print(\"player connected: \", id)
-	print(players)
-	print(game_running)
+	
+	players.append(id)
 	
 	sync_level.rpc_id(id, 1)
 	await get_tree().create_timer(0.1).timeout
