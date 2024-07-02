@@ -1,0 +1,15 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3 uid="uid://dhs8hwst8a0pp"]
+
+[ext_resource type="Texture2D" uid="uid://c41i6fxrb8j4d" path="res://assets/pexels-scottwebb-2117937.jpg" id="1_n1lm7"]
+[ext_resource type="Texture2D" uid="uid://05ddnnkibkgu" path="res://assets/Untitled.png" id="2_xib1e"]
+
+[resource]
+albedo_color = Color(0.443137, 0.443137, 0.443137, 1)
+metallic = 1.0
+metallic_texture = ExtResource("2_xib1e")
+roughness = 0.9
+roughness_texture = ExtResource("1_n1lm7")
+clearcoat_roughness = 0.0
+anisotropy = -1.0
+heightmap_texture = ExtResource("1_n1lm7")
+heightmap_flip_texture = true

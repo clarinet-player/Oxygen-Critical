@@ -1,8 +1,7 @@
 [gd_scene load_steps=2 format=3 uid="uid://j50xd2vp8mfv"]
 
 [sub_resource type="GDScript" id="GDScript_noakj"]
-script/source = "extends Node
-
+script/source = "extends  Node
 
 
 var mainmenu

@@ -1,8 +1,0 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://ckenibrj8p5ea"]
-
-[ext_resource type="Texture2D" uid="uid://inyuujyffj5g" path="res://assets/MetalRusted0129_1_350.jpg" id="1_antdp"]
-
-[resource]
-albedo_texture = ExtResource("1_antdp")
-metallic = 0.75
-roughness_texture = ExtResource("1_antdp")

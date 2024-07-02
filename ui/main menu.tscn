@@ -14,7 +14,7 @@ func _connect():
 
 func _singleplayer():
 	Gamemanager.cancel_connect()
-	get_tree().change_scene_to_file(\"res://scenes/barrel.tscn\")
+	get_tree().change_scene_to_file(\"res://scenes/somnambulist.tscn\")
 
 
 func _quit():
@@ -41,13 +41,14 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -1138.0
+offset_left = -1126.0
 offset_top = -579.0
 offset_right = 1006.0
 offset_bottom = 656.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("2_s2yy4")
+expand_mode = 1
 
 [node name="Control2" type="Control" parent="."]
 layout_mode = 1

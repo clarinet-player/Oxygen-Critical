@@ -15,7 +15,7 @@ signal damaged
 
 #region Variables
 const walk_acceleration : float = 35.0
-const walk_friction : float = 35.0
+const walk_friction : float = 30.0
 const walk_max_speed : float = 5.0
 
 const jump_power : float = 2.5
@@ -148,35 +148,41 @@ func _process(delta):
 		return
 	
 	if Input.is_action_pressed(\"Control\"):
+		oriented = true
+	
+	if Input.is_action_pressed(\"Shift\"):
 		oriented = false
-	else:
-		oriented = _anchored_shape != null
 	
 	
 	if _anchored_shape:
 		if oriented:
-			hud.set_hud_anchor(true, 0)
+			hud.set_hud_anchor(1, 0)
 		elif acos(_surface_normal.dot(global_basis.x)) < PI / 2:
-			hud.set_hud_anchor(true, acos(_surface_normal.dot(global_basis.y)))
+			hud.set_hud_anchor(1, acos(_surface_normal.dot(global_basis.y)))
 		else:
-			hud.set_hud_anchor(true, acos(_surface_normal.dot(-global_basis.y)) + PI)
+			hud.set_hud_anchor(1, acos(_surface_normal.dot(-global_basis.y)) + PI)
+	elif !_grapple_point.is_zero_approx():
+		hud.set_hud_anchor(2, 0)
 	else:
-		hud.set_hud_anchor(false, 0)
+		hud.set_hud_anchor(0, 0)
 	
 	
-	if _anchored_shape and oriented:
-		# Adjust roll to avoid gimbal lock
-		var _roll : Vector3 = global_transform.basis.z
-		var _up : Vector3 = global_transform.basis.y
-		var _target : Vector3 = (_surface_normal - _surface_normal.dot(_roll) * _roll).normalized()
-		var _angle : float = acos(_up.dot(_target))
-		var _axis = _up.cross(_target)
-		var _look_angle = _surface_normal.cross(-global_basis.z).length()
-			
-		if !_axis.is_zero_approx():
-			rotate(_axis.normalized(), _angle * _look_angle * 10 * delta)
-		else:
-			rotate(global_basis.z, _angle * _look_angle * 10 * delta)
+	if _anchored_shape and !Input.is_action_pressed(\"Shift\"):
+		if acos(_surface_normal.dot(global_basis.y)) < 0.5:
+			oriented = true
+		if oriented:
+			reorient(global_basis.y, delta * 3)
+		
+		elif acos(_surface_normal.dot((-global_basis.y).normalized())) < 0.6:
+			reorient((-global_basis.y).normalized(), delta)
+		elif acos(_surface_normal.dot((global_basis.y + global_basis.x).normalized())) < 0.85:
+			reorient((global_basis.y + global_basis.x).normalized(), delta)
+		elif acos(_surface_normal.dot((global_basis.y - global_basis.x).normalized())) < 0.85:
+			reorient((global_basis.y - global_basis.x).normalized(), delta)
+		elif acos(_surface_normal.dot((-global_basis.y + global_basis.x).normalized())) < 0.85:
+			reorient((-global_basis.y + global_basis.x).normalized(), delta)
+		elif acos(_surface_normal.dot((-global_basis.y - global_basis.x).normalized())) < 0.85:
+			reorient((-global_basis.y - global_basis.x).normalized(), delta)
 	
 	
 	if Input.is_action_just_pressed(\"B\") and !UiManager.paused and Time.get_ticks_msec() - spawn_time < 20000:
@@ -314,19 +320,16 @@ func _physics_process(delta : float):
 		
 		
 		# Jumping
-		if Input.is_action_just_pressed(\"Space\") and !UiManager.paused and !using_bomb:
-			
+	if Input.is_action_just_pressed(\"Space\") and !UiManager.paused and !using_bomb:
+		if _anchored_shape:
 			detach()
-			velocity += lerp(-global_basis.z, _surface_normal, Settings.jump_angle).normalized() * jump_power * jump_stamina
+			velocity += -global_basis.z * jump_power * jump_stamina
 			jump_stamina = 0
 			
 			move_and_collide(camera.global_position - global_position)
 			move_and_collide(velocity.normalized())
-	
-	
-	# Grappling
-	if Input.is_action_just_pressed(\"Q\") and !UiManager.paused and !using_bomb:
-		if !_anchored_shape or acos(_surface_normal.dot(global_basis.z)) > 1.25:
+		
+		elif !_grapple_point:
 			var _space = get_world_3d().direct_space_state
 			var _ray = PhysicsRayQueryParameters3D.create(camera.global_position, camera.global_position - global_basis.z * grapple_range)
 			var _raycast = _space.intersect_ray(_ray)
@@ -341,6 +344,8 @@ func _physics_process(delta : float):
 					move_and_collide(-global_basis.z)
 				detach()
 				_grapple_point = _raycast.position
+		else:
+			_grapple_point = Vector3.ZERO
 	
 	
 	if _anchored_shape:
@@ -385,11 +390,13 @@ func _anchored_move(delta : float):
 	# Getting movement input
 	if walking:
 		velocity += (((_side * _input.x) + (_forward * _input.y))).normalized() * delta * walk_acceleration
+		if velocity.length() > walk_max_speed + walk_acceleration * delta:
+			velocity = velocity.limit_length(velocity.length() - walk_acceleration * delta)
 		if velocity.length() > walk_max_speed + walk_friction * delta:
 			velocity = velocity.limit_length(velocity.length() - walk_friction * delta)
 		else:
 			velocity = velocity.limit_length(walk_max_speed)
-		
+	
 	else:
 		if velocity.length() < walk_friction * delta:
 			velocity = Vector3.ZERO
@@ -418,7 +425,6 @@ func _anchored_move(delta : float):
 			_forward = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
 			_side = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
 			velocity = _forward * _forward.dot(velocity) + _side * _side.dot(velocity)
-		
 		
 		else:
 			velocity -= velocity.dot(_normal) * _normal
@@ -461,7 +467,7 @@ func _free_move(delta : float):
 		var _shape = _collision.get_collider_shape()
 		var _normal = _collision.get_normal()
 		
-		if \"get_is_grabbable\" in _shape and _shape.get_is_grabbable():
+		if true:#\"get_is_grabbable\" in _shape and _shape.get_is_grabbable():
 			if Time.get_ticks_msec() - sound_time > 200:
 					sound_time = Time.get_ticks_msec()
 					play_sound.rpc(2)
@@ -514,8 +520,23 @@ func detach():
 	#var _body = _anchored_shape.get_parent()
 	#if \"centrifuge_angular_velocity\" in _body:
 	#	velocity += (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
+	oriented = false
 	
 	_anchored_shape = null
+
+
+
+func reorient(to : Vector3, speed : float):
+	var roll : Vector3 = global_transform.basis.z
+	var target : Vector3 = (_surface_normal - _surface_normal.dot(roll) * roll).normalized()
+	var angle : float = acos(to.dot(target))
+	var axis = to.cross(target)
+	var look_angle = _surface_normal.cross(-global_basis.z).length()
+	
+	if !axis.is_zero_approx():
+		rotate(axis.normalized(), angle * look_angle * speed)
+	else:
+		rotate(global_basis.z, angle * look_angle * speed)
 
 
 

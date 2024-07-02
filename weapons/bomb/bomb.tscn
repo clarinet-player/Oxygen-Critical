@@ -5,7 +5,7 @@
 [sub_resource type="GDScript" id="GDScript_c6p4e"]
 script/source = "extends Node3D
 
-const fuse_time := 30000
+const fuse_time := 25000
 
 var start_time := 0
 
@@ -20,9 +20,9 @@ func _ready():
 func _process(delta):
 	if direction:
 		value += delta * 2
-		if Time.get_ticks_msec() - start_time > 20000:
+		if Time.get_ticks_msec() - start_time > 15000:
 			value += delta
-		if Time.get_ticks_msec() - start_time > 25000:
+		if Time.get_ticks_msec() - start_time > 20000:
 			value += delta
 		if value >= 1.0:
 			$AudioStreamPlayer3D.play()
