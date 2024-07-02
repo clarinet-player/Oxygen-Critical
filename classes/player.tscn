@@ -171,7 +171,7 @@ func _process(delta):
 		if acos(_surface_normal.dot(global_basis.y)) < 0.5:
 			oriented = true
 		if oriented:
-			reorient(global_basis.y, delta * 3)
+			reorient(global_basis.y, delta * 3.5)
 		
 		elif acos(_surface_normal.dot((-global_basis.y).normalized())) < 0.6:
 			reorient((-global_basis.y).normalized(), delta)

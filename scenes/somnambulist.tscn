@@ -1232,3 +1232,6 @@ team = 2
 [node name="Spawnpoint16" parent="Spawnpoints" instance=ExtResource("3_evexw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.92194, -19.8631, 1.56113)
 team = 2
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.943275, 0.332013, 0, -0.332013, 0.943275, 9.11422, 3.13464, 20.599)

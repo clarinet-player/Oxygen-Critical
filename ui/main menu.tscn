@@ -7,6 +7,11 @@
 script/source = "extends Control
 
 
+func _ready():
+	$VBoxContainer/Multiplayer.text = \"Multiplayer\"
+	request_ready()
+
+
 func _connect():
 	Gamemanager.connect_player()
 	$VBoxContainer/Multiplayer.text = \"Connecting..\"

@@ -62,6 +62,8 @@ func disconnect_player():
 
 func _on_connect(id : int):
 	print(\"player connected: \", id)
+	print(players)
+	print(game_running)
 	
 	sync_level.rpc_id(id, 1)
 	await get_tree().create_timer(0.1).timeout
@@ -199,7 +201,6 @@ func find_spawnpoint(exclude, player_team):
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
 func sync_level(level : int):
-	print(\"setting level\")
 	if level == 1:
 		get_tree().change_scene_to_file(\"res://scenes/somnambulist.tscn\")
 	
