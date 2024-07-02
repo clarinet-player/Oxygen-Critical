@@ -8,9 +8,6 @@ var local_player
 var freecam
 var mp_active = false
 
-var players := Array()
-var game_running : bool
-var round_running : bool
 
 # Gravity states: zero, thrust, spin
 var gravity_state : String = \"zero\"
@@ -60,10 +57,11 @@ func disconnect_player():
 
 func _on_connect(id : int):
 	print(\"player connected: \", id)
-	players.append(id)
 	
 	sync_level.rpc_id(id, 1)
 	await get_tree().create_timer(0.1).timeout
+	
+	get_tree().get_nodes_in_group(\"Level\")[0].on_connect(id)
 #endregion
 
 
@@ -163,12 +161,6 @@ func reset():
 		child.queue_free()
 		remove_child(child)
 
-
-
-@rpc(\"any_peer\", \"call_local\", \"reliable\")
-func end_round(winner : int):
-	round_running = false
-	ui_message(winner)
 "
 
 [node name="GameManager" type="Node"]

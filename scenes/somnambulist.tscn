@@ -280,6 +280,9 @@ script/source = "extends Sprite3D
 
 
 func _process(delta):
+	if !get_viewport().get_camera_3d():
+		return
+	
 	if (Gamemanager.local_player != null and Gamemanager.local_player.global_position.distance_to(global_position) < 15):
 		hide()
 	elif get_viewport().get_camera_3d().unproject_position(global_position).distance_to(Vector2(get_viewport().size.x / 2, get_viewport().size.y / 2)) < 100:
