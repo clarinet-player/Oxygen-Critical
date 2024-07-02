@@ -25,6 +25,8 @@ func _ready():
 		mp_active = true
 		sync_level(1)
 		
+		await get_tree().create_timer(0.1).timeout
+		
 		multiplayer.peer_connected.connect(_on_connect)
 		multiplayer.peer_disconnected.connect(get_tree().get_nodes_in_group(\"Level\")[0].on_disconnect)
 		

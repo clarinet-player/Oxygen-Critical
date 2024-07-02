@@ -43,7 +43,7 @@ res://assets/footstep_sfx_3.mp3::81d585024b985b148bafa1652d75baf518432d8d1e696e0
 res://assets/footstep_sfx_4.mp3::448dc57b57878adf29618671818ddee4d445017db0d00a6c73e99617850ab20d::1717949136::
 res://assets/footstep_sfx_5.mp3::9d10b8e8d4099427a3745a4a23487dca89738e2ca3fd36e826a233768f0e80fc::1717949136::
 res://assets/footstep_sfx_6.mp3::c2ab2db2f962234ad5a7733d4ddb41fa8370e6a446168e8bd88486a5bb43c4f7::1717711304::
-res://autoloads/gamemanager.tscn::4ae4bab152ff7f13fd36730394ab213d::1719891417::res://.godot/exported/2333676692/export-c518a8c4e356dd1117e250073c764c1d-gamemanager.scn
+res://autoloads/gamemanager.tscn::a546f0768ef9510422ad0dc5a7c24496::1719891543::res://.godot/exported/2333676692/export-c518a8c4e356dd1117e250073c764c1d-gamemanager.scn
 res://weapons/ak12/ak_sfx_1.mp3::6e3ece18cefe3efd0de9692fda3531515c938675c19a49ad0887ac3811ba9fd4::1716937155::
 res://weapons/glock/pistol_sfx_1.mp3::fba0ed68de6cfea831607522b6fa6f6848cf9f7fef3c8037e48d6d79c8713cc8::1716937174::
 res://weapons/vector/smg_sfx_1.mp3::a7eab642861d8198bfb869ebe1857bfffac5a039bea01da685c7543b299942f1::1716937186::
@@ -85,5 +85,5 @@ res://assets/somnambulist.tres::0d079be302687c1552f5a7dd617786da::1719885989::re
 res://assets/Untitled.png::70b7a7b6215c284e9d393a3c3af4b15144a03449e12ae4709dec667feec8fae6::1719420589::
 res://classes/dummy.tscn::e1ecc070093bab5f71b2fadd7f3ac287::1719271475::res://.godot/exported/2333676692/export-1d115a6ed3b945720efb380d83f775c2-dummy.scn
 res://scenes/parkour!.tscn::6366300712f153a0059ae787fb1cc25f::1719891130::res://.godot/exported/2333676692/export-86e7930191f96367edd95e6517ab3274-parkour!.scn
-res://scenes/somnambulist.tscn::3a7f55fe5c9440e132a3bb0dfa35bd83::1719891453::res://.godot/exported/2333676692/export-9db1463a27314f9ad260f5cf82daa8fa-somnambulist.scn
+res://scenes/somnambulist.tscn::743a9775e35c7f5ce39e795619397d8d::1719891657::res://.godot/exported/2333676692/export-9db1463a27314f9ad260f5cf82daa8fa-somnambulist.scn
 res://weapons/bomb/deep2.mp3::dd9812f327c7e31f788bed2d9081d1b0c1de9efab86c53e73dcc3df49b3ffab3::1719274733::
