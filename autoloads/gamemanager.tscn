@@ -75,6 +75,7 @@ func _on_connect(id : int):
 		Gamemanager.ui_message.rpc_id(id, 4)
 
 func _on_disconnect(id):
+	print(\"player disconnected: \", id)
 	if get_node_or_null(str(id)):
 		get_node(str(id)).die.rpc()
 	players.erase(id)
@@ -182,23 +183,23 @@ func find_spawnpoint(exclude, player_team):
 
 
 
-@rpc(\"any_peer\", \"call_remote\", \"unreliable\")
-func timeout():
-	mp_active = false
-	for child in get_children():
-		if child.name == \"MultiplayerSpawner\":
-			continue
-		child.queue_free()
-		remove_child(child)
-	peer.close()
-	get_tree().change_scene_to_file(\"res://scenes/Empty scene.tscn\")
-	UiManager.set_ui(1)
+#@rpc(\"any_peer\", \"call_remote\", \"unreliable\")
+#func timeout():
+#	mp_active = false
+#	for child in get_children():
+#		if child.name == \"MultiplayerSpawner\":
+#			continue
+#		child.queue_free()
+#		remove_child(child)
+#	peer.close()
+#	get_tree().change_scene_to_file(\"res://scenes/Empty scene.tscn\")
+#	UiManager.set_ui(1)
 
 
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
 func sync_level(level : int):
-	
+	print(\"setting level\")
 	if level == 1:
 		get_tree().change_scene_to_file(\"res://scenes/somnambulist.tscn\")
 	
