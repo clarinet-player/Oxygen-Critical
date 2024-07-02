@@ -121,7 +121,7 @@ func timeout():
 func sync_level(level : int):
 	
 	if level == 1:
-		get_tree().change_scene_to_file(\"res://scenes/barrel.tscn\")
+		get_tree().change_scene_to_file(\"res://scenes/somnambulist.tscn\")
 	
 	await get_tree().create_timer(0.1).timeout
 	if UiManager.active_menu != UiManager.spechud:
