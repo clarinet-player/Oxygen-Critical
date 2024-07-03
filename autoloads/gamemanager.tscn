@@ -107,12 +107,12 @@ func spawn_player(player):
 	new_player.name = str(player[0])
 	add_child(new_player)
 	player[1] = new_player
+	await get_tree().create_timer(0.1).timeout
 	new_player.set_team.rpc(player[0])
 
 
 
 func _game_loop():
-	
 	game_running = true
 	while game_running:
 		
@@ -130,21 +130,25 @@ func _game_loop():
 			await get_tree().create_timer(0.1).timeout
 			
 			
+			# Respawn players
 			for player in players:
 				if player[2] == null and player[0] == 1 and c_spawns > 0:
 					c_spawns -= 1
 					spawn_player(player)
 					sync_scoreboard(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
+				
 				elif player[2] == null and player[0] == 2 and t_spawns > 0:
 					t_spawns -= 1
 					spawn_player(player)
 					sync_scoreboard(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
 			
 			
+			# Out of time
 			if Time.get_ticks_msec() - round_start_time > 120000:
 				ui_message.rpc(1)
 				print(\"Round end. Out of time.\")
 			
+			# Bombsites destroyed
 			var sites_destroyed := 0
 			for site in bombsites:
 				if site[1] == 2:
@@ -155,6 +159,7 @@ func _game_loop():
 				round_running = false
 				break
 			
+			# Team eliminated
 			var team1 := true
 			var team2 := true
 			for player in get_tree().get_nodes_in_group(\"Players\"):
