@@ -10,6 +10,7 @@ var playerhud
 var spechud
 var settingsmenu
 var buymenu
+var scoreboard
 
 var active_menu
 
@@ -26,6 +27,7 @@ func _ready():
 	spechud = load(\"res://ui/spectator hud.tscn\").instantiate()
 	settingsmenu = load(\"res://ui/settings menu.tscn\").instantiate()
 	buymenu = load(\"res://ui/buy menu.tscn\").instantiate()
+	scoreboard = load(\"res://ui/scoreboard.tscn\").instantiate()
 	
 	if DisplayServer.get_name() == \"headless\":
 		set_process(false)
@@ -59,6 +61,8 @@ func set_ui(ui : int):
 		prev_menu = 6
 	if active_menu:
 		remove_child(active_menu)
+	if get_children().has(scoreboard):
+		remove_child(scoreboard)
 	
 	if ui == 1:
 		add_child(mainmenu)
@@ -77,6 +81,9 @@ func set_ui(ui : int):
 		active_menu = playerhud
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		paused = false
+		
+		if Gamemanager.mp_active:
+			add_child(scoreboard)
 	
 	elif ui == 4:
 		add_child(buymenu)
@@ -91,6 +98,9 @@ func set_ui(ui : int):
 	elif ui == 6:
 		add_child(spechud)
 		active_menu = spechud
+		
+		if Gamemanager.mp_active:
+			add_child(scoreboard)
 "
 
 [node name="UiManager" type="Node"]

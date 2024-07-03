@@ -190,7 +190,7 @@ func _process(delta):
 		UiManager.set_ui(4)
 	
 	
-	if Input.is_action_just_pressed(\"E\") and team == 2:
+	if Input.is_action_just_pressed(\"E\") and team == 2 and _anchored_shape:
 		for site in Gamemanager.bombsites:
 			if site[0].has_point(global_position) and site[1] == 0:
 				bomb_site = Gamemanager.bombsites.find(site)
@@ -206,7 +206,7 @@ func _process(delta):
 	
 	elif Input.is_action_just_pressed(\"E\") and team == 1:
 		for bomb in Gamemanager.bombs:
-			if bomb.global_position.distance_to(global_position) < 1.5:
+			if bomb != null and bomb.global_position.distance_to(global_position) < 1.5:
 				bomb_site = bomb.site
 				break
 		if bomb_site >= 0:

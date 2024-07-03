@@ -25,3 +25,6 @@ res://ui/settings menu.tscn
 res://ui/spectator hud.tscn
 res://assets/metal.tres
 res://classes/weaponbase.gd
+res://autoloads/settings.tscn
+res://ui/scoreboard.tscn
+res://ui/buy menu.tscn

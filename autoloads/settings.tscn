@@ -23,7 +23,7 @@ var particles_enabled := true
 
 func _ready():
 	read_file()
-	AudioServer.set_bus_volume_db(0, -sqrt(100 - volume))
+	AudioServer.set_bus_volume_db(0, -sqrt(100 - volume) * 2)
 	
 
 

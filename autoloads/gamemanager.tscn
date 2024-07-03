@@ -110,6 +110,7 @@ func _game_loop():
 	while game_running:
 		
 		print(\"Round start.\")
+		
 		for player in players:
 			spawn_player(player)
 		
@@ -193,6 +194,20 @@ func sync_level(level : int):
 func ui_message(ui : int):
 	UiManager.set_ui(6)
 	UiManager.spechud.set_message(ui)
+
+
+
+@rpc(\"authority\", \"call_remote\", \"reliable\")
+func sync_scoreboard(time : float, c_spawns : int, t_spawns : int):
+	var c_players := 0
+	var t_players := 0
+	for player in get_tree().get_nodes_in_group(\"Players\"):
+		if player.team == 1:
+			c_players += 1
+		elif player.team == 2:
+			t_players += 1
+	
+	UiManager.scoreboard.update(time, c_players, c_spawns, t_players, t_spawns)
 
 
 

@@ -1,0 +1,113 @@
+[gd_scene load_steps=4 format=3 uid="uid://c2bpakqol3dp2"]
+
+[ext_resource type="Texture2D" uid="uid://flowlcal467y" path="res://assets/blueplayers.png" id="1_hyh6m"]
+[ext_resource type="Texture2D" uid="uid://xky1da3dh6r2" path="res://assets/redplayers.png" id="2_0htj1"]
+
+[sub_resource type="GDScript" id="GDScript_io8ft"]
+script/source = "extends Control
+
+
+var time_left := 130.0
+
+
+
+func update(time_secs : float, c_players : int, c_spawns : int, t_players : int, t_spawns : int):
+	time_left = time_secs
+	
+	$CT.text = str(c_players) + \"      \" + str(c_spawns)
+	$T.text = str(t_players) + \"      \" + str(t_spawns)
+
+
+
+func _process(delta):
+	time_left -= delta * 8
+	
+	if time_left < 0:
+		$Timer.text = \"0:00\"
+	elif time_left - int(time_left / 60) * 60 < 10:
+		$Timer.text = str(int(time_left / 60)) + \":0\" + str(int(time_left - int(time_left / 60) * 60))
+	else:
+		$Timer.text = str(int(time_left / 60)) + \":\" + str(int(time_left - int(time_left / 60) * 60))
+"
+
+[node name="Scoreboard" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_io8ft")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -459.0
+offset_right = 451.0
+offset_bottom = 84.0
+grow_horizontal = 2
+
+[node name="Timer" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -88.0
+offset_top = -14.0
+offset_right = 86.0
+offset_bottom = 96.0
+grow_horizontal = 2
+theme_override_font_sizes/normal_font_size = 80
+text = "0:00"
+
+[node name="CT" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -453.0
+offset_top = -14.0
+offset_right = -158.0
+offset_bottom = 96.0
+grow_horizontal = 2
+theme_override_font_sizes/normal_font_size = 80
+text = "0      +0"
+
+[node name="TextureRect" type="TextureRect" parent="CT"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -93.5
+offset_top = 20.0
+offset_right = -21.5
+offset_bottom = 92.0
+grow_horizontal = 2
+texture = ExtResource("1_hyh6m")
+
+[node name="T" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 181.0
+offset_top = -14.0
+offset_right = 476.0
+offset_bottom = 96.0
+grow_horizontal = 2
+theme_override_font_sizes/normal_font_size = 80
+text = "0      +0"
+
+[node name="TextureRect2" type="TextureRect" parent="T"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -93.5
+offset_top = 21.0
+offset_right = -21.5
+offset_bottom = 93.0
+grow_horizontal = 2
+texture = ExtResource("2_0htj1")

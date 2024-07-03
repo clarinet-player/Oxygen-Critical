@@ -1302,54 +1302,48 @@ team = 2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.4719, 9.35533, 11.4918)
 stream = ExtResource("11_ngx7b")
 attenuation_model = 3
-volume_db = -11.0
 autoplay = true
 max_distance = 18.0
-panning_strength = 0.5
+panning_strength = 0.25
 
 [node name="AudioStreamPlayer3D2" type="AudioStreamPlayer3D" parent="Audio"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.6145, -22.5922, 2.58688)
 stream = ExtResource("11_ngx7b")
 attenuation_model = 3
-volume_db = -12.0
 autoplay = true
 max_distance = 15.0
-panning_strength = 0.5
+panning_strength = 0.25
 
 [node name="AudioStreamPlayer3D3" type="AudioStreamPlayer3D" parent="Audio"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.0582, 12.7179, 2.92676)
 stream = ExtResource("11_ngx7b")
 attenuation_model = 3
-volume_db = -12.0
 autoplay = true
 max_distance = 20.0
-panning_strength = 0.5
+panning_strength = 0.25
 
 [node name="AudioStreamPlayer3D4" type="AudioStreamPlayer3D" parent="Audio"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.0463, -11.4932, -7.26896)
 stream = ExtResource("11_ngx7b")
 attenuation_model = 3
-volume_db = -12.0
 autoplay = true
 max_distance = 16.0
-panning_strength = 0.5
+panning_strength = 0.25
 
 [node name="AudioStreamPlayer3D6" type="AudioStreamPlayer3D" parent="Audio"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.47068, 0, -3.10643)
 stream = ExtResource("11_ngx7b")
 attenuation_model = 3
-volume_db = -18.0
 autoplay = true
 max_distance = 25.0
-panning_strength = 0.5
+panning_strength = 0.25
 
 [node name="AudioStreamPlayer3D5" type="AudioStreamPlayer3D" parent="Audio"]
 stream = ExtResource("11_ngx7b")
 attenuation_model = 3
-volume_db = -22.0
 max_db = -24.0
 max_distance = 65.0
-panning_strength = 0.5
+panning_strength = 0.25
 script = SubResource("GDScript_owg8c")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="."]

@@ -1,3 +1,6 @@
+Panel
+RichTextLabel
+TextureRect
 GPUParticles3D
 Node3D
 AudioStreamPlayer3D
@@ -9,7 +12,3 @@ Decal
 DirectionalLight3D
 OmniLight3D
 StaticBody3D
-CollisionShape3D
-RigidBody3D
-RichTextLabel
-Area3D

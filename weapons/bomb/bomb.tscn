@@ -116,9 +116,9 @@ func _check_player(player : Node3D):
 func _damage(player):
 	var multiplier = (1 - player.global_position.distance_to(global_position) / 20)
 	if Gamemanager.mp_active:
-		player.damage(50 * multiplier, 10 * multiplier + 3, false)
+		player.damage(50 * multiplier, 9 * multiplier + 3, false)
 	else:
-		player.damage(50 * multiplier, 10 * multiplier + 3, false)
+		player.damage(50 * multiplier, 9 * multiplier + 3, false)
 "
 
 [sub_resource type="BoxMesh" id="BoxMesh_2algb"]
@@ -128,8 +128,8 @@ size = Vector3(0.3, 0.1, 0.2)
 lifetime_randomness = 0.6
 angle_max = 180.0
 spread = 180.0
-initial_velocity_min = 8.0
-initial_velocity_max = 40.0
+initial_velocity_min = 20.0
+initial_velocity_max = 45.0
 gravity = Vector3(0, 0, 0)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_o1kmu"]
@@ -137,12 +137,12 @@ albedo_color = Color(0.376471, 0.376471, 0.376471, 1)
 metallic = 0.62
 roughness = 0.67
 
-[sub_resource type="SphereMesh" id="SphereMesh_ri3cv"]
+[sub_resource type="SphereMesh" id="SphereMesh_rlp1w"]
 material = SubResource("StandardMaterial3D_o1kmu")
-radius = 0.05
-height = 0.08
-radial_segments = 4
-rings = 2
+radius = 0.06
+height = 0.1
+radial_segments = 5
+rings = 3
 
 [sub_resource type="Skin" id="Skin_e60tl"]
 
@@ -170,7 +170,7 @@ one_shot = true
 explosiveness = 1.0
 fixed_fps = 60
 process_material = SubResource("ParticleProcessMaterial_ov625")
-draw_pass_1 = SubResource("SphereMesh_ri3cv")
+draw_pass_1 = SubResource("SphereMesh_rlp1w")
 draw_skin = SubResource("Skin_e60tl")
 
 [node name="OmniLight3D2" type="OmniLight3D" parent="."]
