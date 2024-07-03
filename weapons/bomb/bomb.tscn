@@ -78,6 +78,10 @@ func _physics_process(delta):
 		if is_multiplayer_authority():
 			for player in get_tree().get_nodes_in_group(\"Players\"):
 				_check_player(player)
+		
+		$MeshInstance3D.hide()
+		await get_tree().create_timer(1.5).timeout
+		queue_free()
 
 
 
@@ -150,7 +154,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0107451, 0)
 mesh = SubResource("BoxMesh_2algb")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0731806, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.087207, 0)
 light_color = Color(1, 0.0784314, 0.0784314, 1)
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
@@ -170,7 +174,7 @@ draw_pass_1 = SubResource("SphereMesh_ri3cv")
 draw_skin = SubResource("Skin_e60tl")
 
 [node name="OmniLight3D2" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0470038, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00804131, 0)
 light_color = Color(1, 0.796078, 0.407843, 1)
 light_energy = 0.0
 light_volumetric_fog_energy = 2.0

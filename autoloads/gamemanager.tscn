@@ -108,15 +108,12 @@ func spawn_player(id : int):
 
 
 func _game_loop():
-	bombs = Array()
-	for site in bombsites:
-		site[1] = 0
 	
 	game_running = true
 	while game_running:
 		
 		# Start of round
-		print(\"round start\")
+		print(\"Round start.\")
 		# Spawn players
 		for player in players:
 			spawn_player(player)
@@ -126,10 +123,6 @@ func _game_loop():
 		while round_running:
 			await get_tree().create_timer(0.1).timeout
 			
-			if players.size() < 2:
-				round_running = false
-				ui_message.rpc(0)
-			
 			var sites_destroyed := 0
 			for site in bombsites:
 				if site[1] == 2:
@@ -137,6 +130,7 @@ func _game_loop():
 			if sites_destroyed > bombsites.size() / 2:
 				round_running = false
 				ui_message(2)
+				print(\"Round end. Bombs detonated.\")
 			
 			var team1 := true
 			var team2 := true
@@ -148,9 +142,11 @@ func _game_loop():
 			if team1:
 				round_running = false
 				ui_message.rpc(2)
+				print(\"Round end. CTs eliminated.\")
 			elif team2:
 				round_running = false
 				ui_message.rpc(1)
+				print(\"Round end. Ts eliminated.\")
 		
 		
 		await get_tree().create_timer(2.0).timeout
@@ -226,6 +222,8 @@ func plant_bomb(pos : Vector3, site : int):
 	bomb.global_position = pos
 	bomb.site = site
 	bombs.append(bomb)
+	
+	bombsites[site][1] = 1
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func defuse_bomb(site : int):
@@ -239,6 +237,11 @@ func defuse_bomb(site : int):
 
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func reset():
+	bombs = Array()
+	for site in bombsites:
+		site[1] = 0
+		print(site)
+	
 	for child in get_children():
 		if child.name == \"MultiplayerSpawner\":
 			continue
