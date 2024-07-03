@@ -98,13 +98,12 @@ func _game_loop():
 			
 			var team1 := 0
 			var team2 := 0
+			print(get_tree().get_nodes_in_group(\"Players\"))
 			for player in get_tree().get_nodes_in_group(\"Players\"):
-				print(\"player\")
 				if player.team == 1:
 					team1 += 1
 				elif player.team == 2:
 					team2 += 1
-					print()
 			if team1 > team2:
 				new_player.set_team.rpc(2)
 			else:
