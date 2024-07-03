@@ -126,6 +126,7 @@ func _game_loop():
 			spawn_player(player)
 		
 		
+		round_running = true
 		while round_running:
 			await get_tree().create_timer(0.1).timeout
 			
@@ -147,6 +148,8 @@ func _game_loop():
 			if Time.get_ticks_msec() - round_start_time > 120000:
 				ui_message.rpc(1)
 				print(\"Round end. Out of time.\")
+				round_running = false
+				break
 			
 			# Bombsites destroyed
 			var sites_destroyed := 0
