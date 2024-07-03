@@ -111,12 +111,9 @@ func _game_loop():
 	game_running = true
 	while game_running:
 		
-		# Start of round
 		print(\"Round start.\")
-		# Spawn players
 		for player in players:
 			spawn_player(player)
-		
 		
 		while true:
 			await get_tree().create_timer(0.1).timeout
@@ -146,12 +143,9 @@ func _game_loop():
 				print(\"Round end. Ts eliminated.\")
 				break
 		
-		print(\"debug1\")
 		await get_tree().create_timer(2.0).timeout
-		print(\"debug2\")
 		reset.rpc()
-		await get_tree().create_timer(0.1).timeout
-		print(\"debug3\")
+		await get_tree().create_timer(0.05).timeout
 		
 		if players.size() < 2:
 			game_running = false
@@ -244,8 +238,8 @@ func reset():
 	for child in get_children():
 		if child.name == \"MultiplayerSpawner\":
 			continue
-		child.queue_free()
 		remove_child(child)
+		child.free()
 "
 
 [node name="GameManager" type="Node"]
