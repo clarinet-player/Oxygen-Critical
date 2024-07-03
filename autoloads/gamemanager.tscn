@@ -146,10 +146,12 @@ func _game_loop():
 				print(\"Round end. Ts eliminated.\")
 				break
 		
-		
+		print(\"debug1\")
 		await get_tree().create_timer(2.0).timeout
+		print(\"debug2\")
 		reset.rpc()
 		await get_tree().create_timer(0.1).timeout
+		print(\"debug3\")
 		
 		if players.size() < 2:
 			game_running = false
