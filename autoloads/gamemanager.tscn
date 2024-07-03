@@ -114,11 +114,10 @@ func _game_loop():
 		
 		print(\"Round start.\")
 		round_start_time = Time.get_ticks_msec()
+		sync_spawns.rpc(0, 0)
 		
 		for player in players:
 			spawn_player(player)
-		
-		sync_scoreboard(180)
 		
 		while true:
 			await get_tree().create_timer(0.1).timeout
@@ -201,23 +200,16 @@ func sync_level(level : int):
 
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
-func ui_message(ui : int):
-	UiManager.set_ui(6)
-	UiManager.spechud.set_message(ui)
+func sync_spawns(c : int, t : int):
+	c_spawns = c
+	t_spawns = t
 
 
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
-func sync_scoreboard(time : float):
-	var c_players := 0
-	var t_players := 0
-	for player in get_tree().get_nodes_in_group(\"Players\"):
-		if player.team == 1:
-			c_players += 1
-		elif player.team == 2:
-			t_players += 1
-	
-	UiManager.scoreboard.update(time, c_players, c_spawns, t_players, t_spawns)
+func ui_message(ui : int):
+	UiManager.set_ui(6)
+	UiManager.spechud.set_message(ui)
 
 
 
@@ -241,6 +233,8 @@ func plant_bomb(pos : Vector3, site : int):
 	bombs.append(bomb)
 	
 	bombsites[site][1] = 1
+	
+	round_start_time += 10
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func defuse_bomb(site : int):

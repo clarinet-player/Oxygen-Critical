@@ -87,8 +87,9 @@ func _ready():
 		$Hitbox/MeshInstance3D2.queue_free()
 	
 	
-	if !Gamemanager.mp_active or is_multiplayer_authority():
 		Gamemanager.local_player = self
+		
+		Gamemanager.round_start_time = Time.get_ticks_msec()
 		
 		hud.set_health(100)
 		hud.set_ammo(false, 0)

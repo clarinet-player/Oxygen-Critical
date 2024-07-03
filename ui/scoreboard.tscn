@@ -7,27 +7,37 @@
 script/source = "extends Control
 
 
-var time_left := 130.0
 
-
-
-func update(time_secs : float, c_players : int, c_spawns : int, t_players : int, t_spawns : int):
-	time_left = time_secs
-	
-	$CT.text = str(c_players) + \"      \" + str(c_spawns)
-	$T.text = str(t_players) + \"      \" + str(t_spawns)
+#func update(c_spawns : int, t_spawns : int):
+#	
+#	$CT.text = str(c_players) + \"      \" + str(c_spawns)
+#	$T.text = str(t_players) + \"      \" + str(t_spawns)
 
 
 
 func _process(delta):
-	time_left -= delta * 8
+	
+	var time_left = 180 - (Time.get_ticks_msec() - Gamemanager.round_start_time) / 1000
+	var minutes = int(time_left / 60)
 	
 	if time_left < 0:
 		$Timer.text = \"0:00\"
 	elif time_left - int(time_left / 60) * 60 < 10:
-		$Timer.text = str(int(time_left / 60)) + \":0\" + str(int(time_left - int(time_left / 60) * 60))
+		$Timer.text = str(minutes) + \":0\" + str(int(time_left - minutes * 60))
 	else:
-		$Timer.text = str(int(time_left / 60)) + \":\" + str(int(time_left - int(time_left / 60) * 60))
+		$Timer.text = str(minutes) + \":\" + str(int(time_left - minutes * 60))
+	
+	
+	var t := 0
+	var ct := 0
+	for player in get_tree().get_nodes_in_group(\"Players\"):
+		if player.team == 1:
+			ct += 1
+		elif player.team == 2:
+			t += 1
+	
+	$CT.text = str(ct) + \"      \" + str(Gamemanager.c_spawns)
+	$T.text = str(t) + \"      \" + str(Gamemanager.t_spawns)
 "
 
 [node name="Scoreboard" type="Control"]
