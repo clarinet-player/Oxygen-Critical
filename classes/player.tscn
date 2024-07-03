@@ -85,11 +85,9 @@ func _ready():
 		$Hitbox/MeshInstance3D.queue_free()
 		$Hitbox/Hitbox2.queue_free()
 		$Hitbox/MeshInstance3D2.queue_free()
-	
-	
-		Gamemanager.local_player = self
 		
-		Gamemanager.round_start_time = Time.get_ticks_msec()
+		
+		Gamemanager.local_player = self
 		
 		hud.set_health(100)
 		hud.set_ammo(false, 0)
@@ -118,6 +116,11 @@ func _ready():
 				elif item == 6:
 					var healthkit = preload(\"res://weapons/healing/healthkit.tscn\").instantiate()
 					inventory.append(healthkit)
+	
+	else:
+		hide()
+		$Hitbox/Hitbox.disabled = true
+		$Hitbox/Hitbox2.disabled = true
 
 
 
@@ -187,7 +190,7 @@ func _process(delta):
 			reorient((-global_basis.y - global_basis.x).normalized(), delta)
 	
 	
-	if Input.is_action_just_pressed(\"B\") and !UiManager.paused and Time.get_ticks_msec() - spawn_time < 20000:
+	if Input.is_action_just_pressed(\"B\") and !UiManager.paused and Time.get_ticks_msec() - spawn_time < 10000:
 		UiManager.set_ui(4)
 	
 	
@@ -252,16 +255,16 @@ func _process(delta):
 		hud.stop_progress(\"Bomb\")
 	
 	
-	if Input.is_action_just_pressed(\"MouseDown\") and inventory.size() > 0 and !UiManager.paused:
+	if Input.is_action_just_pressed(\"MouseDown\")and !UiManager.paused:
 		if active_item:
 			camera.remove_child(active_item)
-			active_item = inventory[ min(inventory.find(active_item) + 1, 3) ]
+			active_item = inventory[ clamp(inventory.find(active_item) + 1, 0, inventory.size() - 1) ]
 			camera.add_child(active_item)
 	
-	if Input.is_action_just_pressed(\"MouseUp\") and inventory.size() > 0 and !UiManager.paused:
+	if Input.is_action_just_pressed(\"MouseUp\") and !UiManager.paused:
 		if active_item:
 			camera.remove_child(active_item)
-			active_item = inventory[ max(inventory.find(active_item) - 1, 0) ]
+			active_item = inventory[ clamp(inventory.find(active_item) - 1, 0, inventory.size() - 1) ]
 			camera.add_child(active_item)
 	
 	elif Input.is_action_just_pressed(\"1\") and inventory.size() > 0 and inventory[0] != active_item and !UiManager.paused:
@@ -636,24 +639,28 @@ func set_team(new_team : int):
 			Gamemanager.freecam.queue_free()
 		
 		$Camera3D.current = true
-		UiManager.set_ui(3)
 		hud.set_team(team)
 	
-	elif team == 1:
-		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0, 0, 0.6)
-		mat.emission_enabled = true
-		mat.emission = Color(0, 0, 0.1)
-		$Hitbox/MeshInstance3D.mesh.material = mat
-		$Hitbox/MeshInstance3D2.mesh.material = mat
-	
-	elif team == 2:
-		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0.6, 0, 0)
-		mat.emission_enabled = true
-		mat.emission = Color(0.1, 0, 0)
-		$Hitbox/MeshInstance3D.mesh.material = mat
-		$Hitbox/MeshInstance3D2.mesh.material = mat
+	else:
+		show()
+		$Hitbox/Hitbox.disabled = false
+		$Hitbox/Hitbox2.disabled = false
+		
+		if team == 1:
+			var mat = StandardMaterial3D.new()
+			mat.albedo_color = Color(0, 0, 0.6)
+			mat.emission_enabled = true
+			mat.emission = Color(0, 0, 0.1)
+			$Hitbox/MeshInstance3D.mesh.material = mat
+			$Hitbox/MeshInstance3D2.mesh.material = mat
+		
+		if team == 2:
+			var mat = StandardMaterial3D.new()
+			mat.albedo_color = Color(0.6, 0, 0)
+			mat.emission_enabled = true
+			mat.emission = Color(0.1, 0, 0)
+			$Hitbox/MeshInstance3D.mesh.material = mat
+			$Hitbox/MeshInstance3D2.mesh.material = mat
 	
 	
 	var spawnpoint = Gamemanager.find_spawnpoint(self, team)
@@ -676,6 +683,9 @@ func set_team(new_team : int):
 			rotate(-global_basis.y, _angle)
 	
 	spawn_time = Time.get_ticks_msec()
+	
+	await get_tree().create_timer(0.1).timeout
+	UiManager.set_ui(3)
 
 
 

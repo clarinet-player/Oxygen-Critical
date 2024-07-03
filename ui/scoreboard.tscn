@@ -17,7 +17,7 @@ script/source = "extends Control
 
 func _process(delta):
 	
-	var time_left = 180 - (Time.get_ticks_msec() - Gamemanager.round_start_time) / 1000
+	var time_left = 120 - (Time.get_ticks_msec() - Gamemanager.round_start_time) / 1000
 	var minutes = int(time_left / 60)
 	
 	if time_left < 0:
@@ -36,8 +36,8 @@ func _process(delta):
 		elif player.team == 2:
 			t += 1
 	
-	$CT.text = str(ct) + \"      \" + str(Gamemanager.c_spawns)
-	$T.text = str(t) + \"      \" + str(Gamemanager.t_spawns)
+	$CT.text = str(ct) + \"      +\" + str(Gamemanager.c_spawns)
+	$T.text = str(t) + \"      +\" + str(Gamemanager.t_spawns)
 "
 
 [node name="Scoreboard" type="Control"]

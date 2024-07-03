@@ -222,19 +222,19 @@ grow_vertical = 2
 theme_override_font_sizes/normal_font_size = 30
 
 [node name="T" type="RichTextLabel" parent="."]
-visible = false
 layout_mode = 1
-offset_left = 17.0
-offset_right = 800.0
-offset_bottom = 97.0
+offset_left = 13.0
+offset_top = -7.0
+offset_right = 540.0
+offset_bottom = 77.0
 theme_override_font_sizes/normal_font_size = 60
-text = "T: Plant the bomb"
+text = "T side"
 
 [node name="CT" type="RichTextLabel" parent="."]
-visible = false
-layout_mode = 0
-offset_left = 19.0
-offset_right = 802.0
-offset_bottom = 97.0
+layout_mode = 1
+offset_left = 13.0
+offset_top = -7.0
+offset_right = 605.0
+offset_bottom = 78.0
 theme_override_font_sizes/normal_font_size = 60
-text = "CT: Defend the sites"
+text = "CT side"

@@ -10,10 +10,6 @@ func _unpause():
 	UiManager.set_ui(3)
 
 
-func _buy_menu():
-	UiManager.set_ui(4)
-
-
 func _disconnect():
 	if Gamemanager.mp_active:
 		Gamemanager.disconnect_player()
@@ -93,12 +89,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 70
 text = "Unpause"
 
-[node name="Buy Menu" type="Button" parent="VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 70
-text = "Buy Menu
-"
-
 [node name="Settings" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 70
@@ -111,6 +101,5 @@ text = "Disconnect
 "
 
 [connection signal="button_down" from="VBoxContainer/Unpause" to="." method="_unpause"]
-[connection signal="button_down" from="VBoxContainer/Buy Menu" to="." method="_buy_menu"]
 [connection signal="button_down" from="VBoxContainer/Settings" to="." method="_on_settings_button_down"]
 [connection signal="button_down" from="VBoxContainer/Disconnect" to="." method="_disconnect"]

@@ -12,6 +12,7 @@ var mp_active = false
 
 var players := Array()
 var game_running := false
+var round_running := false
 
 var playable_area : AABB
 var bombsites : Array
@@ -66,10 +67,21 @@ func disconnect_player():
 func _on_connect(id : int):
 	print(\"player connected: \", id)
 	
-	players.append(id)
+	var team1 := 0
+	var team2 := 0
+	for player in players:
+		if player[0] == 1:
+			team1 += 1
+		elif player[0] == 2:
+			team2 += 1
+	if team1 > team2:
+		players.append([id, 2, null, null])
+	else:
+		players.append([id, 1, null, null])
+	
 	
 	sync_level.rpc_id(id, 1)
-	await get_tree().create_timer(0.1).timeout
+	
 	
 	if players.size() >= 2 and !game_running:
 		_game_loop()
@@ -82,7 +94,10 @@ func _on_disconnect(id):
 	print(\"player disconnected: \", id)
 	if get_node_or_null(str(id)):
 		get_node(str(id)).die.rpc()
-	players.erase(id)
+	
+	for player in players:
+		if player[0] == id:
+			players.erase(player)
 #endregion
 
 
@@ -91,19 +106,12 @@ func spawn_player(id):
 	var new_player = preload(\"res://classes/player.tscn\").instantiate()
 	new_player.name = str(id)
 	add_child(new_player)
-	await get_tree().create_timer(0.05).timeout
 	
-	var team1 := 0
-	var team2 := 0
-	for player in get_tree().get_nodes_in_group(\"Players\"):
-		if player.team == 1:
-			team1 += 1
-		elif player.team == 2:
-			team2 += 1
-	if team1 > team2:
-		new_player.set_team.rpc(2)
-	else:
-		new_player.set_team.rpc(1)
+	for player in players:
+		if player[0] == id:
+			player[1] = new_player
+			new_player.set_team.rpc(player[0])
+			break
 
 
 
@@ -114,15 +122,15 @@ func _game_loop():
 		
 		print(\"Round start.\")
 		round_start_time = Time.get_ticks_msec()
-		sync_spawns.rpc(0, 0)
-		
+		sync_scoreboard.rpc(120000, 0, 0)
+			
 		for player in players:
-			spawn_player(player)
+			spawn_player(player[0])
 		
-		while true:
+		while round_running:
 			await get_tree().create_timer(0.1).timeout
 			
-			if Time.get_ticks_msec() - round_start_time > 180000:
+			if Time.get_ticks_msec() - round_start_time > 120000:
 				ui_message.rpc(1)
 				print(\"Round end. Out of time.\")
 			
@@ -133,6 +141,7 @@ func _game_loop():
 			if sites_destroyed > bombsites.size() / 2:
 				ui_message.rpc(2)
 				print(\"Round end. Bombs detonated.\")
+				round_running = false
 				break
 			
 			var team1 := true
@@ -145,10 +154,12 @@ func _game_loop():
 			if team1:
 				ui_message.rpc(2)
 				print(\"Round end. CTs eliminated.\")
+				round_running = false
 				break
 			elif team2 and bombs.is_empty():
 				ui_message.rpc(1)
 				print(\"Round end. Ts eliminated.\")
+				round_running = false
 				break
 		
 		await get_tree().create_timer(2.0).timeout
@@ -200,7 +211,8 @@ func sync_level(level : int):
 
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
-func sync_spawns(c : int, t : int):
+func sync_scoreboard(time_left : int, c : int, t : int):
+	round_start_time = Time.get_ticks_msec() - 120000 + time_left
 	c_spawns = c
 	t_spawns = t
 
@@ -234,7 +246,7 @@ func plant_bomb(pos : Vector3, site : int):
 	
 	bombsites[site][1] = 1
 	
-	round_start_time += 10
+	round_start_time += 25000
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func defuse_bomb(site : int):
