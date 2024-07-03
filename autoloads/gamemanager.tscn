@@ -69,9 +69,9 @@ func _on_connect(id : int):
 	var team1 := 0
 	var team2 := 0
 	for player in players:
-		if player[0] == 1:
+		if player[1] == 1:
 			team1 += 1
-		elif player[0] == 2:
+		elif player[1] == 2:
 			team2 += 1
 	if team1 > team2:
 		players.append([id, 2, null, null])
@@ -233,6 +233,7 @@ func sync_level(level : int):
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
 func sync_scoreboard(time_left : int, c : int, t : int):
+	print(\"scoreboard synced\")
 	round_start_time = Time.get_ticks_msec() - 120000 + time_left
 	c_spawns = c
 	t_spawns = t
