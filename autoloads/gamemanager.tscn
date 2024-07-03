@@ -102,16 +102,12 @@ func _on_disconnect(id):
 
 
 
-func spawn_player(id):
+func spawn_player(player):
 	var new_player = preload(\"res://classes/player.tscn\").instantiate()
-	new_player.name = str(id)
+	new_player.name = str(player[0])
 	add_child(new_player)
-	
-	for player in players:
-		if player[0] == id:
-			player[1] = new_player
-			new_player.set_team.rpc(player[0])
-			break
+	player[1] = new_player
+	new_player.set_team.rpc(player[0])
 
 
 
@@ -122,13 +118,28 @@ func _game_loop():
 		
 		print(\"Round start.\")
 		round_start_time = Time.get_ticks_msec()
-		sync_scoreboard.rpc(120000, 0, 0)
-			
+		c_spawns = 2
+		t_spawns = 2
+		sync_scoreboard.rpc(120000, 2, 2)
+		
 		for player in players:
-			spawn_player(player[0])
+			spawn_player(player)
+		
 		
 		while round_running:
 			await get_tree().create_timer(0.1).timeout
+			
+			
+			for player in players:
+				if player[2] == null and player[0] == 1 and c_spawns > 0:
+					c_spawns -= 1
+					spawn_player(player)
+					sync_scoreboard(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
+				elif player[2] == null and player[0] == 2 and t_spawns > 0:
+					t_spawns -= 1
+					spawn_player(player)
+					sync_scoreboard(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
+			
 			
 			if Time.get_ticks_msec() - round_start_time > 120000:
 				ui_message.rpc(1)
@@ -161,6 +172,7 @@ func _game_loop():
 				print(\"Round end. Ts eliminated.\")
 				round_running = false
 				break
+		
 		
 		await get_tree().create_timer(2.0).timeout
 		reset.rpc()
