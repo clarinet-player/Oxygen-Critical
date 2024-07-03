@@ -92,7 +92,6 @@ func spawn_player(id):
 	
 	var team1 := 0
 	var team2 := 0
-	print(get_tree().get_nodes_in_group(\"Players\"))
 	for player in get_tree().get_nodes_in_group(\"Players\"):
 		if player.team == 1:
 			team1 += 1
@@ -137,7 +136,7 @@ func _game_loop():
 				ui_message.rpc(2)
 				print(\"Round end. CTs eliminated.\")
 				break
-			elif team2:
+			elif team2 and bombs.is_empty():
 				ui_message.rpc(1)
 				print(\"Round end. Ts eliminated.\")
 				break
