@@ -191,12 +191,9 @@ func _process(delta):
 	
 	
 	if Input.is_action_just_pressed(\"E\") and team == 2:
-		print(\"attempting plant\")
 		for site in Gamemanager.bombsites:
-			print(site[0].position.distance_to(global_position))
 			if site[0].has_point(global_position) and site[1] == 0:
 				bomb_site = Gamemanager.bombsites.find(site)
-				print(\"found site\")
 				break
 		if bomb_site >= 0:
 			using_bomb = true

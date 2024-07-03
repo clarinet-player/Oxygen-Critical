@@ -69,7 +69,6 @@ func _on_connect(id : int):
 	await get_tree().create_timer(0.1).timeout
 	
 	if players.size() >= 2 and !game_running:
-		print(\"starting game loop\")
 		_game_loop()
 	elif !game_running:
 		ui_message.rpc(0)
@@ -119,8 +118,7 @@ func _game_loop():
 			spawn_player(player)
 		
 		
-		round_running = true
-		while round_running:
+		while true:
 			await get_tree().create_timer(0.1).timeout
 			
 			var sites_destroyed := 0
@@ -128,9 +126,9 @@ func _game_loop():
 				if site[1] == 2:
 					sites_destroyed += 1
 			if sites_destroyed > bombsites.size() / 2:
-				round_running = false
 				ui_message(2)
 				print(\"Round end. Bombs detonated.\")
+				break
 			
 			var team1 := true
 			var team2 := true
@@ -140,13 +138,13 @@ func _game_loop():
 				elif player.team == 2:
 					team2 = false
 			if team1:
-				round_running = false
 				ui_message.rpc(2)
 				print(\"Round end. CTs eliminated.\")
+				break
 			elif team2:
-				round_running = false
 				ui_message.rpc(1)
 				print(\"Round end. Ts eliminated.\")
+				break
 		
 		
 		await get_tree().create_timer(2.0).timeout
@@ -240,7 +238,6 @@ func reset():
 	bombs = Array()
 	for site in bombsites:
 		site[1] = 0
-		print(site)
 	
 	for child in get_children():
 		if child.name == \"MultiplayerSpawner\":
