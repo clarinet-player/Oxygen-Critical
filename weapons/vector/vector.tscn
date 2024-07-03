@@ -53,7 +53,6 @@ recovery = 0.15
 recoil = 0.83
 spray = 3.0
 inventory_size = 2
-handling_time = 0.15
 audio = NodePath("AudioStreamPlayer3D")
 light = NodePath("Vector/SpotLight3D")
 

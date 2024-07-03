@@ -1,0 +1,9 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://bje2m6bnsa4r"]
+
+[ext_resource type="Texture2D" uid="uid://boixaq7472djr" path="res://assets/metal.jpg" id="1_tt7na"]
+
+[resource]
+albedo_color = Color(0.788235, 0.788235, 0.788235, 1)
+albedo_texture = ExtResource("1_tt7na")
+metallic = 0.4
+roughness_texture = ExtResource("1_tt7na")

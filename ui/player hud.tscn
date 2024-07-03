@@ -16,10 +16,6 @@ var progress_speed : float
 @onready var progress := $\"Progress Bar\"
 @onready var crosshair := $Crosshair
 
-@onready var wheel := $Wheel
-@onready var anchor := $\"Wheel/Anchor\"
-@onready var indicator := $Wheel/Indicator
-
 
 
 func set_team(team : int):
@@ -57,17 +53,16 @@ func alt_fire(type : int):
 
 
 func set_hud_anchor(mode : int, rotation_rad : float):
-	pass
-	#wheel.rotation = rotation_rad
-	#if mode == 1:
-	#	indicator.show()
-	#	anchor.hide()
-	#elif mode == 2:
-	#	indicator.hide()
-	#	anchor.show()
-	#else:
-	#	indicator.hide()
-	#	anchor.hide()
+	$Wheel.rotation = rotation_rad
+	if mode == 1:
+		$Wheel/Indicator.show()
+		$\"Wheel/Anchor\".hide()
+	elif mode == 2:
+		$Wheel/Indicator.hide()
+		$\"Wheel/Anchor\".show()
+	else:
+		$Wheel/Indicator.hide()
+		$\"Wheel/Anchor\".hide()
 
 
 

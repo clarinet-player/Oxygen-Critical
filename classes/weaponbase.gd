@@ -15,7 +15,6 @@ extends Node3D
 @export var recoil : float
 @export var spray : float
 @export var inventory_size : int
-@export var handling_time : float
 
 @export var audio : AudioStreamPlayer3D
 @export var light : SpotLight3D
@@ -160,8 +159,8 @@ func _physics_process(delta):
 		
 		
 		if !player.is_anchored() or player.velocity.length() > 1:
-			rotate(basis.x.normalized(), recoil * 0.006)
-			get_parent().rotate(basis.x.normalized(), recoil * 0.006)
+			rotate(basis.x.normalized(), recoil * 0.005)
+			get_parent().rotate(basis.x.normalized(), recoil * 0.005)
 		else:
 			rotate(basis.x.normalized(), recoil * 0.004)
 			get_parent().rotate(basis.x.normalized(), recoil * 0.004)
@@ -197,7 +196,7 @@ func fire(pos : Vector3, velocity : Vector3):
 	_bullet.mass = damage
 	_bullet.tearing = tearing
 	_bullet.effective_range = effective_range
-	_bullet.owning_player = get_parent().get_parent()
+	_bullet.team = get_parent().get_parent().team
 	
 	var _smoke = preload("res://classes/smoke.tscn").instantiate()
 	_smoke.size = Vector3(0.01, 0.01, 4)

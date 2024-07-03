@@ -221,8 +221,9 @@ func plant_bomb(pos : Vector3, site : int):
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func defuse_bomb(site : int):
 	for bomb in bombs:
-		if bomb.site == site:
+		if bomb != null and bomb.site == site:
 			bomb.defuse()
+			bombs.erase(bomb)
 			bombsites[site][1] = 0
 			break
 

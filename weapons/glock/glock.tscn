@@ -57,7 +57,6 @@ effective_range = 35.0
 recovery = 0.1
 recoil = 2.5
 spray = 1.5
-handling_time = 0.05
 audio = NodePath("AudioStreamPlayer3D")
 light = NodePath("Skeleton3D/SpotLight3D")
 
