@@ -65,7 +65,6 @@ func disconnect_player():
 
 
 func _on_connect(id : int):
-	print(\"player connected: \", id)
 	
 	var team1 := 0
 	var team2 := 0
@@ -76,8 +75,10 @@ func _on_connect(id : int):
 			team2 += 1
 	if team1 > team2:
 		players.append([id, 2, null, null])
+		print(\"player connected: \", 2, \" \", id)
 	else:
 		players.append([id, 1, null, null])
+		print(\"player connected: \", 1, \" \", id)
 	
 	
 	sync_level.rpc_id(id, 1)
