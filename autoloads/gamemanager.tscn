@@ -84,36 +84,30 @@ func _on_disconnect(id):
 
 
 
-func spawn_player(id : int):
-	var new_player = preload(\"res://classes/player.tscn\").instantiate()
-	new_player.name = str(id)
-	
-	add_child(new_player)
-	
-	await get_tree().create_timer(0.1).timeout
-	
-	var team1 := 0
-	var team2 := 0
-	for player in get_tree().get_nodes_in_group(\"Players\"):
-		if player.team == 1:
-			team1 += 1
-		elif player.team == 2:
-			team2 += 1
-	if team1 > team2:
-		new_player.set_team.rpc(2)
-	else:
-		new_player.set_team.rpc(1)
-
-
-
 func _game_loop():
 	
 	game_running = true
 	while game_running:
 		
 		print(\"Round start.\")
-		for player in players:
-			spawn_player(player)
+		for id in players:
+			var new_player = preload(\"res://classes/player.tscn\").instantiate()
+			new_player.name = str(id)
+			add_child(new_player)
+			await get_tree().create_timer(0.1).timeout
+			
+			var team1 := 0
+			var team2 := 0
+			for player in get_tree().get_nodes_in_group(\"Players\"):
+				if player.team == 1:
+					team1 += 1
+				elif player.team == 2:
+					team2 += 1
+			if team1 > team2:
+				new_player.set_team.rpc(2)
+			else:
+				new_player.set_team.rpc(1)
+		
 		
 		while true:
 			await get_tree().create_timer(0.1).timeout
