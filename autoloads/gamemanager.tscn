@@ -106,7 +106,7 @@ func spawn_player(player):
 	var new_player = preload(\"res://classes/player.tscn\").instantiate()
 	new_player.name = str(player[0])
 	add_child(new_player)
-	player[1] = new_player
+	player[2] = new_player
 	await get_tree().create_timer(0.1).timeout
 	new_player.set_team.rpc(player[0])
 
@@ -165,10 +165,10 @@ func _game_loop():
 			# Team eliminated
 			var team1 := true
 			var team2 := true
-			for player in get_tree().get_nodes_in_group(\"Players\"):
-				if player.team == 1:
+			for player in players:
+				if player[1] == 1 and player[2] != null:
 					team1 = false
-				elif player.team == 2:
+				elif player[1] == 2 and player[2] != null:
 					team2 = false
 			if team1:
 				ui_message.rpc(2)
