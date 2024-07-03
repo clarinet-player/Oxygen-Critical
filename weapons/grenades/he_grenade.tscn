@@ -247,9 +247,7 @@ one_shot = true
 explosiveness = 1.0
 fixed_fps = 60
 process_material = SubResource("ParticleProcessMaterial_24xpk")
-draw_passes = 2
 draw_pass_1 = SubResource("SphereMesh_bl6n2")
-draw_pass_2 = null
 draw_skin = SubResource("Skin_j3ngg")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]

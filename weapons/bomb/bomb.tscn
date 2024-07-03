@@ -66,9 +66,9 @@ func _physics_process(delta):
 			$GPUParticles3D.emitting = true
 		
 		var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()
-		_smoke.size = Vector3(2, 2, 2)
+		_smoke.size = Vector3(2.5, 2.5, 2.5)
 		_smoke.fade_speed = 0.08
-		_smoke.start_density = 0.5
+		_smoke.start_density = 0.4
 		Gamemanager.add_child(_smoke)
 		_smoke.global_position = global_position
 		
@@ -125,7 +125,7 @@ lifetime_randomness = 0.6
 angle_max = 180.0
 spread = 180.0
 initial_velocity_min = 8.0
-initial_velocity_max = 32.0
+initial_velocity_max = 40.0
 gravity = Vector3(0, 0, 0)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_o1kmu"]
@@ -135,8 +135,8 @@ roughness = 0.67
 
 [sub_resource type="SphereMesh" id="SphereMesh_ri3cv"]
 material = SubResource("StandardMaterial3D_o1kmu")
-radius = 0.035
-height = 0.06
+radius = 0.05
+height = 0.08
 radial_segments = 4
 rings = 2
 
@@ -166,9 +166,7 @@ one_shot = true
 explosiveness = 1.0
 fixed_fps = 60
 process_material = SubResource("ParticleProcessMaterial_ov625")
-draw_passes = 2
 draw_pass_1 = SubResource("SphereMesh_ri3cv")
-draw_pass_2 = null
 draw_skin = SubResource("Skin_e60tl")
 
 [node name="OmniLight3D2" type="OmniLight3D" parent="."]
