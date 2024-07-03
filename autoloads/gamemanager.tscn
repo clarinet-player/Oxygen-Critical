@@ -12,11 +12,14 @@ var mp_active = false
 
 var players := Array()
 var game_running := false
-var round_running := false
 
 var playable_area : AABB
 var bombsites : Array
 var bombs := Array()
+
+var round_start_time := 0
+var c_spawns := 0
+var t_spawns := 0
 
 
 
@@ -110,12 +113,19 @@ func _game_loop():
 	while game_running:
 		
 		print(\"Round start.\")
+		round_start_time = Time.get_ticks_msec()
 		
 		for player in players:
 			spawn_player(player)
 		
+		sync_scoreboard(180)
+		
 		while true:
 			await get_tree().create_timer(0.1).timeout
+			
+			if Time.get_ticks_msec() - round_start_time > 180000:
+				ui_message.rpc(1)
+				print(\"Round end. Out of time.\")
 			
 			var sites_destroyed := 0
 			for site in bombsites:
@@ -198,7 +208,7 @@ func ui_message(ui : int):
 
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
-func sync_scoreboard(time : float, c_spawns : int, t_spawns : int):
+func sync_scoreboard(time : float):
 	var c_players := 0
 	var t_players := 0
 	for player in get_tree().get_nodes_in_group(\"Players\"):
