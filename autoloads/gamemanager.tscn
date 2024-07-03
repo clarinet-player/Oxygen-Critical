@@ -94,7 +94,7 @@ func _game_loop():
 			var new_player = preload(\"res://classes/player.tscn\").instantiate()
 			new_player.name = str(id)
 			add_child(new_player)
-			await get_tree().create_timer(0.1).timeout
+			await get_tree().create_timer(0.05).timeout
 			
 			var team1 := 0
 			var team2 := 0
