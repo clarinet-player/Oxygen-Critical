@@ -90,6 +90,7 @@ func _game_loop():
 	while game_running:
 		
 		print(\"Round start.\")
+		
 		for id in players:
 			var new_player = preload(\"res://classes/player.tscn\").instantiate()
 			new_player.name = str(id)
@@ -98,7 +99,6 @@ func _game_loop():
 			
 			var team1 := 0
 			var team2 := 0
-			print(get_tree().get_nodes_in_group(\"Players\"))
 			for player in get_tree().get_nodes_in_group(\"Players\"):
 				if player.team == 1:
 					team1 += 1
@@ -226,9 +226,7 @@ func defuse_bomb(site : int):
 
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func reset():
-	bombs = Array()
-	for site in bombsites:
-		site[1] = 0
+	get_tree().change_scene_to_file(\"res://scenes/somnambulist.tscn\")
 	
 	for child in get_children():
 		if child.name == \"MultiplayerSpawner\":
