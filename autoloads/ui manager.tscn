@@ -38,16 +38,21 @@ func _ready():
 
 func _process(delta):
 	if Input.is_action_just_pressed(\"Escape\"):
-		if active_menu == mainmenu:
-			get_tree().quit()
-		elif active_menu == pausemenu:
-			set_ui(prev_menu)
-		elif active_menu == buymenu:
-			set_ui(3)
-		elif active_menu == settingsmenu:
-			set_ui(2)
-		else:
-			set_ui(2)
+		exit()
+
+
+
+func exit():
+	if active_menu == mainmenu:
+		get_tree().quit()
+	elif active_menu == pausemenu:
+		set_ui(prev_menu)
+	elif active_menu == buymenu:
+		set_ui(3)
+	elif active_menu == settingsmenu:
+		set_ui(2)
+	else:
+		set_ui(2)
 
 
 
@@ -94,10 +99,12 @@ func set_ui(ui : int):
 	elif ui == 5:
 		add_child(settingsmenu)
 		active_menu = settingsmenu
+		paused = true
 	
 	elif ui == 6:
 		add_child(spechud)
 		active_menu = spechud
+		paused = false
 		
 		if Gamemanager.mp_active:
 			add_child(scoreboard)

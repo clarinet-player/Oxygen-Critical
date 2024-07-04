@@ -28,3 +28,4 @@ res://classes/weaponbase.gd
 res://autoloads/settings.tscn
 res://ui/scoreboard.tscn
 res://ui/buy menu.tscn
+res://classes/freecam.tscn

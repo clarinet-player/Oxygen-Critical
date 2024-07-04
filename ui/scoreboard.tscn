@@ -13,7 +13,7 @@ func _process(delta):
 	var time_left = 120 - (Time.get_ticks_msec() - Gamemanager.round_start_time) / 1000
 	var minutes = int(time_left / 60)
 	
-	if time_left < 0:
+	if time_left < 0 or Gamemanager.round_start_time == -1:
 		$Timer.text = \"0:00\"
 	elif time_left - int(time_left / 60) * 60 < 10:
 		$Timer.text = str(minutes) + \":0\" + str(int(time_left - minutes * 60))

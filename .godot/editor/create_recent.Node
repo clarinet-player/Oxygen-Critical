@@ -1,3 +1,4 @@
+Camera3D
 Panel
 RichTextLabel
 TextureRect
@@ -6,7 +7,6 @@ Node3D
 AudioStreamPlayer3D
 MeshInstance3D
 Marker3D
-Camera3D
 Sprite3D
 Decal
 DirectionalLight3D

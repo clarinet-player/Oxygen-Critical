@@ -1,0 +1,37 @@
+[gd_scene load_steps=2 format=3 uid="uid://b7wpptkmt2d1m"]
+
+[sub_resource type="GDScript" id="GDScript_odh0x"]
+script/source = "extends Camera3D
+
+
+func _ready():
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	current = true
+	fov = Settings.fov
+
+
+func _input(event):
+	if UiManager.paused:
+		return
+	
+	if event is InputEventMouseMotion:
+		global_rotate(global_basis.x, event.relative.y * Settings.mouse_sensitivity * -0.001)
+		global_rotate(global_basis.y, event.relative.x * Settings.mouse_sensitivity * -0.001)
+
+
+func _process(delta):
+	if UiManager.paused:
+		return
+	
+	if Input.is_action_pressed(\"W\"):
+		global_translate(global_basis.z * -10 * delta)
+	if Input.is_action_pressed(\"A\"):
+		global_translate(global_basis.x * -10 * delta)
+	if Input.is_action_pressed(\"S\"):
+		global_translate(global_basis.z * 10 * delta)
+	if Input.is_action_pressed(\"D\"):
+		global_translate(global_basis.x * 10 * delta)
+"
+
+[node name="Freecam" type="Camera3D"]
+script = SubResource("GDScript_odh0x")

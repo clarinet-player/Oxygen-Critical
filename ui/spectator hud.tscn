@@ -3,6 +3,9 @@
 [sub_resource type="GDScript" id="GDScript_3bm6q"]
 script/source = "extends Control
 
+func _ready():
+	request_ready()
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func set_message(message : int):
 	if message == 0:

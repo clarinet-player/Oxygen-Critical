@@ -7,7 +7,7 @@ script/source = "extends Control
 
 
 func _unpause():
-	UiManager.set_ui(3)
+	UiManager.exit()
 
 
 func _disconnect():
@@ -20,6 +20,10 @@ func _disconnect():
 
 func _on_settings_button_down():
 	UiManager.set_ui(5)
+
+
+func _on_team_button_down():
+	Gamemanager.switch_team.rpc_id(1)
 "
 
 [node name="PauseMenu" type="Control"]
@@ -76,10 +80,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -206.5
-offset_top = -124.5
-offset_right = 206.5
-offset_bottom = 124.5
+offset_left = -242.5
+offset_top = -214.0
+offset_right = 242.5
+offset_bottom = 214.0
 grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
@@ -88,6 +92,11 @@ alignment = 1
 layout_mode = 2
 theme_override_font_sizes/font_size = 70
 text = "Unpause"
+
+[node name="Team" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 70
+text = "Switch Team"
 
 [node name="Settings" type="Button" parent="VBoxContainer"]
 layout_mode = 2
@@ -101,5 +110,6 @@ text = "Disconnect
 "
 
 [connection signal="button_down" from="VBoxContainer/Unpause" to="." method="_unpause"]
+[connection signal="button_down" from="VBoxContainer/Team" to="." method="_on_team_button_down"]
 [connection signal="button_down" from="VBoxContainer/Settings" to="." method="_on_settings_button_down"]
 [connection signal="button_down" from="VBoxContainer/Disconnect" to="." method="_disconnect"]

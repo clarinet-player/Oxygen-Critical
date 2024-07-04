@@ -18,7 +18,7 @@ var playable_area : AABB
 var bombsites : Array
 var bombs := Array()
 
-var round_start_time := 0
+var round_start_time := -1
 var c_spawns := 0
 var t_spawns := 0
 
@@ -65,6 +65,7 @@ func disconnect_player():
 
 
 func _on_connect(id : int):
+	print(\"player connected: \", id)
 	
 	var team1 := 0
 	var team2 := 0
@@ -75,10 +76,8 @@ func _on_connect(id : int):
 			team2 += 1
 	if team1 > team2:
 		players.append([id, 2, null, null])
-		print(\"player connected: \", 2, \" \", id)
 	else:
 		players.append([id, 1, null, null])
-		print(\"player connected: \", 1, \" \", id)
 	
 	
 	sync_level.rpc_id(id, 1)
@@ -225,9 +224,12 @@ func sync_level(level : int):
 	if level == 1:
 		get_tree().change_scene_to_file(\"res://scenes/somnambulist.tscn\")
 	
-	await get_tree().create_timer(0.1).timeout
-	if UiManager.active_menu != UiManager.spechud:
-		UiManager.set_ui(0)
+	if DisplayServer.get_name() != \"headless\":
+		var cam = preload(\"res://classes/freecam.tscn\").instantiate()
+		add_child(cam)
+		cam.global_position = Vector3(8, 1.7, 20.7)
+		freecam = cam
+		UiManager.set_ui(6)
 
 
 
@@ -294,10 +296,16 @@ func reset():
 
 
 
-
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func switch_team():
-	pass
+	for player in players:
+		if player[0] == multiplayer.get_remote_sender_id():
+			if player[1] == 1:
+				player[1] == 2
+			else:
+				player[1] == 1
+		if player[2] != null:
+			player[2].die.rpc()
 "
 
 [node name="GameManager" type="Node"]

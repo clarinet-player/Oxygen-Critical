@@ -631,7 +631,8 @@ func set_team(new_team : int):
 	team = new_team
 	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
-		if Gamemanager.freecam:
+		
+		if Gamemanager.freecam != null:
 			Gamemanager.freecam.queue_free()
 		
 		$Camera3D.current = true
@@ -709,6 +710,11 @@ func die():
 		Gamemanager.local_player = null
 		if UiManager.active_menu != UiManager.spechud:
 			Gamemanager.ui_message(3)
+		
+		var freecam = preload(\"res://classes/freecam.tscn\").instantiate()
+		Gamemanager.add_child(freecam)
+		Gamemanager.freecam = freecam
+		freecam.global_transform = camera.global_transform
 	
 	death.emit(int(str(name)))
 	queue_free()
