@@ -131,15 +131,14 @@ func _game_loop():
 		while round_running:
 			await get_tree().create_timer(0.1).timeout
 			
-			
 			# Respawn players
 			for player in players:
-				if player[2] == null and player[0] == 1 and c_spawns > 0:
+				if player[2] == null and player[1] == 1 and c_spawns > 0:
 					c_spawns -= 1
 					spawn_player(player)
 					sync_scoreboard(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
 				
-				elif player[2] == null and player[0] == 2 and t_spawns > 0:
+				elif player[2] == null and player[1] == 2 and t_spawns > 0:
 					t_spawns -= 1
 					spawn_player(player)
 					sync_scoreboard(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
