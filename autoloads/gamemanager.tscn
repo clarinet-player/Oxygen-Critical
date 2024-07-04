@@ -291,6 +291,13 @@ func reset():
 			continue
 		remove_child(child)
 		child.free()
+
+
+
+
+@rpc(\"any_peer\", \"call_remote\", \"reliable\")
+func switch_team():
+	pass
 "
 
 [node name="GameManager" type="Node"]
