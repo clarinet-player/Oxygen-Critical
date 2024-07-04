@@ -131,6 +131,9 @@ func _game_loop():
 		round_running = true
 		while round_running:
 			await get_tree().create_timer(0.1).timeout
+			print(Time.get_ticks_msec() - round_start_time)
+			print(c_spawns, \"  \", t_spawns)
+			print()
 			
 			# Respawn players
 			for player in players:
@@ -233,6 +236,7 @@ func sync_level(level : int):
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
 func sync_scoreboard(time_left : int, c : int, t : int):
+	print(\"scoreboard synced \", int(time_left), \" \", c, \" \", t )
 	round_start_time = Time.get_ticks_msec() - 120000 + time_left
 	c_spawns = c
 	t_spawns = t
