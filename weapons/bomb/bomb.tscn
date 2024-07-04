@@ -101,7 +101,7 @@ func _check_player(player : Node3D):
 	var _raycast = _space.intersect_ray(_ray)
 	
 	if _raycast.has(\"collider\") and _raycast.collider == player.hitbox:
-		_damage(player, 100, 10)
+		_damage(player, 110, 10)
 		return
 	
 	# Raycast to player's head
@@ -109,7 +109,7 @@ func _check_player(player : Node3D):
 	_raycast = _space.intersect_ray(_ray)
 	
 	if _raycast.has(\"collider\") and _raycast.collider == player.hitbox:
-		_damage(player, 100, 10)
+		_damage(player, 110, 10)
 		return
 	
 	_damage(player, 60, 4)
