@@ -109,7 +109,7 @@ func spawn_player(player):
 	add_child(new_player)
 	player[2] = new_player
 	await get_tree().create_timer(0.1).timeout
-	new_player.set_team.rpc(player[0])
+	new_player.set_team.rpc(player[1])
 
 
 
@@ -171,14 +171,14 @@ func _game_loop():
 					team1 = false
 				elif player[1] == 2 and player[2] != null:
 					team2 = false
-			if team1:
-				ui_message.rpc(2)
-				print(\"Round end. CTs eliminated.\")
-				round_running = false
-				break
-			elif team2 and bombs.is_empty():
+			if team2 and bombs.is_empty() and t_spawns < 1:
 				ui_message.rpc(1)
 				print(\"Round end. Ts eliminated.\")
+				round_running = false
+				break
+			elif team1 and c_spawns < 1:
+				ui_message.rpc(2)
+				print(\"Round end. CTs eliminated.\")
 				round_running = false
 				break
 		

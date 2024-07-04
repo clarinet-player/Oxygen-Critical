@@ -8,13 +8,6 @@ script/source = "extends Control
 
 
 
-#func update(c_spawns : int, t_spawns : int):
-#	
-#	$CT.text = str(c_players) + \"      \" + str(c_spawns)
-#	$T.text = str(t_players) + \"      \" + str(t_spawns)
-
-
-
 func _process(delta):
 	
 	var time_left = 120 - (Time.get_ticks_msec() - Gamemanager.round_start_time) / 1000
