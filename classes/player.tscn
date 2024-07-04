@@ -304,13 +304,9 @@ func _physics_process(delta : float):
 			die()
 	
 	else:
-		
-		#if Time.get_ticks_msec() - update_time > timeout_time:
-		#	Gamemanager.timeout.rpc_id(int(str(name)))
-		#	print(\"player disconnected: \", name)
-		#	queue_free()
-		
 		health -= breach * delta
+		if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):
+			health -= 100 * delta
 		if health < 0.1:
 			die.rpc()
 		return
