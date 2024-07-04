@@ -83,8 +83,9 @@ func _on_connect(id : int):
 	
 	sync_level.rpc_id(id, 1)
 	
-	
-	if players.size() >= 2 and !game_running:
+	if round_running:
+		sync_scoreboard.rpc_id(id, Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
+	elif players.size() >= 2 and !game_running:
 		_game_loop()
 	elif !game_running:
 		ui_message.rpc(0)
@@ -232,7 +233,6 @@ func sync_level(level : int):
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
 func sync_scoreboard(time_left : int, c : int, t : int):
-	print(\"scoreboard synced\")
 	round_start_time = Time.get_ticks_msec() - 120000 + time_left
 	c_spawns = c
 	t_spawns = t
