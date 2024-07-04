@@ -69,8 +69,9 @@ func _on_connect(id : int):
 	
 	# Syncing other players
 	for player in players:
+		print(\"syncing player\")
 		if player[2] != null:
-			player[2].set_team.rpc_id(id)
+			player[2].set_team.rpc_id(id, player[1])
 	
 	
 	# Assigning player a team
@@ -82,9 +83,9 @@ func _on_connect(id : int):
 		elif player[1] == 2:
 			team2 += 1
 	if team1 > team2:
-		players.append([id, 2, null, null])
+		players.append([id, 2, null])
 	else:
-		players.append([id, 1, null, null])
+		players.append([id, 1, null])
 	
 	
 	sync_level.rpc_id(id, 1)
