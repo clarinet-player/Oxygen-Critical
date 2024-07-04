@@ -67,6 +67,13 @@ func disconnect_player():
 func _on_connect(id : int):
 	print(\"player connected: \", id)
 	
+	# Syncing other players
+	for player in players:
+		if player[2] != null:
+			player[2].set_team.rpc_id(id)
+	
+	
+	# Assigning player a team
 	var team1 := 0
 	var team2 := 0
 	for player in players:
