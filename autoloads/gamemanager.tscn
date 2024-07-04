@@ -298,16 +298,15 @@ func reset():
 
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func switch_team():
-	print(\"switch team\")
 	for player in players:
 		if player[0] == multiplayer.get_remote_sender_id():
 			if player[1] == 1:
 				player[1] == 2
 			else:
 				player[1] == 1
-		if player[2] != null:
-			player[2].die.rpc()
-		break
+			if player[2] != null:
+				player[2].die.rpc()
+			break
 "
 
 [node name="GameManager" type="Node"]
