@@ -180,6 +180,24 @@ func _game_loop():
 				print(\"Round end. CTs eliminated.\")
 				round_running = false
 				break
+			
+			team1 = true
+			team2 = true
+			for player in players:
+				if player[1] == 1:
+					team1 = false
+				elif player[1] == 2:
+					team2 = false
+			if team2:
+				ui_message.rpc(1)
+				print(\"Round end. Ts disconnected.\")
+				round_running = false
+				break
+			elif team1:
+				ui_message.rpc(2)
+				print(\"Round end. CTs disconnected.\")
+				round_running = false
+				break
 		
 		
 		await get_tree().create_timer(5.0).timeout

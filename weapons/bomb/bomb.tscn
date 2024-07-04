@@ -92,7 +92,7 @@ func defuse():
 
 
 func _check_player(player : Node3D):
-	if player.global_position.distance_to(global_position) > 20:
+	if player.global_position.distance_to(global_position) > 18:
 		return
 	
 	# Raycast to player's feet
@@ -117,7 +117,7 @@ func _check_player(player : Node3D):
 
 
 func _damage(player, damage, tearing):
-	var multiplier = (1 - player.global_position.distance_to(global_position) / 20)
+	var multiplier = (1 - player.global_position.distance_to(global_position) / 18)
 	if Gamemanager.mp_active:
 		player.damage(damage * multiplier, tearing * multiplier + 1, false)
 	else:
