@@ -249,7 +249,7 @@ func _process(delta):
 	
 	if using_bomb and team == 2 and Time.get_ticks_msec() - bomb_time > 2000:
 		using_bomb = false
-		Gamemanager.plant_bomb.rpc(global_position - global_basis.y * 0.5, bomb_site)
+		Gamemanager.plant_bomb.rpc(global_position - _surface_normal * 0.5, bomb_site)
 		bomb_site = -1
 	elif using_bomb and team == 1 and Time.get_ticks_msec() - bomb_time > 4000:
 		using_bomb = false
@@ -686,10 +686,11 @@ func set_team(new_team : int):
 		else:
 			rotate(-global_basis.y, _angle)
 	
-	spawn_time = Time.get_ticks_msec()
-	
-	await get_tree().create_timer(0.1).timeout
-	UiManager.set_ui(3)
+	if !Gamemanager.mp_active or is_multiplayer_authority():
+		spawn_time = Time.get_ticks_msec()
+		
+		await get_tree().create_timer(0.1).timeout
+		UiManager.set_ui(3)
 
 
 

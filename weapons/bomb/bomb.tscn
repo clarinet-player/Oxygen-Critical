@@ -32,18 +32,22 @@ func _process(delta):
 	
 	if direction:
 		value += delta * 2
-		if Time.get_ticks_msec() - start_time > 15000:
+		if Time.get_ticks_msec() - start_time > 13000:
 			value += delta
-		if Time.get_ticks_msec() - start_time > 20000:
+		if Time.get_ticks_msec() - start_time > 19000:
+			value += delta
+		if Time.get_ticks_msec() - start_time > 23000:
 			value += delta
 		if value >= 1.0:
 			$AudioStreamPlayer3D.play()
 			direction = false
 	else:
 		value -= delta * 2
-		if Time.get_ticks_msec() - start_time > 20000:
+		if Time.get_ticks_msec() - start_time > 16000:
 			value -= delta
-		if Time.get_ticks_msec() - start_time > 25000:
+		if Time.get_ticks_msec() - start_time > 19000:
+			value -= delta
+		if Time.get_ticks_msec() - start_time > 22000:
 			value -= delta
 		if value <= 0.0:
 			direction = true
@@ -112,7 +116,7 @@ func _check_player(player : Node3D):
 		_damage(player, 110, 10)
 		return
 	
-	_damage(player, 60, 4)
+	_damage(player, 50, 4)
 
 
 

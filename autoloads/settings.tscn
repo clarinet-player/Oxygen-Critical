@@ -24,7 +24,11 @@ var particles_enabled := true
 
 func _ready():
 	read_file()
-	AudioServer.set_bus_volume_db(0, -sqrt(100 - volume) * 2)
+	if !volume:
+		AudioServer.set_bus_mute(0, true)
+	else:
+		AudioServer.set_bus_mute(0, false)
+		AudioServer.set_bus_volume_db(0, -sqrt(100 - volume) * 2)
 	
 
 
