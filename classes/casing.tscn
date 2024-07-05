@@ -32,7 +32,7 @@ func _physics_process(delta):
 	var collision = move_and_collide(velocity * delta)
 	
 	if collision:
-		$AudioStreamPlayer3D.pitch_scale = 0.91 + velocity.length() / 60
+		$AudioStreamPlayer3D.pitch_scale = 0.88 + velocity.length() / 50
 		$AudioStreamPlayer3D.play()
 		
 		if \"get_is_grabbable\" in collision.get_collider_shape() and velocity.length() < randf_range(1.5, 4):
