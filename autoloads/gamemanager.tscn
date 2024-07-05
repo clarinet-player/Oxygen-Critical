@@ -116,7 +116,6 @@ func _on_disconnect(id):
 func spawn_player(player):
 	var new_player = preload(\"res://classes/player.tscn\").instantiate()
 	new_player.name = str(player[0])
-	new_player.username = player[3]
 	add_child(new_player)
 	player[2] = new_player
 	await get_tree().create_timer(0.1).timeout

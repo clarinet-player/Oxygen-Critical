@@ -7,6 +7,8 @@ script/source = "extends Control
 
 
 func _ready():
+	request_ready()
+	$VBoxContainer/Connect.text = \"Connect\"
 	$VBoxContainer/TextEdit.text = Settings.username
 
 
