@@ -775,6 +775,9 @@ properties/6/replication_mode = 1
 properties/7/path = NodePath(".:username")
 properties/7/spawn = true
 properties/7/replication_mode = 1
+properties/8/path = NodePath(".:velocity")
+properties/8/spawn = true
+properties/8/replication_mode = 1
 
 [node name="Player" type="RigidBody3D" groups=["Players"]]
 top_level = true
@@ -841,7 +844,6 @@ _spawnable_scenes = PackedStringArray("res://weapons/ak12/ak12.tscn", "res://wea
 spawn_path = NodePath("../Camera3D")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_interval = 0.1
 replication_config = SubResource("SceneReplicationConfig_0uupb")
 
 [connection signal="synchronized" from="MultiplayerSynchronizer" to="." method="_on_synchronization"]
