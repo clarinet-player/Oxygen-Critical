@@ -75,7 +75,7 @@ func start_progress(secs : float, task_name : String):
 
 
 func stop_progress(task_name : String):
-	if task_name == progress_name:
+	if task_name.is_empty() or task_name == progress_name:
 		progress.visible = false
 
 

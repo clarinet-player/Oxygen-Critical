@@ -71,7 +71,6 @@ func _on_connect(id : int):
 	
 	# Syncing other players
 	for player in players:
-		print(\"syncing player\")
 		if player[2] != null:
 			player[2].set_team.rpc_id(id, player[1])
 	

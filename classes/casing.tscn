@@ -27,7 +27,7 @@ func _physics_process(delta):
 		return
 	
 	global_rotate(angular.normalized(), angular.length() * delta)
-	velocity = lerp(velocity, Vector3.ZERO, delta * 0.1)
+	velocity = lerp(velocity, Vector3.ZERO, delta * 0.15)
 	angular = lerp(angular, Vector3.ZERO, delta * 0.01)
 	var collision = move_and_collide(velocity * delta)
 	
@@ -35,7 +35,7 @@ func _physics_process(delta):
 		$AudioStreamPlayer3D.pitch_scale = 0.88 + velocity.length() / 50
 		$AudioStreamPlayer3D.play()
 		
-		if \"get_is_grabbable\" in collision.get_collider_shape() and velocity.length() < randf_range(1.5, 4):
+		if \"get_is_grabbable\" in collision.get_collider_shape() and velocity.length() < randf_range(1, 3.5):
 			landed = true
 		else:
 			velocity = velocity.bounce(collision.get_normal()) * randf_range(0.25, 0.5) + Vector3(randf_range(-0.3, 0.3), randf_range(-0.5, 0.5), randf_range(-0.3, 0.3))

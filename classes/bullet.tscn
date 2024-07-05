@@ -67,7 +67,7 @@ func _physics_process(delta):
 					Audiomanager.play(\"res://assets/bullet_hit.mp3\")
 				
 				if multiplayer.get_unique_id() == 1:
-					_player.damage(min(mass * (1 - ((dist_travelled - effective_range) / effective_range)), mass) * _shape.damage, tearing, _shape.damage == 2)
+					_player.damage(min(mass * (1 - ((dist_travelled - effective_range) / effective_range)), mass) * _shape.damage, tearing * min(_shape.damage, 1), _shape.damage == 2)
 				
 				var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
 				Gamemanager.add_child(blood)
