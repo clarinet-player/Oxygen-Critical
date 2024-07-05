@@ -49,7 +49,6 @@ func connect_player():
 	peer.close()
 	peer.create_client(\"66.179.249.44\", 7777)
 	multiplayer.multiplayer_peer = peer
-	multiplayer.peer_connected.connect(_player_connect)
 	mp_active = true
 
 func cancel_connect():
@@ -64,10 +63,6 @@ func disconnect_player():
 		child.queue_free()
 		remove_child(child)
 	peer.close()
-
-func _player_connect():
-	if !username.is_empty():
-		set_username.rpc(username)
 
 
 
@@ -90,9 +85,9 @@ func _on_connect(id : int):
 		elif player[1] == 2:
 			team2 += 1
 	if team1 > team2:
-		players.append([id, 2, null, \"\"])
+		players.append([id, 2, null])
 	else:
-		players.append([id, 1, null, \"\"])
+		players.append([id, 1, null])
 	
 	
 	sync_level.rpc_id(id, 1)
@@ -341,18 +336,6 @@ func switch_team():
 			if player[2] != null:
 				player[2].die.rpc()
 			break
-
-
-
-@rpc(\"any_peer\", \"call_remote\", \"reliable\")
-func set_username(name : String):
-	for player in players:
-		if player[0] == multiplayer.get_remote_sender_id():
-			player[3] = name
-	for player in get_tree().get_nodes_in_group(\"Players\"):
-		if int(player.name) == multiplayer.get_remote_sender_id():
-			player.username = name
-
 "
 
 [node name="GameManager" type="Node"]

@@ -50,7 +50,7 @@ var active_item : Node3D
 var spawn_time := 0
 
 var team := 0
-var username := \"\"
+@export var username := \"\"
 var using_bomb := false
 var bomb_time := 0
 var bomb_site := -1
@@ -75,6 +75,8 @@ func _enter_tree():
 
 
 func _ready():
+	if !Gamemanager.username.is_empty():
+		username = Gamemanager.username
 	update_time = Time.get_ticks_msec()
 	
 	Settings.settings_changed.connect(_load_settings)
@@ -769,6 +771,9 @@ properties/5/replication_mode = 1
 properties/6/path = NodePath(".:team")
 properties/6/spawn = true
 properties/6/replication_mode = 1
+properties/7/path = NodePath(".:username")
+properties/7/spawn = true
+properties/7/replication_mode = 1
 
 [node name="Player" type="RigidBody3D" groups=["Players"]]
 top_level = true
