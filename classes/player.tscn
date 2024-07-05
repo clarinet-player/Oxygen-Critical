@@ -720,7 +720,7 @@ func die():
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jomgw"]
 radius = 0.25
-height = 0.9
+height = 1.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b7v7a"]
 emission_enabled = true
@@ -729,7 +729,7 @@ emission_enabled = true
 resource_local_to_scene = true
 material = SubResource("StandardMaterial3D_b7v7a")
 radius = 0.25
-height = 0.9
+height = 1.0
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_p56ql"]
 radius = 0.19
@@ -811,42 +811,42 @@ can_sleep = false
 freeze = true
 
 [node name="Label3D" type="Label3D" parent="Hitbox"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.02067, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.961088, 0)
 pixel_size = 0.002
 billboard = 1
 outline_modulate = Color(0, 0, 0, 0)
 font_size = 60
 
 [node name="Hitbox" parent="Hitbox" node_paths=PackedStringArray("player") instance=ExtResource("1_2yv3f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0650908, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0361335, 0)
 shape = SubResource("CapsuleShape3D_jomgw")
 player = NodePath("../..")
 damage = 1.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Hitbox"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0656398, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0366825, 0)
 mesh = SubResource("CapsuleMesh_r400h")
 skeleton = NodePath("../../PlayerBody")
 
 [node name="Hitbox2" parent="Hitbox" node_paths=PackedStringArray("player") instance=ExtResource("1_2yv3f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.705284, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.707071, 0)
 shape = SubResource("SphereShape3D_p56ql")
 player = NodePath("../..")
 damage = 2.0
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="Hitbox"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.705107, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.706894, 0)
 mesh = SubResource("SphereMesh_lmg7g")
 skeleton = NodePath("../../PlayerBody")
 
 [node name="Hitbox3" parent="Hitbox" node_paths=PackedStringArray("player") instance=ExtResource("1_2yv3f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.356752, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.416334, 0)
 shape = SubResource("CapsuleShape3D_71ht7")
 player = NodePath("../..")
 damage = 0.66
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="Hitbox"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.356203, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.415785, 0)
 mesh = SubResource("CapsuleMesh_6cv8e")
 skeleton = NodePath("../../PlayerBody")
 
