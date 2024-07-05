@@ -50,6 +50,7 @@ var active_item : Node3D
 var spawn_time := 0
 
 var team := 0
+var username := \"\"
 var using_bomb := false
 var bomb_time := 0
 var bomb_site := -1
@@ -149,6 +150,9 @@ func _input(event):
 
 
 func _process(delta):
+	if !username.is_empty():
+		$Hitbox/Label3D.text = username
+	
 	if Gamemanager.mp_active and !is_multiplayer_authority():
 		return
 	
@@ -724,7 +728,7 @@ func die():
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jomgw"]
 radius = 0.25
-height = 1.2
+height = 1.3
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b7v7a"]
 emission_enabled = true
@@ -733,15 +737,15 @@ emission_enabled = true
 resource_local_to_scene = true
 material = SubResource("StandardMaterial3D_b7v7a")
 radius = 0.25
-height = 1.2
+height = 1.3
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_p56ql"]
-radius = 0.2
+radius = 0.19
 
 [sub_resource type="SphereMesh" id="SphereMesh_lmg7g"]
 resource_local_to_scene = true
-radius = 0.2
-height = 0.4
+radius = 0.19
+height = 0.38
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_0uupb"]
 properties/0/path = NodePath(".:position")
@@ -797,25 +801,32 @@ collision_mask = 0
 can_sleep = false
 freeze = true
 
+[node name="Label3D" type="Label3D" parent="Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.02067, 0)
+pixel_size = 0.002
+billboard = 1
+outline_modulate = Color(0, 0, 0, 0)
+font_size = 60
+
 [node name="Hitbox" parent="Hitbox" node_paths=PackedStringArray("player") instance=ExtResource("1_2yv3f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.150896, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.133442, 0)
 shape = SubResource("CapsuleShape3D_jomgw")
 player = NodePath("../..")
 damage = 1.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Hitbox"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.150347, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.132893, 0)
 mesh = SubResource("CapsuleMesh_r400h")
 skeleton = NodePath("../../PlayerBody")
 
 [node name="Hitbox2" parent="Hitbox" node_paths=PackedStringArray("player") instance=ExtResource("1_2yv3f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6533, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.705284, 0)
 shape = SubResource("SphereShape3D_p56ql")
 player = NodePath("../..")
 damage = 2.0
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="Hitbox"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.653123, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.705107, 0)
 mesh = SubResource("SphereMesh_lmg7g")
 skeleton = NodePath("../../PlayerBody")
 

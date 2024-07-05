@@ -1,0 +1,83 @@
+[gd_scene load_steps=3 format=3 uid="uid://ccmsiqxtitjq7"]
+
+[ext_resource type="Texture2D" uid="uid://bitf3f8hujhok" path="res://assets/pikachu.png" id="1_5qod4"]
+
+[sub_resource type="GDScript" id="GDScript_3y1rm"]
+script/source = "extends Control
+
+
+func _ready():
+	$VBoxContainer/TextEdit.text = Settings.username
+
+
+func _on_connect_button_down():
+	Gamemanager.username = $VBoxContainer/TextEdit.text
+	Settings.username = $VBoxContainer/TextEdit.text
+	Settings.write_file()
+	Gamemanager.connect_player()
+	$VBoxContainer/Connect.text = \"Connecting..\"
+
+
+func _on_back_button_down():
+	Gamemanager.cancel_connect()
+	UiManager.set_ui(1)
+"
+
+[node name="MultiplayerMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_3y1rm")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1126.0
+offset_top = -579.0
+offset_right = 1006.0
+offset_bottom = 656.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_5qod4")
+expand_mode = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -311.5
+offset_top = -161.5
+offset_right = 311.5
+offset_bottom = 161.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextEdit" type="TextEdit" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 80
+placeholder_text = "username"
+
+[node name="Connect" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 70
+text = "Connect
+"
+
+[node name="Back" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 70
+text = "Back"
+
+[connection signal="button_down" from="VBoxContainer/Connect" to="." method="_on_connect_button_down"]
+[connection signal="button_down" from="VBoxContainer/Back" to="." method="_on_back_button_down"]

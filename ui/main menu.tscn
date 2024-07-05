@@ -13,8 +13,7 @@ func _ready():
 
 
 func _connect():
-	Gamemanager.connect_player()
-	$VBoxContainer/Multiplayer.text = \"Connecting..\"
+	UiManager.set_ui(7)
 
 
 func _singleplayer():

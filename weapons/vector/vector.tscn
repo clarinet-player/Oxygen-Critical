@@ -38,10 +38,10 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_ow5o0")
 
-[node name="vector" type="Node3D" node_paths=PackedStringArray("audio", "light")]
+[node name="vector" type="Node3D" node_paths=PackedStringArray("audio", "light", "ejection")]
 script = ExtResource("1_onunk")
 item_id = 2
-firerate = [23.0, 16.0]
+firerate = [23.0, 18.0]
 shots = [0, 2]
 mag_size = 33
 reload_time = 2250.0
@@ -55,6 +55,7 @@ spray = 3.0
 inventory_size = 2
 audio = NodePath("AudioStreamPlayer3D")
 light = NodePath("Vector/SpotLight3D")
+ejection = NodePath("Vector/Marker3D")
 
 [node name="Vector" type="MeshInstance3D" parent="."]
 transform = Transform3D(-2.62216e-08, 0.599881, -0.0119477, -5.22252e-10, 0.0119477, 0.599881, 0.6, 2.62268e-08, 1.14641e-15, 0, -0.0106429, -0.103489)
@@ -71,6 +72,9 @@ spot_range = 25.0
 spot_attenuation = -0.5
 spot_angle = 75.0
 spot_angle_attenuation = 1.8025
+
+[node name="Marker3D" type="Marker3D" parent="Vector"]
+transform = Transform3D(1, 3.6187e-08, -4.30589e-08, 3.61871e-08, 0.172135, 0.985073, 4.30589e-08, -0.985073, 0.172135, -0.182915, 0.0344564, 0.0308497)
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("1_il3kq")

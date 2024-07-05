@@ -18,6 +18,7 @@ extends Node3D
 
 @export var audio : AudioStreamPlayer3D
 @export var light : SpotLight3D
+@export var ejection : Marker3D
 
 
 var firemode := 0
@@ -205,4 +206,13 @@ func fire(pos : Vector3, velocity : Vector3):
 	Gamemanager.add_child(_smoke)
 	_smoke.global_position = light.global_position + velocity.normalized() * 3
 	_smoke.look_at(light.global_position)
+	
+	await get_tree().create_timer(0.05).timeout
+	
+	var casing = preload("res://classes/casing.tscn").instantiate()
+	Gamemanager.add_child(casing)
+	casing.global_position = ejection.global_position
+	casing.look_at(casing.global_position + velocity)
+	casing.velocity = ejection.global_basis.z.normalized() * 4 + Vector3(randf_range(-0.3, 0.3), randf_range(-0.3, 0.3), randf_range(-0.3, 0.3)) + get_parent().get_parent().velocity
+	casing.angular = Vector3(randf_range(-0.5, 0.5), randf_range(-0.5, 0.5), randf_range(-0.5, 0.5))
 	

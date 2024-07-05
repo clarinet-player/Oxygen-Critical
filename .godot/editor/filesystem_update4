@@ -1,9 +1,9 @@
-res://autoloads/gamemanager.tscn
+res://weapons/vector/vector.tscn
 res://assets/metal_walls.tres
 res://assets/somnambulist.tres
+res://autoloads/gamemanager.tscn
 res://classes/player.tscn
 res://weapons/ak12/ak12.tscn
-res://weapons/vector/vector.tscn
 res://weapons/glock/glock.tscn
 res://weapons/grenades/he_display.tscn
 res://weapons/grenades/he_grenade.tscn
@@ -22,10 +22,11 @@ res://ui/pause menu.tscn
 res://classes/gameSurface.tscn
 res://autoloads/ui manager.tscn
 res://ui/settings menu.tscn
-res://ui/spectator hud.tscn
-res://assets/metal.tres
-res://classes/weaponbase.gd
 res://autoloads/settings.tscn
 res://ui/scoreboard.tscn
 res://ui/buy menu.tscn
+res://ui/spectator hud.tscn
 res://classes/freecam.tscn
+res://classes/casing.tscn
+res://classes/weaponbase.gd
+res://ui/multiplayer menu.tscn

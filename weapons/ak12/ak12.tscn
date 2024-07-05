@@ -86,7 +86,7 @@ bind/3/name = &"neutral_bone"
 bind/3/bone = -1
 bind/3/pose = Transform3D(7.62132e-07, 0, 10.0947, 0, 10.0947, 0, -10.0947, 0, 7.62132e-07, 0, 0, 0)
 
-[node name="AK12" type="Node3D" node_paths=PackedStringArray("audio", "light")]
+[node name="AK12" type="Node3D" node_paths=PackedStringArray("audio", "light", "ejection")]
 script = ExtResource("1_fsuj5")
 item_id = 1
 firerate = [9.0, 9.0]
@@ -103,6 +103,7 @@ spray = 3.0
 inventory_size = 2
 audio = NodePath("AudioStreamPlayer3D")
 light = NodePath("Skeleton3D2/SpotLight3D")
+ejection = NodePath("Skeleton3D2/Marker3D")
 
 [node name="Skeleton3D2" type="Skeleton3D" parent="."]
 transform = Transform3D(-0.00878338, 0.0996135, 8.7085e-09, 0.0996135, 0.00878338, 7.67868e-10, 3.82137e-16, 8.74228e-09, -0.1, 0, -0.00830968, 0.0432864)
@@ -151,6 +152,9 @@ spot_range = 25.0
 spot_attenuation = -0.5
 spot_angle = 75.0
 spot_angle_attenuation = 1.8025
+
+[node name="Marker3D" type="Marker3D" parent="Skeleton3D2"]
+transform = Transform3D(0.97472, 0.0859455, 0.206238, -0.205441, -0.0181147, 0.978502, 0.0878338, -0.996135, -4.52391e-08, 0.359193, 0.115354, 2.1563)
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("1_b1tva")

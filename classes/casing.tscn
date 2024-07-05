@@ -1,0 +1,77 @@
+[gd_scene load_steps=7 format=3 uid="uid://brssyfab86qey"]
+
+[ext_resource type="Texture2D" uid="uid://05ddnnkibkgu" path="res://assets/Untitled.png" id="1_i7l7f"]
+[ext_resource type="AudioStream" uid="uid://bb52tally40em" path="res://assets/shells.mp3" id="2_x1otk"]
+
+[sub_resource type="GDScript" id="GDScript_kyabb"]
+script/source = "extends RigidBody3D
+
+
+var lifetime := 90000
+
+var velocity := Vector3()
+var angular := Vector3()
+var landed := false
+var spawn_time := 0
+
+
+func _ready():
+	spawn_time = Time.get_ticks_msec()
+
+
+func _physics_process(delta):
+	if Time.get_ticks_msec() - spawn_time > lifetime and get_viewport().get_camera_3d() != null and get_viewport().get_camera_3d().unproject_position(global_position).distance_to(get_window().size / 2) > 500:
+		queue_free()
+	
+	if landed:
+		return
+	
+	global_rotate(angular.normalized(), angular.length() * delta)
+	velocity = lerp(velocity, Vector3.ZERO, delta * 0.1)
+	angular = lerp(angular, Vector3.ZERO, delta * 0.01)
+	var collision = move_and_collide(velocity * delta)
+	
+	if collision:
+		$AudioStreamPlayer3D.pitch_scale = 0.91 + velocity.length() / 60
+		$AudioStreamPlayer3D.play()
+		
+		if \"get_is_grabbable\" in collision.get_collider_shape() and velocity.length() < randf_range(1.5, 4):
+			landed = true
+		else:
+			velocity = velocity.bounce(collision.get_normal()) * randf_range(0.25, 0.5) + Vector3(randf_range(-0.3, 0.3), randf_range(-0.5, 0.5), randf_range(-0.3, 0.3))
+			angular += Vector3(randf_range(-0.75, 0.75), randf_range(-0.75, 0.75), randf_range(-0.75, 0.75))
+"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_33kcu"]
+albedo_color = Color(0.831373, 0.623529, 0.372549, 1)
+metallic = 1.0
+roughness = 0.38
+roughness_texture = ExtResource("1_i7l7f")
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_xb1x8"]
+material = SubResource("StandardMaterial3D_33kcu")
+top_radius = 0.007
+bottom_radius = 0.007
+height = 0.03
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_dlg8l"]
+radius = 0.015
+
+[node name="Casing" type="RigidBody3D"]
+collision_layer = 0
+freeze = true
+script = SubResource("GDScript_kyabb")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_xb1x8")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_dlg8l")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("2_x1otk")
+attenuation_model = 3
+max_distance = 10.0
+panning_strength = 1.5
