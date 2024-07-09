@@ -139,7 +139,7 @@ func boom():
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func destroy():
 	armed = false
-	destroyed = false
+	destroyed = true
 	
 	audio.attenuation_model = AudioStreamPlayer3D.ATTENUATION_DISABLED
 	audio.max_distance = 30
