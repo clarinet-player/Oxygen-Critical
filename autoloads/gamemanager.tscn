@@ -276,33 +276,38 @@ func ui_message(ui : int):
 
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
-func throw_grenade(type : int, position : Vector3, velocity : Vector3):
+func throw_grenade(type : int, id : int, position : Vector3, velocity : Vector3):
 	if type == 1:
 		var grenade : RigidBody3D = preload(\"res://weapons/grenades/he_grenade.tscn\").instantiate()
+		grenade.name = str(id)
 		add_child(grenade)
 		grenade.global_position = position
 		grenade.apply_impulse(velocity)
 		
 	elif type == 2:
 		var incendiary = preload(\"res://weapons/grenades/incendiary.tscn\").instantiate()
+		incendiary.name = str(id)
 		add_child(incendiary)
 		incendiary.global_position = position
 		incendiary.apply_impulse(velocity)
 	
 	elif type == 3:
 		var flash = preload(\"res://weapons/grenades/flash_grenade.tscn\").instantiate()
+		flash.name = str(id)
 		add_child(flash)
 		flash.global_position = position
 		flash.apply_impulse(velocity)
 	
 	elif type == 4:
 		var smoke = preload(\"res://weapons/grenades/smoke_grenade.tscn\").instantiate()
+		smoke.name = str(id)
 		add_child(smoke)
 		smoke.global_position = position
 		smoke.apply_impulse(velocity)
 	
 	elif type == 5:
 		var claymore = preload(\"res://weapons/grenades/claymore.tscn\").instantiate()
+		claymore.name = str(id)
 		add_child(claymore)
 		claymore.global_position = position
 		claymore.velocity = velocity

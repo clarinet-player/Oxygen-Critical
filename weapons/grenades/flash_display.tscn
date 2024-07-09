@@ -40,9 +40,9 @@ func _physics_process(delta):
 		var velocity = -global_basis.z * throw_velocity + player.get_velocity()
 		
 		if Gamemanager.mp_active:
-			Gamemanager.throw_grenade.rpc(3, global_position, velocity)
+			Gamemanager.throw_grenade.rpc(3, randi(), global_position, velocity)
 		else:
-			Gamemanager.throw_grenade(3, global_position, velocity)
+			Gamemanager.throw_grenade(3, randi(), global_position, velocity)
 		
 		player.inventory.erase(self)
 		get_parent().remove_child(self)
@@ -54,9 +54,9 @@ func _physics_process(delta):
 		var velocity = -global_basis.z * throw_velocity * 0.35 + player.get_velocity()
 		
 		if Gamemanager.mp_active:
-			Gamemanager.throw_grenade.rpc(3, global_position, velocity)
+			Gamemanager.throw_grenade.rpc(3, randi(), global_position, velocity)
 		else:
-			Gamemanager.throw_grenade(3, global_position, velocity)
+			Gamemanager.throw_grenade(3, randi(), global_position, velocity)
 		
 		player.inventory.erase(self)
 		get_parent().remove_child(self)
