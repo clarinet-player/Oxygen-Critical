@@ -235,17 +235,25 @@ func _process(delta):
 	
 	
 	if Input.is_action_just_pressed(\"F\"):
-		if health < 100.0:
-			for item in inventory:
-				if item.item_id == 6:
-					if active_item:
-						camera.remove_child(active_item)
-					active_item = item
-					camera.add_child(active_item)
-					break
+		var found_item
 		if breach > 0.0:
 			for item in inventory:
 				if item.item_id == 5:
+					found_item = item
+					break
+			if found_item == null:
+				if active_item:
+					camera.remove_child(active_item)
+				active_item = preload(\"res://weapons/healing/tape.tscn\").instantiate()
+				camera.add_child(active_item)
+			else:
+				if active_item:
+					camera.remove_child(active_item)
+				active_item = found_item
+				camera.add_child(active_item)
+		elif health < 100.0:
+			for item in inventory:
+				if item.item_id == 6:
 					if active_item:
 						camera.remove_child(active_item)
 					active_item = item
@@ -325,7 +333,7 @@ func _physics_process(delta : float):
 		return
 	
 	
-	if !active_item and !using_bomb:
+	if active_item == null and !using_bomb:
 		if inventory.size() > 0:
 			active_item = inventory[0]
 			camera.add_child(active_item)

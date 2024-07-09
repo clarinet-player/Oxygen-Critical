@@ -52,7 +52,7 @@ func _physics_process(delta):
 		return
 	
 	
-	if Input.is_action_just_pressed(\"Mouse1\") and !in_use and player.health < 100 and !UiManager.paused:
+	if Input.is_action_pressed(\"Mouse1\") and !in_use and player.health < 100 and !UiManager.paused:
 		in_use = true
 		start_time = Time.get_ticks_msec()
 		hud.start_progress(1.6, \"healing\")
@@ -112,7 +112,7 @@ albedo_color = Color(0.67451, 0.67451, 0.67451, 1)
 script = SubResource("GDScript_xkkah")
 
 [node name="Cube_003" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.957613, 0, 2.76034, 0, 4.52722, 0, -7.10039, 0, -0.37228, 0.0145229, 0, -0.113293)
+transform = Transform3D(-2.80082, 0, 2.06233, 0, 3.791, 0, -5.30617, 0, -1.08859, 0.0509483, 0, -0.148557)
 mesh = SubResource("ArrayMesh_mdfms")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_wc2g5")

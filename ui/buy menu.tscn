@@ -139,6 +139,7 @@ func _clear_inventory():
 		if item != null:
 			item.queue_free()
 	inv.clear()
+	Gamemanager.local_player.active_item = null
 	
 	UiManager.playerhud.set_ammo(false, 0)
 "

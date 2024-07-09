@@ -7,7 +7,7 @@ script/source = "extends Node3D
 const item_id := 5
 const inventory_size := 1
 
-const use_time := 800
+const use_time := 750
 
 var in_use := false
 var start_time := 0
@@ -33,7 +33,7 @@ func _ready():
 		if player.breach > 0:
 			in_use = true
 			start_time = Time.get_ticks_msec()
-			hud.start_progress(0.8, \"healing\")
+			hud.start_progress(0.75, \"healing\")
 		
 		player.damaged.connect(_cancel)
 
@@ -52,12 +52,12 @@ func _physics_process(delta):
 		return
 	
 	
-	if Input.is_action_just_pressed(\"Mouse1\") and !in_use and player.breach > 0 and !UiManager.paused:
+	if Input.is_action_pressed(\"Mouse1\") and !in_use and player.breach > 0 and !UiManager.paused:
 		in_use = true
 		start_time = Time.get_ticks_msec()
-		hud.start_progress(0.8, \"healing\")
+		hud.start_progress(0.75, \"healing\")
 	
-	if in_use and Time.get_ticks_msec() - start_time > use_time - 50:
+	if DisplayServer.get_name() == \"headless\" and in_use and Time.get_ticks_msec() - start_time > use_time - 50:
 		player.heal.rpc_id(1, 0.0, true)
 	
 	if in_use and Time.get_ticks_msec() - start_time > use_time:

@@ -150,7 +150,7 @@ MouseDown={
 
 [physics]
 
-common/max_physics_steps_per_frame=4
+common/physics_ticks_per_second=120
 
 [rendering]
 
