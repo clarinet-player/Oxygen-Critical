@@ -19,6 +19,7 @@ var beep_time
 var grounded := false
 var armed := false
 var expended := false
+var destroyed := false
 
 
 @onready var audio = $AudioStreamPlayer3D
@@ -83,14 +84,16 @@ func _physics_process(delta):
 				audio.play()
 				
 				await get_tree().create_timer(2).timeout
-				armed = true
-				beep_time = Time.get_ticks_msec()
 				
-				$OmniLight3D2.light_energy = 1
-				
-				audio.stream = load(\"res://assets/claymore_beep.mp3\")
-				audio.pitch_scale = 1
-				audio.play()
+				if !destroyed:
+					armed = true
+					beep_time = Time.get_ticks_msec()
+					
+					$OmniLight3D2.light_energy = 1
+					
+					audio.stream = load(\"res://assets/claymore_beep.mp3\")
+					audio.pitch_scale = 1
+					audio.play()
 			
 			else:
 				velocity = velocity.bounce(collision.get_normal()) * 0.75
@@ -136,6 +139,7 @@ func boom():
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func destroy():
 	armed = false
+	destroyed = false
 	
 	audio.attenuation_model = AudioStreamPlayer3D.ATTENUATION_DISABLED
 	audio.max_distance = 30

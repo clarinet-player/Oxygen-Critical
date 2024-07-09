@@ -30,25 +30,31 @@ func _process(delta):
 			$OmniLight3D2.light_energy = 0
 		return
 	
+	var time = Time.get_ticks_msec() - start_time
+	
 	if direction:
 		value += delta * 2
-		if Time.get_ticks_msec() - start_time > 13000:
+		if time > 13000:
 			value += delta
-		if Time.get_ticks_msec() - start_time > 19000:
+		if time > 19000:
 			value += delta
-		if Time.get_ticks_msec() - start_time > 23000:
-			value += delta
+		if time > 22000:
+			value += delta * 1.5
+		if time > 23500:
+			value += delta * 2
 		if value >= 1.0:
 			$AudioStreamPlayer3D.play()
 			direction = false
 	else:
 		value -= delta * 2
-		if Time.get_ticks_msec() - start_time > 16000:
+		if time > 13000:
 			value -= delta
-		if Time.get_ticks_msec() - start_time > 19000:
+		if time > 19000:
 			value -= delta
-		if Time.get_ticks_msec() - start_time > 22000:
-			value -= delta
+		if time > 22000:
+			value -= delta * 1.5
+		if time > 23500:
+			value -= delta * 2
 		if value <= 0.0:
 			direction = true
 	$OmniLight3D.light_energy = value
@@ -62,7 +68,7 @@ func _physics_process(delta):
 		$AudioStreamPlayer3D.stream = preload(\"res://assets/bomb_explosion.mp3\")
 		$AudioStreamPlayer3D.play()
 		
-		await get_tree().create_timer(0.3).timeout
+		await get_tree().create_timer(0.32).timeout
 		
 		if Settings.particles_enabled:
 			$GPUParticles3D.emitting = true

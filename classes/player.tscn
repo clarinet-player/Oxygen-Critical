@@ -221,7 +221,12 @@ func _process(delta):
 				bomb_site = bomb.site
 				break
 		if bomb_site >= 0:
-			using_bomb = true
+			if !using_bomb:
+				using_bomb = true
+				if Gamemanager.mp_active:
+					play_sound.rpc(5)
+				else:
+					play_sound(5)
 			bomb_time = Time.get_ticks_msec()
 			hud.start_progress(4.0, \"Bomb\")
 			if active_item:
@@ -645,7 +650,7 @@ func play_sound(sound : int):
 		audio.stream = preload(\"res://assets/1911-reload-6248.mp3\")
 		audio.play()
 	elif sound == 5:
-		audio.stream = preload(\"res://weapons/bomb/beep.mp3\")
+		audio.stream = preload(\"res://assets/defuse.mp3\")
 		audio.play()
 
 
