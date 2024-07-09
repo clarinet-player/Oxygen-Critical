@@ -252,7 +252,7 @@ rings = 2
 [sub_resource type="Skin" id="Skin_j3ngg"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ig0lh"]
-size = Vector3(0.343384, 0.214783, 0.0726318)
+size = Vector3(0.293848, 0.214783, 0.0510101)
 
 [node name="Claymore" type="RigidBody3D"]
 collision_layer = 0
@@ -309,5 +309,6 @@ collision_mask = 0
 freeze = true
 
 [node name="Hitbox" parent="Hitbox" node_paths=PackedStringArray("player") instance=ExtResource("1_ad7dt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.05447e-05, 0, 0.0147888)
 shape = SubResource("BoxShape3D_ig0lh")
 player = NodePath("../..")
