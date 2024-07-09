@@ -1,0 +1,62 @@
+[gd_scene load_steps=6 format=3 uid="uid://c3jtv8rvi8im2"]
+
+[ext_resource type="Material" uid="uid://y75gmnjjavok" path="res://assets/somnambulist.tres" id="1_n1rs6"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_pks4n"]
+_surfaces = [{
+"aabb": AABB(-2.2464, -2.2464, -2.2464, 4.4928, 4.4928, 4.4928),
+"format": 34896613377,
+"index_count": 24,
+"index_data": PackedByteArray(2, 0, 1, 0, 4, 0, 1, 0, 0, 0, 4, 0, 3, 0, 2, 0, 4, 0, 4, 0, 0, 0, 3, 0, 3, 0, 0, 0, 5, 0, 3, 0, 5, 0, 2, 0, 0, 0, 1, 0, 5, 0, 1, 0, 2, 0, 5, 0),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 6,
+"vertex_data": PackedByteArray(0, 0, 255, 127, 255, 127, 0, 0, 255, 127, 255, 127, 255, 255, 0, 0, 255, 255, 255, 127, 255, 127, 0, 0, 255, 127, 255, 127, 0, 0, 0, 0, 255, 127, 255, 255, 255, 127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0)
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_7mgjb"]
+resource_name = "star_Plane_002"
+_surfaces = [{
+"aabb": AABB(-2.2464, -2.2464, -2.2464, 4.4928, 4.4928, 4.4928),
+"attribute_data": PackedByteArray(0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255),
+"format": 34896613399,
+"index_count": 24,
+"index_data": PackedByteArray(11, 0, 7, 0, 19, 0, 5, 0, 3, 0, 17, 0, 15, 0, 10, 0, 18, 0, 16, 0, 2, 0, 13, 0, 12, 0, 0, 0, 20, 0, 14, 0, 22, 0, 8, 0, 1, 0, 4, 0, 21, 0, 6, 0, 9, 0, 23, 0),
+"material": ExtResource("1_n1rs6"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray(0, 0, 255, 127, 255, 127, 105, 220, 0, 0, 255, 127, 255, 127, 105, 92, 0, 0, 255, 127, 255, 127, 105, 220, 0, 0, 255, 127, 255, 127, 105, 92, 255, 127, 255, 127, 255, 255, 105, 92, 255, 127, 255, 127, 255, 255, 105, 92, 255, 127, 255, 127, 255, 255, 105, 92, 255, 127, 255, 127, 255, 255, 105, 92, 255, 255, 255, 127, 255, 127, 105, 220, 255, 255, 255, 127, 255, 127, 105, 92, 255, 255, 255, 127, 255, 127, 105, 220, 255, 255, 255, 127, 255, 127, 105, 92, 255, 127, 255, 127, 0, 0, 105, 220, 255, 127, 255, 127, 0, 0, 105, 220, 255, 127, 255, 127, 0, 0, 105, 220, 255, 127, 255, 127, 0, 0, 105, 220, 255, 127, 255, 255, 255, 127, 105, 220, 255, 127, 255, 255, 255, 127, 105, 92, 255, 127, 255, 255, 255, 127, 105, 220, 255, 127, 255, 255, 255, 127, 105, 92, 255, 127, 0, 0, 255, 127, 105, 220, 255, 127, 0, 0, 255, 127, 105, 92, 255, 127, 0, 0, 255, 127, 105, 220, 255, 127, 0, 0, 255, 127, 105, 92, 177, 39, 176, 167, 177, 39, 176, 167, 77, 216, 176, 167, 77, 216, 176, 167, 177, 39, 176, 167, 77, 216, 176, 167, 177, 39, 78, 88, 77, 216, 78, 88, 177, 39, 78, 88, 177, 39, 78, 88, 77, 216, 78, 88, 77, 216, 78, 88, 177, 39, 176, 167, 77, 216, 176, 167, 177, 39, 78, 88, 77, 216, 78, 88, 77, 216, 176, 167, 77, 216, 176, 167, 77, 216, 78, 88, 77, 216, 78, 88, 177, 39, 176, 167, 177, 39, 176, 167, 177, 39, 78, 88, 177, 39, 78, 88)
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_pks4n")
+
+[sub_resource type="GDScript" id="GDScript_jqpws"]
+script/source = "extends MeshInstance3D
+
+
+func _physics_process(delta):
+	var movement := Vector3.ZERO
+	for star in get_tree().get_nodes_in_group(\"Stars\"):
+		movement += global_position + star.global_position.direction_to(global_position) * (50 - star.global_position.distance_to(global_position))
+	movement -= global_position + Vector3.ZERO.direction_to(global_position) * Vector3.ZERO.distance_to(global_position) * get_tree().get_nodes_in_group(\"Stars\").size() * 2
+	global_translate(movement * delta * 0.1)
+"
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_q1uq6"]
+data = PackedVector3Array(1.872, 0, 0, 0, 0, 1.872, 0, 1.872, 0, 0, 0, 1.872, -1.872, 0, 0, 0, 1.872, 0, 0, 0, -1.872, 1.872, 0, 0, 0, 1.872, 0, 0, 1.872, 0, -1.872, 0, 0, 0, 0, -1.872, 0, 0, -1.872, -1.872, 0, 0, 0, -1.872, 0, 0, 0, -1.872, 0, -1.872, 0, 1.872, 0, 0, -1.872, 0, 0, 0, 0, 1.872, 0, -1.872, 0, 0, 0, 1.872, 1.872, 0, 0, 0, -1.872, 0)
+
+[node name="Star" type="MeshInstance3D" groups=["Stars"]]
+mesh = SubResource("ArrayMesh_7mgjb")
+skeleton = NodePath("")
+script = SubResource("GDScript_jqpws")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+shadow_enabled = true
+omni_range = 35.0
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_q1uq6")

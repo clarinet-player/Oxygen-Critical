@@ -106,7 +106,7 @@ blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_fjxpk")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f6edg"]
-albedo_color = Color(0.682353, 0.313726, 0, 1)
+albedo_color = Color(0.188235, 0.572549, 0, 1)
 metallic = 0.09
 roughness = 0.66
 

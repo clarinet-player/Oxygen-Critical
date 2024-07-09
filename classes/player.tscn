@@ -1,6 +1,7 @@
-[gd_scene load_steps=12 format=3 uid="uid://bq3u0xb10re6"]
+[gd_scene load_steps=15 format=3 uid="uid://bq3u0xb10re6"]
 
 [ext_resource type="PackedScene" uid="uid://c2hluyirbi4rf" path="res://classes/hitbox.tscn" id="1_2yv3f"]
+[ext_resource type="Texture2D" uid="uid://dv4b2q2nb4u6n" path="res://assets/flash.png" id="1_qlxub"]
 
 [sub_resource type="GDScript" id="GDScript_qj47s"]
 script/source = "extends RigidBody3D
@@ -57,12 +58,12 @@ var bomb_site := -1
 
 
 var sound_time : int
-var update_time : int
 
 
 @onready var camera := $Camera3D
 @onready var hitbox := $Hitbox
 @onready var audio := $Camera3D/AudioStreamPlayer3D
+@onready var flash_overlay := $Camera3D/MeshInstance3D
 @onready var hud = UiManager.playerhud
 #endregion
 
@@ -75,7 +76,6 @@ func _enter_tree():
 
 
 func _ready():
-	update_time = Time.get_ticks_msec()
 	
 	Settings.settings_changed.connect(_load_settings)
 	_load_settings()
@@ -88,7 +88,6 @@ func _ready():
 		
 		$Hitbox/Hitbox.queue_free()
 		$Hitbox/MeshInstance3D.queue_free()
-		$Hitbox/Hitbox2.queue_free()
 		$Hitbox/MeshInstance3D2.queue_free()
 		$Hitbox/Hitbox3.queue_free()
 		$Hitbox/MeshInstance3D3.queue_free()
@@ -99,6 +98,7 @@ func _ready():
 		hud.set_health(100)
 		hud.set_ammo(false, 0)
 		
+		flash_overlay.mesh.material.albedo_color.a = 0
 		
 		for item in Settings.saved_inventory:
 			if item == 1:
@@ -122,6 +122,15 @@ func _ready():
 			elif item == 6:
 				var healthkit = preload(\"res://weapons/healing/healthkit.tscn\").instantiate()
 				inventory.append(healthkit)
+			elif item == 7:
+				var incendiary = preload(\"res://weapons/grenades/incendiary_display.tscn\").instantiate()
+				inventory.append(incendiary)
+			elif item == 8:
+				var flash = preload(\"res://weapons/grenades/flash_display.tscn\").instantiate()
+				inventory.append(flash)
+			elif item == 9:
+				var smoke = preload(\"res://weapons/grenades/smoke_display.tscn\").instantiate()
+				inventory.append(smoke)
 	
 	else:
 		hide()
@@ -160,6 +169,10 @@ func _process(delta):
 		if !username.is_empty():
 			$Hitbox/Label3D.text = username
 		return
+	
+	
+	flash_overlay.mesh.material.albedo_color.a = max(0, flash_overlay.mesh.material.albedo_color.a - delta * 0.4)
+	
 	
 	if Input.is_action_pressed(\"Shift\"):
 		oriented = false
@@ -476,8 +489,6 @@ func _free_move(delta : float):
 		var _shape = _collision.get_collider_shape()
 		var _normal = _collision.get_normal()
 		
-		move_and_collide(-_normal * 0.01)
-		
 		if \"get_is_grabbable\" in _shape:# and _shape.get_is_grabbable():
 			if Time.get_ticks_msec() - sound_time > 200:
 				sound_time = Time.get_ticks_msec()
@@ -575,16 +586,35 @@ func get_velocity() -> Vector3:
 
 
 
-func _on_synchronization():
-	update_time = Time.get_ticks_msec()
-
-
-
-func damage(dmg, tearing, headshot):
+func damage(dmg, tearing, headshot = false, fire = false):
+	if !Gamemanager.mp_active:
+		if headshot:
+			Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
+		elif fire:
+			Audiomanager.play(\"res://assets/fire_damage.mp3\")
+		elif tearing > breach:
+			Audiomanager.play(\"res://assets/bullet_breach.mp3\")
+		else:
+			Audiomanager.play(\"res://assets/bullet_hit.mp3\")
+	
 	health = max(health - dmg, 0)
 	breach = max(breach, tearing)
-	set_health.rpc_id(int(str(name)), health, breach, true, headshot)
+	set_health.rpc_id(int(str(name)), health, breach, true, headshot, fire)
 	damaged.emit()
+
+
+
+func flash(pos : Vector3):
+	flash_overlay.global_position = camera.global_position + camera.global_position.direction_to(pos) * 0.18
+	
+	#var _axis = flash_overlay.global_position.direction_to(camera.global_position).cross(flash_overlay.global_basis.y)
+	#var _angle = acos(flash_overlay.global_position.direction_to(camera.global_position).dot(flash_overlay.global_basis.y))
+	#if !_axis.is_zero_approx():
+	#	flash_overlay.rotate(_axis.normalized(), _angle)
+	#else:
+	#	flash_overlay.rotate(flash_overlay.global_basis.x, _angle)
+	
+	flash_overlay.mesh.material.albedo_color.a = 1
 
 
 
@@ -682,11 +712,13 @@ func set_team(new_team : int):
 
 
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
-func set_health(new_health : float, new_breach : float, damage : bool, headshot : bool):
+func set_health(new_health : float, new_breach : float, damage : bool, headshot : bool, fire : bool):
 	if damage:
 		damaged.emit()
 		if headshot:
 			Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
+		elif fire:
+			Audiomanager.play(\"res://assets/fire_damage.mp3\")
 		elif new_breach > breach:
 			Audiomanager.play(\"res://assets/bullet_breach.mp3\")
 		else:
@@ -717,6 +749,16 @@ func die():
 "
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ufnhc"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j25b5"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_texture = ExtResource("1_qlxub")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_kd24n"]
+material = SubResource("StandardMaterial3D_j25b5")
+size = Vector2(0.5, 0.5)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jomgw"]
 radius = 0.25
@@ -803,6 +845,10 @@ spot_angle_attenuation = 1.41421
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Camera3D"]
 attenuation_model = 1
 max_distance = 30.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.2)
+mesh = SubResource("PlaneMesh_kd24n")
 
 [node name="Hitbox" type="RigidBody3D" parent="."]
 collision_layer = 2

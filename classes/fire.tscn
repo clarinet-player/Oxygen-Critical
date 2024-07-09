@@ -1,0 +1,169 @@
+[gd_scene load_steps=11 format=3 uid="uid://bbylmi7j4afh"]
+
+[ext_resource type="Material" uid="uid://dxppkto2mpq7u" path="res://assets/fire.tres" id="1_78fvj"]
+[ext_resource type="Material" uid="uid://1ipsh8ldxewh" path="res://assets/fire2.tres" id="2_6tomi"]
+[ext_resource type="AudioStream" uid="uid://c47dmpbcq6rdj" path="res://assets/fire.mp3" id="2_53don"]
+
+[sub_resource type="GDScript" id="GDScript_nhs7v"]
+script/source = "extends Node3D
+
+
+
+var spawn_time := 0
+var mesh
+var mesh2
+var velocity := Vector3.ZERO
+var size := 0.0001
+var grounded := false
+
+
+
+func _ready():
+	spawn_time = Time.get_ticks_msec() + randi_range(-200, 200)
+	
+	mesh = SphereMesh.new()
+	mesh.material = preload(\"res://assets/fire.tres\")
+	$MeshInstance3D.mesh = mesh
+	
+	mesh2 = SphereMesh.new()
+	mesh2.material = preload(\"res://assets/fire2.tres\")
+	$MeshInstance3D2.mesh = mesh2
+	
+	if !Gamemanager.mp_active or is_multiplayer_authority():
+		while true:
+			await get_tree().create_timer(0.5).timeout
+			
+			for player in get_tree().get_nodes_in_group(\"Players\"):
+				if player.hitbox.global_position.distance_to(global_position) < size + 0.4:
+					player.damage(size * 6, 0, false, true)
+
+
+
+func _process(delta):
+	if Time.get_ticks_msec() - spawn_time < 2100:
+		size += delta * min(1.5 / size, 2)
+	elif Time.get_ticks_msec() - spawn_time > 9000:
+		size = max(size - delta * 0.3, 0)
+	if Time.get_ticks_msec() - spawn_time > 20000:
+		queue_free()
+	
+	mesh.radius = size
+	mesh.height = 2 * size
+	mesh2.radius = size ** 3 * 0.13
+	mesh2.height = size ** 3 * 0.26
+	if grounded:
+		$MeshInstance3D.position = lerp($MeshInstance3D.position, Vector3.ZERO, delta * 2)
+	else:
+		$MeshInstance3D.global_position = global_position + -velocity.limit_length(0.2) * size
+	
+	$MeshInstance3D/OmniLight3D.light_energy = min(size / 2, 1)
+	$MeshInstance3D/OmniLight3D.omni_range = 6 + size
+	$MeshInstance3D2/OmniLight3D.light_energy = size * 3
+	$MeshInstance3D2/OmniLight3D.omni_range = size * 1.5
+	$GPUParticles3D.amount_ratio = size * 1.8 / get_viewport().get_camera_3d().global_position.distance_to(global_position)
+
+
+
+func _physics_process(delta):
+	if grounded:
+		return
+	
+	var _space = get_world_3d().direct_space_state
+	var _ray = PhysicsRayQueryParameters3D.create(global_position, global_position + velocity * delta * 2)
+	var _raycast = _space.intersect_ray(_ray)
+	
+	if !_raycast.is_empty():
+		global_position = _raycast.position
+		grounded = true
+		
+		#var _axis = global_basis.y.cross(_raycast.normal)
+		#var _angle = acos(global_basis.y.dot(_raycast.normal))
+		#if !_axis.is_zero_approx():
+		#	rotate(_axis.normalized(), _angle)
+		#else:
+		#	rotate(global_basis.x, _angle)
+	
+	else:
+		global_translate(velocity * delta)
+		velocity *= 1 - delta * 0.25
+"
+
+[sub_resource type="SphereMesh" id="SphereMesh_2hsti"]
+material = ExtResource("1_78fvj")
+radius = 2.0
+height = 4.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_kqu2j"]
+material = ExtResource("2_6tomi")
+radius = 1.0
+height = 2.0
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_nhp5s"]
+lifetime_randomness = 0.75
+angle_max = 180.0
+direction = Vector3(0, 1, 0)
+spread = 180.0
+initial_velocity_min = 0.5
+initial_velocity_max = 8.0
+gravity = Vector3(0, 0, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iqfnf"]
+shading_mode = 0
+albedo_color = Color(0.713726, 0.458824, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_pauyl"]
+material = SubResource("StandardMaterial3D_iqfnf")
+radius = 0.012
+height = 0.024
+radial_segments = 6
+rings = 3
+
+[sub_resource type="Skin" id="Skin_2lfnc"]
+
+[node name="Fire" type="Node3D"]
+top_level = true
+script = SubResource("GDScript_nhs7v")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+visibility_range_end = 20.0
+mesh = SubResource("SphereMesh_2hsti")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="MeshInstance3D"]
+light_color = Color(0.27451, 0.176471, 1, 0.270588)
+light_energy = 0.0
+light_volumetric_fog_energy = 2.0
+light_specular = 0.0
+distance_fade_enabled = true
+distance_fade_begin = 5.0
+distance_fade_length = 5.0
+omni_range = 10.0
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+custom_aabb = AABB(-0.5, -0.5, -0.5, 1, 1, 1)
+visibility_range_end = 40.0
+mesh = SubResource("SphereMesh_kqu2j")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="MeshInstance3D2"]
+light_color = Color(0.952941, 0.54902, 0, 0.270588)
+light_energy = 0.0
+light_volumetric_fog_energy = 2.0
+light_specular = 0.0
+distance_fade_enabled = true
+distance_fade_begin = 10.0
+distance_fade_length = 5.0
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("2_53don")
+attenuation_model = 3
+autoplay = true
+max_distance = 10.0
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+cast_shadow = 0
+amount = 100
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_nhp5s")
+draw_pass_1 = SubResource("SphereMesh_pauyl")
+draw_skin = SubResource("Skin_2lfnc")

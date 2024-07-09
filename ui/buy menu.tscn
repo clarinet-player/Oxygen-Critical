@@ -11,7 +11,7 @@ var warningtime := 0
 func _exit_tree():
 	$spacewarning.hide()
 	
-	if !inv:
+	if inv == null:
 		inv = Gamemanager.local_player.inventory
 	
 	var save = Array()
@@ -32,7 +32,7 @@ func _process(_delta):
 
 #region buying
 func _buy_ak():
-	if !inv:
+	if inv == null:
 		inv = Gamemanager.local_player.inventory
 	
 	var size := 0
@@ -49,7 +49,7 @@ func _buy_ak():
 
 
 func _buy_vector():
-	if !inv:
+	if inv == null:
 		inv = Gamemanager.local_player.inventory
 	
 	var size := 0
@@ -66,7 +66,7 @@ func _buy_vector():
 
 
 func _buy_glock():
-	if !inv:
+	if inv == null:
 		inv = Gamemanager.local_player.inventory
 	
 	var size := 0
@@ -83,7 +83,7 @@ func _buy_glock():
 
 
 func _buy_HE():
-	if !inv:
+	if inv == null:
 		inv = Gamemanager.local_player.inventory
 	
 	var size := 0
@@ -99,7 +99,7 @@ func _buy_HE():
 
 
 func _buy_sealant():
-	if !inv:
+	if inv == null:
 		inv = Gamemanager.local_player.inventory
 	
 	var size := 0
@@ -115,7 +115,7 @@ func _buy_sealant():
 
 
 func _buy_healthkit():
-	if !inv:
+	if inv == null:
 		inv = Gamemanager.local_player.inventory
 	
 	var size := 0
@@ -132,7 +132,7 @@ func _buy_healthkit():
 
 
 func _clear_inventory():
-	if !inv:
+	if inv == null:
 		inv = Gamemanager.local_player.inventory
 	
 	for item in inv:

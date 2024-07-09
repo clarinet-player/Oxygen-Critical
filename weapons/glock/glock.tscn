@@ -55,8 +55,10 @@ damage = 17.0
 tearing = 5.5
 effective_range = 35.0
 recovery = 0.12
-recoil = 2.2
+recoil = 2.4
 spray = 1.5
+inventory_size = 1
+camera_movement = 0.75
 audio = NodePath("AudioStreamPlayer3D")
 light = NodePath("Skeleton3D/SpotLight3D")
 ejection = NodePath("Skeleton3D/Marker3D")
@@ -109,7 +111,7 @@ spot_angle = 75.0
 spot_angle_attenuation = 1.8025
 
 [node name="Marker3D" type="Marker3D" parent="Skeleton3D"]
-transform = Transform3D(0.738243, -2.28835e-08, -0.674534, -2.28836e-08, 1, -5.89697e-08, 0.674534, 5.89697e-08, 0.738243, -0.318582, -0.366899, 1.19448)
+transform = Transform3D(0.65035, -3.05674e-08, -0.759635, -3.05675e-08, 1, -6.64094e-08, 0.759635, 6.64094e-08, 0.65035, -0.647989, -0.366899, 1.44691)
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("1_6qqve")

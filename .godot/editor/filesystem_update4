@@ -1,6 +1,8 @@
 res://classes/player.tscn
 res://assets/metal_walls.tres
 res://assets/somnambulist.tres
+res://assets/fire.tres
+res://assets/fire2.tres
 res://autoloads/gamemanager.tscn
 res://weapons/ak12/ak12.tscn
 res://weapons/vector/vector.tscn
@@ -29,3 +31,12 @@ res://ui/spectator hud.tscn
 res://classes/freecam.tscn
 res://classes/casing.tscn
 res://ui/multiplayer menu.tscn
+res://weapons/grenades/incendiary_display.tscn
+res://weapons/grenades/incendiary.tscn
+res://classes/fire.tscn
+res://classes/smoke.tscn
+res://weapons/grenades/flash_display.tscn
+res://weapons/grenades/flash_grenade.tscn
+res://weapons/grenades/smoke_display.tscn
+res://weapons/grenades/smoke_grenade.tscn
+res://assets/smoke.tres

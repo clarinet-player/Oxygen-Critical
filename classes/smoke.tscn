@@ -6,6 +6,7 @@ script/source = "extends FogVolume
 
 var start_density := 1.0
 var fade_speed := 1.0
+var max_size := 25
 
 var mat
 
@@ -22,10 +23,11 @@ func _ready():
 
 func _process(delta):
 	mat.density = lerp(mat.density, 0.0, delta * fade_speed)
-	var size_change = delta * fade_speed * (150 / size.length())
+	var size_change = delta * fade_speed * (5 * max_size / size.length())
 	size.x += size_change
 	size.y += size_change
 	size.z += size_change
+	size = size.limit_length(max_size)
 	
 	if abs(mat.density) < 0.001:
 		queue_free()

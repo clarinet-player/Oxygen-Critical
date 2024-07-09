@@ -15,6 +15,7 @@ extends Node3D
 @export var recoil : float
 @export var spray : float
 @export var inventory_size : int
+@export var camera_movement : float
 
 @export var audio : AudioStreamPlayer3D
 @export var light : SpotLight3D
@@ -161,10 +162,10 @@ func _physics_process(delta):
 		
 		if !player.is_anchored() or player.velocity.length() > 1:
 			rotate(basis.x.normalized(), recoil * 0.005)
-			get_parent().rotate(basis.x.normalized(), recoil * 0.005)
+			get_parent().rotate(basis.x.normalized(), recoil * 0.005 * camera_movement)
 		else:
 			rotate(basis.x.normalized(), recoil * 0.004)
-			get_parent().rotate(basis.x.normalized(), recoil * 0.004)
+			get_parent().rotate(basis.x.normalized(), recoil * 0.004 * camera_movement)
 		
 		_heat += 1
 		_burst -= 1
@@ -176,7 +177,7 @@ func _physics_process(delta):
 	# Recovering heat after firing
 	if time - _fire_time_ms > _firedelay:
 		rotation.x = move_toward(rotation.x, 0.0, recovery * delta)
-		get_parent().rotation.x = move_toward(rotation.x, 0.0, recovery * delta)
+		get_parent().rotation.x = move_toward(rotation.x, 0.0, recovery * delta * camera_movement)
 		_heat = move_toward(_heat, 0.0, recovery * delta * 100)
 
 
