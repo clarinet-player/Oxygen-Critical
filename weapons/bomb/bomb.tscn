@@ -57,14 +57,12 @@ func _process(delta):
 
 func _physics_process(delta):
 	if active and Time.get_ticks_msec() - start_time >= fuse_time:
-		
-		Gamemanager.bombsites[site][1] = 2
 		active = false
 		
-		
-		$AudioStreamPlayer3D.stream = preload(\"res://weapons/grenades/grenade_sfx_2.mp3\")
-		$AudioStreamPlayer3D.pitch_scale = 0.7
+		$AudioStreamPlayer3D.stream = preload(\"res://assets/bomb_explosion.mp3\")
 		$AudioStreamPlayer3D.play()
+		
+		await get_tree().create_timer(0.3).timeout
 		
 		if Settings.particles_enabled:
 			$GPUParticles3D.emitting = true
@@ -78,6 +76,8 @@ func _physics_process(delta):
 		
 		$OmniLight3D.light_energy = 0
 		$OmniLight3D2.light_energy = 1.0
+		
+		Gamemanager.bombsites[site][1] = 2
 		
 		if is_multiplayer_authority():
 			for player in get_tree().get_nodes_in_group(\"Players\"):

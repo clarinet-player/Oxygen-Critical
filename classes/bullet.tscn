@@ -58,8 +58,8 @@ func _physics_process(delta):
 		
 		
 		if \"player\" in _shape:
-			#if _shape.player.team == 0 or _shape.player.team != team:
-				
+			
+			if \"health\" in _shape.player:
 				var _player = _shape.player
 				if _shape.damage == 2:
 					Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
@@ -76,6 +76,15 @@ func _physics_process(delta):
 					blood.rotate(global_basis.x, acos(blood.global_basis.y.dot(-velocity.normalized())))
 				else:
 					blood.rotate(blood.global_basis.y.cross(-velocity).normalized(), acos(blood.global_basis.y.dot(-velocity.normalized())))
+				
+				queue_free()
+				return
+			
+			elif \"fuse_time\" in _shape.player:
+				if Gamemanager.mp_active:
+					_shape.player.destroy.rpc()
+				else:
+					_shape.player.destroy()
 				
 				queue_free()
 				return
