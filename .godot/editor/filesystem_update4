@@ -1,9 +1,10 @@
-res://classes/player.tscn
+res://weapons/grenades/claymore.tscn
 res://assets/metal_walls.tres
 res://assets/somnambulist.tres
 res://assets/fire.tres
 res://assets/fire2.tres
 res://autoloads/gamemanager.tscn
+res://classes/player.tscn
 res://weapons/ak12/ak12.tscn
 res://weapons/vector/vector.tscn
 res://weapons/glock/glock.tscn
@@ -39,4 +40,4 @@ res://weapons/grenades/flash_display.tscn
 res://weapons/grenades/flash_grenade.tscn
 res://weapons/grenades/smoke_display.tscn
 res://weapons/grenades/smoke_grenade.tscn
-res://assets/smoke.tres
+res://weapons/grenades/claymore_display.tscn

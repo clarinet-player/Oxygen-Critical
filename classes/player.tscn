@@ -131,6 +131,9 @@ func _ready():
 			elif item == 9:
 				var smoke = preload(\"res://weapons/grenades/smoke_display.tscn\").instantiate()
 				inventory.append(smoke)
+			elif item == 10:
+				var claymore = preload(\"res://weapons/grenades/claymore_display.tscn\").instantiate()
+				inventory.append(claymore)
 	
 	else:
 		hide()

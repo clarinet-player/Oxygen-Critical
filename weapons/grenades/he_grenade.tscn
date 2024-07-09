@@ -203,13 +203,13 @@ initial_velocity_min = 10.0
 initial_velocity_max = 30.0
 gravity = Vector3(0, 0, 0)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4sa1p"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vplm2"]
 albedo_color = Color(0.376471, 0.376471, 0.376471, 1)
 metallic = 0.62
 roughness = 0.67
 
 [sub_resource type="SphereMesh" id="SphereMesh_bl6n2"]
-material = SubResource("StandardMaterial3D_4sa1p")
+material = SubResource("StandardMaterial3D_vplm2")
 radius = 0.037
 height = 0.06
 radial_segments = 4

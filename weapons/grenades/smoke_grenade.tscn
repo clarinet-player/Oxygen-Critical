@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://b1mxh3i0p26vm"]
+[gd_scene load_steps=13 format=3 uid="uid://b1mxh3i0p26vm"]
 
 [ext_resource type="AudioStream" uid="uid://dcl58h1vws3yk" path="res://weapons/grenades/smoke.mp3" id="1_n1xwa"]
 [ext_resource type="Material" uid="uid://c5jd4ia6214cw" path="res://assets/smoke.tres" id="2_jojwo"]
@@ -55,7 +55,7 @@ func _process(delta):
 		Gamemanager.add_child(_smoke)
 		_smoke.global_position = global_position
 	if Time.get_ticks_msec() - arm_time > 20000:
-		queue_free()
+		$MeshInstance3D.hide()
 
 
 
@@ -82,7 +82,10 @@ func _physics_process(delta):
 		Gamemanager.add_child(_smoke)
 		_smoke.global_position = global_position
 		
-		await get_tree().create_timer(30).timeout
+		await get_tree().create_timer(0.5).timeout
+		$GPUParticles3D.emitting = true
+		
+		await get_tree().create_timer(25).timeout
 		queue_free()
 "
 
@@ -124,8 +127,31 @@ shadow_mesh = SubResource("ArrayMesh_kx3gp")
 [sub_resource type="SphereShape3D" id="SphereShape3D_r0l4c"]
 radius = 0.07
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1s6gn"]
+cull_mode = 2
+albedo_color = Color(0.780392, 0.780392, 0.780392, 1)
+
 [sub_resource type="SphereMesh" id="SphereMesh_c0e68"]
+material = SubResource("StandardMaterial3D_1s6gn")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_vgwey"]
+lifetime_randomness = 0.2
+emission_shape = 1
+emission_sphere_radius = 1.0
+angle_max = 180.0
+spread = 180.0
+initial_velocity_min = 0.1
+initial_velocity_max = 0.8
+gravity = Vector3(0, 0, 0)
+
+[sub_resource type="SphereMesh" id="SphereMesh_l4he3"]
 material = ExtResource("2_jojwo")
+radius = 0.05
+height = 0.1
+radial_segments = 16
+rings = 8
+
+[sub_resource type="Skin" id="Skin_4hvn2"]
 
 [node name="Smoke Grenade" type="RigidBody3D"]
 collision_layer = 0
@@ -150,3 +176,15 @@ stream = ExtResource("1_n1xwa")
 visible = false
 cast_shadow = 0
 mesh = SubResource("SphereMesh_c0e68")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 25
+lifetime = 23.0
+one_shot = true
+explosiveness = 0.5
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_vgwey")
+draw_pass_1 = SubResource("SphereMesh_l4he3")
+draw_skin = SubResource("Skin_4hvn2")

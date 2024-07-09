@@ -2,5 +2,4 @@
 
 [resource]
 cull_mode = 2
-shading_mode = 0
-albedo_color = Color(0.501961, 0.501961, 0.501961, 1)
+albedo_color = Color(0.780392, 0.780392, 0.780392, 1)

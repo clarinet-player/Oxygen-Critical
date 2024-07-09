@@ -300,6 +300,12 @@ func throw_grenade(type : int, position : Vector3, velocity : Vector3):
 		add_child(smoke)
 		smoke.global_position = position
 		smoke.apply_impulse(velocity)
+	
+	elif type == 5:
+		var claymore = preload(\"res://weapons/grenades/claymore.tscn\").instantiate()
+		add_child(claymore)
+		claymore.global_position = position
+		claymore.velocity = velocity
 
 
 
