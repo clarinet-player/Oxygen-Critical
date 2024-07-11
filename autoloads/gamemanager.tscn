@@ -249,7 +249,7 @@ func find_spawnpoint(exclude, player_team):
 @rpc(\"authority\", \"call_remote\", \"reliable\")
 func sync_level(level : int):
 	if level == 1:
-		get_tree().change_scene_to_file(\"res://scenes/somnambulist.tscn\")
+		get_tree().change_scene_to_file(\"res://scenes/somnambulist 2.0.tscn\")
 	
 	if DisplayServer.get_name() != \"headless\":
 		var cam = preload(\"res://classes/freecam.tscn\").instantiate()
