@@ -20,6 +20,8 @@ var shadows_enabled := true
 var volumetrics_enabled := true
 var particles_enabled := true
 
+var comfort_mode := false
+
 
 
 func _ready():
@@ -66,6 +68,8 @@ func read_file():
 		particles_enabled = data[\"particles_enabled\"]
 	if data.has(\"username\"):
 		username = data[\"username\"]
+	if data.has(\"comfort_mode\"):
+		comfort_mode = data[\"comfort_mode\"]
 
 
 
@@ -80,7 +84,8 @@ func write_file():
 		\"shadows_enabled\": shadows_enabled,
 		\"volumetrics_enabled\": volumetrics_enabled,
 		\"particles_enabled\": particles_enabled,
-		\"username\": username
+		\"username\": username,
+		\"comfort_mode\": comfort_mode
 	}
 	file.store_line(JSON.stringify(data))
 	file.close()

@@ -52,9 +52,9 @@ var spawn_time := 0
 
 var team := 0
 @export var username := \"\"
-var using_bomb := false
-var bomb_time := 0
-var bomb_site := -1
+var using_objective := false
+var objective_time := 0
+var objective_index
 
 
 var sound_time : int
@@ -158,7 +158,10 @@ func _input(event):
 	
 	# Rotating to follow mouse
 	if event is InputEventMouseMotion:
-		if oriented and _anchored_shape:
+		if Settings.comfort_mode:
+			rotate(Vector3.UP, event.relative.x * mouse_sensitivity * -0.001)
+			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
+		elif oriented and _anchored_shape:
 			rotate(_surface_normal, event.relative.x * mouse_sensitivity * -0.001)
 			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
 		else:
@@ -177,7 +180,7 @@ func _process(delta):
 	flash_overlay.mesh.material.albedo_color.a = max(0, flash_overlay.mesh.material.albedo_color.a - delta * 0.4)
 	
 	
-	if Input.is_action_pressed(\"Shift\"):
+	if Input.is_action_pressed(\"Shift\") or Settings.comfort_mode:
 		oriented = false
 	elif _anchored_shape:
 		oriented = true
@@ -201,40 +204,47 @@ func _process(delta):
 		UiManager.set_ui(4)
 	
 	
-	if Input.is_action_just_pressed(\"E\") and team == 2 and _anchored_shape:
-		for site in Gamemanager.bombsites:
-			if site[0].has_point(global_position) and site[1] == 0:
-				bomb_site = Gamemanager.bombsites.find(site)
+	if Input.is_action_just_pressed(\"F\") and team == 2 and _anchored_shape:
+		var objective
+		for obj in Gamemanager.objectives:
+			if obj[0] == 1 and obj[1].has_point(global_position) and obj[2] == 0:
+				objective = obj
+				objective_index = Gamemanager.find(obj)
 				break
-		if bomb_site >= 0:
-			using_bomb = true
-			bomb_time = Time.get_ticks_msec()
-			hud.start_progress(2.0, \"Bomb\")
+		if objective_index >= 0:
+			using_objective = true
+			objective_time = Time.get_ticks_msec()
+			if objective[0] == 1:
+				hud.start_progress(2.0, \"Objective\")
+			elif objective[0] == 2:
+				hud.start_progress(10, \"Objective\")
+			elif objective[0] == 3:
+				hud.start_progress(5.0)
 			if active_item:
 				camera.remove_child(active_item)
 				active_item = null
 	
 	
-	elif Input.is_action_just_pressed(\"E\") and team == 1:
+	elif Input.is_action_just_pressed(\"F\") and team == 1:
 		for bomb in Gamemanager.bombs:
 			if bomb != null and bomb.global_position.distance_to(global_position) < 1.5:
-				bomb_site = bomb.site
+				objective_index = bomb.site
 				break
-		if bomb_site >= 0:
-			if !using_bomb:
-				using_bomb = true
+		if objective_index >= 0:
+			if !using_objective:
+				using_objective = true
 				if Gamemanager.mp_active:
 					play_sound.rpc(5)
 				else:
 					play_sound(5)
-			bomb_time = Time.get_ticks_msec()
+			objective_time = Time.get_ticks_msec()
 			hud.start_progress(4.0, \"Bomb\")
 			if active_item:
 				camera.remove_child(active_item)
 				active_item = null
 	
 	
-	if Input.is_action_just_pressed(\"F\"):
+	if Input.is_action_just_pressed(\"E\"):
 		var found_item
 		if breach > 0.0:
 			for item in inventory:
@@ -261,17 +271,40 @@ func _process(delta):
 					break
 	
 	
-	if using_bomb and team == 2 and Time.get_ticks_msec() - bomb_time > 2000:
-		using_bomb = false
-		Gamemanager.plant_bomb.rpc(global_position - _surface_normal * 0.5, bomb_site)
-		bomb_site = -1
-	elif using_bomb and team == 1 and Time.get_ticks_msec() - bomb_time > 4000:
-		using_bomb = false
-		Gamemanager.defuse_bomb.rpc(bomb_site)
-		bomb_site = -1
-	elif using_bomb and !Input.is_action_pressed(\"E\"):
-		using_bomb = false
-		bomb_site = -1
+	if Input.is_action_just_pressed(\"Q\"):
+		for item in inventory:
+			if item.item_id == 4 or item.item_id == 7 or item.item_id == 8 or item.item_id == 9 or item.item_id == 10:
+				if active_item:
+					camera.remove_child(active_item)
+				active_item = item
+				camera.add_child(active_item)
+				await get_tree().create_timer(0.06).timeout
+				if active_item == item:
+					item.throw()
+				break
+	
+	
+	if using_objective and team == 2:
+		if Gamemanager.objectives[objective_index] == 1 and Time.get_ticks_msec() - objective_time > 2000:
+			using_objective = false
+			Gamemanager.plant_bomb.rpc(global_position - _surface_normal * 0.5, objective_index)
+			objective_index = -1
+		elif Gamemanager.objectives[objective_index] == 2 and Time.get_ticks_msec() - objective_time > 10000:
+			using_objective = false
+			Gamemanager.detonate_emp.rpc(global_position, objective_index)
+			objective_index = -1
+		elif Gamemanager.objectives[objective_index] == 3 and Time.get_ticks_msec() - objective_time > 5000:
+			using_objective = false
+			Gamemanager.take_objective.rpc(objective_index)
+			objective_index = -1
+			hud.set_objective(true)
+	elif using_objective and team == 1 and Time.get_ticks_msec() - objective_time > 4000:
+		using_objective = false
+		Gamemanager.defuse_bomb.rpc(objective_index)
+		objective_index = -1
+	elif using_objective and !Input.is_action_pressed(\"F\"):
+		using_objective = false
+		objective_index = -1
 		hud.stop_progress(\"Bomb\")
 	
 	
@@ -333,8 +366,8 @@ func _physics_process(delta : float):
 		return
 	
 	
-	if active_item == null and !using_bomb:
-		if inventory.size() > 0:
+	if active_item == null and !using_objective:
+		if inventory.size() > 0 and inventory[0] != null:
 			active_item = inventory[0]
 			camera.add_child(active_item)
 	
@@ -347,7 +380,7 @@ func _physics_process(delta : float):
 	
 	
 	if _anchored_shape:
-		if (Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\")) and !UiManager.paused and !using_bomb:
+		if (Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\")) and !UiManager.paused and !using_objective:
 			walking = true
 		else:
 			walking = false
@@ -360,17 +393,18 @@ func _physics_process(delta : float):
 			var ang_vel : Vector3 = _anchored_shape.get_parent().centrifuge_angular_velocity
 			global_rotate(ang_vel.normalized(), ang_vel.length() * delta)
 			_surface_normal = _surface_normal.rotated(ang_vel.normalized(), ang_vel.length() * delta)
-		
-		
-		# Jumping
-	if Input.is_action_just_pressed(\"Space\") and !UiManager.paused and !using_bomb:
+	
+	
+	# Jumping
+	if Input.is_action_just_pressed(\"Space\") and !UiManager.paused and !using_objective:
 		if _anchored_shape:
 			detach()
 			velocity += -global_basis.z * jump_power * jump_stamina
 			jump_stamina = 0
 			
 			move_and_collide(camera.global_position - global_position)
-			move_and_collide(velocity.normalized())
+			move_and_collide(velocity.normalized())	
+
 		
 		elif !_grapple_point:
 			var _space = get_world_3d().direct_space_state
@@ -381,10 +415,6 @@ func _physics_process(delta : float):
 				if Time.get_ticks_msec() - sound_time > 400 or _anchored_shape:
 					sound_time = Time.get_ticks_msec()
 					play_sound.rpc(3)
-				
-				if _anchored_shape:
-					move_and_collide(camera.global_position - global_position)
-					move_and_collide(-global_basis.z)
 				detach()
 				_grapple_point = _raycast.position
 		else:
@@ -483,15 +513,12 @@ func _anchored_move(delta : float):
 		_anchor_point_l = _anchored_shape.to_local(self.global_position)
 		_surface_normal = _collision.get_normal()
 	else:
-		global_translate(_surface_normal * 100 * delta)
+		move_and_collide(_surface_normal * 100 * delta)
 		detach()
 
 
 
 func _free_move(delta : float):
-	# Apply gravity, if any
-	#velocity += Gamemanager.get_gravity_vector() * delta
-	
 	
 	# Grapple
 	if _grapple_point != Vector3.ZERO:
@@ -520,13 +547,6 @@ func _free_move(delta : float):
 		else:
 			_grapple_point = Vector3.ZERO
 		
-		if _collision.get_travel().length_squared() < 0.1:
-			global_translate(_normal * 0.01)
-		
-		#var _body = _shape.get_parent()
-		#if \"centrifuge_angular_velocity\" in _body:
-		#	velocity = lerp(velocity, (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity), 0.5)
-		
 		_collision = move_and_collide(_collision.get_remainder().bounce(_normal) * 0.3)
 		velocity = velocity.bounce(_normal) * 0.3
 #endregion
@@ -549,20 +569,10 @@ func attach(_shape : CollisionShape3D, _normal : Vector3):
 	velocity = velocity - velocity.dot(_surface_normal) * _surface_normal
 	
 	oriented = true
-	
-	#var _body = _shape.get_parent()
-	#if \"centrifuge_angular_velocity\" in _body:
-	#	velocity -= (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
 
 
 
 func detach():
-	#if !_anchored_shape:
-	#	return
-	#
-	#var _body = _anchored_shape.get_parent()
-	#if \"centrifuge_angular_velocity\" in _body:
-	#	velocity += (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
 	oriented = false
 	
 	_anchored_shape = null
@@ -622,13 +632,6 @@ func damage(dmg, tearing, headshot = false, fire = false):
 
 func flash(pos : Vector3):
 	flash_overlay.global_position = camera.global_position + camera.global_position.direction_to(pos) * 0.18
-	
-	#var _axis = flash_overlay.global_position.direction_to(camera.global_position).cross(flash_overlay.global_basis.y)
-	#var _angle = acos(flash_overlay.global_position.direction_to(camera.global_position).dot(flash_overlay.global_basis.y))
-	#if !_axis.is_zero_approx():
-	#	flash_overlay.rotate(_axis.normalized(), _angle)
-	#else:
-	#	flash_overlay.rotate(flash_overlay.global_basis.x, _angle)
 	
 	flash_overlay.mesh.material.albedo_color.a = 1
 
@@ -705,19 +708,8 @@ func set_team(new_team : int):
 		global_position = spawnpoint.global_position
 		velocity = spawnpoint.down * 10
 		
-		var _axis = spawnpoint.down.cross(-global_basis.y)
-		var _angle = acos(spawnpoint.down.dot(-global_basis.y))
-		if !_axis.is_zero_approx():
-			rotate(_axis.normalized(), _angle)
-		else:
-			rotate(global_basis.x, _angle)
-			
-		_axis = spawnpoint.facing.cross(global_basis.z)
-		_angle = acos(spawnpoint.down.dot(global_basis.z))
-		if !_axis.is_zero_approx():
-			rotate(_axis.normalized(), _angle)
-		else:
-			rotate(-global_basis.y, _angle)
+		look_at(global_position + spawnpoint.facing, -spawnpoint.down)
+		move_and_collide(spawnpoint.down)
 	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
 		spawn_time = Time.get_ticks_msec()

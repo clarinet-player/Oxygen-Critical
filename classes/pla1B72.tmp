@@ -1,0 +1,929 @@
+[gd_scene load_steps=15 format=3 uid="uid://bq3u0xb10re6"]
+
+[ext_resource type="PackedScene" uid="uid://c2hluyirbi4rf" path="res://classes/hitbox.tscn" id="1_2yv3f"]
+[ext_resource type="Texture2D" uid="uid://dv4b2q2nb4u6n" path="res://assets/flash.png" id="1_qlxub"]
+
+[sub_resource type="GDScript" id="GDScript_qj47s"]
+script/source = "extends RigidBody3D
+
+
+
+signal death(id : int)
+
+signal damaged
+
+
+
+#region Variables
+const walk_acceleration : float = 35.0
+const walk_friction : float = 30.0
+const walk_max_speed : float = 5.0
+
+const jump_power : float = 2.5
+
+const grapple_range : float = 40.0
+const grapple_acceleration : float = 10.0
+const grapple_max_speed : float = 6.5
+
+const timeout_time : int = 1000
+
+var mouse_sensitivity : float
+
+var jump_stamina : float = 1.0
+
+@export var velocity : Vector3
+
+var walking := false
+
+var oriented := true
+
+var _anchored_shape : CollisionShape3D
+var _anchor_point_l : Vector3
+var _grapple_point : Vector3
+var _surface_normal : Vector3
+
+var health : float = 100
+var breach : float = 0
+
+var inventory := Array()
+var active_item : Node3D
+
+var spawn_time := 0
+
+var team := 0
+@export var username := \"\"
+var using_objective := false
+var objective_time := 0
+var objective_index
+
+
+var sound_time : int
+
+
+@onready var camera := $Camera3D
+@onready var hitbox := $Hitbox
+@onready var audio := $Camera3D/AudioStreamPlayer3D
+@onready var flash_overlay := $Camera3D/MeshInstance3D
+@onready var hud = UiManager.playerhud
+#endregion
+
+
+
+func _enter_tree():
+	if name != \"Player\":
+		set_multiplayer_authority(int(str(name)))
+
+
+
+func _ready():
+	
+	Settings.settings_changed.connect(_load_settings)
+	_load_settings()
+	
+	
+	if !Gamemanager.mp_active or is_multiplayer_authority():
+		
+		if !Gamemanager.username.is_empty():
+			username = Gamemanager.username
+		
+		$Hitbox/Hitbox.queue_free()
+		$Hitbox/MeshInstance3D.queue_free()
+		$Hitbox/MeshInstance3D2.queue_free()
+		$Hitbox/Hitbox3.queue_free()
+		$Hitbox/MeshInstance3D3.queue_free()
+		
+		
+		Gamemanager.local_player = self
+		
+		hud.set_health(100)
+		hud.set_ammo(false, 0)
+		
+		flash_overlay.mesh.material.albedo_color.a = 0
+		
+		for item in Settings.saved_inventory:
+			if item == 1:
+				var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
+				ak.magazine = ak.mag_size
+				inventory.append(ak)
+			elif item == 2:
+				var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
+				vector.magazine = vector.mag_size
+				inventory.append(vector)
+			elif item == 3:
+				var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
+				glock.magazine = glock.mag_size
+				inventory.append(glock)
+			elif item == 4:
+				var grenade = preload(\"res://weapons/grenades/he_display.tscn\").instantiate()
+				inventory.append(grenade)
+			elif item == 5:
+				var sealant = preload(\"res://weapons/healing/sealant.tscn\").instantiate()
+				inventory.append(sealant)
+			elif item == 6:
+				var healthkit = preload(\"res://weapons/healing/healthkit.tscn\").instantiate()
+				inventory.append(healthkit)
+			elif item == 7:
+				var incendiary = preload(\"res://weapons/grenades/incendiary_display.tscn\").instantiate()
+				inventory.append(incendiary)
+			elif item == 8:
+				var flash = preload(\"res://weapons/grenades/flash_display.tscn\").instantiate()
+				inventory.append(flash)
+			elif item == 9:
+				var smoke = preload(\"res://weapons/grenades/smoke_display.tscn\").instantiate()
+				inventory.append(smoke)
+			elif item == 10:
+				var claymore = preload(\"res://weapons/grenades/claymore_display.tscn\").instantiate()
+				inventory.append(claymore)
+	
+	else:
+		hide()
+		$Hitbox/Hitbox.disabled = true
+		$Hitbox/Hitbox2.disabled = true
+		$Hitbox/Hitbox3.disabled = true
+
+
+
+func _load_settings():
+	camera.fov = Settings.fov
+	mouse_sensitivity = Settings.mouse_sensitivity
+
+
+
+func _input(event):
+	if Gamemanager.mp_active and !is_multiplayer_authority():
+		return
+	
+	if UiManager.paused:
+		return
+	
+	# Rotating to follow mouse
+	if event is InputEventMouseMotion:
+		if oriented and _anchored_shape:
+			rotate(_surface_normal, event.relative.x * mouse_sensitivity * -0.001)
+			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
+		else:
+			rotate(global_transform.basis.y.normalized(), event.relative.x * mouse_sensitivity * -0.001)
+			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
+
+
+
+func _process(delta):
+	if Gamemanager.mp_active and !is_multiplayer_authority():
+		if !username.is_empty():
+			$Hitbox/Label3D.text = username
+		return
+	
+	
+	flash_overlay.mesh.material.albedo_color.a = max(0, flash_overlay.mesh.material.albedo_color.a - delta * 0.4)
+	
+	
+	if Input.is_action_pressed(\"Shift\"):
+		oriented = false
+	elif _anchored_shape:
+		oriented = true
+		reorient(global_basis.y, delta * 3.5)
+	
+	
+	if _anchored_shape:
+		if oriented:
+			hud.set_hud_anchor(1, 0)
+		elif acos(_surface_normal.dot(global_basis.x)) < PI / 2:
+			hud.set_hud_anchor(1, acos(_surface_normal.dot(global_basis.y)))
+		else:
+			hud.set_hud_anchor(1, acos(_surface_normal.dot(-global_basis.y)) + PI)
+	elif !_grapple_point.is_zero_approx():
+		hud.set_hud_anchor(2, 0)
+	else:
+		hud.set_hud_anchor(0, 0)
+	
+	
+	if Input.is_action_just_pressed(\"B\") and !UiManager.paused and Time.get_ticks_msec() - spawn_time < 10000:
+		UiManager.set_ui(4)
+	
+	
+	if Input.is_action_just_pressed(\"E\") and team == 2 and _anchored_shape:
+		var objective
+		for obj in Gamemanager.objectives:
+			if obj[0] == 1 and obj[1].has_point(global_position) and obj[2] == 0:
+				objective = obj
+				objective_index = Gamemanager.find(obj)
+				break
+		if objective_index >= 0:
+			using_objective = true
+			objective_time = Time.get_ticks_msec()
+			if objective[0] == 1:
+				hud.start_progress(2.0, \"Objective\")
+			elif objective[0] == 2:
+				hud.start_progress(7.5, \"Objective\")
+			elif objective[0] == 3:
+				hud.start_progress(5.0)
+			if active_item:
+				camera.remove_child(active_item)
+				active_item = null
+	
+	
+	elif Input.is_action_just_pressed(\"E\") and team == 1:
+		for bomb in Gamemanager.bombs:
+			if bomb != null and bomb.global_position.distance_to(global_position) < 1.5:
+				objective_index = bomb.site
+				break
+		if objective_index >= 0:
+			if !using_objective:
+				using_objective = true
+				if Gamemanager.mp_active:
+					play_sound.rpc(5)
+				else:
+					play_sound(5)
+			objective_time = Time.get_ticks_msec()
+			hud.start_progress(4.0, \"Bomb\")
+			if active_item:
+				camera.remove_child(active_item)
+				active_item = null
+	
+	
+	if Input.is_action_just_pressed(\"F\"):
+		var found_item
+		if breach > 0.0:
+			for item in inventory:
+				if item.item_id == 5:
+					found_item = item
+					break
+			if found_item == null:
+				if active_item:
+					camera.remove_child(active_item)
+				active_item = preload(\"res://weapons/healing/tape.tscn\").instantiate()
+				camera.add_child(active_item)
+			else:
+				if active_item:
+					camera.remove_child(active_item)
+				active_item = found_item
+				camera.add_child(active_item)
+		elif health < 100.0:
+			for item in inventory:
+				if item.item_id == 6:
+					if active_item:
+						camera.remove_child(active_item)
+					active_item = item
+					camera.add_child(active_item)
+					break
+	
+	
+	if using_objective and team == 2 and Time.get_ticks_msec() - objective_time > 2000:
+		using_objective = false
+		Gamemanager.plant_bomb.rpc(global_position - _surface_normal * 0.5, objective_index)
+		objective_index = -1
+	elif using_objective and team == 1 and Time.get_ticks_msec() - objective_time > 4000:
+		using_objective = false
+		Gamemanager.defuse_bomb.rpc(objective_index)
+		objective_index = -1
+	elif using_objective and !Input.is_action_pressed(\"E\"):
+		using_objective = false
+		objective_index = -1
+		hud.stop_progress(\"Bomb\")
+	
+	
+	if Input.is_action_just_pressed(\"MouseDown\")and !UiManager.paused:
+		if active_item:
+			camera.remove_child(active_item)
+			active_item = inventory[ clamp(inventory.find(active_item) + 1, 0, inventory.size() - 1) ]
+			camera.add_child(active_item)
+	
+	if Input.is_action_just_pressed(\"MouseUp\") and !UiManager.paused:
+		if active_item:
+			camera.remove_child(active_item)
+			active_item = inventory[ clamp(inventory.find(active_item) - 1, 0, inventory.size() - 1) ]
+			camera.add_child(active_item)
+	
+	elif Input.is_action_just_pressed(\"1\") and inventory.size() > 0 and inventory[0] != active_item and !UiManager.paused:
+		if active_item:
+			camera.remove_child(active_item)
+		active_item = inventory[0]
+		camera.add_child(active_item)
+	
+	elif Input.is_action_just_pressed(\"2\") and inventory.size() > 1 and inventory[1] != active_item and !UiManager.paused:
+		if active_item:
+			camera.remove_child(active_item)
+		active_item = inventory[1]
+		camera.add_child(active_item)
+	
+	elif Input.is_action_just_pressed(\"3\") and inventory.size() > 2 and inventory[2] != active_item and !UiManager.paused:
+		if active_item:
+			camera.remove_child(active_item)
+		active_item = inventory[2]
+		camera.add_child(active_item)
+	
+	elif Input.is_action_just_pressed(\"4\")and inventory.size() > 3 and inventory[3] != active_item and !UiManager.paused:
+		if active_item:
+			camera.remove_child(active_item)
+		active_item = inventory[3]
+		camera.add_child(active_item)
+
+
+
+#region Physics Frame
+func _physics_process(delta : float):
+	if !Gamemanager.mp_active or is_multiplayer_authority():
+		health -= breach * delta
+		if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):
+			health -= 100 * delta
+		hud.set_health(health)
+		if !Gamemanager.mp_active and health < 0.1:
+			die()
+	
+	else:
+		global_translate(velocity * delta)
+		health -= breach * delta
+		if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):
+			health -= 100 * delta
+		if health < 0.1:
+			die.rpc()
+		return
+	
+	
+	if active_item == null and !using_objective:
+		if inventory.size() > 0 and inventory[0] != null:
+			active_item = inventory[0]
+			camera.add_child(active_item)
+	
+	
+	# Regain stamina
+	if jump_stamina < 1:
+		jump_stamina += delta * 2
+		if jump_stamina > 1:
+			jump_stamina = 1
+	
+	
+	if _anchored_shape:
+		if (Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\")) and !UiManager.paused and !using_objective:
+			walking = true
+		else:
+			walking = false
+		
+		
+		# Move to follow our anchor
+		var newpos = _anchored_shape.to_global(_anchor_point_l)
+		global_position = newpos
+		if \"centrifuge_angular_velocity\" in _anchored_shape.get_parent():
+			var ang_vel : Vector3 = _anchored_shape.get_parent().centrifuge_angular_velocity
+			global_rotate(ang_vel.normalized(), ang_vel.length() * delta)
+			_surface_normal = _surface_normal.rotated(ang_vel.normalized(), ang_vel.length() * delta)
+		
+		
+		# Jumping
+	if Input.is_action_just_pressed(\"Space\") and !UiManager.paused and !using_objective:
+		if _anchored_shape:
+			detach()
+			velocity += -global_basis.z * jump_power * jump_stamina
+			jump_stamina = 0
+			
+			move_and_collide(camera.global_position - global_position)
+			move_and_collide(velocity.normalized())
+		
+		elif !_grapple_point:
+			var _space = get_world_3d().direct_space_state
+			var _ray = PhysicsRayQueryParameters3D.create(camera.global_position, camera.global_position - global_basis.z * grapple_range)
+			var _raycast = _space.intersect_ray(_ray)
+			
+			if !_raycast.is_empty():
+				if Time.get_ticks_msec() - sound_time > 400 or _anchored_shape:
+					sound_time = Time.get_ticks_msec()
+					play_sound.rpc(3)
+				
+				if _anchored_shape:
+					move_and_collide(camera.global_position - global_position)
+					move_and_collide(-global_basis.z)
+				detach()
+				_grapple_point = _raycast.position
+		else:
+			_grapple_point = Vector3.ZERO
+	
+	
+	if _anchored_shape:
+		camera.global_position = global_position + _surface_normal
+		hitbox.global_position = global_position + _surface_normal * 0.35
+		var _up : Vector3 = hitbox.global_basis.y
+		var _angle : float = acos(_up.dot(_surface_normal))
+		var _axis = _up.cross(_surface_normal)
+		if !_axis.is_zero_approx():
+			hitbox.global_rotate(_axis.normalized(), _angle)
+	
+	else:
+		camera.global_position = global_position - velocity.normalized()
+		hitbox.global_position = global_position - velocity.normalized() * 0.35
+		var _up : Vector3 = -hitbox.global_basis.y
+		var _angle : float = acos(_up.dot(velocity.normalized()))
+		var _axis = _up.cross(velocity.normalized())
+		if !_axis.is_zero_approx():
+			hitbox.global_rotate(_axis.normalized(), _angle)
+	
+	
+	# Delegate movement
+	if _anchored_shape:
+		_anchored_move(delta)
+	else:
+		_free_move(delta)
+
+
+
+func _anchored_move(delta : float):
+	if walking and Time.get_ticks_msec() - sound_time > 500:
+		sound_time = Time.get_ticks_msec()
+		play_sound.rpc(1)
+	
+	# Calculating movement direction along the ground
+	var _forward : Vector3 = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
+	var _side : Vector3 = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
+	
+	var _input := Input.get_vector(\"A\", \"D\", \"S\", \"W\")
+	
+	# Getting movement input
+	if walking:
+		velocity += (((_side * _input.x) + (_forward * _input.y))).normalized() * delta * walk_acceleration
+		if velocity.length() > walk_max_speed + walk_acceleration * delta:
+			velocity = velocity.limit_length(velocity.length() - walk_acceleration * delta)
+		if velocity.length() > walk_max_speed + walk_friction * delta:
+			velocity = velocity.limit_length(velocity.length() - walk_friction * delta)
+		else:
+			velocity = velocity.limit_length(walk_max_speed)
+	
+	else:
+		if velocity.length() < walk_friction * delta:
+			velocity = Vector3.ZERO
+		else:
+			velocity = velocity.limit_length(velocity.length() - walk_friction * delta)
+	
+	
+	if velocity.is_zero_approx():
+		return
+	
+	
+	# Applying movement
+	var _time = delta
+	var _collision = move_and_collide(velocity * _time)
+	var _loops = 0
+	
+	while _collision:
+		var _shape = _collision.get_collider_shape()
+		var _normal = _collision.get_normal()
+		
+		_time -= delta * (_collision.get_travel().length() / velocity.length())
+		
+		if _shape == _anchored_shape and acos(_surface_normal.dot(_normal)) < 1.5:
+			_surface_normal = _normal
+			_forward = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
+			_side = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
+			velocity = _forward * _forward.dot(velocity) + _side * _side.dot(velocity)
+		
+		else:
+			velocity -= velocity.dot(_normal) * _normal
+		
+		
+		if _loops > 4:
+			break
+		
+		_loops += 1
+		_collision = move_and_collide(velocity * _time)
+	
+	# Checking we're still on the ground
+	_collision = move_and_collide(_surface_normal * -100 * delta)
+	if _collision and _collision.get_collider_shape() == _anchored_shape:
+		_anchor_point_l = _anchored_shape.to_local(self.global_position)
+		_surface_normal = _collision.get_normal()
+	else:
+		global_translate(_surface_normal * 100 * delta)
+		detach()
+
+
+
+func _free_move(delta : float):
+	# Apply gravity, if any
+	#velocity += Gamemanager.get_gravity_vector() * delta
+	
+	
+	# Grapple
+	if _grapple_point != Vector3.ZERO:
+		velocity = (velocity + global_position.direction_to(_grapple_point) * grapple_acceleration * delta).limit_length(grapple_max_speed)
+	
+	
+	# Try to move to our new position
+	var _collision = move_and_collide(velocity * delta)
+	
+	while _collision:
+		var _shape = _collision.get_collider_shape()
+		var _normal = _collision.get_normal()
+		
+		if \"get_is_grabbable\" in _shape:# and _shape.get_is_grabbable():
+			if Time.get_ticks_msec() - sound_time > 200:
+				sound_time = Time.get_ticks_msec()
+				if Gamemanager.mp_active:
+					play_sound.rpc(2)
+				else:
+					play_sound(2)
+			
+			attach(_shape, _normal)
+			_anchored_move(_collision.get_remainder().length()/velocity.length())
+			return
+		
+		else:
+			_grapple_point = Vector3.ZERO
+		
+		if _collision.get_travel().length_squared() < 0.1:
+			global_translate(_normal * 0.01)
+		
+		#var _body = _shape.get_parent()
+		#if \"centrifuge_angular_velocity\" in _body:
+		#	velocity = lerp(velocity, (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity), 0.5)
+		
+		_collision = move_and_collide(_collision.get_remainder().bounce(_normal) * 0.3)
+		velocity = velocity.bounce(_normal) * 0.3
+#endregion
+
+
+
+func attach(_shape : CollisionShape3D, _normal : Vector3):
+	
+	global_position = camera.global_position
+	move_and_collide(-_normal)
+	camera.global_position = global_position + _normal
+	
+	_anchored_shape = _shape
+	_anchor_point_l = _anchored_shape.to_local(global_position)
+	_surface_normal = _normal
+	
+	if _grapple_point != Vector3.ZERO:
+		_grapple_point = Vector3.ZERO
+	
+	velocity = velocity - velocity.dot(_surface_normal) * _surface_normal
+	
+	oriented = true
+	
+	#var _body = _shape.get_parent()
+	#if \"centrifuge_angular_velocity\" in _body:
+	#	velocity -= (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
+
+
+
+func detach():
+	#if !_anchored_shape:
+	#	return
+	#
+	#var _body = _anchored_shape.get_parent()
+	#if \"centrifuge_angular_velocity\" in _body:
+	#	velocity += (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
+	oriented = false
+	
+	_anchored_shape = null
+
+
+
+func reorient(to : Vector3, speed : float):
+	var roll : Vector3 = global_transform.basis.z
+	var target : Vector3 = (_surface_normal - _surface_normal.dot(roll) * roll).normalized()
+	var angle : float = acos(to.dot(target))
+	var axis = to.cross(target)
+	var look_angle = _surface_normal.cross(-global_basis.z).length()
+	
+	if angle < 0.01:
+		return
+	if !axis.is_zero_approx():
+		rotate(axis.normalized(), angle * look_angle * speed)
+	else:
+		rotate(global_basis.z, angle * look_angle * speed)
+
+
+
+func is_anchored() -> bool:
+	if _anchored_shape:
+		return true
+	else:
+		return false
+
+
+
+func get_velocity() -> Vector3:
+	if _anchored_shape:
+		var _body = _anchored_shape.get_parent()
+		if \"centrifuge_angular_velocity\" in _body:
+			return velocity + (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
+	return velocity
+
+
+
+func damage(dmg, tearing, headshot = false, fire = false):
+	if !Gamemanager.mp_active:
+		if headshot:
+			Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
+		elif fire:
+			Audiomanager.play(\"res://assets/fire_damage.mp3\")
+		elif tearing > breach:
+			Audiomanager.play(\"res://assets/bullet_breach.mp3\")
+		else:
+			Audiomanager.play(\"res://assets/bullet_hit.mp3\")
+	
+	health = max(health - dmg, 0)
+	breach = max(breach, tearing)
+	set_health.rpc_id(int(str(name)), health, breach, true, headshot, fire)
+	damaged.emit()
+
+
+
+func flash(pos : Vector3):
+	flash_overlay.global_position = camera.global_position + camera.global_position.direction_to(pos) * 0.18
+	
+	#var _axis = flash_overlay.global_position.direction_to(camera.global_position).cross(flash_overlay.global_basis.y)
+	#var _angle = acos(flash_overlay.global_position.direction_to(camera.global_position).dot(flash_overlay.global_basis.y))
+	#if !_axis.is_zero_approx():
+	#	flash_overlay.rotate(_axis.normalized(), _angle)
+	#else:
+	#	flash_overlay.rotate(flash_overlay.global_basis.x, _angle)
+	
+	flash_overlay.mesh.material.albedo_color.a = 1
+
+
+
+@rpc(\"authority\", \"call_remote\", \"reliable\")
+func heal(healing, tearing):
+	health = min(health + healing, 100)
+	if tearing:
+		breach = 0
+
+
+
+@rpc(\"authority\", \"call_local\", \"unreliable\")
+func play_sound(sound : int):
+	audio.pitch_scale = randf_range(0.95, 1.05)
+	if sound == 1:
+		audio.stream = [preload(\"res://assets/footstep_sfx_1.mp3\"), preload(\"res://assets/footstep_sfx_2.mp3\"), preload(\"res://assets/footstep_sfx_3.mp3\"), preload(\"res://assets/footstep_sfx_4.mp3\"), preload(\"res://assets/footstep_sfx_5.mp3\")].pick_random()
+		audio.play()
+	elif sound == 2:
+		audio.stream = preload(\"res://assets/footstep_sfx_6.mp3\")
+		audio.play()
+	elif sound == 3:
+		audio.stream = preload(\"res://assets/grappling-hook-14680.mp3\")
+		audio.play()
+	elif sound == 4:
+		audio.stream = preload(\"res://assets/1911-reload-6248.mp3\")
+		audio.play()
+	elif sound == 5:
+		audio.stream = preload(\"res://assets/defuse.mp3\")
+		audio.play()
+
+
+
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
+func set_team(new_team : int):
+	team = new_team
+	
+	if !Gamemanager.mp_active or is_multiplayer_authority():
+		
+		if Gamemanager.freecam != null:
+			Gamemanager.freecam.queue_free()
+		
+		$Camera3D.current = true
+		hud.set_team(team)
+	
+	else:
+		show()
+		$Hitbox/Hitbox.disabled = false
+		$Hitbox/Hitbox2.disabled = false
+		$Hitbox/Hitbox3.disabled = false
+		
+		if team == 1:
+			var mat = StandardMaterial3D.new()
+			mat.albedo_color = Color(0, 0, 0.6)
+			mat.emission_enabled = true
+			mat.emission = Color(0, 0, 0.1)
+			$Hitbox/MeshInstance3D.mesh.material = mat
+			$Hitbox/MeshInstance3D2.mesh.material = mat
+			$Hitbox/MeshInstance3D3.mesh.material = mat
+		
+		if team == 2:
+			var mat = StandardMaterial3D.new()
+			mat.albedo_color = Color(0.6, 0, 0)
+			mat.emission_enabled = true
+			mat.emission = Color(0.1, 0, 0)
+			$Hitbox/MeshInstance3D.mesh.material = mat
+			$Hitbox/MeshInstance3D2.mesh.material = mat
+			$Hitbox/MeshInstance3D3.mesh.material = mat
+	
+	
+	var spawnpoint = Gamemanager.find_spawnpoint(self, team)
+	if spawnpoint:
+		global_position = spawnpoint.global_position
+		velocity = spawnpoint.down * 10
+		
+		var _axis = spawnpoint.down.cross(-global_basis.y)
+		var _angle = acos(spawnpoint.down.dot(-global_basis.y))
+		if !_axis.is_zero_approx():
+			rotate(_axis.normalized(), _angle)
+		else:
+			rotate(global_basis.x, _angle)
+			
+		_axis = spawnpoint.facing.cross(global_basis.z)
+		_angle = acos(spawnpoint.down.dot(global_basis.z))
+		if !_axis.is_zero_approx():
+			rotate(_axis.normalized(), _angle)
+		else:
+			rotate(-global_basis.y, _angle)
+	
+	if !Gamemanager.mp_active or is_multiplayer_authority():
+		spawn_time = Time.get_ticks_msec()
+		
+		await get_tree().create_timer(0.1).timeout
+		UiManager.set_ui(3)
+
+
+
+@rpc(\"any_peer\", \"call_remote\", \"reliable\")
+func set_health(new_health : float, new_breach : float, damage : bool, headshot : bool, fire : bool):
+	if damage:
+		damaged.emit()
+		if headshot:
+			Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
+		elif fire:
+			Audiomanager.play(\"res://assets/fire_damage.mp3\")
+		elif new_breach > breach:
+			Audiomanager.play(\"res://assets/bullet_breach.mp3\")
+		else:
+			Audiomanager.play(\"res://assets/bullet_hit.mp3\")
+	
+	health = new_health
+	breach = new_breach
+	
+	hud.set_health(health)
+
+
+
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
+func die():
+	if is_multiplayer_authority():
+		Gamemanager.local_player = null
+		hud.stop_progress(\"\")
+		if UiManager.active_menu != UiManager.spechud:
+			Gamemanager.ui_message(3)
+		
+		var freecam = preload(\"res://classes/freecam.tscn\").instantiate()
+		Gamemanager.add_child(freecam)
+		Gamemanager.freecam = freecam
+		freecam.global_transform = camera.global_transform
+	
+	death.emit(int(str(name)))
+	queue_free()
+"
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ufnhc"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j25b5"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_texture = ExtResource("1_qlxub")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_kd24n"]
+material = SubResource("StandardMaterial3D_j25b5")
+size = Vector2(0.5, 0.5)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jomgw"]
+radius = 0.25
+height = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b7v7a"]
+emission_enabled = true
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_r400h"]
+resource_local_to_scene = true
+material = SubResource("StandardMaterial3D_b7v7a")
+radius = 0.25
+height = 1.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_p56ql"]
+radius = 0.19
+
+[sub_resource type="SphereMesh" id="SphereMesh_lmg7g"]
+resource_local_to_scene = true
+radius = 0.19
+height = 0.38
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_71ht7"]
+radius = 0.23
+height = 0.6
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_6cv8e"]
+resource_local_to_scene = true
+material = SubResource("StandardMaterial3D_b7v7a")
+radius = 0.23
+height = 0.6
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_0uupb"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("Hitbox:position")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath("Hitbox:rotation")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath("Camera3D:position")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+properties/5/path = NodePath("Camera3D:rotation")
+properties/5/spawn = true
+properties/5/replication_mode = 1
+properties/6/path = NodePath(".:team")
+properties/6/spawn = true
+properties/6/replication_mode = 1
+properties/7/path = NodePath(".:username")
+properties/7/spawn = true
+properties/7/replication_mode = 1
+properties/8/path = NodePath(".:velocity")
+properties/8/spawn = true
+properties/8/replication_mode = 1
+
+[node name="Player" type="RigidBody3D" groups=["Players"]]
+top_level = true
+collision_layer = 0
+can_sleep = false
+freeze = true
+continuous_cd = true
+script = SubResource("GDScript_qj47s")
+
+[node name="PlayerBody" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_ufnhc")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0406958)
+light_color = Color(0.858824, 0.882353, 0.968627, 1)
+light_energy = 0.1
+light_volumetric_fog_energy = 0.0
+spot_range = 15.0
+spot_angle = 60.0
+spot_angle_attenuation = 1.41421
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Camera3D"]
+attenuation_model = 1
+max_distance = 30.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.2)
+mesh = SubResource("PlaneMesh_kd24n")
+
+[node name="Hitbox" type="RigidBody3D" parent="."]
+collision_layer = 2
+collision_mask = 0
+can_sleep = false
+freeze = true
+
+[node name="Label3D" type="Label3D" parent="Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.961088, 0)
+pixel_size = 0.002
+billboard = 1
+outline_modulate = Color(0, 0, 0, 0)
+font_size = 60
+
+[node name="Hitbox" parent="Hitbox" node_paths=PackedStringArray("player") instance=ExtResource("1_2yv3f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0361335, 0)
+shape = SubResource("CapsuleShape3D_jomgw")
+player = NodePath("../..")
+damage = 1.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0366825, 0)
+mesh = SubResource("CapsuleMesh_r400h")
+skeleton = NodePath("../../PlayerBody")
+
+[node name="Hitbox2" parent="Hitbox" node_paths=PackedStringArray("player") instance=ExtResource("1_2yv3f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.707071, 0)
+shape = SubResource("SphereShape3D_p56ql")
+player = NodePath("../..")
+damage = 2.0
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.706894, 0)
+mesh = SubResource("SphereMesh_lmg7g")
+skeleton = NodePath("../../PlayerBody")
+
+[node name="Hitbox3" parent="Hitbox" node_paths=PackedStringArray("player") instance=ExtResource("1_2yv3f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.416334, 0)
+shape = SubResource("CapsuleShape3D_71ht7")
+player = NodePath("../..")
+damage = 0.66
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.415785, 0)
+mesh = SubResource("CapsuleMesh_6cv8e")
+skeleton = NodePath("../../PlayerBody")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://weapons/ak12/ak12.tscn", "res://weapons/vector/vector.tscn", "res://weapons/glock/glock.tscn", "res://weapons/grenades/he_display.tscn", "res://weapons/healing/sealant.tscn", "res://weapons/healing/healthkit.tscn")
+spawn_path = NodePath("../Camera3D")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_0uupb")
+
+[connection signal="synchronized" from="MultiplayerSynchronizer" to="." method="_on_synchronization"]

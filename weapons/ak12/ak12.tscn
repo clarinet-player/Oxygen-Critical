@@ -102,6 +102,7 @@ recoil = 3.7
 spray = 3.0
 inventory_size = 2
 camera_movement = 1.0
+casing = 2
 audio = NodePath("AudioStreamPlayer3D")
 light = NodePath("Skeleton3D2/SpotLight3D")
 ejection = NodePath("Skeleton3D2/Marker3D")

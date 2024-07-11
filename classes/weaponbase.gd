@@ -16,6 +16,7 @@ extends Node3D
 @export var spray : float
 @export var inventory_size : int
 @export var camera_movement : float
+@export var casing : int
 
 @export var audio : AudioStreamPlayer3D
 @export var light : SpotLight3D
@@ -51,7 +52,7 @@ func _ready():
 	if !Gamemanager.mp_active or is_multiplayer_authority():
 		hud.set_ammo(true, magazine)
 		hud.alt_fire(shots[firemode])
-		get_parent().get_parent().using_bomb = false
+		get_parent().get_parent().using_objective = false
 		hud.stop_progress("Planting")
 	
 	rotation = Vector3.ZERO
@@ -103,13 +104,15 @@ func _physics_process(delta):
 		if magazine < mag_size and _burst == 0:
 			reloading = true
 			reload_start_time = time
+			magazine = min(magazine, 1)
+			hud.set_ammo(true, magazine)
 			hud.start_progress(reload_time / 1000, "reloading")
 			$"../..".sound_time = Time.get_ticks_msec() + 300
 			$"../..".play_sound.rpc(4)
 	
 	if reloading and time - reload_start_time > reload_time:
 		reloading = false
-		magazine = mag_size
+		magazine += mag_size
 		hud.set_ammo(true, magazine)
 	
 	
@@ -210,10 +213,11 @@ func fire(pos : Vector3, velocity : Vector3):
 	
 	await get_tree().create_timer(0.05).timeout
 	
-	var casing = preload("res://classes/casing.tscn").instantiate()
-	Gamemanager.add_child(casing)
-	casing.global_position = ejection.global_position
-	casing.look_at(casing.global_position + velocity)
-	casing.velocity = ejection.global_basis.z.normalized() * 4 + Vector3(randf_range(-0.3, 0.3), randf_range(-0.3, 0.3), randf_range(-0.3, 0.3)) + get_parent().get_parent().velocity
-	casing.angular = Vector3(randf_range(-0.5, 0.5), randf_range(-0.5, 0.5), randf_range(-0.5, 0.5))
+	var case = preload("res://classes/casing.tscn").instantiate()
+	case.type = casing
+	Gamemanager.add_child(case)
+	case.global_position = ejection.global_position
+	case.look_at(case.global_position + velocity)
+	case.velocity = ejection.global_basis.z.normalized() * 4 + Vector3(randf_range(-0.3, 0.3), randf_range(-0.3, 0.3), randf_range(-0.3, 0.3)) + get_parent().get_parent().velocity
+	case.angular = Vector3(randf_range(-0.5, 0.5), randf_range(-0.5, 0.5), randf_range(-0.5, 0.5))
 	

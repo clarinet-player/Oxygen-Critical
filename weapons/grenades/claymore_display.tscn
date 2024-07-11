@@ -34,20 +34,27 @@ func _physics_process(delta):
 	if Gamemanager.mp_active and !is_multiplayer_authority():
 		return
 	
-	if (Input.is_action_just_pressed(\"Mouse1\") or Input.is_action_just_pressed(\"Mouse2\")) and !UiManager.paused:
-		var player = get_parent().get_parent()
+	if Input.is_action_just_pressed(\"Mouse1\") and !UiManager.paused:
+		throw()
 	
-		var velocity = -global_basis.z * throw_velocity + player.get_velocity()
-		
-		if Gamemanager.mp_active:
-			Gamemanager.throw_grenade.rpc(5, randi(), global_position, velocity)
-		else:
-			Gamemanager.throw_grenade(5, randi(), global_position, velocity)
-		
-		player.inventory.erase(self)
-		get_parent().remove_child(self)
-		player.active_item = null
+	if Input.is_action_just_pressed(\"Mouse2\") and !UiManager.paused:
+		throw()
+
+
+
+func throw(vel := 1.0):
+	var player = get_parent().get_parent()
 	
+	var velocity = -global_basis.z * throw_velocity * vel + player.get_velocity()
+	
+	if Gamemanager.mp_active:
+		Gamemanager.throw_grenade.rpc(5, randi(), global_position, velocity)
+	else:
+		Gamemanager.throw_grenade(5, randi(), global_position, velocity)
+	
+	player.inventory.erase(self)
+	get_parent().remove_child(self)
+	player.active_item = null
 "
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_twcu3"]

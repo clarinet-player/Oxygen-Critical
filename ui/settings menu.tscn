@@ -42,6 +42,7 @@ func _ready():
 	volumetrics.button_pressed = Settings.volumetrics_enabled
 	shadows.button_pressed = Settings.shadows_enabled
 	particles.button_pressed = Settings.particles_enabled
+	$VBoxContainer2/Comfort.button_pressed = Settings.comfort_mode
 
 
 func _exit_tree():
@@ -100,6 +101,11 @@ func _on_particles_toggled(toggled_on):
 
 func _on_return_button_down():
 	UiManager.set_ui(2)
+
+
+func _on_comfort_toggled(toggled_on):
+	changed = true
+	Settings.comfort_mode = toggled_on
 "
 
 [node name="SettingsMenu" type="Control"]
@@ -243,6 +249,11 @@ theme_override_font_sizes/font_size = 80
 text = "Particles
 "
 
+[node name="Comfort" type="CheckButton" parent="VBoxContainer2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "Comfort Mode"
+
 [connection signal="button_down" from="Return" to="." method="_on_return_button_down"]
 [connection signal="value_changed" from="VBoxContainer/FovSlider" to="." method="_fov_slider_changed"]
 [connection signal="value_changed" from="VBoxContainer/SensitivitySlider" to="." method="_sensitivity_slider_changed"]
@@ -251,3 +262,4 @@ text = "Particles
 [connection signal="toggled" from="VBoxContainer2/Volumetrics" to="." method="_on_volumetrics_toggled"]
 [connection signal="toggled" from="VBoxContainer2/Shadows" to="." method="_on_shadows_toggled"]
 [connection signal="toggled" from="VBoxContainer2/Particles" to="." method="_on_particles_toggled"]
+[connection signal="toggled" from="VBoxContainer2/Comfort" to="." method="_on_comfort_toggled"]

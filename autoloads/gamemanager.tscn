@@ -17,7 +17,7 @@ var game_running := false
 var round_running := false
 
 var playable_area : AABB
-var bombsites : Array
+var objectives : Array
 var bombs := Array()
 
 var round_start_time := -1
@@ -161,11 +161,11 @@ func _game_loop():
 				break
 			
 			# Bombsites destroyed
-			var sites_destroyed := 0
-			for site in bombsites:
-				if site[1] == 2:
-					sites_destroyed += 1
-			if sites_destroyed > bombsites.size() / 2:
+			var objectives_complete := 0
+			for obj in objectives:
+				if obj[2] == 2:
+					objectives_complete += 1
+			if objectives_complete > objectives.size() / 2:
 				ui_message.rpc(2)
 				print(\"Round end. Bombs detonated.\")
 				round_running = false
@@ -331,7 +331,7 @@ func plant_bomb(pos : Vector3, site : int):
 	bomb.site = site
 	bombs.append(bomb)
 	
-	bombsites[site][1] = 1
+	objectives[site][2] = 1
 	
 	round_start_time += 25000
 
@@ -341,7 +341,7 @@ func defuse_bomb(site : int):
 		if bomb != null and bomb.site == site:
 			bomb.defuse()
 			bombs.erase(bomb)
-			bombsites[site][1] = 0
+			objectives[site][2] = 0
 			break
 
 
@@ -349,8 +349,8 @@ func defuse_bomb(site : int):
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func reset():
 	bombs = Array()
-	for site in bombsites:
-		site[1] = 0
+	for obj in objectives:
+		obj[2] = 0
 	
 	for child in get_children():
 		if child.name == \"MultiplayerSpawner\":
