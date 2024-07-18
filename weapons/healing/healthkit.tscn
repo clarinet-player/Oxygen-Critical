@@ -61,11 +61,11 @@ func _physics_process(delta):
 		hud.start_progress(1.6, \"healing\")
 	
 	if in_use and Time.get_ticks_msec() - start_time > use_time - 50:
-		player.heal.rpc_id(1, 50.0, false, 0.25)
+		player.heal.rpc_id(1, 60.0, false, 0.6)
 	
 	if in_use and Time.get_ticks_msec() - start_time > use_time:
 		in_use = false
-		player.heal(50.0, false, 0.25)
+		player.heal(60.0, false, 0.6)
 
 
 
