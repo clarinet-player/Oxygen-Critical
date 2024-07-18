@@ -749,6 +749,19 @@ func set_team(new_team : int):
 
 
 
+@rpc(\"any_peer\", \"call_local\", 'reliable')
+func set_armor(num : int):
+	if num == 0:
+		armor = null
+	elif num == 1:
+		armor = load(\"res://weapons/armor/light_armor.tres\")
+	elif num == 2:
+		armor = load(\"res://weapons/armor/assault_armor.tres\")
+	elif num == 3:
+		armor = load(\"res://weapons/armor/heavy_armor.tres\")
+
+
+
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func set_health(new_health : float, new_breach : float, new_tagged : float, damage : bool, headshot : bool, fire : bool, armor : bool):
 	if damage:

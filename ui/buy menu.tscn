@@ -182,19 +182,19 @@ func _clear_inventory():
 
 
 func _buy_light_armor():
-	Gamemanager.local_player.armor = load(\"res://weapons/armor/light_armor.tres\")
+	Gamemanager.local_player.set_armor.rpc(1)
 
 
 func _buy_assault_armor():
-	Gamemanager.local_player.armor = load(\"res://weapons/armor/assault_armor.tres\")
+	Gamemanager.local_player.set_armor.rpc(2)
 
 
 func _buy_heavy_armor():
-	Gamemanager.local_player.armor = load(\"res://weapons/armor/heavy_armor.tres\")
+	Gamemanager.local_player.set_armor.rpc(3)
 
 
 func _remove_armor():
-	Gamemanager.local_player.armor = null
+	Gamemanager.local_player.set_armor.rpc(0)
 "
 
 [node name="BuyMenu" type="Control"]
