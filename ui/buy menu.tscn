@@ -179,6 +179,22 @@ func _clear_inventory():
 	Gamemanager.local_player.inventory.clear()
 	
 	UiManager.playerhud.set_ammo(false, 0)
+
+
+func _buy_light_armor():
+	Gamemanager.local_player.armor = load(\"res://weapons/armor/light_armor.tres\")
+
+
+func _buy_assault_armor():
+	Gamemanager.local_player.armor = load(\"res://weapons/armor/assault_armor.tres\")
+
+
+func _buy_heavy_armor():
+	Gamemanager.local_player.armor = load(\"res://weapons/armor/heavy_armor.tres\")
+
+
+func _remove_armor():
+	Gamemanager.local_player.armor = null
 "
 
 [node name="BuyMenu" type="Control"]
@@ -212,14 +228,14 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -301.0
-offset_top = 341.0
-offset_right = 301.0
-offset_bottom = 459.0
+offset_left = -601.0
+offset_top = 322.0
+offset_right = 1.0
+offset_bottom = 440.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 80
-text = "Clear Inventory"
+text = "  Clear Inventory  "
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -228,9 +244,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -584.5
+offset_left = -800.0
 offset_top = -303.0
-offset_right = 584.5
+offset_right = 800.0
 offset_bottom = 303.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -263,7 +279,7 @@ text = "Buy Sealant"
 [node name="Button6" type="Button" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 80
-text = "Buy Healthkit"
+text = " Buy Healthkit "
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer"]
 layout_mode = 2
@@ -296,6 +312,30 @@ theme_override_font_sizes/font_size = 80
 text = "Buy Claymore
 "
 
+[node name="VBoxContainer3" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Button4" type="Button" parent="HBoxContainer/VBoxContainer3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "Unarmored"
+
+[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "Light Armor"
+
+[node name="Button2" type="Button" parent="HBoxContainer/VBoxContainer3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = " Assault Armor "
+
+[node name="Button3" type="Button" parent="HBoxContainer/VBoxContainer3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "Heavy Armor"
+
 [connection signal="button_down" from="Button7" to="." method="_clear_inventory"]
 [connection signal="button_down" from="HBoxContainer/VBoxContainer/Button" to="." method="_buy_ak"]
 [connection signal="button_down" from="HBoxContainer/VBoxContainer/Button2" to="." method="_buy_vector"]
@@ -307,3 +347,7 @@ text = "Buy Claymore
 [connection signal="button_down" from="HBoxContainer/VBoxContainer2/Button6" to="." method="_buy_smoke"]
 [connection signal="button_down" from="HBoxContainer/VBoxContainer2/Button7" to="." method="_buy_incendiary"]
 [connection signal="button_down" from="HBoxContainer/VBoxContainer2/Button8" to="." method="_buy_claymore"]
+[connection signal="button_down" from="HBoxContainer/VBoxContainer3/Button4" to="." method="_remove_armor"]
+[connection signal="button_down" from="HBoxContainer/VBoxContainer3/Button" to="." method="_buy_light_armor"]
+[connection signal="button_down" from="HBoxContainer/VBoxContainer3/Button2" to="." method="_buy_assault_armor"]
+[connection signal="button_down" from="HBoxContainer/VBoxContainer3/Button3" to="." method="_buy_heavy_armor"]

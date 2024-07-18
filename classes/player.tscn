@@ -615,7 +615,7 @@ func get_velocity() -> Vector3:
 
 
 
-func damage(dmg, tearing, tagging, headshot = false, fire = false):
+func damage(dmg, tearing, tagging, headshot = false, fire = false, armor = false):
 	if !Gamemanager.mp_active:
 		if headshot:
 			Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
@@ -629,7 +629,7 @@ func damage(dmg, tearing, tagging, headshot = false, fire = false):
 	health = max(health - dmg, 0)
 	breach = max(breach, tearing)
 	tagged = max(tagged, tagging)
-	set_health.rpc_id(int(str(name)), health, breach, tagged, true, headshot, fire)
+	set_health.rpc_id(int(str(name)), health, breach, tagged, true, headshot, fire, armor)
 	damaged.emit()
 
 
@@ -672,6 +672,26 @@ func play_sound(sound : int):
 	elif sound == 5:
 		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
 		audio.stream = preload(\"res://assets/defuse.mp3\")
+		audio.play()
+	elif sound == 6:
+		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
+		audio.stream = preload(\"res://assets/bullet_hit.mp3\")
+		audio.play()
+	elif sound == 7:
+		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
+		audio.stream = preload(\"res://assets/headshot.mp3\")
+		audio.play()
+	elif sound == 8:
+		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
+		audio.stream = preload(\"res://assets/fire_damage.mp3\")
+		audio.play()
+	elif sound == 9:
+		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
+		audio.stream = preload(\"res://assets/bullet_breach.mp3\")
+		audio.play()
+	elif sound == 10:
+		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
+		audio.stream = preload(\"res://assets/bullet_armor.mp3\")
 		audio.play()
 
 
@@ -730,17 +750,17 @@ func set_team(new_team : int):
 
 
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
-func set_health(new_health : float, new_breach : float, new_tagged : float, damage : bool, headshot : bool, fire : bool):
+func set_health(new_health : float, new_breach : float, new_tagged : float, damage : bool, headshot : bool, fire : bool, armor : bool):
 	if damage:
 		damaged.emit()
 		if headshot:
-			Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
+			play_sound.rpc(7)
 		elif fire:
-			Audiomanager.play(\"res://assets/fire_damage.mp3\")
-		elif new_breach > breach:
-			Audiomanager.play(\"res://assets/bullet_breach.mp3\")
+			play_sound.rpc(8)
+		elif armor:
+			play_sound.rpc(10)
 		else:
-			Audiomanager.play(\"res://assets/bullet_hit.mp3\")
+			play_sound.rpc(6)
 	
 	health = new_health
 	breach = new_breach

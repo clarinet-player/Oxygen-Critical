@@ -9,7 +9,7 @@ script/source = "extends RigidBody3D
 
 const fuse_time := 1800
 const blast_radius := 8
-const damage := 40.0
+const damage := 50.0
 const tearing := 12
 
 var velocity := Vector3.ZERO
@@ -183,6 +183,8 @@ func _check_player(player : Node3D):
 
 func _damage(player):
 	var multiplier = (1 - player.global_position.distance_to(global_position) / blast_radius)
+	if player.armor:
+		multiplier *= 1 - max(player.armor.protection[0], 0)
 	if Gamemanager.mp_active:
 		player.damage(damage * multiplier, tearing * multiplier + 3, 0.5 * multiplier + 0.1, false)
 	else:
