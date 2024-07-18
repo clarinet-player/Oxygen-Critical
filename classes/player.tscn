@@ -673,25 +673,6 @@ func play_sound(sound : int):
 		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
 		audio.stream = preload(\"res://assets/defuse.mp3\")
 		audio.play()
-	elif sound == 6:
-		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
-		audio.stream = preload(\"res://assets/bullet_hit.mp3\")
-		audio.play()
-	elif sound == 7:
-		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
-		audio.stream = preload(\"res://assets/headshot.mp3\")
-		audio.play()
-	elif sound == 8:
-		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
-		audio.stream = preload(\"res://assets/fire_damage.mp3\")
-		audio.play()
-	elif sound == 9:
-		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
-		audio.stream = preload(\"res://assets/bullet_breach.mp3\")
-		audio.play()
-	elif sound == 10:
-		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
-		audio.stream = preload(\"res://assets/bullet_armor.mp3\")
 		audio.play()
 
 
@@ -767,13 +748,13 @@ func set_health(new_health : float, new_breach : float, new_tagged : float, dama
 	if damage:
 		damaged.emit()
 		if headshot:
-			play_sound.rpc(7)
+			Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
 		elif fire:
-			play_sound.rpc(8)
+			Audiomanager.play(\"res://assets/fire_damage.mp3\")
 		elif armor:
-			play_sound.rpc(10)
+			Audiomanager.play(\"res://assets/bullet_armor.mp3\")
 		else:
-			play_sound.rpc(6)
+			Audiomanager.play(\"res://assets/bullet_hit.mp3\")
 	
 	health = new_health
 	breach = new_breach

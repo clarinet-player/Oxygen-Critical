@@ -206,7 +206,7 @@ func fire(pos : Vector3, velocity : Vector3):
 	_bullet.tearing = tearing
 	_bullet.tagging = tagging
 	_bullet.effective_range = effective_range
-	_bullet.team = get_parent().get_parent().team
+	_bullet.owning_player = get_parent().get_parent()
 	
 	var _smoke = preload("res://classes/smoke.tscn").instantiate()
 	_smoke.size = Vector3(0.01, 0.01, 4)

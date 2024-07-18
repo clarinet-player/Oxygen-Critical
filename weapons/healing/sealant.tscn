@@ -6,7 +6,7 @@ script/source = "extends Node3D
 
 const item_id := 5
 const inventory_size := 1
-const weight := 0.75
+const weight := 0.5
 
 const use_time := 750
 
