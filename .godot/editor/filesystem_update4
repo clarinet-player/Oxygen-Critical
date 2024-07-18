@@ -1,5 +1,8 @@
-res://autoloads/gamemanager.tscn
+res://weapons/grenades/incendiary.tscn
 res://assets/metal_walls.tres
+res://assets/fire.tres
+res://assets/fire2.tres
+res://autoloads/gamemanager.tscn
 res://classes/player.tscn
 res://ui/main menu.tscn
 res://scenes/somnambulist 2.0.tscn
@@ -11,16 +14,25 @@ res://classes/casing.tscn
 res://weapons/ak12/ak12.tscn
 res://autoloads/settings.tscn
 res://ui/settings menu.tscn
-res://classes/weaponbase.gd
-res://weapons/vector/vector.tscn
 res://weapons/glock/glock.tscn
-res://weapons/grenades/smoke_display.tscn
-res://weapons/grenades/incendiary_display.tscn
-res://weapons/grenades/flash_display.tscn
-res://weapons/grenades/flash_grenade.tscn
+res://weapons/vector/vector.tscn
 res://weapons/grenades/he_display.tscn
 res://classes/bullet.tscn
-res://weapons/grenades/incendiary.tscn
 res://classes/fire.tscn
-res://assets/fire.tres
-res://assets/fire2.tres
+res://classes/freecam.tscn
+res://weapons/healing/tape.tscn
+res://weapons/bomb/bomb.tscn
+res://weapons/grenades/smoke_display.tscn
+res://weapons/grenades/smoke_grenade.tscn
+res://equipment/ak12/ak12.tscn
+res://equipment/glock/glock.tscn
+res://equipment/vector/vector.tscn
+res://equipment/bomb/bomb.tscn
+res://equipment/grenades/smoke_grenade.tscn
+res://weapons/armor/light_armor.tres
+res://weapons/armor/assault_armor.tres
+res://weapons/armor/heavy_armor.tres
+res://classes/weaponbase.gd
+res://weapons/healing/sealant.tscn
+res://weapons/grenades/he_grenade.tscn
+res://classes/hitbox.tscn

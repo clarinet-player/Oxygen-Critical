@@ -34,7 +34,7 @@ func _physics_process(delta):
 		return
 	
 	global_rotate(angular.normalized(), angular.length() * delta)
-	velocity = lerp(velocity, Vector3.ZERO, delta * 0.15)
+	velocity = lerp(velocity, Vector3.ZERO, delta * 0.175)
 	angular = lerp(angular, Vector3.ZERO, delta * 0.01)
 	var collision = move_and_collide(velocity * delta)
 	

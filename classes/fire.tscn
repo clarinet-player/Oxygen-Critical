@@ -29,13 +29,22 @@ func _ready():
 	mesh2.material = preload(\"res://assets/fire2.tres\")
 	$MeshInstance3D2.mesh = mesh2
 	
+	Settings.settings_changed.connect(_load_settings)
+	_load_settings()
+	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
 		while true:
 			await get_tree().create_timer(0.5).timeout
 			
 			for player in get_tree().get_nodes_in_group(\"Players\"):
 				if player.hitbox.global_position.distance_to(global_position) < size + 0.4:
-					player.damage(size * 6, 0, false, true)
+					player.damage(size * 6, 0, 0, false, true)
+
+
+
+func _load_settings():
+	$MeshInstance3D/OmniLight3D.shadow_enabled = Settings.shadows_enabled
+	$MeshInstance3D2/OmniLight3D.shadow_enabled = Settings.shadows_enabled
 
 
 
@@ -130,6 +139,7 @@ script = SubResource("GDScript_nhs7v")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 cast_shadow = 0
 visibility_range_end = 20.0
+visibility_range_end_margin = 1.0
 mesh = SubResource("SphereMesh_2hsti")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="MeshInstance3D"]
@@ -138,7 +148,7 @@ light_energy = 0.0
 light_volumetric_fog_energy = 2.0
 light_specular = 0.0
 distance_fade_enabled = true
-distance_fade_begin = 12.0
+distance_fade_begin = 15.0
 distance_fade_length = 5.0
 omni_range = 10.0
 
@@ -146,6 +156,7 @@ omni_range = 10.0
 cast_shadow = 0
 custom_aabb = AABB(-0.5, -0.5, -0.5, 1, 1, 1)
 visibility_range_end = 40.0
+visibility_range_end_margin = 1.0
 mesh = SubResource("SphereMesh_kqu2j")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="MeshInstance3D2"]
@@ -154,7 +165,7 @@ light_energy = 0.0
 light_volumetric_fog_energy = 2.0
 light_specular = 0.0
 distance_fade_enabled = true
-distance_fade_begin = 24.0
+distance_fade_begin = 30.0
 distance_fade_length = 5.0
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]

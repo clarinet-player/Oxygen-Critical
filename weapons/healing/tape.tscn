@@ -5,6 +5,7 @@ script/source = "extends Node3D
 
 
 const use_time := 1400
+const weight := 1.5
 
 var in_use := false
 var start_time := 0
@@ -48,12 +49,12 @@ func _physics_process(delta):
 	if Gamemanager.mp_active and !is_multiplayer_authority():
 		return
 	
-	if DisplayServer.get_name() == \"headless\" and in_use and Time.get_ticks_msec() - start_time > use_time - 50:
-		player.heal.rpc_id(1, 0.0, true)
+	if Gamemanager.mp_active and in_use and Time.get_ticks_msec() - start_time > use_time - 50:
+		player.heal.rpc_id(1, 0.0, true, 0.0)
 	
 	if in_use and Time.get_ticks_msec() - start_time > use_time:
 		in_use = false
-		player.heal(0.0, true)
+		player.heal(0.0, true, 0.0)
 		get_parent().remove_child(self)
 		player.active_item = null
 

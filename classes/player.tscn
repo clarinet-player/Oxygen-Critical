@@ -17,7 +17,7 @@ signal damaged
 #region Variables
 const walk_acceleration : float = 35.0
 const walk_friction : float = 30.0
-const walk_max_speed : float = 5.0
+const walk_max_speed : float = 5.5
 
 const jump_power : float = 2.5
 
@@ -44,6 +44,11 @@ var _surface_normal : Vector3
 
 var health : float = 100
 var breach : float = 0
+var tagged : float = 0
+
+var armor : Resource
+
+var total_weight : float
 
 var inventory := Array()
 var active_item : Node3D
@@ -209,7 +214,7 @@ func _process(delta):
 		for obj in Gamemanager.objectives:
 			if obj[0] == 1 and obj[1].has_point(global_position) and obj[2] == 0:
 				objective = obj
-				objective_index = Gamemanager.find(obj)
+				objective_index = Gamemanager.objectives.find(obj)
 				break
 		if objective_index >= 0:
 			using_objective = true
@@ -217,7 +222,7 @@ func _process(delta):
 			if objective[0] == 1:
 				hud.start_progress(2.0, \"Objective\")
 			elif objective[0] == 2:
-				hud.start_progress(10, \"Objective\")
+				hud.start_progress(12, \"Objective\")
 			elif objective[0] == 3:
 				hud.start_progress(5.0)
 			if active_item:
@@ -285,15 +290,15 @@ func _process(delta):
 	
 	
 	if using_objective and team == 2:
-		if Gamemanager.objectives[objective_index] == 1 and Time.get_ticks_msec() - objective_time > 2000:
+		if Gamemanager.objectives[objective_index][0] == 1 and Time.get_ticks_msec() - objective_time > 2000:
 			using_objective = false
 			Gamemanager.plant_bomb.rpc(global_position - _surface_normal * 0.5, objective_index)
 			objective_index = -1
-		elif Gamemanager.objectives[objective_index] == 2 and Time.get_ticks_msec() - objective_time > 10000:
+		elif Gamemanager.objectives[objective_index][0] == 2 and Time.get_ticks_msec() - objective_time > 12000:
 			using_objective = false
 			Gamemanager.detonate_emp.rpc(global_position, objective_index)
 			objective_index = -1
-		elif Gamemanager.objectives[objective_index] == 3 and Time.get_ticks_msec() - objective_time > 5000:
+		elif Gamemanager.objectives[objective_index][0] == 3 and Time.get_ticks_msec() - objective_time > 5000:
 			using_objective = false
 			Gamemanager.take_objective.rpc(objective_index)
 			objective_index = -1
@@ -384,26 +389,24 @@ func _physics_process(delta : float):
 			walking = true
 		else:
 			walking = false
-		
-		
-		# Move to follow our anchor
-		var newpos = _anchored_shape.to_global(_anchor_point_l)
-		global_position = newpos
-		if \"centrifuge_angular_velocity\" in _anchored_shape.get_parent():
-			var ang_vel : Vector3 = _anchored_shape.get_parent().centrifuge_angular_velocity
-			global_rotate(ang_vel.normalized(), ang_vel.length() * delta)
-			_surface_normal = _surface_normal.rotated(ang_vel.normalized(), ang_vel.length() * delta)
+	
+	
+	total_weight = tagged
+	if armor:
+		total_weight += armor.weight
+	if active_item and \"weight\" in active_item:
+		total_weight += active_item.weight
 	
 	
 	# Jumping
 	if Input.is_action_just_pressed(\"Space\") and !UiManager.paused and !using_objective:
 		if _anchored_shape:
 			detach()
-			velocity += -global_basis.z * jump_power * jump_stamina
+			velocity += -global_basis.z * max(jump_power * jump_stamina - total_weight, 0)
 			jump_stamina = 0
 			
 			move_and_collide(camera.global_position - global_position)
-			move_and_collide(velocity.normalized())	
+			move_and_collide(velocity.normalized())
 
 		
 		elif !_grapple_point:
@@ -462,12 +465,12 @@ func _anchored_move(delta : float):
 	# Getting movement input
 	if walking:
 		velocity += (((_side * _input.x) + (_forward * _input.y))).normalized() * delta * walk_acceleration
-		if velocity.length() > walk_max_speed + walk_acceleration * delta:
+		if velocity.length() > walk_max_speed - total_weight + walk_acceleration * delta:
 			velocity = velocity.limit_length(velocity.length() - walk_acceleration * delta)
-		if velocity.length() > walk_max_speed + walk_friction * delta:
+		if velocity.length() > walk_max_speed - total_weight + walk_friction * delta:
 			velocity = velocity.limit_length(velocity.length() - walk_friction * delta)
 		else:
-			velocity = velocity.limit_length(walk_max_speed)
+			velocity = velocity.limit_length(walk_max_speed - total_weight)
 	
 	else:
 		if velocity.length() < walk_friction * delta:
@@ -612,7 +615,7 @@ func get_velocity() -> Vector3:
 
 
 
-func damage(dmg, tearing, headshot = false, fire = false):
+func damage(dmg, tearing, tagging, headshot = false, fire = false):
 	if !Gamemanager.mp_active:
 		if headshot:
 			Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
@@ -625,7 +628,8 @@ func damage(dmg, tearing, headshot = false, fire = false):
 	
 	health = max(health - dmg, 0)
 	breach = max(breach, tearing)
-	set_health.rpc_id(int(str(name)), health, breach, true, headshot, fire)
+	tagged = max(tagged, tagging)
+	set_health.rpc_id(int(str(name)), health, breach, tagged, true, headshot, fire)
 	damaged.emit()
 
 
@@ -638,10 +642,11 @@ func flash(pos : Vector3):
 
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
-func heal(healing, tearing):
+func heal(healing, tearing, tagging):
 	health = min(health + healing, 100)
 	if tearing:
 		breach = 0
+	tagged = max(tagged - tagging, 0)
 
 
 
@@ -649,18 +654,23 @@ func heal(healing, tearing):
 func play_sound(sound : int):
 	audio.pitch_scale = randf_range(0.95, 1.05)
 	if sound == 1:
+		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
 		audio.stream = [preload(\"res://assets/footstep_sfx_1.mp3\"), preload(\"res://assets/footstep_sfx_2.mp3\"), preload(\"res://assets/footstep_sfx_3.mp3\"), preload(\"res://assets/footstep_sfx_4.mp3\"), preload(\"res://assets/footstep_sfx_5.mp3\")].pick_random()
 		audio.play()
 	elif sound == 2:
+		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
 		audio.stream = preload(\"res://assets/footstep_sfx_6.mp3\")
 		audio.play()
 	elif sound == 3:
+		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
 		audio.stream = preload(\"res://assets/grappling-hook-14680.mp3\")
 		audio.play()
 	elif sound == 4:
+		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
 		audio.stream = preload(\"res://assets/1911-reload-6248.mp3\")
 		audio.play()
 	elif sound == 5:
+		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
 		audio.stream = preload(\"res://assets/defuse.mp3\")
 		audio.play()
 
@@ -720,7 +730,7 @@ func set_team(new_team : int):
 
 
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
-func set_health(new_health : float, new_breach : float, damage : bool, headshot : bool, fire : bool):
+func set_health(new_health : float, new_breach : float, new_tagged : float, damage : bool, headshot : bool, fire : bool):
 	if damage:
 		damaged.emit()
 		if headshot:
@@ -734,6 +744,7 @@ func set_health(new_health : float, new_breach : float, damage : bool, headshot 
 	
 	health = new_health
 	breach = new_breach
+	tagged = new_tagged
 	
 	hud.set_health(health)
 
@@ -875,7 +886,6 @@ font_size = 60
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0361335, 0)
 shape = SubResource("CapsuleShape3D_jomgw")
 player = NodePath("../..")
-damage = 1.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Hitbox"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0366825, 0)
@@ -886,7 +896,7 @@ skeleton = NodePath("../../PlayerBody")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.707071, 0)
 shape = SubResource("SphereShape3D_p56ql")
 player = NodePath("../..")
-damage = 2.0
+area = 1
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="Hitbox"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.706894, 0)
@@ -897,7 +907,7 @@ skeleton = NodePath("../../PlayerBody")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.416334, 0)
 shape = SubResource("CapsuleShape3D_71ht7")
 player = NodePath("../..")
-damage = 0.66
+area = 2
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="Hitbox"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.415785, 0)

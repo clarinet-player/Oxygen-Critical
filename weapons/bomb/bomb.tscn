@@ -83,7 +83,7 @@ func _physics_process(delta):
 		$OmniLight3D.light_energy = 0
 		$OmniLight3D2.light_energy = 1.0
 		
-		Gamemanager.bombsites[site][1] = 2
+		Gamemanager.objectives[site][2] = 2
 		
 		if is_multiplayer_authority():
 			for player in get_tree().get_nodes_in_group(\"Players\"):

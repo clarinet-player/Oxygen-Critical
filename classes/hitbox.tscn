@@ -4,7 +4,7 @@
 script/source = "extends CollisionShape3D
 
 @export var player : Node3D
-@export var damage : float
+@export var area : int
 "
 
 [node name="Hitbox" type="CollisionShape3D"]

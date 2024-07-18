@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://6ablha2bmcnt"]
+
+[sub_resource type="GDScript" id="GDScript_7eew2"]
+script/source = "const head_armor := 0.4
+const body_armor := 0.2
+const leg_armor := 1.0
+
+const weight := 0.3"
+
+[resource]
+script = SubResource("GDScript_7eew2")

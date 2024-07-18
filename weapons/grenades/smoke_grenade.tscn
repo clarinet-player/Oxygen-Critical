@@ -41,11 +41,11 @@ func _process(delta):
 		return
 	
 	if Time.get_ticks_msec() - arm_time < 3000:
-		mesh.radius += delta * 0.7
-		mesh.height += delta * 1.4
+		mesh.radius += delta * 0.65
+		mesh.height += delta * 1.3
 	elif Time.get_ticks_msec() - arm_time > 17000:
-		mesh.radius -= delta * 0.7
-		mesh.height -= delta * 1.4
+		mesh.radius -= delta * 0.65
+		mesh.height -= delta * 1.3
 	elif smoke:
 		smoke = false
 		var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()
@@ -77,15 +77,15 @@ func _physics_process(delta):
 		var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()
 		_smoke.size = Vector3(1, 1, 1)
 		_smoke.fade_speed = 0.18
-		_smoke.start_density = 8
+		_smoke.start_density = 9
 		_smoke.max_size = 12
 		Gamemanager.add_child(_smoke)
 		_smoke.global_position = global_position
 		
-		await get_tree().create_timer(0.5).timeout
+		await get_tree().create_timer(0.2).timeout
 		$GPUParticles3D.emitting = true
 		
-		await get_tree().create_timer(25).timeout
+		await get_tree().create_timer(30).timeout
 		queue_free()
 "
 
@@ -137,11 +137,11 @@ material = SubResource("StandardMaterial3D_1s6gn")
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_vgwey"]
 lifetime_randomness = 0.2
 emission_shape = 1
-emission_sphere_radius = 1.0
+emission_sphere_radius = 1.5
 angle_max = 180.0
 spread = 180.0
-initial_velocity_min = 0.1
-initial_velocity_max = 0.8
+initial_velocity_min = 0.2
+initial_velocity_max = 0.6
 gravity = Vector3(0, 0, 0)
 
 [sub_resource type="SphereMesh" id="SphereMesh_l4he3"]
@@ -181,9 +181,9 @@ mesh = SubResource("SphereMesh_c0e68")
 cast_shadow = 0
 emitting = false
 amount = 25
-lifetime = 23.0
+lifetime = 22.0
 one_shot = true
-explosiveness = 0.5
+randomness = 0.25
 fixed_fps = 60
 process_material = SubResource("ParticleProcessMaterial_vgwey")
 draw_pass_1 = SubResource("SphereMesh_l4he3")

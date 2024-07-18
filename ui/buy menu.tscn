@@ -4,18 +4,14 @@
 script/source = "extends Control
 
 
-var inv
 var warningtime := 0
 
 
 func _exit_tree():
 	$spacewarning.hide()
 	
-	if inv == null:
-		inv = Gamemanager.local_player.inventory
-	
 	var save = Array()
-	for item in inv:
+	for item in Gamemanager.local_player.inventory:
 		if item != null:
 			save.append(item.item_id)
 	
@@ -32,163 +28,143 @@ func _process(_delta):
 
 #region buying
 func _buy_ak():
-	if inv == null:
-		inv = Gamemanager.local_player.inventory
 	
 	var size := 0
-	for item in inv:
+	for item in Gamemanager.local_player.inventory:
 		if item != null:
 			size += item.inventory_size
 	if size < 3:
 		var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
 		ak.magazine = ak.mag_size
-		inv.append(ak)
+		Gamemanager.local_player.inventory.append(ak)
 	else:
 		warningtime = Time.get_ticks_msec()
 		$spacewarning.show()
 
 
 func _buy_vector():
-	if inv == null:
-		inv = Gamemanager.local_player.inventory
 	
 	var size := 0
-	for item in inv:
+	for item in Gamemanager.local_player.inventory:
 		if item != null:
 			size += item.inventory_size
 	if size < 3:
 		var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
 		vector.magazine = vector.mag_size
-		inv.append(vector)
+		Gamemanager.local_player.inventory.append(vector)
 	else:
 		warningtime = Time.get_ticks_msec()
 		$spacewarning.show()
 
 
 func _buy_glock():
-	if inv == null:
-		inv = Gamemanager.local_player.inventory
 	
 	var size := 0
-	for item in inv:
+	for item in Gamemanager.local_player.inventory:
 		if item != null:
 			size += item.inventory_size
 	if size < 4:
 		var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
 		glock.magazine = glock.mag_size
-		inv.append(glock)
+		Gamemanager.local_player.inventory.append(glock)
 	else:
 		warningtime = Time.get_ticks_msec()
 		$spacewarning.show()
 
 
 func _buy_HE():
-	if inv == null:
-		inv = Gamemanager.local_player.inventory
 	
 	var size := 0
-	for item in inv:
+	for item in Gamemanager.local_player.inventory:
 		if item != null:
 			size += item.inventory_size
 	if size < 4:
 		var he = preload(\"res://weapons/grenades/he_display.tscn\").instantiate()
-		inv.append(he)
+		Gamemanager.local_player.inventory.append(he)
 	else:
 		warningtime = Time.get_ticks_msec()
 		$spacewarning.show()
 
 
 func _buy_sealant():
-	if inv == null:
-		inv = Gamemanager.local_player.inventory
 	
 	var size := 0
-	for item in inv:
+	for item in Gamemanager.local_player.inventory:
 		if item != null:
 			size += item.inventory_size
 	if size < 4:
 		var sealant = preload(\"res://weapons/healing/sealant.tscn\").instantiate()
-		inv.append(sealant)
+		Gamemanager.local_player.inventory.append(sealant)
 	else:
 		warningtime = Time.get_ticks_msec()
 		$spacewarning.show()
 
 
 func _buy_healthkit():
-	if inv == null:
-		inv = Gamemanager.local_player.inventory
 	
 	var size := 0
-	for item in inv:
+	for item in Gamemanager.local_player.inventory:
 		if item != null:
 			size += item.inventory_size
 	if size < 4:
 		var health = preload(\"res://weapons/healing/healthkit.tscn\").instantiate()
-		inv.append(health)
+		Gamemanager.local_player.inventory.append(health)
 	else:
 		warningtime = Time.get_ticks_msec()
 		$spacewarning.show()
 
 
 func _buy_flashbang():
-	if inv == null:
-		inv = Gamemanager.local_player.inventory
 	
 	var size := 0
-	for item in inv:
+	for item in Gamemanager.local_player.inventory:
 		if item != null:
 			size += item.inventory_size
 	if size < 4:
 		var flash = preload(\"res://weapons/grenades/flash_display.tscn\").instantiate()
-		inv.append(flash)
+		Gamemanager.local_player.inventory.append(flash)
 	else:
 		warningtime = Time.get_ticks_msec()
 		$spacewarning.show()
 
 
 func _buy_smoke():
-	if inv == null:
-		inv = Gamemanager.local_player.inventory
 	
 	var size := 0
-	for item in inv:
+	for item in Gamemanager.local_player.inventory:
 		if item != null:
 			size += item.inventory_size
 	if size < 4:
 		var smoke = preload(\"res://weapons/grenades/smoke_display.tscn\").instantiate()
-		inv.append(smoke)
+		Gamemanager.local_player.inventory.append(smoke)
 	else:
 		warningtime = Time.get_ticks_msec()
 		$spacewarning.show()
 
 
 func _buy_incendiary():
-	if inv == null:
-		inv = Gamemanager.local_player.inventory
 	
 	var size := 0
-	for item in inv:
+	for item in Gamemanager.local_player.inventory:
 		if item != null:
 			size += item.inventory_size
 	if size < 4:
 		var incendiary = preload(\"res://weapons/grenades/incendiary_display.tscn\").instantiate()
-		inv.append(incendiary)
+		Gamemanager.local_player.inventory.append(incendiary)
 	else:
 		warningtime = Time.get_ticks_msec()
 		$spacewarning.show()
 
 
 func _buy_claymore():
-	if inv == null:
-		inv = Gamemanager.local_player.inventory
 	
 	var size := 0
-	for item in inv:
+	for item in Gamemanager.local_player.inventory:
 		if item != null:
 			size += item.inventory_size
 	if size < 4:
 		var claymore = preload(\"res://weapons/grenades/claymore_display.tscn\").instantiate()
-		inv.append(claymore)
+		Gamemanager.local_player.inventory.append(claymore)
 	else:
 		warningtime = Time.get_ticks_msec()
 		$spacewarning.show()
@@ -196,13 +172,11 @@ func _buy_claymore():
 
 
 func _clear_inventory():
-	if inv == null:
-		inv = Gamemanager.local_player.inventory
 	
-	for item in inv:
+	for item in Gamemanager.local_player.inventory:
 		if item != null:
 			item.free()
-	inv.clear()
+	Gamemanager.local_player.inventory.clear()
 	
 	UiManager.playerhud.set_ammo(false, 0)
 "

@@ -6,6 +6,7 @@ script/source = "extends Node3D
 
 const item_id := 5
 const inventory_size := 1
+const weight := 0.75
 
 const use_time := 750
 
@@ -58,11 +59,11 @@ func _physics_process(delta):
 		hud.start_progress(0.75, \"healing\")
 	
 	if DisplayServer.get_name() == \"headless\" and in_use and Time.get_ticks_msec() - start_time > use_time - 50:
-		player.heal.rpc_id(1, 0.0, true)
+		player.heal.rpc_id(1, 0.0, true, 0.0)
 	
 	if in_use and Time.get_ticks_msec() - start_time > use_time:
 		in_use = false
-		player.heal(0.0, true)
+		player.heal(0.0, true, 0.0)
 
 
 

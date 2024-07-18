@@ -10,11 +10,13 @@ extends Node3D
 @export var muzzle_vel : float
 @export var damage : float
 @export var tearing : float
+@export var tagging : float
 @export var effective_range : float
 @export var recovery : float
 @export var recoil : float
 @export var spray : float
 @export var inventory_size : int
+@export var weight : float
 @export var camera_movement : float
 @export var casing : int
 
@@ -200,6 +202,7 @@ func fire(pos : Vector3, velocity : Vector3):
 	_bullet.velocity = velocity
 	_bullet.mass = damage
 	_bullet.tearing = tearing
+	_bullet.tagging = tagging
 	_bullet.effective_range = effective_range
 	_bullet.team = get_parent().get_parent().team
 	
@@ -213,11 +216,12 @@ func fire(pos : Vector3, velocity : Vector3):
 	
 	await get_tree().create_timer(0.05).timeout
 	
-	var case = preload("res://classes/casing.tscn").instantiate()
-	case.type = casing
-	Gamemanager.add_child(case)
-	case.global_position = ejection.global_position
-	case.look_at(case.global_position + velocity)
-	case.velocity = ejection.global_basis.z.normalized() * 4 + Vector3(randf_range(-0.3, 0.3), randf_range(-0.3, 0.3), randf_range(-0.3, 0.3)) + get_parent().get_parent().velocity
-	case.angular = Vector3(randf_range(-0.5, 0.5), randf_range(-0.5, 0.5), randf_range(-0.5, 0.5))
+	if get_parent():
+		var case = preload("res://classes/casing.tscn").instantiate()
+		case.type = casing
+		Gamemanager.add_child(case)
+		case.global_position = ejection.global_position
+		case.look_at(case.global_position + velocity)
+		case.velocity = ejection.global_basis.z.normalized() * 4 + Vector3(randf_range(-0.3, 0.3), randf_range(-0.3, 0.3), randf_range(-0.3, 0.3)) + get_parent().get_parent().velocity
+		case.angular = Vector3(randf_range(-0.5, 0.5), randf_range(-0.5, 0.5), randf_range(-0.5, 0.5))
 	
