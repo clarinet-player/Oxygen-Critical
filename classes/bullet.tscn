@@ -72,7 +72,7 @@ func _physics_process(delta):
 						multiplier *= 0.66
 					if _player.armor:
 						multiplier *= 1 - max(_player.armor.protection[_shape.area] - piercing, 0)
-					_player.damage(mass * multiplier * _shape.damage, tearing * multiplier, tagging * multiplier, _shape.damage == 2, _player.armor.protection[_shape.area] > piercing)
+					_player.damage(mass * multiplier * _shape.damage, tearing * multiplier, tagging * multiplier, _shape.area == 1, _player.armor.protection[_shape.area] > piercing)
 				
 				var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
 				Gamemanager.add_child(blood)
