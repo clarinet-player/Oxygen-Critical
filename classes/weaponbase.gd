@@ -202,6 +202,7 @@ func fire(pos : Vector3, velocity : Vector3):
 	_bullet.global_position = pos + velocity.normalized()
 	_bullet.velocity = velocity
 	_bullet.mass = damage
+	_bullet.piercing = piercing
 	_bullet.tearing = tearing
 	_bullet.tagging = tagging
 	_bullet.effective_range = effective_range
