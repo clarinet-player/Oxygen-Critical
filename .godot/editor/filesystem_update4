@@ -36,3 +36,4 @@ res://classes/weaponbase.gd
 res://weapons/healing/sealant.tscn
 res://weapons/grenades/he_grenade.tscn
 res://classes/hitbox.tscn
+res://autoloads/audiomanager.tscn
