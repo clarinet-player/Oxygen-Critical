@@ -8,7 +8,7 @@ extends Node3D
 @export var mag_size : int
 @export var reload_time : float
 @export var muzzle_vel : float
-@export var damage : float
+@export var damage : Array
 @export var piercing : float
 @export var tearing : float
 @export var tagging : float

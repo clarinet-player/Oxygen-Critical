@@ -7,7 +7,7 @@ extends Node3D
 
 
 
-var mass : float = 10.0
+var mass : Array
 var piercing : float = 0.0
 var tearing : float = 5.0
 var tagging : float = 0.1
@@ -74,16 +74,12 @@ func _physics_process(delta):
 				
 				if Gamemanager.mp_active and is_multiplayer_authority():
 					var multiplier = clamp(1 - ((dist_travelled - effective_range) / effective_range), 0, 1)
-					if _shape.area == 1:
-						multiplier *= 2
-					elif _shape.area == 2:
-						multiplier *= 0.66
 					if _player.armor:
 						multiplier *= 1 - max(_player.armor.protection[_shape.area] - piercing, 0)
 					if _player.armor and _player.armor.protection[_shape.area] > piercing:
 						tearing *= 0.5
 						tagging *= 0.5
-					_player.damage(mass * multiplier, tearing, tagging, _shape.area == 1, false, _player.armor and _player.armor.protection[_shape.area] > piercing)
+					_player.damage(mass[_shape.area] * multiplier, tearing, tagging, _shape.area == 1, false, _player.armor and _player.armor.protection[_shape.area] > piercing)
 				
 				var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
 				Gamemanager.add_child(blood)
