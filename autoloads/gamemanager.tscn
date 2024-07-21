@@ -84,9 +84,9 @@ func _on_connect(id : int):
 		elif player[1] == 2:
 			team2 += 1
 	if team1 > team2:
-		players.append([id, 2, null])
+		players.append([id, 2, null, Time.get_ticks_msec()])
 	else:
-		players.append([id, 1, null])
+		players.append([id, 1, null, Time.get_ticks_msec()])
 	
 	
 	sync_level.rpc_id(id, 1)
@@ -142,12 +142,12 @@ func _game_loop():
 			
 			# Respawn players
 			for player in players:
-				if player[2] == null and player[1] == 1 and c_spawns > 0:
+				if player[2] == null and player[1] == 1 and c_spawns > 0 and Time.get_ticks_msec() - player[3] > 5000:
 					c_spawns -= 1
 					spawn_player(player)
 					sync_scoreboard.rpc(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
 				
-				elif player[2] == null and player[1] == 2 and t_spawns > 0:
+				elif player[2] == null and player[1] == 2 and t_spawns > 0 and Time.get_ticks_msec() - player[3] > 5000:
 					t_spawns -= 1
 					spawn_player(player)
 					sync_scoreboard.rpc(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
@@ -216,6 +216,14 @@ func _game_loop():
 		if players.size() < 2:
 			game_running = false
 			ui_message.rpc(0)
+
+
+
+func on_death(id : int):
+	for player in players:
+		if player[0] == id:
+			player[3] = Time.get_ticks_msec()
+			return
 
 
 

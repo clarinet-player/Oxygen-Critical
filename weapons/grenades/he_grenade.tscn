@@ -65,7 +65,7 @@ func _physics_process(delta):
 		audio.play()
 		if Settings.particles_enabled:
 			particles.emitting = true
-		light.light_energy = 0.3
+		light.light_energy = 0.4
 		
 		var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()
 		_smoke.size = Vector3(0.4, 0.4, 0.4)

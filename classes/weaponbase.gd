@@ -91,7 +91,7 @@ func _process(delta):
 	if Time.get_ticks_msec() > _fire_time_ms + 35:
 		light.light_energy = 0
 	else:
-		light.light_energy = 0.2
+		light.light_energy = 0.25
 
 
 

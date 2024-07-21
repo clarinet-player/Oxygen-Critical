@@ -63,6 +63,7 @@ var objective_index
 
 
 var sound_time : int
+var warning_time : int
 
 
 @onready var camera := $Camera3D
@@ -371,6 +372,11 @@ func _physics_process(delta : float):
 		return
 	
 	
+	if breach > 0 and Time.get_ticks_msec() - warning_time > 750:
+		Audiomanager.play(\"res://assets/breachwarning.mp3\")
+		warning_time = Time.get_ticks_msec()
+	
+	
 	if active_item == null and !using_objective:
 		if inventory.size() > 0 and inventory[0] != null:
 			active_item = inventory[0]
@@ -405,9 +411,9 @@ func _physics_process(delta : float):
 			velocity += -global_basis.z * max(jump_power * jump_stamina - total_weight, 0)
 			jump_stamina = 0
 			
-			move_and_collide(camera.global_position - global_position)
-			move_and_collide(velocity.normalized())
-
+			move_and_collide(global_position.direction_to(camera.global_position) * 0.8, false, 0.2)
+			move_and_collide(velocity.normalized(), false, 0.2)
+		
 		
 		elif !_grapple_point:
 			var _space = get_world_3d().direct_space_state
@@ -625,6 +631,7 @@ func damage(dmg, tearing, tagging, headshot = false, fire = false, armor = false
 			Audiomanager.play(\"res://assets/bullet_breach.mp3\")
 		else:
 			Audiomanager.play(\"res://assets/bullet_hit.mp3\")
+		warning_time = Time.get_ticks_msec() - 250
 	
 	health = max(health - dmg, 0)
 	breach = max(breach, tearing)
@@ -761,6 +768,8 @@ func set_health(new_health : float, new_breach : float, new_tagged : float, dama
 	tagged = new_tagged
 	
 	hud.set_health(health)
+	
+	warning_time = Time.get_ticks_msec() - 250
 
 
 
