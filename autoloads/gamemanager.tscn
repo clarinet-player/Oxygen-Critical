@@ -116,6 +116,7 @@ func spawn_player(player):
 	var new_player = preload(\"res://classes/player.tscn\").instantiate()
 	new_player.name = str(player[0])
 	add_child(new_player)
+	new_player.death.connect(on_death)
 	player[2] = new_player
 	await get_tree().create_timer(0.1).timeout
 	new_player.set_team.rpc(player[1])
