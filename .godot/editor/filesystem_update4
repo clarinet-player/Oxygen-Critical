@@ -29,3 +29,6 @@ res://weapons/grenades/he_grenade.tscn
 res://classes/hitbox.tscn
 res://autoloads/audiomanager.tscn
 res://classes/weaponbase.gd
+res://weapons/armor/light_armor.tres
+res://weapons/armor/heavy_armor.tres
+res://weapons/armor/assault_armor.tres

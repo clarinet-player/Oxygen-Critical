@@ -724,7 +724,7 @@ func set_team(new_team : int):
 	var spawnpoint = Gamemanager.find_spawnpoint(self, team)
 	if spawnpoint:
 		global_position = spawnpoint.global_position
-		velocity = spawnpoint.down * 10
+		velocity = spawnpoint.down
 		
 		look_at(global_position + spawnpoint.facing, -spawnpoint.down)
 		move_and_collide(spawnpoint.down)
