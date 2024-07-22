@@ -35,3 +35,4 @@ res://weapons/grenades/flash_grenade.tscn
 res://classes/smoke.tscn
 res://ui/spectator hud.tscn
 res://classes/gameSurface.tscn
+res://weapons/bomb/emp.tscn

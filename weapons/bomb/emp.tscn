@@ -1,0 +1,70 @@
+[gd_scene load_steps=5 format=3 uid="uid://cgk1y55lxb1l7"]
+
+[ext_resource type="AudioStream" uid="uid://b4j512pjb6rg5" path="res://weapons/bomb/beep.mp3" id="1_b677f"]
+[ext_resource type="Material" uid="uid://ctqoki6r4ifwv" path="res://assets/gunmetal.tres" id="1_ywai7"]
+
+[sub_resource type="GDScript" id="GDScript_c6p4e"]
+script/source = "extends Node3D
+
+
+const fuse_time := 30000
+
+
+var site
+
+var start_time := 0
+var active := true
+
+var direction := true
+var value := 0.0
+var sound_locked := false
+
+
+
+func _ready():
+		$AudioStreamPlayer3D.stream = load(\"res://assets/emp_blast.mp3\")
+		
+		await get_tree().create_timer(0.3).timeout
+		
+		$AudioStreamPlayer3D.play()
+		
+		await get_tree().create_timer(0.32).timeout
+		
+		$OmniLight3D.light_energy = 0.5
+		
+		Gamemanager.objectives[site][2] = 2
+		Gamemanager.gravity = Vector3.ZERO
+		
+		if is_multiplayer_authority():
+			for player in get_tree().get_nodes_in_group(\"Players\"):
+				if player.global_position.distance_to(global_position) < 30:
+					player.damage(0, 0, 5 * clamp(1 - player.global_position.distance_to(global_position) / 30, 0, 1), false)
+		
+		await get_tree().create_timer(0.33).timeout
+		$OmniLight3D.light_energy = 0
+"
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_7gb2b"]
+material = ExtResource("1_ywai7")
+top_radius = 0.15
+bottom_radius = 0.15
+height = 0.5
+
+[node name="Bomb" type="Node3D"]
+script = SubResource("GDScript_c6p4e")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0.242123, 0)
+mesh = SubResource("CylinderMesh_7gb2b")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.23633, 0)
+light_color = Color(0.247059, 0.466667, 1, 1)
+light_energy = 0.0
+light_specular = 0.0
+omni_range = 60.0
+omni_attenuation = 0.366022
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25015, 0)
+stream = ExtResource("1_b677f")

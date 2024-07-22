@@ -213,7 +213,7 @@ func _process(delta):
 	if Input.is_action_just_pressed(\"E\") and team == 2 and _anchored_shape:
 		var objective
 		for obj in Gamemanager.objectives:
-			if obj[0] == 1 and obj[1].has_point(global_position) and obj[2] == 0:
+			if obj[1].has_point(global_position) and obj[2] == 0:
 				objective = obj
 				objective_index = Gamemanager.objectives.find(obj)
 				break
@@ -290,11 +290,11 @@ func _process(delta):
 	if using_objective and team == 2:
 		if Gamemanager.objectives[objective_index][0] == 1 and Time.get_ticks_msec() - objective_time > 3000:
 			using_objective = false
-			Gamemanager.plant_bomb.rpc(global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
+			Gamemanager.plant_bomb.rpc(1, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
 			objective_index = -1
 		elif Gamemanager.objectives[objective_index][0] == 2 and Time.get_ticks_msec() - objective_time > 12000:
 			using_objective = false
-			Gamemanager.detonate_emp.rpc(global_position, objective_index)
+			Gamemanager.plant_bomb.rpc(2, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
 			objective_index = -1
 		elif Gamemanager.objectives[objective_index][0] == 3 and Time.get_ticks_msec() - objective_time > 5000:
 			using_objective = false
@@ -647,7 +647,10 @@ func damage(dmg, tearing, tagging, headshot = false, fire = false, armor = false
 	health = max(health - dmg, 0)
 	breach = max(breach, tearing)
 	tagged = max(tagged, tagging)
-	set_health.rpc_id(int(str(name)), health, breach, tagged, true, headshot, fire, armor)
+	if dmg > 0:
+		set_health.rpc_id(int(str(name)), health, breach, tagged, true, headshot, fire, armor)
+	else:
+		set_health.rpc_id(int(str(name)), health, breach, tagged, false, headshot, fire, armor)
 	damaged.emit()
 
 

@@ -19,6 +19,7 @@ var round_running := false
 var gravity := Vector3.ZERO
 var playable_area : AABB
 var objectives : Array
+var time_bonuses : Array
 var bombs := Array()
 
 var round_start_time := -1
@@ -125,6 +126,8 @@ func spawn_player(player):
 
 
 func _game_loop():
+	reset.rpc()
+	
 	game_running = true
 	while game_running:
 		
@@ -334,8 +337,12 @@ func spawn_fire(pos, vel):
 
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
-func plant_bomb(pos : Vector3, facing : Vector3, normal : Vector3, site : int):
-	var bomb = preload(\"res://weapons/bomb/bomb.tscn\").instantiate()
+func plant_bomb(type : int, pos : Vector3, facing : Vector3, normal : Vector3, site : int):
+	var bomb
+	if type == 1:
+		bomb = preload(\"res://weapons/bomb/bomb.tscn\").instantiate()
+	elif type == 2:
+		bomb = preload(\"res://weapons/bomb/emp.tscn\").instantiate()
 	add_child(bomb)
 	bomb.global_position = pos
 	bomb.look_at(pos + (facing - facing.dot(normal) * normal), normal)
@@ -344,7 +351,11 @@ func plant_bomb(pos : Vector3, facing : Vector3, normal : Vector3, site : int):
 	
 	objectives[site][2] = 1
 	
-	round_start_time += 25000
+	if mp_active and time_bonuses[site]:
+		time_bonuses[site] = false
+		round_start_time = max(Time.get_ticks_msec() - 90000, round_start_time + 10000)
+
+
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func defuse_bomb(site : int):
@@ -360,8 +371,10 @@ func defuse_bomb(site : int):
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func reset():
 	bombs = Array()
+	time_bonuses = Array()
 	for obj in objectives:
 		obj[2] = 0
+		time_bonuses[objectives.find(obj)] = true
 	
 	for child in get_children():
 		if child.name == \"MultiplayerSpawner\":
