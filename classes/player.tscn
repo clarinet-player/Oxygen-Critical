@@ -226,7 +226,7 @@ func _process(delta):
 			if objective[0] == 1:
 				hud.start_progress(3.0, \"Objective\")
 			elif objective[0] == 2:
-				hud.start_progress(10, \"Objective\")
+				hud.start_progress(12.0, \"Objective\")
 			elif objective[0] == 3:
 				hud.start_progress(5.0, \"Objective\")
 			if active_item:
@@ -295,7 +295,7 @@ func _process(delta):
 			using_objective = false
 			Gamemanager.plant_bomb.rpc(1, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
 			objective_index = -1
-		elif Gamemanager.objectives[objective_index][0] == 2 and Time.get_ticks_msec() - objective_time > 10000:
+		elif Gamemanager.objectives[objective_index][0] == 2 and Time.get_ticks_msec() - objective_time > 12000:
 			using_objective = false
 			Gamemanager.plant_bomb.rpc(2, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
 			objective_index = -1
@@ -313,7 +313,7 @@ func _process(delta):
 		objective_index = -1
 		hud.stop_progress(\"Objective\")
 	if using_objective and team == 2 and Gamemanager.objectives[objective_index][0] == 2:
-		if (Time.get_ticks_msec() - objective_time > 5000 and Time.get_ticks_msec() - beep_time > 300) or Time.get_ticks_msec() - beep_time > 600:
+		if (Time.get_ticks_msec() - objective_time > 8000 and Time.get_ticks_msec() - beep_time > 300) or Time.get_ticks_msec() - beep_time > 600:
 			beep_time = Time.get_ticks_msec()
 			play_sound.rpc(5)
 	
@@ -405,7 +405,7 @@ func _physics_process(delta : float):
 	total_weight = tagged
 	if armor != null:
 		total_weight += armor.weight
-	if active_item and \"weight\" in active_item:
+	if active_item != null and \"weight\" in active_item:
 		total_weight += active_item.weight
 	
 	
@@ -416,7 +416,7 @@ func _physics_process(delta : float):
 			if Gamemanager.gravity.is_zero_approx():
 				velocity += -global_basis.z * max(jump_power * jump_stamina - total_weight, 0)
 			else:
-				velocity += Vector3.UP * max(4 * jump_stamina - total_weight, 0)
+				velocity += Vector3.UP * max(5 * jump_stamina - total_weight, 0)
 			jump_stamina = 0
 			
 			if Gamemanager.gravity.is_zero_approx():
@@ -548,7 +548,7 @@ func _free_move(delta : float):
 		velocity = (velocity + global_position.direction_to(_grapple_point) * grapple_acceleration * delta).limit_length(grapple_max_speed)
 	
 	# Gravity
-	velocity += Gamemanager.gravity * delta
+	velocity += Gamemanager.gravity * delta * 1.25
 	
 	
 	# Try to move to our new position
