@@ -22,8 +22,8 @@ const walk_max_speed : float = 5.5
 const jump_power : float = 2.5
 
 const grapple_range : float = 40.0
-const grapple_acceleration : float = 10.0
-const grapple_max_speed : float = 6.5
+const grapple_acceleration : float = 7.5
+const grapple_max_speed : float = 7.5
 
 const timeout_time : int = 1000
 
@@ -59,7 +59,7 @@ var team := 0
 @export var username := \"\"
 var using_objective := false
 var objective_time := 0
-var objective_index
+var objective_index := -1
 
 
 var sound_time : int
@@ -210,7 +210,7 @@ func _process(delta):
 		UiManager.set_ui(4)
 	
 	
-	if Input.is_action_just_pressed(\"F\") and team == 2 and _anchored_shape:
+	if Input.is_action_just_pressed(\"E\") and team == 2 and _anchored_shape:
 		var objective
 		for obj in Gamemanager.objectives:
 			if obj[0] == 1 and obj[1].has_point(global_position) and obj[2] == 0:
@@ -231,7 +231,7 @@ func _process(delta):
 				active_item = null
 	
 	
-	elif Input.is_action_just_pressed(\"F\") and team == 1:
+	elif Input.is_action_just_pressed(\"E\") and team == 1:
 		for bomb in Gamemanager.bombs:
 			if bomb != null and bomb.global_position.distance_to(global_position) < 1.5:
 				objective_index = bomb.site
@@ -250,7 +250,7 @@ func _process(delta):
 				active_item = null
 	
 	
-	if Input.is_action_just_pressed(\"E\"):
+	if Input.is_action_just_pressed(\"F\"):
 		var found_item
 		if breach > 0.0:
 			for item in inventory:
@@ -293,7 +293,7 @@ func _process(delta):
 	if using_objective and team == 2:
 		if Gamemanager.objectives[objective_index][0] == 1 and Time.get_ticks_msec() - objective_time > 2000:
 			using_objective = false
-			Gamemanager.plant_bomb.rpc(global_position - _surface_normal * 0.5, objective_index)
+			Gamemanager.plant_bomb.rpc(global_position - _surface_normal * 0.5, _surface_normal, objective_index)
 			objective_index = -1
 		elif Gamemanager.objectives[objective_index][0] == 2 and Time.get_ticks_msec() - objective_time > 12000:
 			using_objective = false
@@ -308,7 +308,7 @@ func _process(delta):
 		using_objective = false
 		Gamemanager.defuse_bomb.rpc(objective_index)
 		objective_index = -1
-	elif using_objective and !Input.is_action_pressed(\"F\"):
+	elif using_objective and !Input.is_action_pressed(\"E\"):
 		using_objective = false
 		objective_index = -1
 		hud.stop_progress(\"Bomb\")
@@ -398,7 +398,7 @@ func _physics_process(delta : float):
 	
 	
 	total_weight = tagged
-	if armor:
+	if armor != null:
 		total_weight += armor.weight
 	if active_item and \"weight\" in active_item:
 		total_weight += active_item.weight

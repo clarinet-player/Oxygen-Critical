@@ -1,9 +1,9 @@
 [gd_resource type="Resource" load_steps=2 format=3 uid="uid://c8eh0vuqwyvn5"]
 
 [sub_resource type="GDScript" id="GDScript_bjhrd"]
-script/source = "const protection := [0.2, 0.4, 0.4]
+script/source = "const protection := [0.3, 0.0, 0.3]
 
-const weight := 0.25
+const weight := 0.35
 "
 
 [resource]

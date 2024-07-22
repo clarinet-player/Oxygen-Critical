@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://cidvalhisdojx"]
+[gd_scene load_steps=9 format=3 uid="uid://cidvalhisdojx"]
 
 [ext_resource type="AudioStream" uid="uid://b4j512pjb6rg5" path="res://weapons/bomb/beep.mp3" id="1_nqxex"]
+[ext_resource type="Texture2D" uid="uid://d2rm5f8ob43sy" path="res://assets/hole.png" id="2_7trhc"]
 
 [sub_resource type="GDScript" id="GDScript_c6p4e"]
 script/source = "extends Node3D
@@ -26,7 +27,7 @@ func _ready():
 
 func _process(delta):
 	if !active:
-		if Time.get_ticks_msec() - start_time > 25075:
+		if Time.get_ticks_msec() - start_time > 25250:
 			$OmniLight3D2.light_energy = 0
 		return
 	
@@ -81,7 +82,7 @@ func _physics_process(delta):
 		_smoke.global_position = global_position
 		
 		$OmniLight3D.light_energy = 0
-		$OmniLight3D2.light_energy = 1.0
+		$OmniLight3D2.light_energy = 6.0
 		
 		Gamemanager.objectives[site][2] = 2
 		
@@ -90,8 +91,12 @@ func _physics_process(delta):
 				_check_player(player)
 		
 		$MeshInstance3D.hide()
-		await get_tree().create_timer(1.5).timeout
-		queue_free()
+		$Decal.show()
+		$Decal2.show()
+		$Decal3.show()
+		$Decal4.show()
+		$Decal5.show()
+		$Decal6.show()
 
 
 
@@ -111,7 +116,7 @@ func _check_player(player : Node3D):
 	var _raycast = _space.intersect_ray(_ray)
 	
 	if _raycast.has(\"collider\") and _raycast.collider == player.hitbox:
-		_damage(player, 110, 10)
+		_damage(player, 120, 12)
 		return
 	
 	# Raycast to player's head
@@ -119,19 +124,19 @@ func _check_player(player : Node3D):
 	_raycast = _space.intersect_ray(_ray)
 	
 	if _raycast.has(\"collider\") and _raycast.collider == player.hitbox:
-		_damage(player, 110, 10)
+		_damage(player, 120, 12)
 		return
 	
-	_damage(player, 50, 4)
+	_damage(player, 70, 6)
 
 
 
 func _damage(player, damage, tearing):
-	var multiplier = (1 - player.global_position.distance_to(global_position) / 18)
+	var multiplier = clamp(1 - player.global_position.distance_to(global_position) / 20, 0, 1)
 	if Gamemanager.mp_active:
-		player.damage(damage * multiplier, tearing * multiplier + 1, false)
+		player.damage(damage * multiplier, tearing * multiplier + 1, multiplier, false)
 	else:
-		player.damage(damage * multiplier, tearing * multiplier + 1, false)
+		player.damage(damage * multiplier, tearing * multiplier + 1, multiplier, false)
 "
 
 [sub_resource type="BoxMesh" id="BoxMesh_2algb"]
@@ -163,18 +168,19 @@ rings = 3
 script = SubResource("GDScript_c6p4e")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0107451, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0364454, 0)
 mesh = SubResource("BoxMesh_2algb")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.087207, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.134398, 0)
 light_color = Color(1, 0.0784314, 0.0784314, 1)
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0107451, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0364454, 0)
 stream = ExtResource("1_nqxex")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0471905, 0)
 cast_shadow = 0
 emitting = false
 amount = 60
@@ -187,10 +193,15 @@ draw_pass_1 = SubResource("SphereMesh_rlp1w")
 draw_skin = SubResource("Skin_e60tl")
 
 [node name="OmniLight3D2" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00804131, 0)
-light_color = Color(1, 0.796078, 0.407843, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0450748, 0)
+light_color = Color(1, 0.74902, 0.278431, 1)
 light_energy = 0.0
 light_volumetric_fog_energy = 2.0
 shadow_enabled = true
 omni_range = 20.0
 omni_shadow_mode = 0
+
+[node name="Decal" type="Decal" parent="."]
+visible = false
+size = Vector3(12, 0.1, 12)
+texture_albedo = ExtResource("2_7trhc")

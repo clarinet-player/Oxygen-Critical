@@ -66,7 +66,6 @@ func _ready():
 
 
 
-
 func _exit_tree():
 	reloading = false
 	_heat = 0
