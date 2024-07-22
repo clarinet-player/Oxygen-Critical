@@ -7,13 +7,14 @@ script/source = "extends Node3D
 
 const item_id := 6
 const inventory_size := 1
-const weight := 1.5
+const weight := 1.8
 
 const healing := 50
 
-const use_time := 1600
+const use_time := 2000
 
 var in_use := false
+var uses_remaining
 var start_time := 0
 
 
@@ -61,11 +62,11 @@ func _physics_process(delta):
 		hud.start_progress(1.6, \"healing\")
 	
 	if in_use and Time.get_ticks_msec() - start_time > use_time - 50:
-		player.heal.rpc_id(1, 60.0, false, 0.6)
+		player.heal.rpc_id(1, healing, false, 10)
 	
 	if in_use and Time.get_ticks_msec() - start_time > use_time:
 		in_use = false
-		player.heal(60.0, false, 0.6)
+		player.heal(healing, false, 10)
 
 
 

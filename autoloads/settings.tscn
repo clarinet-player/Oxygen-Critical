@@ -10,7 +10,6 @@ signal settings_changed
 
 var fov := 75.0
 var mouse_sensitivity := 1.0
-var jump_angle := 0.0
 var volume := 75
 
 var saved_inventory := [1, 5, 4]
@@ -54,8 +53,6 @@ func read_file():
 		fov = data[\"fov\"]
 	if data.has(\"mouse_sensitivity\"):
 		mouse_sensitivity = data[\"mouse_sensitivity\"]
-	if data.has(\"jump_angle\"):
-		jump_angle = data[\"jump_angle\"]
 	if data.has(\"volume\"):
 		volume = data[\"volume\"]
 	if data.has(\"saved_inventory\"):
@@ -78,7 +75,6 @@ func write_file():
 	var data = {
 		\"fov\": fov,
 		\"mouse_sensitivity\": mouse_sensitivity,
-		\"jump_angle\": jump_angle,
 		\"volume\": volume,
 		\"saved_inventory\": saved_inventory,
 		\"shadows_enabled\": shadows_enabled,

@@ -3,7 +3,7 @@
 [sub_resource type="GDScript" id="GDScript_bjhrd"]
 script/source = "const protection := [0.3, 0.0, 0.3]
 
-const weight := 0.35
+const weight := 0.6
 "
 
 [resource]

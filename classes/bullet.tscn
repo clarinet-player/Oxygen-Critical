@@ -26,15 +26,19 @@ var owning_player
 
 func _physics_process(delta):
 	
-	var _time = delta
-	var _target_pos = global_position + (velocity * _time)
+	var _target_pos = global_position + (velocity * delta)
 	var _space = get_world_3d().direct_space_state
 	var _ray = PhysicsRayQueryParameters3D.create(global_position, _target_pos)
 	var _raycast = _space.intersect_ray(_ray)
 	
-	# For every collision
-	while !_raycast.is_empty():
-		
+	
+	if _raycast.is_empty():
+		velocity += Gamemanager.gravity * delta
+		dist_travelled += global_position.distance_to(_target_pos)
+		global_position = _target_pos
+	
+	
+	else:
 		# Get information about the collision
 		var _body = _raycast.collider
 		var _shape = _body.shape_owner_get_owner(_body.shape_find_owner(_raycast.shape))
@@ -42,21 +46,11 @@ func _physics_process(delta):
 		var _normal = _raycast.normal
 		var _travelled = global_position.distance_to(_point)
 		
-		var _passed = _travelled / velocity.length()
-		_time -= _passed
 		
 		# Update ourself
-		#velocity += Gamemanager.get_gravity_vector() * _passed
+		velocity += Gamemanager.gravity * delta
 		dist_travelled += _travelled
 		global_position = _point
-		
-		# Remove ourself if necessary
-		if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):
-			queue_free()
-			return
-		if dist_travelled > 2 * effective_range:
-			queue_free()
-			return
 		
 		
 		if \"player\" in _shape:
@@ -77,8 +71,8 @@ func _physics_process(delta):
 					if _player.armor:
 						multiplier *= 1 - max(_player.armor.protection[_shape.area] - piercing, 0)
 					if _player.armor and _player.armor.protection[_shape.area] > piercing:
-						tearing *= 0.75
-						tagging *= 0.75
+						tearing *= 0.8
+						tagging *= 0.8
 					_player.damage(mass[_shape.area] * multiplier, tearing, tagging, _shape.area == 1, false, _player.armor and _player.armor.protection[_shape.area] > piercing)
 				
 				var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
@@ -119,12 +113,6 @@ func _physics_process(delta):
 			
 			queue_free()
 			return
-	
-	
-	# Update ourself
-	#velocity += Gamemanager.get_gravity_vector() * _time
-	dist_travelled += global_position.distance_to(_target_pos)
-	global_position = _target_pos
 	
 	
 	# Remove ourself if necessary

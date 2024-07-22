@@ -4,8 +4,8 @@
 script/source = "extends Node3D
 
 
-const use_time := 1400
-const weight := 1.0
+const use_time := 1600
+const weight := 1.2
 
 var in_use := false
 var start_time := 0
@@ -31,7 +31,7 @@ func _ready():
 		if player.breach > 0:
 			in_use = true
 			start_time = Time.get_ticks_msec()
-			hud.start_progress(1.4, \"healing\")
+			hud.start_progress(1.6, \"healing\")
 		
 		player.damaged.connect(_cancel)
 

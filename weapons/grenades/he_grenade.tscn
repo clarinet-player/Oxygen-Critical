@@ -107,9 +107,9 @@ func _damage(player):
 		multiplier *= 1 - max(player.armor.protection[0], 0)
 	
 	if Gamemanager.mp_active:
-		player.damage(damage * multiplier, tearing * multiplier + 3, 1 * multiplier + 0.1, false)
+		player.damage(damage * multiplier, tearing * multiplier + 3, 1.5 * multiplier + 0.1, false)
 	else:
-		player.damage(damage * multiplier, tearing * multiplier + 3, 1 * multiplier + 0.1, false)
+		player.damage(damage * multiplier, tearing * multiplier + 3, 1.5 * multiplier + 0.1, false)
 "
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k2ba4"]

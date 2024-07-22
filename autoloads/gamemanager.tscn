@@ -16,6 +16,7 @@ var players := Array()
 var game_running := false
 var round_running := false
 
+var gravity := Vector3.ZERO
 var playable_area : AABB
 var objectives : Array
 var bombs := Array()

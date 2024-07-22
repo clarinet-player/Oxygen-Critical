@@ -8,7 +8,7 @@ const item_id := 5
 const inventory_size := 1
 const weight := 0.5
 
-const use_time := 750
+const use_time := 600
 
 var in_use := false
 var start_time := 0
@@ -56,14 +56,14 @@ func _physics_process(delta):
 	if Input.is_action_pressed(\"Mouse1\") and !in_use and player.breach > 0 and !UiManager.paused:
 		in_use = true
 		start_time = Time.get_ticks_msec()
-		hud.start_progress(0.75, \"healing\")
+		hud.start_progress(0.6, \"healing\")
 	
 	if DisplayServer.get_name() == \"headless\" and in_use and Time.get_ticks_msec() - start_time > use_time - 50:
-		player.heal.rpc_id(1, 0.0, true, 0.0)
+		player.heal.rpc_id(1, 5.0, true, 1.0)
 	
 	if in_use and Time.get_ticks_msec() - start_time > use_time:
 		in_use = false
-		player.heal(0.0, true, 0.0)
+		player.heal(5.0, true, 1.0)
 
 
 

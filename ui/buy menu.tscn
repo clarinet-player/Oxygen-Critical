@@ -326,11 +326,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 80
 text = "Light Armor"
 
-[node name="Button2" type="Button" parent="HBoxContainer/VBoxContainer3"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 80
-text = " Assault Armor "
-
 [node name="Button3" type="Button" parent="HBoxContainer/VBoxContainer3"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 80
@@ -349,5 +344,4 @@ text = "Heavy Armor"
 [connection signal="button_down" from="HBoxContainer/VBoxContainer2/Button8" to="." method="_buy_claymore"]
 [connection signal="button_down" from="HBoxContainer/VBoxContainer3/Button4" to="." method="_remove_armor"]
 [connection signal="button_down" from="HBoxContainer/VBoxContainer3/Button" to="." method="_buy_light_armor"]
-[connection signal="button_down" from="HBoxContainer/VBoxContainer3/Button2" to="." method="_buy_assault_armor"]
 [connection signal="button_down" from="HBoxContainer/VBoxContainer3/Button3" to="." method="_buy_heavy_armor"]

@@ -17,7 +17,7 @@ signal damaged
 #region Variables
 const walk_acceleration : float = 35.0
 const walk_friction : float = 30.0
-const walk_max_speed : float = 5.5
+const walk_max_speed : float = 5.25
 
 const jump_power : float = 2.5
 
@@ -164,7 +164,7 @@ func _input(event):
 	
 	# Rotating to follow mouse
 	if event is InputEventMouseMotion:
-		if Settings.comfort_mode:
+		if Settings.comfort_mode or !Gamemanager.gravity.is_zero_approx():
 			rotate(Vector3.UP, event.relative.x * mouse_sensitivity * -0.001)
 			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
 		elif oriented and _anchored_shape:
@@ -186,7 +186,7 @@ func _process(delta):
 	flash_overlay.mesh.material.albedo_color.a = max(0, flash_overlay.mesh.material.albedo_color.a - delta * 0.4)
 	
 	
-	if Input.is_action_pressed(\"Shift\") or Settings.comfort_mode:
+	if Input.is_action_pressed(\"Shift\") or Settings.comfort_mode or !Gamemanager.gravity.is_zero_approx():
 		oriented = false
 	elif _anchored_shape:
 		oriented = true
@@ -194,7 +194,7 @@ func _process(delta):
 	
 	
 	if _anchored_shape:
-		if oriented:
+		if oriented or !Gamemanager.gravity.is_zero_approx():
 			hud.set_hud_anchor(1, 0)
 		elif acos(_surface_normal.dot(global_basis.x)) < PI / 2:
 			hud.set_hud_anchor(1, acos(_surface_normal.dot(global_basis.y)))
@@ -221,7 +221,7 @@ func _process(delta):
 			using_objective = true
 			objective_time = Time.get_ticks_msec()
 			if objective[0] == 1:
-				hud.start_progress(2.0, \"Objective\")
+				hud.start_progress(3.0, \"Objective\")
 			elif objective[0] == 2:
 				hud.start_progress(12, \"Objective\")
 			elif objective[0] == 3:
@@ -235,16 +235,13 @@ func _process(delta):
 		for bomb in Gamemanager.bombs:
 			if bomb != null and bomb.global_position.distance_to(global_position) < 1.5:
 				objective_index = bomb.site
+				bomb.start_defuse.rpc()
 				break
 		if objective_index >= 0:
 			if !using_objective:
 				using_objective = true
-				if Gamemanager.mp_active:
-					play_sound.rpc(5)
-				else:
-					play_sound(5)
 			objective_time = Time.get_ticks_msec()
-			hud.start_progress(4.0, \"Objective\")
+			hud.start_progress(5.0, \"Objective\")
 			if active_item:
 				camera.remove_child(active_item)
 				active_item = null
@@ -284,14 +281,14 @@ func _process(delta):
 					camera.remove_child(active_item)
 				active_item = item
 				camera.add_child(active_item)
-				await get_tree().create_timer(0.06).timeout
+				await get_tree().create_timer(0.1).timeout
 				if active_item == item:
 					item.throw()
 				break
 	
 	
 	if using_objective and team == 2:
-		if Gamemanager.objectives[objective_index][0] == 1 and Time.get_ticks_msec() - objective_time > 2000:
+		if Gamemanager.objectives[objective_index][0] == 1 and Time.get_ticks_msec() - objective_time > 3000:
 			using_objective = false
 			Gamemanager.plant_bomb.rpc(global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
 			objective_index = -1
@@ -304,7 +301,7 @@ func _process(delta):
 			Gamemanager.take_objective.rpc(objective_index)
 			objective_index = -1
 			hud.set_objective(true)
-	elif using_objective and team == 1 and Time.get_ticks_msec() - objective_time > 4000:
+	elif using_objective and team == 1 and Time.get_ticks_msec() - objective_time > 5000:
 		using_objective = false
 		Gamemanager.defuse_bomb.rpc(objective_index)
 		objective_index = -1
@@ -356,7 +353,7 @@ func _process(delta):
 func _physics_process(delta : float):
 	if !Gamemanager.mp_active or is_multiplayer_authority():
 		health -= breach * delta
-		tagged = max(tagged - delta / 10, 0)
+		tagged = max(tagged - delta * max(0.4 * tagged, 0.2), 0)
 		if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):
 			health -= 100 * delta
 		hud.set_health(health)
@@ -409,14 +406,18 @@ func _physics_process(delta : float):
 	if Input.is_action_just_pressed(\"Space\") and !UiManager.paused and !using_objective:
 		if _anchored_shape:
 			detach()
-			velocity += -global_basis.z * max(jump_power * jump_stamina - total_weight, 0)
+			if Gamemanager.gravity.is_zero_approx():
+				velocity += -global_basis.z * max(jump_power * jump_stamina - total_weight, 0)
+			else:
+				velocity += Vector3.UP * max(4 * jump_stamina - total_weight, 0)
 			jump_stamina = 0
 			
-			move_and_collide(global_position.direction_to(camera.global_position) * 0.8, false, 0.2)
-			move_and_collide(velocity.normalized(), false, 0.2)
+			if Gamemanager.gravity.is_zero_approx():
+				move_and_collide(global_position.direction_to(camera.global_position) * 0.8, false, 0.2)
+				move_and_collide(velocity.normalized(), false, 0.2)
 		
 		
-		elif !_grapple_point:
+		elif !_grapple_point and Gamemanager.gravity.is_zero_approx():
 			var _space = get_world_3d().direct_space_state
 			var _ray = PhysicsRayQueryParameters3D.create(camera.global_position, camera.global_position - global_basis.z * grapple_range)
 			var _raycast = _space.intersect_ray(_ray)
@@ -431,7 +432,12 @@ func _physics_process(delta : float):
 			_grapple_point = Vector3.ZERO
 	
 	
-	if _anchored_shape:
+	if !Gamemanager.gravity.is_zero_approx():
+		camera.global_position = global_position + Vector3.UP
+		hitbox.global_position = global_position + Vector3.UP * 0.35
+		hitbox.global_rotation = Vector3.ZERO
+	
+	elif _anchored_shape:
 		camera.global_position = global_position + _surface_normal
 		hitbox.global_position = global_position + _surface_normal * 0.35
 		var _up : Vector3 = hitbox.global_basis.y
@@ -519,7 +525,7 @@ func _anchored_move(delta : float):
 	
 	# Checking we're still on the ground
 	_collision = move_and_collide(_surface_normal * -100 * delta)
-	if _collision and _collision.get_collider_shape() == _anchored_shape:
+	if _collision and _collision.get_collider_shape() == _anchored_shape and acos(_collision.get_normal().dot(Vector3.UP)) < 0.5:
 		_anchor_point_l = _anchored_shape.to_local(self.global_position)
 		_surface_normal = _collision.get_normal()
 	else:
@@ -534,6 +540,9 @@ func _free_move(delta : float):
 	if _grapple_point != Vector3.ZERO:
 		velocity = (velocity + global_position.direction_to(_grapple_point) * grapple_acceleration * delta).limit_length(grapple_max_speed)
 	
+	# Gravity
+	velocity += Gamemanager.gravity * delta
+	
 	
 	# Try to move to our new position
 	var _collision = move_and_collide(velocity * delta)
@@ -542,7 +551,7 @@ func _free_move(delta : float):
 		var _shape = _collision.get_collider_shape()
 		var _normal = _collision.get_normal()
 		
-		if \"get_is_grabbable\" in _shape:# and _shape.get_is_grabbable():
+		if (Gamemanager.gravity.is_zero_approx() and \"get_is_grabbable\" in _shape) or (!Gamemanager.gravity.is_zero_approx() and acos(_normal.dot(Vector3.UP)) < 0.5):
 			if Time.get_ticks_msec() - sound_time > 200:
 				sound_time = Time.get_ticks_msec()
 				if Gamemanager.mp_active:
@@ -551,7 +560,8 @@ func _free_move(delta : float):
 					play_sound(2)
 			
 			attach(_shape, _normal)
-			_anchored_move(_collision.get_remainder().length()/velocity.length())
+			if !velocity.is_zero_approx():
+				_anchored_move(_collision.get_remainder().length()/velocity.length())
 			return
 		
 		else:
@@ -676,11 +686,6 @@ func play_sound(sound : int):
 	elif sound == 4:
 		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
 		audio.stream = preload(\"res://assets/1911-reload-6248.mp3\")
-		audio.play()
-	elif sound == 5:
-		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
-		audio.stream = preload(\"res://assets/defuse.mp3\")
-		audio.play()
 		audio.play()
 
 
