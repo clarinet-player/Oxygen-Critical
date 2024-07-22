@@ -333,11 +333,11 @@ func spawn_fire(pos, vel):
 
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
-func plant_bomb(pos : Vector3, normal : Vector3, site : int):
+func plant_bomb(pos : Vector3, facing : Vector3, normal : Vector3, site : int):
 	var bomb = preload(\"res://weapons/bomb/bomb.tscn\").instantiate()
 	add_child(bomb)
 	bomb.global_position = pos
-	bomb.look_at()
+	bomb.look_at(pos + (facing - facing.dot(normal) * normal), normal)
 	bomb.site = site
 	bombs.append(bomb)
 	

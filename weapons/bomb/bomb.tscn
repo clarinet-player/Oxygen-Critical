@@ -27,7 +27,7 @@ func _ready():
 
 func _process(delta):
 	if !active:
-		if Time.get_ticks_msec() - start_time > 25250:
+		if Time.get_ticks_msec() - start_time > 25200:
 			$OmniLight3D2.light_energy = 0
 		return
 	
@@ -75,9 +75,9 @@ func _physics_process(delta):
 			$GPUParticles3D.emitting = true
 		
 		var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()
-		_smoke.size = Vector3(2.5, 2.5, 2.5)
+		_smoke.size = Vector3(3, 3, 3)
 		_smoke.fade_speed = 0.08
-		_smoke.start_density = 0.4
+		_smoke.start_density = 0.45
 		Gamemanager.add_child(_smoke)
 		_smoke.global_position = global_position
 		
@@ -92,11 +92,6 @@ func _physics_process(delta):
 		
 		$MeshInstance3D.hide()
 		$Decal.show()
-		$Decal2.show()
-		$Decal3.show()
-		$Decal4.show()
-		$Decal5.show()
-		$Decal6.show()
 
 
 
@@ -107,7 +102,7 @@ func defuse():
 
 
 func _check_player(player : Node3D):
-	if player.global_position.distance_to(global_position) > 18:
+	if player.global_position.distance_to(global_position) > 15:
 		return
 	
 	# Raycast to player's feet
@@ -132,7 +127,7 @@ func _check_player(player : Node3D):
 
 
 func _damage(player, damage, tearing):
-	var multiplier = clamp(1 - player.global_position.distance_to(global_position) / 20, 0, 1)
+	var multiplier = clamp(1 - player.global_position.distance_to(global_position) / 15, 0, 1)
 	if Gamemanager.mp_active:
 		player.damage(damage * multiplier, tearing * multiplier + 1, multiplier, false)
 	else:
@@ -168,19 +163,19 @@ rings = 3
 script = SubResource("GDScript_c6p4e")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0364454, 0)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0.0284714, 0)
 mesh = SubResource("BoxMesh_2algb")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.134398, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.126424, 0)
 light_color = Color(1, 0.0784314, 0.0784314, 1)
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0364454, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0284714, 0)
 stream = ExtResource("1_nqxex")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0471905, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0392165, 0)
 cast_shadow = 0
 emitting = false
 amount = 60
@@ -203,5 +198,5 @@ omni_shadow_mode = 0
 
 [node name="Decal" type="Decal" parent="."]
 visible = false
-size = Vector3(12, 0.1, 12)
+size = Vector3(18, 0.1, 18)
 texture_albedo = ExtResource("2_7trhc")

@@ -225,7 +225,7 @@ func _process(delta):
 			elif objective[0] == 2:
 				hud.start_progress(12, \"Objective\")
 			elif objective[0] == 3:
-				hud.start_progress(5.0)
+				hud.start_progress(5.0, \"Objective\")
 			if active_item:
 				camera.remove_child(active_item)
 				active_item = null
@@ -244,7 +244,7 @@ func _process(delta):
 				else:
 					play_sound(5)
 			objective_time = Time.get_ticks_msec()
-			hud.start_progress(4.0, \"Bomb\")
+			hud.start_progress(4.0, \"Objective\")
 			if active_item:
 				camera.remove_child(active_item)
 				active_item = null
@@ -293,7 +293,7 @@ func _process(delta):
 	if using_objective and team == 2:
 		if Gamemanager.objectives[objective_index][0] == 1 and Time.get_ticks_msec() - objective_time > 2000:
 			using_objective = false
-			Gamemanager.plant_bomb.rpc(global_position - _surface_normal * 0.5, _surface_normal, objective_index)
+			Gamemanager.plant_bomb.rpc(global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
 			objective_index = -1
 		elif Gamemanager.objectives[objective_index][0] == 2 and Time.get_ticks_msec() - objective_time > 12000:
 			using_objective = false
@@ -308,10 +308,10 @@ func _process(delta):
 		using_objective = false
 		Gamemanager.defuse_bomb.rpc(objective_index)
 		objective_index = -1
-	elif using_objective and !Input.is_action_pressed(\"E\"):
+	if using_objective and !Input.is_action_pressed(\"E\"):
 		using_objective = false
 		objective_index = -1
-		hud.stop_progress(\"Bomb\")
+		hud.stop_progress(\"Objective\")
 	
 	
 	if Input.is_action_just_pressed(\"MouseDown\")and !UiManager.paused:
@@ -356,6 +356,7 @@ func _process(delta):
 func _physics_process(delta : float):
 	if !Gamemanager.mp_active or is_multiplayer_authority():
 		health -= breach * delta
+		tagged = max(tagged - delta / 10, 0)
 		if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):
 			health -= 100 * delta
 		hud.set_health(health)

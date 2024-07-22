@@ -1,8 +1,8 @@
+Marker3D
 Decal
 StaticBody3D
 VBoxContainer
 MeshInstance3D
-Marker3D
 HBoxContainer
 CollisionShape3D
 RigidBody3D
@@ -12,4 +12,3 @@ AudioStreamPlayer3D
 Node3D
 FogVolume
 DirectionalLight3D
-WorldEnvironment
