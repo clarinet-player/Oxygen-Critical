@@ -93,8 +93,6 @@ func _on_connect(id : int):
 	
 	sync_level.rpc_id(id, 1)
 	
-	await get_tree().create_timer(0.1).timeout
-	
 	if round_running:
 		sync_scoreboard.rpc_id(id, Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
 	elif players.size() >= 2 and !game_running:
@@ -128,8 +126,6 @@ func spawn_player(player):
 
 
 func _game_loop():
-	reset.rpc()
-	
 	game_running = true
 	while game_running:
 		
