@@ -30,3 +30,4 @@ res://classes/hitbox.tscn
 res://autoloads/audiomanager.tscn
 res://weapons/grenades/flash_grenade.tscn
 res://classes/smoke.tscn
+res://weapons/armor/heavy_armor.tres

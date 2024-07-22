@@ -77,8 +77,8 @@ func _physics_process(delta):
 					if _player.armor:
 						multiplier *= 1 - max(_player.armor.protection[_shape.area] - piercing, 0)
 					if _player.armor and _player.armor.protection[_shape.area] > piercing:
-						tearing *= 0.5
-						tagging *= 0.5
+						tearing *= 0.75
+						tagging *= 0.75
 					_player.damage(mass[_shape.area] * multiplier, tearing, tagging, _shape.area == 1, false, _player.armor and _player.armor.protection[_shape.area] > piercing)
 				
 				var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
