@@ -1,6 +1,7 @@
-[gd_scene load_steps=15 format=3 uid="uid://bq3u0xb10re6"]
+[gd_scene load_steps=16 format=3 uid="uid://bq3u0xb10re6"]
 
 [ext_resource type="PackedScene" uid="uid://c2hluyirbi4rf" path="res://classes/hitbox.tscn" id="1_2yv3f"]
+[ext_resource type="AudioStream" uid="uid://b4j512pjb6rg5" path="res://weapons/bomb/beep.mp3" id="1_6ku4m"]
 [ext_resource type="Texture2D" uid="uid://dv4b2q2nb4u6n" path="res://assets/flash.png" id="1_qlxub"]
 
 [sub_resource type="GDScript" id="GDScript_qj47s"]
@@ -60,6 +61,7 @@ var team := 0
 var using_objective := false
 var objective_time := 0
 var objective_index := -1
+var beep_time := 0
 
 
 var sound_time : int
@@ -142,6 +144,7 @@ func _ready():
 				inventory.append(claymore)
 	
 	else:
+		$Camera3D/SpotLight3D.queue_free()
 		hide()
 		$Hitbox/Hitbox.disabled = true
 		$Hitbox/Hitbox2.disabled = true
@@ -223,7 +226,7 @@ func _process(delta):
 			if objective[0] == 1:
 				hud.start_progress(3.0, \"Objective\")
 			elif objective[0] == 2:
-				hud.start_progress(12, \"Objective\")
+				hud.start_progress(10, \"Objective\")
 			elif objective[0] == 3:
 				hud.start_progress(5.0, \"Objective\")
 			if active_item:
@@ -292,7 +295,7 @@ func _process(delta):
 			using_objective = false
 			Gamemanager.plant_bomb.rpc(1, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
 			objective_index = -1
-		elif Gamemanager.objectives[objective_index][0] == 2 and Time.get_ticks_msec() - objective_time > 12000:
+		elif Gamemanager.objectives[objective_index][0] == 2 and Time.get_ticks_msec() - objective_time > 10000:
 			using_objective = false
 			Gamemanager.plant_bomb.rpc(2, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
 			objective_index = -1
@@ -309,6 +312,10 @@ func _process(delta):
 		using_objective = false
 		objective_index = -1
 		hud.stop_progress(\"Objective\")
+	if using_objective and team == 2 and Gamemanager.objectives[objective_index][0] == 2:
+		if (Time.get_ticks_msec() - objective_time > 5000 and Time.get_ticks_msec() - beep_time > 300) or Time.get_ticks_msec() - beep_time > 600:
+			beep_time = Time.get_ticks_msec()
+			play_sound.rpc(5)
 	
 	
 	if Input.is_action_just_pressed(\"MouseDown\")and !UiManager.paused:
@@ -525,7 +532,7 @@ func _anchored_move(delta : float):
 	
 	# Checking we're still on the ground
 	_collision = move_and_collide(_surface_normal * -100 * delta)
-	if _collision and _collision.get_collider_shape() == _anchored_shape and acos(_collision.get_normal().dot(Vector3.UP)) < 0.5:
+	if _collision and _collision.get_collider_shape() == _anchored_shape and (Gamemanager.gravity.is_zero_approx() or acos(_collision.get_normal().dot(Vector3.UP)) < 0.5):
 		_anchor_point_l = _anchored_shape.to_local(self.global_position)
 		_surface_normal = _collision.get_normal()
 	else:
@@ -550,7 +557,6 @@ func _free_move(delta : float):
 	while _collision:
 		var _shape = _collision.get_collider_shape()
 		var _normal = _collision.get_normal()
-		
 		if (Gamemanager.gravity.is_zero_approx() and \"get_is_grabbable\" in _shape) or (!Gamemanager.gravity.is_zero_approx() and acos(_normal.dot(Vector3.UP)) < 0.5):
 			if Time.get_ticks_msec() - sound_time > 200:
 				sound_time = Time.get_ticks_msec()
@@ -675,21 +681,19 @@ func heal(healing, tearing, tagging):
 func play_sound(sound : int):
 	audio.pitch_scale = randf_range(0.95, 1.05)
 	if sound == 1:
-		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
 		audio.stream = [preload(\"res://assets/footstep_sfx_1.mp3\"), preload(\"res://assets/footstep_sfx_2.mp3\"), preload(\"res://assets/footstep_sfx_3.mp3\"), preload(\"res://assets/footstep_sfx_4.mp3\"), preload(\"res://assets/footstep_sfx_5.mp3\")].pick_random()
 		audio.play()
 	elif sound == 2:
-		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
 		audio.stream = preload(\"res://assets/footstep_sfx_6.mp3\")
 		audio.play()
 	elif sound == 3:
-		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
 		audio.stream = preload(\"res://assets/grappling-hook-14680.mp3\")
 		audio.play()
 	elif sound == 4:
-		$Camera3D/AudioStreamPlayer3D.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
 		audio.stream = preload(\"res://assets/1911-reload-6248.mp3\")
 		audio.play()
+	elif sound == 5:
+		$Camera3D/AudioStreamPlayer3D2.play()
 
 
 
@@ -896,6 +900,9 @@ spot_angle_attenuation = 1.41421
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Camera3D"]
 attenuation_model = 1
 max_distance = 30.0
+
+[node name="AudioStreamPlayer3D2" type="AudioStreamPlayer3D" parent="Camera3D"]
+stream = ExtResource("1_6ku4m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Camera3D"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.2)

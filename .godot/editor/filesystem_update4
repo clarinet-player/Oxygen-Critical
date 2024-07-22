@@ -36,3 +36,5 @@ res://classes/smoke.tscn
 res://ui/spectator hud.tscn
 res://classes/gameSurface.tscn
 res://weapons/bomb/emp.tscn
+res://weapons/grenades/flash_display.tscn
+res://weapons/grenades/incendiary_display.tscn

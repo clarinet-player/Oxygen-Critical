@@ -28,7 +28,7 @@ func _ready():
 
 func _process(delta):
 	if !active:
-		if Time.get_ticks_msec() - start_time > 25200:
+		if Time.get_ticks_msec() - start_time > 25250:
 			$OmniLight3D2.light_energy = 0
 		return
 	
@@ -165,8 +165,8 @@ roughness = 0.67
 
 [sub_resource type="SphereMesh" id="SphereMesh_rlp1w"]
 material = SubResource("StandardMaterial3D_o1kmu")
-radius = 0.06
-height = 0.1
+radius = 0.07
+height = 0.12
 radial_segments = 5
 rings = 3
 

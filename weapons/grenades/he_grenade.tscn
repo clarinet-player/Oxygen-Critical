@@ -56,8 +56,7 @@ func _physics_process(delta):
 		arm_time = Time.get_ticks_msec()
 		freeze = true
 		
-		if get_node_or_null(\"Sphere\"):
-			get_node(\"Sphere\").queue_free()
+		$Sphere.queue_free()
 		
 		audio.stream = load(\"res://weapons/grenades/grenade_sfx_2.mp3\")
 		audio.pitch_scale = 0.8

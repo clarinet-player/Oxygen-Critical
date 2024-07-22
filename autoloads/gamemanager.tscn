@@ -145,12 +145,12 @@ func _game_loop():
 			
 			# Respawn players
 			for player in players:
-				if player[2] == null and player[1] == 1 and c_spawns > 0 and Time.get_ticks_msec() - player[3] > 5000:
+				if player[2] == null and player[1] == 1 and c_spawns > 0 and Time.get_ticks_msec() - player[3] > 4000:
 					c_spawns -= 1
 					spawn_player(player)
 					sync_scoreboard.rpc(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
 				
-				elif player[2] == null and player[1] == 2 and t_spawns > 0 and Time.get_ticks_msec() - player[3] > 5000:
+				elif player[2] == null and player[1] == 2 and t_spawns > 0 and Time.get_ticks_msec() - player[3] > 4000:
 					t_spawns -= 1
 					spawn_player(player)
 					sync_scoreboard.rpc(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)

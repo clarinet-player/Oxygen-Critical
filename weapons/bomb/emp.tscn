@@ -38,7 +38,7 @@ func _ready():
 		if is_multiplayer_authority():
 			for player in get_tree().get_nodes_in_group(\"Players\"):
 				if player.global_position.distance_to(global_position) < 30:
-					player.damage(0, 0, 5 * clamp(1 - player.global_position.distance_to(global_position) / 30, 0, 1), false)
+					player.damage(0, 0, 4.5 * clamp(1 - player.global_position.distance_to(global_position) / 30, 0, 1), false)
 		
 		await get_tree().create_timer(0.33).timeout
 		$OmniLight3D.light_energy = 0
@@ -59,7 +59,7 @@ mesh = SubResource("CylinderMesh_7gb2b")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.23633, 0)
-light_color = Color(0.247059, 0.466667, 1, 1)
+light_color = Color(0.145098, 0.376471, 1, 1)
 light_energy = 0.0
 light_specular = 0.0
 omni_range = 60.0
