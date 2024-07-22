@@ -374,7 +374,7 @@ func reset():
 	time_bonuses = Array()
 	for obj in objectives:
 		obj[2] = 0
-		time_bonuses[objectives.find(obj)] = true
+		time_bonuses.append(true)
 	
 	for child in get_children():
 		if child.name == \"MultiplayerSpawner\":
