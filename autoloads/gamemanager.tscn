@@ -20,7 +20,7 @@ var gravity := Vector3.ZERO
 var playable_area : AABB
 var objectives : Array
 var time_bonuses : Array
-var bombs := Array()
+var bombs : Array
 
 var round_start_time := -1
 var c_spawns := 0
@@ -92,6 +92,8 @@ func _on_connect(id : int):
 	
 	
 	sync_level.rpc_id(id, 1)
+	
+	await get_tree().create_timer(0.1).timeout
 	
 	if round_running:
 		sync_scoreboard.rpc_id(id, Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
