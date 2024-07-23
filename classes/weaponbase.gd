@@ -220,9 +220,8 @@ func fire(pos : Vector3, velocity : Vector3):
 	if get_parent():
 		var case = preload("res://classes/casing.tscn").instantiate()
 		case.type = casing
+		case.velocity = ejection.global_basis.z.normalized() * 4 + Vector3(randf_range(-0.3, 0.3), randf_range(-0.3, 0.3), randf_range(-0.3, 0.3)) + get_parent().get_parent().velocity
+		case.angular = Vector3(randf_range(-0.5, 0.5), randf_range(-0.5, 0.5), randf_range(-0.5, 0.5))
 		Gamemanager.add_child(case)
 		case.global_position = ejection.global_position
 		case.look_at(case.global_position + velocity)
-		case.velocity = ejection.global_basis.z.normalized() * 4 + Vector3(randf_range(-0.3, 0.3), randf_range(-0.3, 0.3), randf_range(-0.3, 0.3)) + get_parent().get_parent().velocity
-		case.angular = Vector3(randf_range(-0.5, 0.5), randf_range(-0.5, 0.5), randf_range(-0.5, 0.5))
-	
