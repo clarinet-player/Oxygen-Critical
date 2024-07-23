@@ -351,7 +351,7 @@ func plant_bomb(type : int, pos : Vector3, facing : Vector3, normal : Vector3, s
 	
 	if mp_active: #and time_bonuses[site]:
 		#time_bonuses[site] = false
-		round_start_time = max(Time.get_ticks_msec() - 90000, round_start_time + 10000)
+		round_start_time = max(Time.get_ticks_msec() - 120000, round_start_time + 10000)
 
 
 
