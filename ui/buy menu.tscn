@@ -14,6 +14,10 @@ func _exit_tree():
 	for item in Gamemanager.local_player.inventory:
 		if item != null:
 			save.append(item.item_id)
+	if Gamemanager.local_player.armor == load(\"res://weapons/armor/light_armor.tres\"):
+		save.append(11)
+	elif Gamemanager.local_player.armor == load(\"res://weapons/armor/heavy_armor.tres\"):
+		save.append(12)
 	
 	Settings.saved_inventory = save
 	Settings.write_file()

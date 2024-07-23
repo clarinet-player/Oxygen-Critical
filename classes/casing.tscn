@@ -20,6 +20,8 @@ var spawn_time := 0
 func _ready():
 	spawn_time = Time.get_ticks_msec()
 	
+	global_rotate(angular.normalized(), angular.length())
+	
 	if type == 2:
 		$\"9mm\".hide()
 	else:
