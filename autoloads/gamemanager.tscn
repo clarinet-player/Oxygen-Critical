@@ -157,7 +157,7 @@ func _game_loop():
 			
 			
 			# Out of time
-			if Time.get_ticks_msec() - round_start_time > 120000:
+			if Time.get_ticks_msec() - round_start_time > 150000:
 				ui_message.rpc(1)
 				print(\"Round end. Out of time.\")
 				round_running = false
@@ -349,8 +349,8 @@ func plant_bomb(type : int, pos : Vector3, facing : Vector3, normal : Vector3, s
 	
 	objectives[site][2] = 1
 	
-	if mp_active and time_bonuses[site]:
-		time_bonuses[site] = false
+	if mp_active: #and time_bonuses[site]:
+		#time_bonuses[site] = false
 		round_start_time = max(Time.get_ticks_msec() - 90000, round_start_time + 10000)
 
 
@@ -369,10 +369,7 @@ func defuse_bomb(site : int):
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func reset():
 	bombs = Array()
-	time_bonuses = Array()
-	for obj in objectives:
-		obj[2] = 0
-		time_bonuses.append(true)
+	get_tree().get_first_node_in_group(\"Levels\")._ready()
 	
 	for child in get_children():
 		if child.name == \"MultiplayerSpawner\":
