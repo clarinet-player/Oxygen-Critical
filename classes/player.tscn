@@ -47,6 +47,8 @@ var health : float = 100
 var breach : float = 0
 var tagged : float = 0
 
+var kill_contributors := []
+
 var armor : Resource
 
 var total_weight : float
@@ -641,15 +643,10 @@ func get_velocity() -> Vector3:
 
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
-func damage(dmg, tearing, tagging, headshot = false, fire = false, armor = false):
-	if headshot:
-		Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
-	elif fire:
-		Audiomanager.play(\"res://assets/fire_damage.mp3\")
-	elif tearing > breach:
-		Audiomanager.play(\"res://assets/bullet_breach.mp3\")
-	else:
-		Audiomanager.play(\"res://assets/bullet_hit.mp3\")
+func damage(dmg, tearing, tagging):
+	
+	if tearing > breach and health - dmg > 0.1:
+		Audiomanager.play(\"res://assets/breach.mp3\")
 	
 	health = max(health - dmg, 0)
 	breach = max(breach, tearing)
@@ -684,6 +681,18 @@ func play_sound(sound : int):
 		audio.play()
 	elif sound == 5:
 		$Camera3D/AudioStreamPlayer3D2.play()
+	elif sound == 6:
+		audio.stream = preload(\"res://assets/bullet_headshot.mp3\")
+		audio.play()
+	elif sound == 7:
+		audio.stream = preload(\"res://assets/fire_damage.mp3\")
+		audio.play()
+	elif sound == 8:
+		audio.stream = preload(\"res://assets/breach.mp3\")
+		audio.play()
+	elif sound == 9:
+		audio.stream = preload(\"res://assets/bullet_hit.mp3\")
+		audio.play()
 
 
 
@@ -756,6 +765,8 @@ func set_armor(num : int):
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func die():
 	if is_multiplayer_authority():
+		Audiomanager.play(\"res://assets/death.mp3\")
+		
 		Gamemanager.local_player = null
 		hud.stop_progress(\"\")
 		if UiManager.active_menu != UiManager.spechud:
@@ -765,6 +776,9 @@ func die():
 		Gamemanager.add_child(freecam)
 		Gamemanager.freecam = freecam
 		freecam.global_transform = camera.global_transform
+	
+	if kill_contributors.has(multiplayer.get_unique_id()):
+		Audiomanager.play(\"res://assets/death.mp3\")
 	
 	death.emit(int(str(name)))
 	queue_free()

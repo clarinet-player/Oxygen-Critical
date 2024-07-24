@@ -16,7 +16,10 @@ func _input(event):
 	
 	if event is InputEventMouseMotion:
 		global_rotate(global_basis.x, event.relative.y * Settings.mouse_sensitivity * -0.001)
-		global_rotate(global_basis.y, event.relative.x * Settings.mouse_sensitivity * -0.001)
+		if Input.is_action_pressed(\"Shift\"):
+			global_rotate(global_basis.y, event.relative.x * Settings.mouse_sensitivity * -0.001)
+		else:
+			global_rotate(Vector3.UP, event.relative.x * Settings.mouse_sensitivity * -0.001)
 
 
 func _process(delta):
@@ -31,6 +34,9 @@ func _process(delta):
 		global_translate(global_basis.z * 10 * delta)
 	if Input.is_action_pressed(\"D\"):
 		global_translate(global_basis.x * 10 * delta)
+	
+	if Input.is_action_just_released(\"Shift\"):
+		look_at(global_position - global_basis.z)
 "
 
 [node name="Freecam" type="Camera3D"]

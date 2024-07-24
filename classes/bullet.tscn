@@ -62,15 +62,28 @@ func _physics_process(delta):
 					var multiplier = clamp(1 - ((dist_travelled - effective_range) / effective_range), 0, 1)
 					if _player.armor:
 						multiplier *= 1 - max(_player.armor.protection[_shape.area] - piercing, 0)
+					
 					if _player.armor and _player.armor.protection[_shape.area] > piercing:
 						tearing *= 0.8
 						tagging *= 0.8
-					_player.damage.rpc(mass[_shape.area] * multiplier, tearing, tagging, _shape.area == 1, false, _player.armor and _player.armor.protection[_shape.area] > piercing)
+					_player.damage.rpc(mass[_shape.area] * multiplier, tearing, tagging)
+					if !_player.kill_contributors.has(get_multiplayer_authority()):
+						_player.kill_contributors.append(get_multiplayer_authority())
+					
+					if _shape.area == 1:
+						_player.play_sound.rpc(6)
+					elif _player.armor != null and _player.armor.protection[_shape.area] > piercing:
+						_player.play_sound.rpc(8)
+					else:
+						_player.play_sound.rpc(9)
 				
 				var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
 				Gamemanager.add_child(blood)
 				blood.global_position = global_position
-				blood.look_at(global_position - velocity, velocity.cross(_normal))
+				if blood.global_basis.y.cross(-velocity).is_zero_approx():
+					blood.rotate(global_basis.x, acos(blood.global_basis.y.dot(-velocity.normalized())))
+				else:
+					blood.rotate(blood.global_basis.y.cross(-velocity).normalized(), acos(blood.global_basis.y.dot(-velocity.normalized())))
 				
 				queue_free()
 				return
