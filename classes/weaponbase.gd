@@ -196,6 +196,7 @@ func fire(pos : Vector3, velocity : Vector3):
 		_fire_time_ms = Time.get_ticks_msec()
 	
 	var _bullet = preload("res://classes/bullet.tscn").instantiate()
+	_bullet.set_multiplayer_authority(get_multiplayer_authority())
 	add_child(_bullet)
 	_bullet.look_at(pos + velocity)
 	_bullet.global_position = pos + velocity.normalized()

@@ -73,8 +73,8 @@ func _on_connect(id : int):
 	
 	# Syncing other players
 	for player in players:
-		if player[2] != null:
-			player[2].set_team.rpc_id(id, player[1])
+		if player.body != null:
+			player.body.set_team.rpc_id(id, player[1])
 	
 	
 	# Assigning player a team
@@ -86,9 +86,9 @@ func _on_connect(id : int):
 		elif player[1] == 2:
 			team2 += 1
 	if team1 > team2:
-		players.append([id, 2, null, Time.get_ticks_msec()])
+		players.append({\"id\": id, \"team\": 2, \"body\": null, \"ping\": 0, \"death_time\": Time.get_ticks_msec()})
 	else:
-		players.append([id, 1, null, Time.get_ticks_msec()])
+		players.append({\"id\": id, \"team\": 1, \"body\": null, \"ping\": 0, \"death_time\": Time.get_ticks_msec()})
 	
 	
 	sync_level.rpc_id(id, 1)
@@ -108,7 +108,7 @@ func _on_disconnect(id):
 		get_node(str(id)).die.rpc()
 	
 	for player in players:
-		if player[0] == id:
+		if player.id == id:
 			players.erase(player)
 #endregion
 
@@ -116,12 +116,12 @@ func _on_disconnect(id):
 
 func spawn_player(player):
 	var new_player = preload(\"res://classes/player.tscn\").instantiate()
-	new_player.name = str(player[0])
+	new_player.name = str(player.id)
 	add_child(new_player)
 	new_player.death.connect(on_death)
-	player[2] = new_player
+	player.body = new_player
 	await get_tree().create_timer(0.1).timeout
-	new_player.set_team.rpc(player[1])
+	new_player.set_team.rpc(player.team)
 
 
 
@@ -145,12 +145,12 @@ func _game_loop():
 			
 			# Respawn players
 			for player in players:
-				if player[2] == null and player[1] == 1 and c_spawns > 0 and Time.get_ticks_msec() - player[3] > 4000:
+				if player.body == null and player.team == 1 and c_spawns > 0 and Time.get_ticks_msec() - player.death_time > 4000:
 					c_spawns -= 1
 					spawn_player(player)
 					sync_scoreboard.rpc(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
 				
-				elif player[2] == null and player[1] == 2 and t_spawns > 0 and Time.get_ticks_msec() - player[3] > 4000:
+				elif player.body == null and player.team == 2 and t_spawns > 0 and Time.get_ticks_msec() - player.death_time > 4000:
 					t_spawns -= 1
 					spawn_player(player)
 					sync_scoreboard.rpc(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
@@ -178,9 +178,9 @@ func _game_loop():
 			var team1 := true
 			var team2 := true
 			for player in players:
-				if player[1] == 1 and player[2] != null:
+				if player.team == 1 and player.body != null:
 					team1 = false
-				elif player[1] == 2 and player[2] != null:
+				elif player.team == 2 and player.body != null:
 					team2 = false
 			if team2 and bombs.is_empty() and t_spawns < 1:
 				ui_message.rpc(1)
@@ -196,9 +196,9 @@ func _game_loop():
 			team1 = true
 			team2 = true
 			for player in players:
-				if player[1] == 1:
+				if player.team == 1:
 					team1 = false
-				elif player[1] == 2:
+				elif player.team == 2:
 					team2 = false
 			if team2:
 				ui_message.rpc(1)
@@ -224,8 +224,8 @@ func _game_loop():
 
 func on_death(id : int):
 	for player in players:
-		if player[0] == id:
-			player[3] = Time.get_ticks_msec()
+		if player.id == id:
+			player.death_time = Time.get_ticks_msec()
 			return
 
 

@@ -58,14 +58,6 @@ func _physics_process(delta):
 			if \"health\" in _shape.player:
 				var _player = _shape.player
 				
-				if owning_player == Gamemanager.local_player:
-					if _shape.area == 1:
-						Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
-					elif _player.armor and _player.armor.protection[_shape.area] > piercing:
-						Audiomanager.play(\"res://assets/bullet_armor.mp3\")
-					else:
-						Audiomanager.play(\"res://assets/bullet_hit.mp3\")
-				
 				if Gamemanager.mp_active and is_multiplayer_authority():
 					var multiplier = clamp(1 - ((dist_travelled - effective_range) / effective_range), 0, 1)
 					if _player.armor:
@@ -73,15 +65,12 @@ func _physics_process(delta):
 					if _player.armor and _player.armor.protection[_shape.area] > piercing:
 						tearing *= 0.8
 						tagging *= 0.8
-					_player.damage(mass[_shape.area] * multiplier, tearing, tagging, _shape.area == 1, false, _player.armor and _player.armor.protection[_shape.area] > piercing)
+					_player.damage.rpc(mass[_shape.area] * multiplier, tearing, tagging, _shape.area == 1, false, _player.armor and _player.armor.protection[_shape.area] > piercing)
 				
 				var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
 				Gamemanager.add_child(blood)
 				blood.global_position = global_position
-				if blood.global_basis.y.cross(-velocity).is_zero_approx():
-					blood.rotate(global_basis.x, acos(blood.global_basis.y.dot(-velocity.normalized())))
-				else:
-					blood.rotate(blood.global_basis.y.cross(-velocity).normalized(), acos(blood.global_basis.y.dot(-velocity.normalized())))
+				blood.look_at(global_position - velocity, velocity.cross(_normal))
 				
 				queue_free()
 				return

@@ -362,23 +362,21 @@ func _process(delta):
 
 #region Physics Frame
 func _physics_process(delta : float):
-	if !Gamemanager.mp_active or is_multiplayer_authority():
-		health -= breach * delta
-		tagged = max(tagged - delta * max(0.4 * tagged, 0.2), 0)
-		if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):
-			health -= 100 * delta
-		hud.set_health(health)
-		if !Gamemanager.mp_active and health < 0.1:
-			die()
 	
-	else:
+	if Gamemanager.mp_active and !is_multiplayer_authority():
 		global_translate(velocity * delta)
-		health -= breach * delta
-		if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):
-			health -= 100 * delta
-		if health < 0.1:
-			die.rpc()
 		return
+	
+	
+	health -= breach * delta
+	if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):
+		health -= 100 * delta
+	hud.set_health(health)
+	
+	if health < 0.1:
+		die.rpc()
+	
+	tagged = max(tagged - delta * max(0.4 * tagged, 0.2), 0)
 	
 	
 	if breach > 0 and Time.get_ticks_msec() - warning_time > 750:
@@ -434,7 +432,7 @@ func _physics_process(delta : float):
 			var _raycast = _space.intersect_ray(_ray)
 			
 			if !_raycast.is_empty():
-				if Time.get_ticks_msec() - sound_time > 400 or _anchored_shape:
+				if Time.get_ticks_msec() - sound_time > 200 or _anchored_shape:
 					sound_time = Time.get_ticks_msec()
 					play_sound.rpc(3)
 				detach()
@@ -642,26 +640,23 @@ func get_velocity() -> Vector3:
 
 
 
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
 func damage(dmg, tearing, tagging, headshot = false, fire = false, armor = false):
-	if !Gamemanager.mp_active:
-		if headshot:
-			Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
-		elif fire:
-			Audiomanager.play(\"res://assets/fire_damage.mp3\")
-		elif tearing > breach:
-			Audiomanager.play(\"res://assets/bullet_breach.mp3\")
-		else:
-			Audiomanager.play(\"res://assets/bullet_hit.mp3\")
-		warning_time = Time.get_ticks_msec() - 250
+	if headshot:
+		Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
+	elif fire:
+		Audiomanager.play(\"res://assets/fire_damage.mp3\")
+	elif tearing > breach:
+		Audiomanager.play(\"res://assets/bullet_breach.mp3\")
+	else:
+		Audiomanager.play(\"res://assets/bullet_hit.mp3\")
 	
 	health = max(health - dmg, 0)
 	breach = max(breach, tearing)
 	tagged = max(tagged, tagging)
-	if dmg > 0:
-		set_health.rpc_id(int(str(name)), health, breach, tagged, true, headshot, fire, armor)
-	else:
-		set_health.rpc_id(int(str(name)), health, breach, tagged, false, headshot, fire, armor)
+	
 	damaged.emit()
+	warning_time = Time.get_ticks_msec() - 250
 
 
 
@@ -672,16 +667,7 @@ func flash(pos : Vector3):
 
 
 
-@rpc(\"authority\", \"call_remote\", \"reliable\")
-func heal(healing, tearing, tagging):
-	health = min(health + healing, 100)
-	if tearing:
-		breach = 0
-	tagged = max(tagged - tagging, 0)
-
-
-
-@rpc(\"authority\", \"call_local\", \"unreliable\")
+@rpc(\"any_peer\", \"call_local\", \"unreliable\")
 func play_sound(sound : int):
 	audio.pitch_scale = randf_range(0.95, 1.05)
 	if sound == 1:
@@ -764,29 +750,6 @@ func set_armor(num : int):
 		armor = load(\"res://weapons/armor/assault_armor.tres\")
 	elif num == 3:
 		armor = load(\"res://weapons/armor/heavy_armor.tres\")
-
-
-
-@rpc(\"any_peer\", \"call_remote\", \"reliable\")
-func set_health(new_health : float, new_breach : float, new_tagged : float, damage : bool, headshot : bool, fire : bool, armor : bool):
-	if damage:
-		damaged.emit()
-		if headshot:
-			Audiomanager.play(\"res://assets/bullet_headshot.mp3\")
-		elif fire:
-			Audiomanager.play(\"res://assets/fire_damage.mp3\")
-		elif armor:
-			Audiomanager.play(\"res://assets/bullet_armor.mp3\")
-		else:
-			Audiomanager.play(\"res://assets/bullet_hit.mp3\")
-	
-	health = new_health
-	breach = new_breach
-	tagged = new_tagged
-	
-	hud.set_health(health)
-	
-	warning_time = Time.get_ticks_msec() - 250
 
 
 

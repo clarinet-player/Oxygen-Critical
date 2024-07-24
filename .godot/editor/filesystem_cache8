@@ -1,8 +1,8 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1721701626
+::res://::1721772124
 default_bus_layout.tres::AudioBusLayout::2643845262476249347::1717716591::0::1::::<><>::
-export_presets.cfg::TextFile::-1::1721701297::0::1::::<><>::
-::res://assets/::1721701092
+export_presets.cfg::TextFile::-1::1721701645::0::1::::<><>::
+::res://assets/::1721701647
 10_m_Air_Rifle_target.svg.png::CompressedTexture2D::2537508927825535489::1712802479::1712803765::1::::<><>::
 1911-reload-6248.mp3::AudioStreamMP3::6287606057257744826::1717950022::1717950024::1::::<><>::
 a.png::CompressedTexture2D::7053270614787229952::1719272352::1719272635::1::::<><>::
@@ -31,9 +31,9 @@ d.png::CompressedTexture2D::1268740549883842865::1719273695::1719273766::1::::<>
 defuse.mp3::AudioStreamMP3::7250172193898761197::1720553247::1720553248::1::::<><>::
 e.png::CompressedTexture2D::7526927297391683624::1719273762::1719273766::1::::<><>::
 emp_blast.mp3::AudioStreamMP3::5501981831341843897::1721677328::1721677328::1::::<><>::
-fire2.tres::StandardMaterial3D::1842368274949810059::1721701092::0::1::::<><>::
+fire2.tres::StandardMaterial3D::1842368274949810059::1721701647::0::1::::<><>::
 fire.mp3::AudioStreamMP3::6874582291032759211::1720392591::1720392591::1::::<><>::
-fire.tres::StandardMaterial3D::8805500754709806764::1721701092::0::1::::<><>::
+fire.tres::StandardMaterial3D::8805500754709806764::1721701647::0::1::::<><>::
 fire_damage.mp3::AudioStreamMP3::7786781564503576637::1720392591::1720392591::1::::<><>::
 flash.png::CompressedTexture2D::8693204538450397779::1720413547::1720413585::1::::<><>::
 footstep_sfx_1.mp3::AudioStreamMP3::4453631898608927094::1717949136::1717949136::1::::<><>::
@@ -53,7 +53,7 @@ ink-303244_1920.png::CompressedTexture2D::6461241233667623243::1717100459::17171
 metal2.jpg::CompressedTexture2D::6997138037676137017::1717042670::1717042700::1::::<><>::
 metal.jpg::CompressedTexture2D::3386976898660459975::1718225982::1718225988::1::::<><>::
 metal.tres::StandardMaterial3D::89060006063723307::1720026475::0::1::::<><>::uid://boixaq7472djr::::res://assets/metal.jpg
-metal_walls.tres::StandardMaterial3D::7689760101664817633::1721701092::0::1::::<><>::uid://c41i6fxrb8j4d::::res://assets/pexels-scottwebb-2117937.jpg<>uid://05ddnnkibkgu::::res://assets/Untitled.png
+metal_walls.tres::StandardMaterial3D::7689760101664817633::1721701647::0::1::::<><>::uid://c41i6fxrb8j4d::::res://assets/pexels-scottwebb-2117937.jpg<>uid://05ddnnkibkgu::::res://assets/Untitled.png
 pexels-scottwebb-2117937.jpg::CompressedTexture2D::6862533048970178169::1717544709::1717544757::1::::<><>::
 pikachu.png::CompressedTexture2D::2987508511258098730::1706320626::1717555351::1::::<><>::
 redplayers.png::CompressedTexture2D::1636490978529827905::1720040634::1720071394::1::::<><>::
@@ -106,8 +106,8 @@ scoreboard.tscn::PackedScene::6670915828860905461::1721701326::0::1::::<><>::uid
 settings menu.tscn::PackedScene::3279499615582436139::1721701325::0::1::::<><>::
 spectator hud.tscn::PackedScene::4159546957078101877::1721701326::0::1::::<><>::
 ::res://weapons/::1721327743
-::res://weapons/ak12/::1721701325
-ak12.tscn::PackedScene::6057950990840864630::1721701325::0::1::::<><>::uid://bvrbi4j40jude::::res://weapons/ak12/ak_sfx_1.mp3<>res://classes/weaponbase.gd
+::res://weapons/ak12/::1721701647
+ak12.tscn::PackedScene::6057950990840864630::1721701647::0::1::::<><>::uid://bvrbi4j40jude::::res://weapons/ak12/ak_sfx_1.mp3<>res://classes/weaponbase.gd
 ak drop.tscn::PackedScene::3076172708515409220::1717472135::0::1::::<><>::
 ak_sfx_1.mp3::AudioStreamMP3::3895557363686609522::1716937155::1721327723::1::::<><>::
 ::res://weapons/armor/::1721695469
@@ -146,4 +146,4 @@ tape.tscn::PackedScene::3159813786562989347::1721701326::0::1::::<><>::
 smg_sfx_1.mp3::AudioStreamMP3::6971798867161072048::1716937186::1721327723::1::::<><>::
 vector drop.tscn::PackedScene::4819068018828275688::1717472158::0::1::::<><>::
 vector.tscn::PackedScene::1985506697532872956::1721701326::0::1::::<><>::uid://c6lgrkd5m54lw::::res://weapons/vector/smg_sfx_1.mp3<>res://classes/weaponbase.gd
-::res://windows/::1721701315
+::res://windows/::1721701661

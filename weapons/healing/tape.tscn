@@ -4,7 +4,7 @@
 script/source = "extends Node3D
 
 
-const use_time := 1600
+const use_time := 1600.0
 const weight := 1.2
 
 var in_use := false
@@ -31,7 +31,7 @@ func _ready():
 		if player.breach > 0:
 			in_use = true
 			start_time = Time.get_ticks_msec()
-			hud.start_progress(1.6, \"healing\")
+			hud.start_progress(use_time / 1000, \"healing\")
 		
 		player.damaged.connect(_cancel)
 
@@ -49,12 +49,9 @@ func _physics_process(delta):
 	if Gamemanager.mp_active and !is_multiplayer_authority():
 		return
 	
-	if Gamemanager.mp_active and in_use and Time.get_ticks_msec() - start_time > use_time - 50:
-		player.heal.rpc_id(1, 0.0, true, 0.0)
-	
 	if in_use and Time.get_ticks_msec() - start_time > use_time:
 		in_use = false
-		player.heal(0.0, true, 0.0)
+		player.breach = 0
 		get_parent().remove_child(self)
 		player.active_item = null
 

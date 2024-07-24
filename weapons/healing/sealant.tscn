@@ -8,7 +8,7 @@ const item_id := 5
 const inventory_size := 1
 const weight := 0.5
 
-const use_time := 500
+const use_time := 500.0
 
 var in_use := false
 var start_time := 0
@@ -34,7 +34,7 @@ func _ready():
 		if player.breach > 0:
 			in_use = true
 			start_time = Time.get_ticks_msec()
-			hud.start_progress(0.5, \"healing\")
+			hud.start_progress(use_time / 1000, \"healing\")
 		
 		player.damaged.connect(_cancel)
 
@@ -56,14 +56,13 @@ func _physics_process(delta):
 	if Input.is_action_pressed(\"Mouse1\") and !in_use and player.breach > 0 and !UiManager.paused:
 		in_use = true
 		start_time = Time.get_ticks_msec()
-		hud.start_progress(0.5, \"healing\")
+		hud.start_progress(use_time / 1000, \"healing\")
 	
-	if DisplayServer.get_name() == \"headless\" and in_use and Time.get_ticks_msec() - start_time > use_time - 50:
-		player.heal.rpc_id(1, 10.0, true, 1.0)
 	
 	if in_use and Time.get_ticks_msec() - start_time > use_time:
 		in_use = false
-		player.heal(10.0, true, 1.0)
+		player.breach = 0
+		player.health = min(100, player.health + 10)
 
 
 
