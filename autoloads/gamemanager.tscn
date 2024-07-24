@@ -81,9 +81,9 @@ func _on_connect(id : int):
 	var team1 := 0
 	var team2 := 0
 	for player in players:
-		if player[1] == 1:
+		if player.team == 1:
 			team1 += 1
-		elif player[1] == 2:
+		elif player.team == 2:
 			team2 += 1
 	if team1 > team2:
 		players.append({\"id\": id, \"team\": 2, \"body\": null, \"ping\": 0, \"death_time\": Time.get_ticks_msec()})
