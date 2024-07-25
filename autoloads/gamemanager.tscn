@@ -372,8 +372,8 @@ func take_objective(site : int):
 	objectives[site][2] = 1
 	for player in get_tree().get_nodes_in_group(\"Players\"):
 		if int(str(player.name)) == multiplayer.get_remote_sender_id():
-			player.body.carrying_objective = true
-			player.body.objective_index = site
+			player.carrying_objective = true
+			player.objective_index = site
 			break
 
 
