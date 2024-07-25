@@ -78,7 +78,7 @@ func _on_connect(id : int):
 	# Syncing other players
 	for player in players:
 		if player.body != null:
-			player.body.set_team.rpc_id(id, player[1])
+			player.body.set_team.rpc_id(id, player.team)
 	
 	
 	# Assigning player a team
@@ -401,13 +401,13 @@ func reset():
 @rpc(\"any_peer\", \"call_remote\", \"reliable\")
 func switch_team():
 	for player in players:
-		if player[0] == multiplayer.get_remote_sender_id():
-			if player[1] == 1:
-				player[1] = 2
+		if player.id == multiplayer.get_remote_sender_id():
+			if player.team == 1:
+				player.team = 2
 			else:
-				player[1] = 1
-			if player[2] != null:
-				player[2].die.rpc()
+				player.team = 1
+			if player.body != null:
+				player.body.die.rpc()
 			break
 "
 

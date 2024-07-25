@@ -799,6 +799,9 @@ func die():
 	if kill_contributors.has(multiplayer.get_unique_id()):
 		Audiomanager.play(\"res://assets/death.mp3\")
 	
+	if carrying_objective:
+		Gamemanager.objectives[objective_index][2] = 0
+	
 	death.emit(int(str(name)))
 	queue_free()
 "
