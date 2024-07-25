@@ -1,12 +1,12 @@
+MeshInstance3D
+CollisionShape3D
+StaticBody3D
 Node3D
 Marker3D
 DirectionalLight3D
 Decal
-StaticBody3D
 VBoxContainer
-MeshInstance3D
 HBoxContainer
-CollisionShape3D
 RigidBody3D
 OmniLight3D
 GPUParticles3D

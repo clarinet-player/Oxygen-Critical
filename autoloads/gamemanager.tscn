@@ -18,6 +18,7 @@ var round_running := false
 
 var gravity := Vector3.ZERO
 var playable_area : AABB
+var spawn_areas : Array
 var objectives : Array
 var time_bonuses : Array
 var bombs : Array
@@ -34,7 +35,7 @@ func _ready():
 	if DisplayServer.get_name() == \"headless\":
 		
 		mp_active = true
-		sync_level(1)
+		sync_level(2)
 		
 		await get_tree().create_timer(0.1).timeout
 		
@@ -91,7 +92,7 @@ func _on_connect(id : int):
 		players.append({\"id\": id, \"team\": 1, \"body\": null, \"ping\": 0, \"death_time\": Time.get_ticks_msec()})
 	
 	
-	sync_level.rpc_id(id, 1)
+	sync_level.rpc_id(id, 2)
 	
 	if round_running:
 		sync_scoreboard.rpc_id(id, Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
@@ -261,6 +262,8 @@ func find_spawnpoint(exclude, player_team):
 func sync_level(level : int):
 	if level == 1:
 		get_tree().change_scene_to_file(\"res://scenes/somnambulist 2.0.tscn\")
+	if level == 2:
+		get_tree().change_scene_to_file(\"res://scenes/wingman.tscn\")
 	
 	if DisplayServer.get_name() != \"headless\":
 		var cam = preload(\"res://classes/freecam.tscn\").instantiate()
@@ -349,8 +352,7 @@ func plant_bomb(type : int, pos : Vector3, facing : Vector3, normal : Vector3, s
 	
 	objectives[site][2] = 1
 	
-	if mp_active: #and time_bonuses[site]:
-		#time_bonuses[site] = false
+	if mp_active:
 		round_start_time = max(Time.get_ticks_msec() - 120000, round_start_time + 10000)
 
 
@@ -362,7 +364,16 @@ func defuse_bomb(site : int):
 			bomb.defuse()
 			bombs.erase(bomb)
 			objectives[site][2] = 0
-			break
+
+
+
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
+func take_objective(site : int):
+	objectives[site][2] = 1
+	for player in players:
+		if player.id == multiplayer.get_remote_sender_id() and player.body != null:
+			player.body.carrying_objective = true
+			player.body.objective_index = site
 
 
 
