@@ -32,7 +32,7 @@ func set_team(team : int):
 
 
 func set_objective(vis : bool):
-	$Objective.hide
+	$Objective.visible = vis
 
 
 

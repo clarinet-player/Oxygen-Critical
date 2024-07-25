@@ -16,6 +16,9 @@ var players := Array()
 var game_running := false
 var round_running := false
 
+var round_time := 150000
+var respawn_time := 5000
+
 var gravity := Vector3.ZERO
 var playable_area : AABB
 var spawn_areas : Array
@@ -146,19 +149,19 @@ func _game_loop():
 			
 			# Respawn players
 			for player in players:
-				if player.body == null and player.team == 1 and c_spawns > 0 and Time.get_ticks_msec() - player.death_time > 4000:
+				if player.body == null and player.team == 1 and c_spawns > 0 and Time.get_ticks_msec() - player.death_time > respawn_time:
 					c_spawns -= 1
 					spawn_player(player)
 					sync_scoreboard.rpc(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
 				
-				elif player.body == null and player.team == 2 and t_spawns > 0 and Time.get_ticks_msec() - player.death_time > 4000:
+				elif player.body == null and player.team == 2 and t_spawns > 0 and Time.get_ticks_msec() - player.death_time > respawn_time:
 					t_spawns -= 1
 					spawn_player(player)
 					sync_scoreboard.rpc(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
 			
 			
 			# Out of time
-			if Time.get_ticks_msec() - round_start_time > 150000:
+			if Time.get_ticks_msec() - round_start_time > round_time:
 				ui_message.rpc(1)
 				print(\"Round end. Out of time.\")
 				round_running = false
@@ -370,6 +373,10 @@ func defuse_bomb(site : int):
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func take_objective(site : int):
 	objectives[site][2] = 1
+	
+	if mp_active:
+		round_start_time = max(Time.get_ticks_msec() - 120000, round_start_time + 10000)
+	
 	for player in get_tree().get_nodes_in_group(\"Players\"):
 		if int(str(player.name)) == multiplayer.get_remote_sender_id():
 			player.carrying_objective = true

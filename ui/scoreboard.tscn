@@ -10,7 +10,7 @@ script/source = "extends Control
 
 func _process(delta):
 	
-	var time_left = 150 - (Time.get_ticks_msec() - Gamemanager.round_start_time) / 1000
+	var time_left = (Gamemanager.round_time - (Time.get_ticks_msec() - Gamemanager.round_start_time)) / 1000.0
 	var minutes = int(time_left / 60)
 	
 	if time_left < 0 or Gamemanager.round_start_time == -1:

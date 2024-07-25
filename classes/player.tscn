@@ -322,10 +322,10 @@ func _process(delta):
 		hud.stop_progress(\"Objective\")
 	if using_objective and team == 2:
 		var time = Time.get_ticks_msec() - beep_time
-		if Gamemanager.objectives[objective_index][0] == 2 and (Time.get_ticks_msec() - objective_time > 8000 and time > 300) or time > 600:
+		if Gamemanager.objectives[objective_index][0] == 2 and ((Time.get_ticks_msec() - objective_time > 8000 and time > 300) or time > 600):
 			beep_time = Time.get_ticks_msec()
 			play_sound.rpc(5)
-		elif Gamemanager.objectives[objective_index][0] == 3 and Time.get_ticks_msec() - objective_time < 7700 and (Time.get_ticks_msec() - objective_time > 5000 and time > 300) or time > 600:
+		elif Gamemanager.objectives[objective_index][0] == 3 and Time.get_ticks_msec() - objective_time < 7800 and ((Time.get_ticks_msec() - objective_time > 5000 and time > 300) or time > 600):
 			beep_time = Time.get_ticks_msec()
 			play_sound.rpc(5)
 	

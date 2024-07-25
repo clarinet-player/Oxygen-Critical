@@ -27,6 +27,8 @@ func _ready():
 		[1, AABB(Vector3(16.5, -1, -7.5), Vector3(14, 6, 14)), 0],
 		[3, AABB(Vector3(-22, 3, -13.8), Vector3(3, 3, 3)), 0]
 	]
+	Gamemanager.respawn_time = 6000
+	Gamemanager.round_time = 90000
 	
 	if !Gamemanager.mp_active:
 		spawn_player(1)
@@ -383,7 +385,7 @@ rings = 3
 
 [sub_resource type="Skin" id="Skin_dduvt"]
 
-[node name="Wingman" type="Node3D"]
+[node name="Wingman" type="Node3D" groups=["Levels"]]
 script = SubResource("GDScript_hs3at")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -1251,7 +1253,7 @@ team = 1
 [node name="GPUParticles3D" type="GPUParticles3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.844425, 3.56483, -4.15953)
 cast_shadow = 0
-amount = 3000
+amount = 1500
 lifetime = 20.0
 preprocess = 10.0
 fixed_fps = 60
