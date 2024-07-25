@@ -645,7 +645,7 @@ func get_velocity() -> Vector3:
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func damage(dmg, tearing, tagging):
 	
-	if tearing > breach and health - dmg > 0.1:
+	if is_multiplayer_authority() and tearing > breach and health - dmg > 0.1:
 		Audiomanager.play(\"res://assets/breach.mp3\")
 	
 	health = max(health - dmg, 0)
@@ -688,7 +688,7 @@ func play_sound(sound : int):
 		audio.stream = preload(\"res://assets/fire_damage.mp3\")
 		audio.play()
 	elif sound == 8:
-		audio.stream = preload(\"res://assets/breach.mp3\")
+		audio.stream = preload(\"res://assets/bullet_armor.mp3\")
 		audio.play()
 	elif sound == 9:
 		audio.stream = preload(\"res://assets/bullet_hit.mp3\")

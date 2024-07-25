@@ -1,4 +1,6 @@
+Node3D
 Marker3D
+DirectionalLight3D
 Decal
 StaticBody3D
 VBoxContainer
@@ -9,6 +11,4 @@ RigidBody3D
 OmniLight3D
 GPUParticles3D
 AudioStreamPlayer3D
-Node3D
 FogVolume
-DirectionalLight3D

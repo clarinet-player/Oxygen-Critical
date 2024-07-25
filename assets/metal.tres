@@ -6,4 +6,5 @@
 albedo_color = Color(0.788235, 0.788235, 0.788235, 1)
 albedo_texture = ExtResource("1_tt7na")
 metallic = 0.4
+roughness = 0.84
 roughness_texture = ExtResource("1_tt7na")
