@@ -1,8 +1,8 @@
+Marker3D
 MeshInstance3D
 CollisionShape3D
 StaticBody3D
 Node3D
-Marker3D
 DirectionalLight3D
 Decal
 VBoxContainer

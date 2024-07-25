@@ -216,7 +216,7 @@ func _process(delta):
 		hud.set_hud_anchor(0, 0)
 	
 	
-	if Input.is_action_just_pressed(\"B\") and !UiManager.paused and Time.get_ticks_msec() - spawn_time < 10000:
+	if Input.is_action_just_pressed(\"B\") and !UiManager.paused and Time.get_ticks_msec() - spawn_time < 20000 and ((team == 1 and Gamemanager.spawn_areas[0].has_point(global_position)) or (team == 2 and Gamemanager.spawn_areas[1].has_point(global_position))):
 		UiManager.set_ui(4)
 	
 	
