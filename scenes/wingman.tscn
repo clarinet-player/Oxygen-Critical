@@ -21,7 +21,7 @@ func _ready():
 	Settings.settings_changed.connect(_load_settings)
 	_load_settings()
 	
-	Gamemanager.playable_area = AABB(Vector3(-30, -1, -25), Vector3(60, 8, 42))
+	Gamemanager.playable_area = AABB(Vector3(-30, -1, -25), Vector3(60, 9, 42))
 	Gamemanager.spawn_areas = [AABB(Vector3(-6.5, 5, 4.5), Vector3(10, 3, 10)), AABB(Vector3(5.5, -1, 6.3), Vector3(10, 3, 10))]
 	Gamemanager.objectives = [
 		[1, AABB(Vector3(16.5, -1, -7.5), Vector3(14, 6, 14)), 0],
@@ -79,7 +79,8 @@ volumetric_fog_temporal_reprojection_enabled = false
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_15rqi"]
 albedo_texture = ExtResource("3_8ns53")
-metallic = 0.55
+metallic = 0.61
+roughness = 0.51
 roughness_texture = ExtResource("3_8ns53")
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_dogfo"]
@@ -210,17 +211,15 @@ func _process(delta):
 	
 "
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aegvl"]
-resource_name = "Material"
-cull_mode = 2
-albedo_color = Color(0.906332, 0.906332, 0.906332, 1)
-roughness = 0.5
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_3vp4s"]
+points = PackedVector3Array(-0.7, 0, -0.604072, -0.604072, 0, -0.7, -0.7, 0, 0.603935, -0.7, 2.30392, -0.604072, 0.603935, 0, -0.7, -0.604072, 2.30392, -0.7, -0.604072, 0, 0.699863, -0.7, 2.30392, 0.603935, -0.604072, 2.4, -0.604072, 0.699863, 0, -0.604072, 0.603935, 2.30392, -0.7, 0.603935, 0, 0.699863, -0.604072, 2.30392, 0.699863, -0.604072, 2.4, 0.603935, 0.603935, 2.4, -0.604072, 0.699863, 0, 0.603935, 0.699863, 2.30392, -0.604072, 0.603935, 2.30392, 0.699863, 0.603935, 2.4, 0.603935, 0.699863, 2.30392, 0.603935)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_w6hgl"]
-resource_name = "Material.001"
-cull_mode = 2
-albedo_color = Color(0.906332, 0.906332, 0.906332, 1)
-roughness = 0.5
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fi7p7"]
+albedo_color = Color(0.188235, 0.188235, 0.188235, 1)
+metallic_specular = 1.0
+roughness = 0.3
+emission_enabled = true
+emission = Color(0, 0.372549, 0, 1)
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_d82ih"]
 _surfaces = [{
@@ -257,7 +256,7 @@ _surfaces = [{
 "index_count": 138,
 "index_data": PackedByteArray(20, 0, 44, 0, 40, 0, 34, 0, 20, 0, 40, 0, 55, 0, 6, 0, 65, 0, 59, 0, 71, 0, 74, 0, 72, 0, 61, 0, 79, 0, 52, 0, 64, 0, 81, 0, 14, 0, 7, 0, 4, 0, 49, 0, 33, 0, 30, 0, 19, 0, 3, 0, 57, 0, 39, 0, 78, 0, 60, 0, 43, 0, 67, 0, 53, 0, 29, 0, 77, 0, 48, 0, 84, 0, 72, 0, 79, 0, 63, 0, 50, 0, 68, 0, 5, 0, 54, 0, 2, 0, 73, 0, 87, 0, 48, 0, 0, 0, 25, 0, 36, 0, 69, 0, 82, 0, 90, 0, 75, 0, 70, 0, 91, 0, 88, 0, 86, 0, 76, 0, 47, 0, 18, 0, 32, 0, 47, 0, 1, 0, 18, 0, 59, 0, 74, 0, 28, 0, 24, 0, 4, 0, 35, 0, 56, 0, 42, 0, 17, 0, 56, 0, 66, 0, 42, 0, 5, 0, 2, 0, 37, 0, 51, 0, 41, 0, 45, 0, 51, 0, 80, 0, 41, 0, 63, 0, 68, 0, 13, 0, 79, 0, 16, 0, 84, 0, 79, 0, 8, 0, 16, 0, 58, 0, 31, 0, 38, 0, 58, 0, 27, 0, 31, 0, 21, 0, 4, 0, 24, 0, 21, 0, 14, 0, 4, 0, 26, 0, 87, 0, 23, 0, 26, 0, 48, 0, 87, 0, 22, 0, 83, 0, 15, 0, 22, 0, 85, 0, 83, 0, 46, 0, 25, 0, 0, 0, 64, 0, 10, 0, 81, 0, 62, 0, 4, 0, 9, 0, 62, 0, 11, 0, 4, 0, 6, 0, 12, 0, 65, 0, 75, 0, 91, 0, 89, 0),
 "lods": [1.20111, PackedByteArray(20, 0, 103, 0, 113, 0, 34, 0, 20, 0, 113, 0, 106, 0, 94, 0, 108, 0, 94, 0, 102, 0, 115, 0, 94, 0, 87, 0, 23, 0, 56, 0, 108, 0, 105, 0, 56, 0, 105, 0, 17, 0, 111, 0, 87, 0, 100, 0, 100, 0, 98, 0, 0, 0, 29, 0, 77, 0, 100, 0, 100, 0, 32, 0, 29, 0, 101, 0, 18, 0, 32, 0, 101, 0, 92, 0, 18, 0, 18, 0, 92, 0, 57, 0, 107, 0, 111, 0, 99, 0, 107, 0, 110, 0, 111, 0, 110, 0, 107, 0, 79, 0, 114, 0, 110, 0, 79, 0, 79, 0, 95, 0, 114, 0, 104, 0, 95, 0, 79, 0, 95, 0, 104, 0, 109, 0, 58, 0, 99, 0, 31, 0, 58, 0, 31, 0, 112, 0, 22, 0, 85, 0, 114, 0, 22, 0, 114, 0, 97, 0, 96, 0, 54, 0, 93, 0, 69, 0, 82, 0, 90, 0, 75, 0, 70, 0, 91, 0, 75, 0, 91, 0, 89, 0, 88, 0, 86, 0, 76, 0)],
-"material": SubResource("StandardMaterial3D_aegvl"),
+"material": ExtResource("3_7tlhp"),
 "name": "Material",
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
@@ -270,7 +269,7 @@ _surfaces = [{
 "index_count": 30,
 "index_data": PackedByteArray(2, 0, 1, 0, 0, 0, 2, 0, 3, 0, 1, 0, 1, 0, 5, 0, 0, 0, 1, 0, 4, 0, 5, 0, 0, 0, 6, 0, 2, 0, 0, 0, 5, 0, 6, 0, 2, 0, 7, 0, 3, 0, 2, 0, 6, 0, 7, 0, 3, 0, 4, 0, 1, 0, 3, 0, 7, 0, 4, 0),
 "lods": [0.0228007, PackedByteArray(6, 0, 4, 0, 5, 0, 6, 0, 3, 0, 4, 0, 3, 0, 7, 0, 4, 0, 6, 0, 7, 0, 3, 0)],
-"material": SubResource("StandardMaterial3D_w6hgl"),
+"material": SubResource("StandardMaterial3D_fi7p7"),
 "name": "Material.001",
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
@@ -366,7 +365,7 @@ size = Vector3(2.2, 2.2, 0.02)
 lifetime_randomness = 0.25
 emission_shape_offset = Vector3(-2, 0, 0)
 emission_shape = 3
-emission_box_extents = Vector3(30, 4, 10)
+emission_box_extents = Vector3(30, 4, 20)
 spread = 90.0
 initial_velocity_max = 0.3
 gravity = Vector3(0, 0, 0)
@@ -526,11 +525,6 @@ size = Vector3(14.1952, 0.00714111, 14.146)
 texture_albedo = ExtResource("4_o2qkk")
 texture_orm = ExtResource("6_hufdc")
 
-[node name="Cube_002" type="MeshInstance3D" parent="Objectives"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -19.1076, 2.99956, -12.5893)
-mesh = SubResource("ArrayMesh_hc204")
-skeleton = NodePath("")
-
 [node name="Sprite3D2" type="Sprite3D" parent="Objectives"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.3746, 4.4151, -12.6433)
 pixel_size = 0.0003
@@ -540,6 +534,22 @@ fixed_size = true
 alpha_cut = 1
 texture = ExtResource("8_1nfpf")
 script = SubResource("GDScript_ycngj")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Objectives"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Objectives/StaticBody3D"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -19.1076, 2.99956, -12.5893)
+shape = SubResource("ConvexPolygonShape3D_3vp4s")
+
+[node name="Cube_002" type="MeshInstance3D" parent="Objectives/StaticBody3D"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -19.1076, 2.99956, -12.5893)
+mesh = SubResource("ArrayMesh_hc204")
+skeleton = NodePath("")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Objectives/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.523, 4.11467, -12.616)
+light_color = Color(0, 0.156863, 0, 1)
+omni_range = 4.0
 
 [node name="Obstacles" type="Node3D" parent="."]
 
@@ -1230,6 +1240,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.08471, 0, 13.0363)
 facing = Vector3(-1, 0, 0)
 team = 2
 
+[node name="Spawnpoint9" parent="Spawnpoints" instance=ExtResource("11_oa0ib")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5876, 0, 11.3384)
+facing = Vector3(-1, 0, 0)
+team = 2
+
 [node name="Spawnpoint5" parent="Spawnpoints" instance=ExtResource("11_oa0ib")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0716772, 6.19482, 7.87333)
 facing = Vector3(0, 0, -1)
@@ -1250,10 +1265,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.94089, 6.19482, 10.947)
 facing = Vector3(0, 0, -1)
 team = 1
 
+[node name="Spawnpoint10" parent="Spawnpoints" instance=ExtResource("11_oa0ib")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.39666, 6.19482, 9.41895)
+facing = Vector3(0, 0, -1)
+team = 1
+
 [node name="GPUParticles3D" type="GPUParticles3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.844425, 3.56483, -4.15953)
 cast_shadow = 0
-amount = 1500
+amount = 800
 lifetime = 20.0
 preprocess = 10.0
 fixed_fps = 60

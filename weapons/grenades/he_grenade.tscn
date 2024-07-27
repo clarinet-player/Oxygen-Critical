@@ -256,7 +256,7 @@ draw_skin = SubResource("Skin_j3ngg")
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
 light_color = Color(1, 0.796078, 0.407843, 1)
 light_energy = 0.0
-light_volumetric_fog_energy = 2.0
+light_volumetric_fog_energy = 3.0
 shadow_enabled = true
 omni_range = 15.0
 omni_shadow_mode = 0

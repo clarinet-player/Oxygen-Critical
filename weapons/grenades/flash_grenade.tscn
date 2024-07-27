@@ -54,7 +54,7 @@ func _physics_process(delta):
 		audio.volume_db = 0.0
 		audio.play()
 		
-		light.light_energy = 18
+		light.light_energy = 16
 		
 		var _smoke = preload(\"res://classes/smoke.tscn\").instantiate()
 		_smoke.size = Vector3(0.2, 0.2, 0.2)
@@ -145,7 +145,7 @@ stream = SubResource("AudioStreamWAV_xsp0b")
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
 light_color = Color(1, 0.976471, 0.929412, 1)
 light_energy = 0.0
-light_volumetric_fog_energy = 2.0
+light_volumetric_fog_energy = 2.5
 shadow_enabled = true
 omni_range = 15.0
 omni_shadow_mode = 0

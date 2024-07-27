@@ -1,14 +1,14 @@
+OmniLight3D
+StaticBody3D
 Marker3D
 MeshInstance3D
 CollisionShape3D
-StaticBody3D
 Node3D
 DirectionalLight3D
 Decal
 VBoxContainer
 HBoxContainer
 RigidBody3D
-OmniLight3D
 GPUParticles3D
 AudioStreamPlayer3D
 FogVolume

@@ -87,10 +87,10 @@ func _load_settings():
 
 
 func _process(delta):
-	if Time.get_ticks_msec() > _fire_time_ms + 35:
+	if Time.get_ticks_msec() > _fire_time_ms + _firedelay * 0.6:
 		light.light_energy = 0
 	else:
-		light.light_energy = 0.25
+		light.light_energy = 0.35
 
 
 

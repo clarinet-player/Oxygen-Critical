@@ -3,10 +3,11 @@ res://assets/metal_walls.tres
 res://assets/fire.tres
 res://assets/fire2.tres
 res://assets/metal.tres
+res://diamond_metal.tres
 res://autoloads/gamemanager.tscn
-res://ui/main menu.tscn
 res://classes/player.tscn
 res://classes/bullet.tscn
+res://ui/main menu.tscn
 res://scenes/somnambulist 2.0.tscn
 res://weapons/grenades/claymore.tscn
 res://ui/player hud.tscn
@@ -39,3 +40,4 @@ res://weapons/grenades/flash_display.tscn
 res://weapons/grenades/incendiary_display.tscn
 res://ui/scoreboard.tscn
 res://classes/blood spray.tscn
+res://classes/weaponbase.gd

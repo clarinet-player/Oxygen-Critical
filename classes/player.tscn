@@ -300,15 +300,24 @@ func _process(delta):
 	if using_objective and team == 2:
 		if Gamemanager.objectives[objective_index][0] == 1 and Time.get_ticks_msec() - objective_time > 3000 and Gamemanager.objectives[objective_index][2] == 0:
 			using_objective = false
-			Gamemanager.plant_bomb.rpc(1, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
+			if Gamemanager.mp_active:
+				Gamemanager.plant_bomb.rpc(1, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
+			else:
+				Gamemanager.plant_bomb(1, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
 			objective_index = -1
 		elif Gamemanager.objectives[objective_index][0] == 2 and Time.get_ticks_msec() - objective_time > 12000 and Gamemanager.objectives[objective_index][2] == 0:
 			using_objective = false
-			Gamemanager.plant_bomb.rpc(2, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
+			if Gamemanager.mp_active:
+				Gamemanager.plant_bomb.rpc(2, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
+			else:
+				Gamemanager.plant_bomb(2, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
 			objective_index = -1
-		elif Gamemanager.objectives[objective_index][0] == 3 and Time.get_ticks_msec() - objective_time > 8000 and Gamemanager.objectives[objective_index][2] == 0:
+		elif Gamemanager.objectives[objective_index][0] == 3 and Time.get_ticks_msec() - objective_time > 7500 and Gamemanager.objectives[objective_index][2] == 0:
 			using_objective = false
-			Gamemanager.take_objective.rpc(objective_index)
+			if Gamemanager.mp_active:
+				Gamemanager.take_objective.rpc(objective_index)
+			else:
+				Gamemanager.take_objective(objective_index)
 			objective_index = -1
 			play_sound.rpc(10)
 			hud.set_objective(true)
@@ -325,7 +334,7 @@ func _process(delta):
 		if Gamemanager.objectives[objective_index][0] == 2 and ((Time.get_ticks_msec() - objective_time > 8000 and time > 300) or time > 600):
 			beep_time = Time.get_ticks_msec()
 			play_sound.rpc(5)
-		elif Gamemanager.objectives[objective_index][0] == 3 and Time.get_ticks_msec() - objective_time < 7800 and ((Time.get_ticks_msec() - objective_time > 5000 and time > 300) or time > 600):
+		elif Gamemanager.objectives[objective_index][0] == 3 and ((Time.get_ticks_msec() - objective_time > 5000 and time > 300) or time > 600):
 			beep_time = Time.get_ticks_msec()
 			play_sound.rpc(5)
 	
@@ -373,7 +382,7 @@ func _physics_process(delta : float):
 	if carrying_objective and Gamemanager.spawn_areas[1].has_point(global_position):
 		Gamemanager.objectives[objective_index][2] == 2
 		carrying_objective = false
-		if is_multiplayer_authority():
+		if !Gamemanager.mp_active or is_multiplayer_authority():
 			hud.set_objective(false)
 			play_sound.rpc(11)
 	
@@ -656,16 +665,16 @@ func get_velocity() -> Vector3:
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func damage(dmg, tearing, tagging):
-	
-	if is_multiplayer_authority() and tearing > breach and health - dmg > 0.1:
-		Audiomanager.play(\"res://assets/breach.mp3\")
-	
 	health = max(health - dmg, 0)
 	breach = max(breach, tearing)
 	tagged = max(tagged, tagging)
 	
 	damaged.emit()
 	warning_time = Time.get_ticks_msec() - 250
+	
+	if is_multiplayer_authority() and tearing > breach and health - dmg > 0.1:
+		await get_tree().create_timer(0.1).timeout
+		Audiomanager.play(\"res://assets/breach.mp3\")
 
 
 
