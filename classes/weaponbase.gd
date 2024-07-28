@@ -9,7 +9,6 @@ extends Node3D
 @export var reload_time : float
 @export var muzzle_vel : float
 @export var damage : Array
-@export var piercing : float
 @export var tearing : float
 @export var tagging : float
 @export var effective_range : float
@@ -202,7 +201,6 @@ func fire(pos : Vector3, velocity : Vector3):
 	_bullet.global_position = pos + velocity.normalized()
 	_bullet.velocity = velocity
 	_bullet.mass = damage
-	_bullet.piercing = piercing
 	_bullet.tearing = tearing
 	_bullet.tagging = tagging
 	_bullet.effective_range = effective_range

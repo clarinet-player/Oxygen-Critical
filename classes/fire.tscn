@@ -38,7 +38,7 @@ func _ready():
 			
 			for player in get_tree().get_nodes_in_group(\"Players\"):
 				if player.hitbox.global_position.distance_to(global_position) < size + 0.5:
-					player.damage(size * 5.5, 0, 0)
+					player.damage.rpc(size * 5.5, 0, 0)
 					player.play_sound.rpc(7)
 
 

@@ -8,7 +8,7 @@ script/source = "extends RigidBody3D
 
 
 const fuse_time := 1800
-const blast_radius := 8
+const blast_radius := 9
 const damage := 60.0
 const tearing := 12
 
@@ -60,7 +60,7 @@ func _physics_process(delta):
 		
 		if !Gamemanager.mp_active or is_multiplayer_authority():
 			for player in get_tree().get_nodes_in_group(\"Players\"):
-				if global_position.direction_to(player.hitbox.global_position).dot(-global_basis.z) > 0.9 and global_position.distance_to(player.hitbox.global_position) < 4:
+				if global_position.direction_to(player.hitbox.global_position).dot(-global_basis.z) > 0.85 and global_position.distance_to(player.hitbox.global_position) < 6:
 					if Gamemanager.mp_active:
 						boom.rpc()
 					else:
@@ -140,7 +140,7 @@ func boom():
 
 
 
-@rpc(\"authority\", \"call_local\", \"reliable\")
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
 func destroy():
 	armed = false
 	destroyed = true
@@ -183,12 +183,12 @@ func _check_player(player : Node3D):
 
 func _damage(player):
 	var multiplier = (1 - player.global_position.distance_to(global_position) / blast_radius)
-	if player.armor:
-		multiplier *= 1 - max(player.armor.protection[0], 0)
+	if player.armor != null:
+		multiplier *= 1 - player.armor.protection[0]
 	if Gamemanager.mp_active:
-		player.damage(damage * multiplier, tearing * multiplier + 3, 1.5 * multiplier + 0.1)
+		player.damage.rpc(damage * multiplier, tearing * multiplier + 3, 1.5 * multiplier + 0.1)
 	else:
-		player.damage(damage * multiplier, tearing * multiplier + 3, 1.5 * multiplier + 0.1)
+		player.damage.rpc(damage * multiplier, tearing * multiplier + 3, 1.5 * multiplier + 0.1)
 	player.play_sound.rpc(9)
 "
 
