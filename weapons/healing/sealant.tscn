@@ -6,7 +6,7 @@ script/source = "extends Node3D
 
 const item_id := 5
 const inventory_size := 1
-const weight := 0.5
+var weight := 0.0
 
 const use_time := 500.0
 
@@ -34,6 +34,7 @@ func _ready():
 		if player.breach > 0:
 			in_use = true
 			start_time = Time.get_ticks_msec()
+			weight = 0.5
 			hud.start_progress(use_time / 1000, \"healing\")
 		
 		player.damaged.connect(_cancel)
@@ -44,6 +45,7 @@ func _exit_tree():
 	request_ready()
 	hud.stop_progress(\"healing\")
 	in_use = false
+	weight = 0
 #endregion
 
 
@@ -56,6 +58,7 @@ func _physics_process(delta):
 	if Input.is_action_pressed(\"Mouse1\") and !in_use and player.breach > 0 and !UiManager.paused:
 		in_use = true
 		start_time = Time.get_ticks_msec()
+		weight = 0.5
 		hud.start_progress(use_time / 1000, \"healing\")
 	
 	
@@ -68,6 +71,7 @@ func _physics_process(delta):
 
 func _cancel():
 	in_use = false
+	weight = 0
 	hud.stop_progress(\"healing\")
 "
 

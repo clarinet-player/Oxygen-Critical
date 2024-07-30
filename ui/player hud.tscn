@@ -42,18 +42,19 @@ func set_health(new : float):
 
 
 func set_ammo(vis : bool, ammo : int):
-	$Panel.visible = vis
-	$\"Panel/Ammo Counter\".text = str(ammo)
+	$\"Ammo Counter\".visible = vis
+	$\"Alt Fire\".visible = vis
+	$\"Ammo Counter\".text = str(ammo)
 
 
 
 func alt_fire(type : int):
 	if type == 0:
-		$\"Panel/Alt Fire\".text = \"Auto\"
+		$\"Alt Fire\".text = \"Auto\"
 	elif type == 1:
-		$\"Panel/Alt Fire\".text = \"Semi\"
+		$\"Alt Fire\".text = \"Semi\"
 	else:
-		$\"Panel/Alt Fire\".text = \"Burst\"
+		$\"Alt Fire\".text = \"Burst\"
 
 
 
@@ -181,48 +182,39 @@ grow_horizontal = 2
 grow_vertical = 2
 show_percentage = false
 
-[node name="Panel" type="Panel" parent="."]
+[node name="Ammo Counter" type="RichTextLabel" parent="."]
 layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
+anchors_preset = 7
+anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -178.0
-offset_top = -80.0
-offset_right = -81.0
-offset_bottom = 1.0
-grow_horizontal = 0
+offset_left = 272.0
+offset_top = -86.0
+offset_right = 355.0
+grow_horizontal = 2
 grow_vertical = 0
-
-[node name="Ammo Counter" type="RichTextLabel" parent="Panel"]
-layout_mode = 1
-anchors_preset = 6
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = -83.0
-offset_top = -43.0
-offset_bottom = 43.0
-grow_horizontal = 0
-grow_vertical = 2
 theme_override_font_sizes/normal_font_size = 60
+text = "10
+"
+scroll_active = false
 
-[node name="Alt Fire" type="RichTextLabel" parent="Panel"]
+[node name="Alt Fire" type="RichTextLabel" parent="."]
 layout_mode = 1
-anchors_preset = 6
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = -86.0
-offset_top = -80.5
-offset_right = 75.0
-offset_bottom = -38.5
-grow_horizontal = 0
-grow_vertical = 2
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 270.0
+offset_top = -114.0
+offset_right = 431.0
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 0
 theme_override_font_sizes/normal_font_size = 30
+text = "Burst"
+scroll_active = false
 
 [node name="T" type="RichTextLabel" parent="."]
 visible = false
@@ -233,6 +225,7 @@ offset_right = 540.0
 offset_bottom = 77.0
 theme_override_font_sizes/normal_font_size = 60
 text = "T side"
+scroll_active = false
 
 [node name="CT" type="RichTextLabel" parent="."]
 visible = false
@@ -243,6 +236,7 @@ offset_right = 605.0
 offset_bottom = 78.0
 theme_override_font_sizes/normal_font_size = 60
 text = "CT side"
+scroll_active = false
 
 [node name="Objective" type="RichTextLabel" parent="."]
 visible = false
@@ -260,3 +254,4 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_font_sizes/normal_font_size = 60
 text = "Carrying objective"
+scroll_active = false

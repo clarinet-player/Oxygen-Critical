@@ -1,6 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://ccmsiqxtitjq7"]
-
-[ext_resource type="Texture2D" uid="uid://bitf3f8hujhok" path="res://assets/pikachu.png" id="1_5qod4"]
+[gd_scene load_steps=2 format=3 uid="uid://ccmsiqxtitjq7"]
 
 [sub_resource type="GDScript" id="GDScript_3y1rm"]
 script/source = "extends Control
@@ -34,22 +32,6 @@ grow_horizontal = 2
 grow_vertical = 2
 script = SubResource("GDScript_3y1rm")
 
-[node name="TextureRect" type="TextureRect" parent="."]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -1126.0
-offset_top = -579.0
-offset_right = 1006.0
-offset_bottom = 656.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("1_5qod4")
-expand_mode = 1
-
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 8
@@ -73,13 +55,26 @@ placeholder_text = "username"
 [node name="Connect" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 70
-text = "Connect
-"
+text = "Connect"
 
 [node name="Back" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 70
 text = "Back"
+
+[node name="RichTextLabel2" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -443.0
+offset_top = 14.0
+offset_right = 443.0
+offset_bottom = 182.0
+grow_horizontal = 2
+theme_override_font_sizes/normal_font_size = 120
+text = "Oxygen Critical"
+scroll_active = false
 
 [connection signal="button_down" from="VBoxContainer/Connect" to="." method="_on_connect_button_down"]
 [connection signal="button_down" from="VBoxContainer/Back" to="." method="_on_back_button_down"]

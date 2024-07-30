@@ -10,8 +10,8 @@ config_version=5
 
 [application]
 
-config/name="Space Game"
-run/main_scene="res://scenes/Empty scene.tscn"
+config/name="Oxygen Critical"
+run/main_scene="res://scenes/menu scene.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://assets/icon.svg"
 
@@ -26,9 +26,8 @@ Audiomanager="*res://autoloads/audiomanager.tscn"
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
-window/size/mode=3
-window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
+window/size/mode=4
+window/size/borderless=true
 
 [filesystem]
 
@@ -155,4 +154,7 @@ common/physics_jitter_fix=0.0
 
 [rendering]
 
+lights_and_shadows/directional_shadow/size=10000
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality=0
+lights_and_shadows/directional_shadow/16_bits=false
 anti_aliasing/quality/msaa_3d=1

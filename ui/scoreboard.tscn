@@ -1,10 +1,24 @@
-[gd_scene load_steps=4 format=3 uid="uid://c2bpakqol3dp2"]
+[gd_scene load_steps=6 format=3 uid="uid://c2bpakqol3dp2"]
 
 [ext_resource type="Texture2D" uid="uid://flowlcal467y" path="res://assets/blueplayers.png" id="1_hyh6m"]
 [ext_resource type="Texture2D" uid="uid://xky1da3dh6r2" path="res://assets/redplayers.png" id="2_0htj1"]
+[ext_resource type="Texture2D" uid="uid://b7x6kxxfxherp" path="res://assets/bluespawns.png" id="2_75d7s"]
+[ext_resource type="Texture2D" uid="uid://cav4gvfdkpsin" path="res://assets/redspawns.png" id="4_ag3j2"]
 
 [sub_resource type="GDScript" id="GDScript_io8ft"]
 script/source = "extends Control
+
+
+
+var a := 0
+var b := 0
+var c := 0
+
+@onready var audio = $AudioStreamPlayer
+
+@onready var a_prog = $HBoxContainer/VBoxContainer/A/ProgressBar
+@onready var b_prog = $HBoxContainer/VBoxContainer/B/ProgressBar
+@onready var c_prog = $HBoxContainer/VBoxContainer/C/ProgressBar
 
 
 
@@ -14,11 +28,11 @@ func _process(delta):
 	var minutes = int(time_left / 60)
 	
 	if time_left < 0 or Gamemanager.round_start_time == -1:
-		$Timer.text = \"0:00\"
+		$HBoxContainer/VBoxContainer/Timer.text = \"0:00\"
 	elif time_left - int(time_left / 60) * 60 < 10:
-		$Timer.text = str(minutes) + \":0\" + str(int(time_left - minutes * 60))
+		$HBoxContainer/VBoxContainer/Timer.text = str(minutes) + \":0\" + str(int(time_left - minutes * 60))
 	else:
-		$Timer.text = str(minutes) + \":\" + str(int(time_left - minutes * 60))
+		$HBoxContainer/VBoxContainer/Timer.text = str(minutes) + \":\" + str(int(time_left - minutes * 60))
 	
 	
 	var t := 0
@@ -29,8 +43,71 @@ func _process(delta):
 		elif player.team == 2:
 			t += 1
 	
-	$CT.text = str(ct) + \"      +\" + str(Gamemanager.c_spawns)
-	$T.text = str(t) + \"      +\" + str(Gamemanager.t_spawns)
+	$HBoxContainer/Defenders/Players.text = str(ct)
+	$HBoxContainer/Defenders/Spawns.text = str(Gamemanager.c_spawns)
+	$HBoxContainer/Attackers/Players.text = str(t)
+	$HBoxContainer/Attackers/Spawns.text = str(Gamemanager.t_spawns)
+	
+	
+	if a > 1:
+		a_prog.value += delta
+	if b > 1:
+		b_prog.value += delta
+	if c > 1:
+		c_prog.value += delta
+
+
+
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
+func set_objective(obj : int, state : int, time : float):
+	if state == 1:
+		audio.stream = preload(\"res://assets/hack.mp3\")
+		audio.play()
+	elif state == 2:
+		audio.stream = preload(\"res://weapons/bomb/beep.mp3\")
+		audio.play()
+	elif state == 3:
+		audio.stream = preload(\"res://assets/defuse.mp3\")
+		audio.play()
+	
+	
+	if obj == 0:
+		a = state
+		a_prog.max_value = time
+		a_prog.value = 0
+		if state == 2:
+			a_prog.fill_mode = ProgressBar.FILL_BEGIN_TO_END
+		if state == 3:
+			a_prog.fill_mode = ProgressBar.FILL_END_TO_BEGIN
+		$HBoxContainer/VBoxContainer/A.visible = state == 0
+		$HBoxContainer/VBoxContainer/A/Label2.visible = state == 1
+		$HBoxContainer/VBoxContainer/A/ProgressBar.visible = state > 1
+	
+	
+	elif obj == 1:
+		b = state
+		b_prog.max_value = time
+		b_prog.value = 0
+		if state == 2:
+			b_prog.fill_mode = ProgressBar.FILL_BEGIN_TO_END
+		if state == 3:
+			b_prog.fill_mode = ProgressBar.FILL_END_TO_BEGIN
+		$HBoxContainer/VBoxContainer/B.visible = state == 0
+		$HBoxContainer/VBoxContainer/B/Label2.visible = state == 1
+		$HBoxContainer/VBoxContainer/B/ProgressBar.visible = state > 1
+	
+	
+	elif obj == 2:
+		c = state
+		c_prog.max_value = time
+		c_prog.value = 0
+		if state == 2:
+			c_prog.fill_mode = ProgressBar.FILL_BEGIN_TO_END
+		if state == 3:
+			c_prog.fill_mode = ProgressBar.FILL_END_TO_BEGIN
+		$HBoxContainer/VBoxContainer/C.visible = state == 0
+		$HBoxContainer/VBoxContainer/C/Label2.visible = state == 1
+		$HBoxContainer/VBoxContainer/C/ProgressBar.visible = state > 1
 "
 
 [node name="Scoreboard" type="Control"]
@@ -42,75 +119,156 @@ grow_horizontal = 2
 grow_vertical = 2
 script = SubResource("GDScript_io8ft")
 
-[node name="Panel" type="Panel" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -459.0
-offset_right = 451.0
-offset_bottom = 84.0
+offset_left = -206.0
+offset_top = 12.0
+offset_right = 206.0
+offset_bottom = 204.0
 grow_horizontal = 2
+theme_override_constants/separation = 75
 
-[node name="Timer" type="RichTextLabel" parent="."]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -88.0
-offset_top = -14.0
-offset_right = 86.0
-offset_bottom = 96.0
-grow_horizontal = 2
-theme_override_font_sizes/normal_font_size = 80
-text = "0:00"
+[node name="Defenders" type="GridContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
 
-[node name="CT" type="RichTextLabel" parent="."]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -453.0
-offset_top = -14.0
-offset_right = -158.0
-offset_bottom = 96.0
-grow_horizontal = 2
-theme_override_font_sizes/normal_font_size = 80
-text = "0      +0"
-
-[node name="TextureRect" type="TextureRect" parent="CT"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -93.5
-offset_top = 20.0
-offset_right = -21.5
-offset_bottom = 92.0
-grow_horizontal = 2
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/Defenders"]
+layout_mode = 2
+size_flags_vertical = 4
 texture = ExtResource("1_hyh6m")
 
-[node name="T" type="RichTextLabel" parent="."]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = 181.0
-offset_top = -14.0
-offset_right = 476.0
-offset_bottom = 96.0
-grow_horizontal = 2
-theme_override_font_sizes/normal_font_size = 80
-text = "0      +0"
+[node name="Players" type="Label" parent="HBoxContainer/Defenders"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0, 0, 0.658824, 1)
+theme_override_font_sizes/font_size = 30
+text = "0"
 
-[node name="TextureRect2" type="TextureRect" parent="T"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -93.5
-offset_top = 21.0
-offset_right = -21.5
-offset_bottom = 93.0
-grow_horizontal = 2
+[node name="TextureRect2" type="TextureRect" parent="HBoxContainer/Defenders"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("2_75d7s")
+
+[node name="Spawns" type="Label" parent="HBoxContainer/Defenders"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0, 0, 0.658824, 1)
+theme_override_font_sizes/font_size = 30
+text = "0"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 10.0
+
+[node name="Timer" type="Label" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 50
+text = "0:00"
+
+[node name="A" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer/A"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "A"
+
+[node name="Label2" type="Label" parent="HBoxContainer/VBoxContainer/A"]
+layout_mode = 2
+text = "Destroyed"
+
+[node name="ProgressBar" type="ProgressBar" parent="HBoxContainer/VBoxContainer/A"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+show_percentage = false
+
+[node name="B" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer/B"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "B
+"
+
+[node name="Label2" type="Label" parent="HBoxContainer/VBoxContainer/B"]
+layout_mode = 2
+text = "Destroyed"
+
+[node name="ProgressBar" type="ProgressBar" parent="HBoxContainer/VBoxContainer/B"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+show_percentage = false
+
+[node name="C" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer/C"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "C"
+
+[node name="Label2" type="Label" parent="HBoxContainer/VBoxContainer/C"]
+layout_mode = 2
+text = "Destroyed"
+
+[node name="ProgressBar" type="ProgressBar" parent="HBoxContainer/VBoxContainer/C"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+show_percentage = false
+
+[node name="Attackers" type="GridContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="TextureRect2" type="TextureRect" parent="HBoxContainer/Attackers"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 texture = ExtResource("2_0htj1")
+
+[node name="Players" type="Label" parent="HBoxContainer/Attackers"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.658824, 0, 0, 1)
+theme_override_font_sizes/font_size = 30
+text = "0"
+
+[node name="TextureRect3" type="TextureRect" parent="HBoxContainer/Attackers"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("4_ag3j2")
+
+[node name="Spawns" type="Label" parent="HBoxContainer/Attackers"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.658824, 0, 0, 1)
+theme_override_font_sizes/font_size = 30
+text = "0"
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]

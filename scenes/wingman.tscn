@@ -10,7 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://d16rwkt574n4s" path="res://classes/gameSurface.tscn" id="4_x2lcu"]
 [ext_resource type="Texture2D" uid="uid://05ddnnkibkgu" path="res://assets/Untitled.png" id="6_hufdc"]
 [ext_resource type="Texture2D" uid="uid://dpp3dskrwv8k4" path="res://assets/b3.png" id="8_1nfpf"]
-[ext_resource type="Material" uid="uid://cqypfqm3ivsmt" path="res://diamond_metal.tres" id="11_3bxgd"]
+[ext_resource type="Material" uid="uid://cqypfqm3ivsmt" path="res://assets/diamond_metal.tres" id="11_3bxgd"]
 [ext_resource type="PackedScene" uid="uid://de0weem1pd67y" path="res://classes/spawnpoint.tscn" id="11_oa0ib"]
 
 [sub_resource type="GDScript" id="GDScript_hs3at"]
@@ -57,12 +57,12 @@ func spawn_player(id : int):
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
 ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
 
-[sub_resource type="Sky" id="Sky_554fn"]
+[sub_resource type="Sky" id="Sky_j6lvn"]
 sky_material = SubResource("ProceduralSkyMaterial_vybj7")
 
 [sub_resource type="Environment" id="Environment_jjncm"]
 background_mode = 1
-sky = SubResource("Sky_554fn")
+sky = SubResource("Sky_j6lvn")
 ambient_light_source = 2
 ambient_light_color = Color(0.0196078, 0.0196078, 0.0313726, 1)
 tonemap_mode = 2
@@ -370,13 +370,13 @@ spread = 90.0
 initial_velocity_max = 0.3
 gravity = Vector3(0, 0, 0)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_q1pc2"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_x0kpc"]
 albedo_color = Color(0.235294, 0.235294, 0.235294, 1)
 emission = Color(1, 1, 1, 1)
 emission_energy_multiplier = 16.0
 
 [sub_resource type="SphereMesh" id="SphereMesh_8113f"]
-material = SubResource("StandardMaterial3D_q1pc2")
+material = SubResource("StandardMaterial3D_x0kpc")
 radius = 0.01
 height = 0.02
 radial_segments = 5

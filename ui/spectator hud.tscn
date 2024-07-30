@@ -64,6 +64,7 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_font_sizes/normal_font_size = 80
 text = "Waiting for minimum player count"
+scroll_active = false
 
 [node name="T" type="RichTextLabel" parent="."]
 visible = false
@@ -81,6 +82,7 @@ grow_vertical = 0
 theme_override_font_sizes/normal_font_size = 80
 text = "T side victory
 "
+scroll_active = false
 
 [node name="CT" type="RichTextLabel" parent="."]
 visible = false
@@ -98,6 +100,7 @@ grow_vertical = 0
 theme_override_font_sizes/normal_font_size = 80
 text = "CT side victory
 "
+scroll_active = false
 
 [node name="Dead" type="RichTextLabel" parent="."]
 visible = false
@@ -114,6 +117,7 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_font_sizes/normal_font_size = 80
 text = "Dead"
+scroll_active = false
 
 [node name="Spectating" type="RichTextLabel" parent="."]
 visible = false
@@ -130,3 +134,4 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_font_sizes/normal_font_size = 80
 text = "Spectating"
+scroll_active = false

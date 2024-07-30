@@ -1,6 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://b6j6wnag62maf"]
-
-[ext_resource type="Texture2D" uid="uid://boou4dol2b4v7" path="res://assets/thumbsup.jpg" id="1_8tipy"]
+[gd_scene load_steps=2 format=3 uid="uid://b6j6wnag62maf"]
 
 [sub_resource type="GDScript" id="GDScript_tiiyp"]
 script/source = "extends Control
@@ -14,7 +12,7 @@ func _disconnect():
 	if Gamemanager.mp_active:
 		Gamemanager.disconnect_player()
 	
-	get_tree().change_scene_to_file(\"res://scenes/Empty scene.tscn\")
+	get_tree().change_scene_to_file(\"res://scenes/menu scene.tscn\")
 	UiManager.set_ui(1)
 
 
@@ -34,44 +32,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = SubResource("GDScript_tiiyp")
-
-[node name="Control" type="Control" parent="."]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -20.0
-offset_top = 10.0
-offset_right = 20.0
-offset_bottom = 50.0
-grow_horizontal = 2
-
-[node name="RichTextLabel" type="RichTextLabel" parent="Control"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -377.0
-offset_top = 59.0
-offset_right = 121.0
-offset_bottom = 188.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/normal_font_size = 80
-text = "Great Menu
-"
-scroll_active = false
-
-[node name="TextureRect" type="TextureRect" parent="Control"]
-layout_mode = 0
-offset_left = 135.0
-offset_top = 13.0
-offset_right = 647.0
-offset_bottom = 431.0
-scale = Vector2(0.6, 0.6)
-texture = ExtResource("1_8tipy")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -106,8 +66,7 @@ text = "Settings"
 [node name="Disconnect" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 70
-text = "Disconnect
-"
+text = "Disconnect"
 
 [connection signal="button_down" from="VBoxContainer/Unpause" to="." method="_unpause"]
 [connection signal="button_down" from="VBoxContainer/Team" to="." method="_on_team_button_down"]

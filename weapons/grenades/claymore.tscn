@@ -9,8 +9,10 @@ script/source = "extends RigidBody3D
 
 const fuse_time := 1800
 const blast_radius := 9
+
 const damage := 60.0
-const tearing := 12
+const tearing := 10.0
+const tagging := 1.0
 
 var velocity := Vector3.ZERO
 
@@ -186,9 +188,9 @@ func _damage(player):
 	if player.armor != null:
 		multiplier *= 1 - player.armor.protection[0]
 	if Gamemanager.mp_active:
-		player.damage.rpc(damage * multiplier, tearing * multiplier + 3, 1.5 * multiplier + 0.1)
+		player.damage.rpc(damage * multiplier, tearing, tagging)
 	else:
-		player.damage.rpc(damage * multiplier, tearing * multiplier + 3, 1.5 * multiplier + 0.1)
+		player.damage(damage * multiplier, tearing, tagging)
 	player.play_sound.rpc(9)
 "
 

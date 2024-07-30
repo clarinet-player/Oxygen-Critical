@@ -46,6 +46,8 @@ var health : float = 100
 var breach : float = 0
 var tagged : float = 0
 
+var tag_time : int
+
 var kill_contributors := []
 
 var armor : Resource
@@ -234,8 +236,10 @@ func _process(delta):
 				hud.start_progress(3.0, \"Objective\")
 			elif objective[0] == 2:
 				hud.start_progress(12.0, \"Objective\")
+				UiManager.scoreboard.set_objective.rpc(objective_index, 2, 12.0)
 			elif objective[0] == 3:
 				hud.start_progress(8.0, \"Objective\")
+				UiManager.scoreboard.set_objective.rpc(objective_index, 2, 8.0)
 			if active_item:
 				camera.remove_child(active_item)
 				active_item = null
@@ -245,7 +249,7 @@ func _process(delta):
 		for bomb in Gamemanager.bombs:
 			if bomb != null and bomb.global_position.distance_to(global_position) < 1.5:
 				objective_index = bomb.site
-				bomb.start_defuse.rpc()
+				UiManager.scoreboard.set_objective.rpc(bomb.site, 3, 5.0)
 				break
 		if objective_index >= 0:
 			if !using_objective:
@@ -302,6 +306,7 @@ func _process(delta):
 			using_objective = false
 			if Gamemanager.mp_active:
 				Gamemanager.plant_bomb.rpc(1, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
+				UiManager.scoreboard.set_objective.rpc(objective_index, 2, 30.0)
 			else:
 				Gamemanager.plant_bomb(1, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
 			objective_index = -1
@@ -319,24 +324,16 @@ func _process(delta):
 			else:
 				Gamemanager.take_objective(objective_index)
 			objective_index = -1
-			play_sound.rpc(10)
 			hud.set_objective(true)
 	elif using_objective and team == 1 and Time.get_ticks_msec() - objective_time > 5000:
 		using_objective = false
 		Gamemanager.defuse_bomb.rpc(objective_index)
+		UiManager.scoreboard.set_objective.rpc(objective_index, 0, 0.0)
 		objective_index = -1
 	if using_objective and !Input.is_action_pressed(\"E\"):
 		using_objective = false
 		objective_index = -1
 		hud.stop_progress(\"Objective\")
-	if using_objective and team == 2:
-		var time = Time.get_ticks_msec() - beep_time
-		if Gamemanager.objectives[objective_index][0] == 2 and ((Time.get_ticks_msec() - objective_time > 8000 and time > 300) or time > 600):
-			beep_time = Time.get_ticks_msec()
-			play_sound.rpc(5)
-		elif Gamemanager.objectives[objective_index][0] == 3 and ((Time.get_ticks_msec() - objective_time > 5000 and time > 300) or time > 600):
-			beep_time = Time.get_ticks_msec()
-			play_sound.rpc(5)
 	
 	
 	if Input.is_action_just_pressed(\"MouseDown\")and !UiManager.paused:
@@ -399,7 +396,8 @@ func _physics_process(delta : float):
 	if health < 0.1:
 		die.rpc()
 	
-	tagged = max(tagged - delta * max(0.4 * tagged, 0.2), 0)
+	if Time.get_ticks_msec() - tag_time > 600:
+		tagged = 0
 	
 	
 	if breach > 0 and Time.get_ticks_msec() - warning_time > 750:
@@ -667,7 +665,9 @@ func get_velocity() -> Vector3:
 func damage(dmg, tearing, tagging):
 	health = max(health - dmg, 0)
 	breach = max(breach, tearing)
-	tagged = max(tagged, tagging)
+	if tagging > tagged:
+		tagged = tagging
+		tag_time = Time.get_ticks_msec()
 	
 	damaged.emit()
 	warning_time = Time.get_ticks_msec() - 250
@@ -700,9 +700,6 @@ func play_sound(sound : int):
 	elif sound == 4:
 		audio.stream = preload(\"res://assets/1911-reload-6248.mp3\")
 		audio.play()
-	elif sound == 5:
-		$Camera3D/AudioStreamPlayer3D2.stream = preload(\"res://weapons/bomb/beep.mp3\")
-		$Camera3D/AudioStreamPlayer3D2.play()
 	elif sound == 6:
 		audio.stream = preload(\"res://assets/bullet_headshot.mp3\")
 		audio.play()
@@ -715,12 +712,6 @@ func play_sound(sound : int):
 	elif sound == 9:
 		audio.stream = preload(\"res://assets/bullet_hit.mp3\")
 		audio.play()
-	elif sound == 10:
-		$Camera3D/AudioStreamPlayer3D2.stream = preload(\"res://assets/hack.mp3\")
-		$Camera3D/AudioStreamPlayer3D2.play()
-	elif sound == 11:
-		$Camera3D/AudioStreamPlayer3D2.stream = preload(\"res://assets/party-horn-68443.mp3\")
-		$Camera3D/AudioStreamPlayer3D2.play()
 
 
 

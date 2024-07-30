@@ -5,7 +5,7 @@ script/source = "extends Node3D
 
 
 const use_time := 1600.0
-const weight := 1.2
+const weight := 1.5
 
 var in_use := false
 var start_time := 0

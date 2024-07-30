@@ -52,7 +52,10 @@ func exit():
 	elif active_menu == buymenu:
 		set_ui(3)
 	elif active_menu == settingsmenu:
-		set_ui(2)
+		if get_tree().get_first_node_in_group(\"Levels\").name == \"MenuScene\":
+			set_ui(1)
+		else:
+			set_ui(2)
 	elif active_menu == multiplayermenu:
 		set_ui(1)
 	else:
