@@ -23,10 +23,6 @@ var c := 0
 
 
 func _process(delta):
-	if DisplayServer.get_name() == \"headless\":
-		return
-	
-	
 	var time_left = (Gamemanager.round_time - (Time.get_ticks_msec() - Gamemanager.round_start_time)) / 1000.0
 	var minutes = int(time_left / 60)
 	
