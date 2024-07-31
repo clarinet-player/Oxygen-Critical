@@ -23,6 +23,9 @@ var c := 0
 
 
 func _process(delta):
+	if DisplayServer.get_name() == \"headless\":
+		return
+	
 	
 	var time_left = (Gamemanager.round_time - (Time.get_ticks_msec() - Gamemanager.round_start_time)) / 1000.0
 	var minutes = int(time_left / 60)
@@ -60,16 +63,18 @@ func _process(delta):
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func set_objective(obj : int, state : int, time : float):
-	if DisplayServer.get_name() != \"headless\":
-		if state == 1:
-			audio.stream = preload(\"res://assets/hack.mp3\")
-			audio.play()
-		elif state == 2:
-			audio.stream = preload(\"res://weapons/bomb/beep.mp3\")
-			audio.play()
-		elif state == 3:
-			audio.stream = preload(\"res://assets/defuse.mp3\")
-			audio.play()
+	if DisplayServer.get_name() == \"headless\":
+		return
+	
+	if state == 1:
+		audio.stream = preload(\"res://assets/hack.mp3\")
+		audio.play()
+	elif state == 2:
+		audio.stream = preload(\"res://weapons/bomb/beep.mp3\")
+		audio.play()
+	elif state == 3:
+		audio.stream = preload(\"res://assets/defuse.mp3\")
+	audio.play()
 	
 	
 	if obj == 0:
