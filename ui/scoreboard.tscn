@@ -60,15 +60,16 @@ func _process(delta):
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
 func set_objective(obj : int, state : int, time : float):
-	if state == 1:
-		audio.stream = preload(\"res://assets/hack.mp3\")
-		audio.play()
-	elif state == 2:
-		audio.stream = preload(\"res://weapons/bomb/beep.mp3\")
-		audio.play()
-	elif state == 3:
-		audio.stream = preload(\"res://assets/defuse.mp3\")
-		audio.play()
+	if DisplayServer.get_name() != \"headless\":
+		if state == 1:
+			audio.stream = preload(\"res://assets/hack.mp3\")
+			audio.play()
+		elif state == 2:
+			audio.stream = preload(\"res://weapons/bomb/beep.mp3\")
+			audio.play()
+		elif state == 3:
+			audio.stream = preload(\"res://assets/defuse.mp3\")
+			audio.play()
 	
 	
 	if obj == 0:
