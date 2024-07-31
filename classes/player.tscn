@@ -376,12 +376,8 @@ func _process(delta):
 
 #region Physics Frame
 func _physics_process(delta : float):
-	if carrying_objective and Gamemanager.spawn_areas[1].has_point(global_position):
-		Gamemanager.objectives[objective_index][2] == 2
-		carrying_objective = false
-		if !Gamemanager.mp_active or is_multiplayer_authority():
-			hud.set_objective(false)
-			play_sound.rpc(11)
+	if multiplayer.get_unique_id() == 1 and carrying_objective and Gamemanager.spawn_areas[1].has_point(global_position):
+		Gamemanager.recover_objective(objective_index, int(str(name)))
 	
 	if Gamemanager.mp_active and !is_multiplayer_authority():
 		global_translate(velocity * delta)
@@ -726,6 +722,7 @@ func set_team(new_team : int):
 		
 		$Camera3D.current = true
 		hud.set_team(team)
+		hud.set_objective(false)
 	
 	else:
 		show()

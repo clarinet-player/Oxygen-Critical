@@ -21,14 +21,14 @@ func _ready():
 	Settings.settings_changed.connect(_load_settings)
 	_load_settings()
 	
-	Gamemanager.playable_area = AABB(Vector3(-30, -1, -25), Vector3(60, 9, 42))
+	Gamemanager.playable_area = AABB(Vector3(-30, -1, -25), Vector3(61, 9, 42))
 	Gamemanager.spawn_areas = [AABB(Vector3(-6.5, 5, 4.5), Vector3(10, 3, 10)), AABB(Vector3(5.5, -1, 6.3), Vector3(10, 3, 10))]
 	Gamemanager.objectives = [
 		[1, AABB(Vector3(16.5, -1, -7.5), Vector3(14, 6, 14)), 0],
 		[3, AABB(Vector3(-22, 3, -13.8), Vector3(3, 3, 3)), 0]
 	]
 	Gamemanager.respawn_time = 6000
-	Gamemanager.round_time = 90000
+	Gamemanager.round_time = 120000
 	
 	if !Gamemanager.mp_active:
 		spawn_player(1)

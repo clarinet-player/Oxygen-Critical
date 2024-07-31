@@ -79,7 +79,7 @@ func set_objective(obj : int, state : int, time : float):
 			a_prog.fill_mode = ProgressBar.FILL_BEGIN_TO_END
 		if state == 3:
 			a_prog.fill_mode = ProgressBar.FILL_END_TO_BEGIN
-		$HBoxContainer/VBoxContainer/A.visible = state == 0
+		$HBoxContainer/VBoxContainer/A.visible = state > 0
 		$HBoxContainer/VBoxContainer/A/Label2.visible = state == 1
 		$HBoxContainer/VBoxContainer/A/ProgressBar.visible = state > 1
 	
@@ -92,7 +92,7 @@ func set_objective(obj : int, state : int, time : float):
 			b_prog.fill_mode = ProgressBar.FILL_BEGIN_TO_END
 		if state == 3:
 			b_prog.fill_mode = ProgressBar.FILL_END_TO_BEGIN
-		$HBoxContainer/VBoxContainer/B.visible = state == 0
+		$HBoxContainer/VBoxContainer/B.visible = state > 0
 		$HBoxContainer/VBoxContainer/B/Label2.visible = state == 1
 		$HBoxContainer/VBoxContainer/B/ProgressBar.visible = state > 1
 	
@@ -105,9 +105,16 @@ func set_objective(obj : int, state : int, time : float):
 			c_prog.fill_mode = ProgressBar.FILL_BEGIN_TO_END
 		if state == 3:
 			c_prog.fill_mode = ProgressBar.FILL_END_TO_BEGIN
-		$HBoxContainer/VBoxContainer/C.visible = state == 0
+		$HBoxContainer/VBoxContainer/C.visible = state > 0
 		$HBoxContainer/VBoxContainer/C/Label2.visible = state == 1
 		$HBoxContainer/VBoxContainer/C/ProgressBar.visible = state > 1
+
+
+
+func reset():
+	a = 0
+	b = 0
+	c = 0
 "
 
 [node name="Scoreboard" type="Control"]

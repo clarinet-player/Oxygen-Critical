@@ -115,6 +115,11 @@ script/source = "extends MeshInstance3D
 var direction = true
 
 
+func _ready():
+	await get_tree().create_timer(0.1).timeout
+	$\"../AudioStreamPlayer\".play()
+
+
 func _process(delta):
 	rotate_z(delta * 0.052)
 	$DirectionalLight3D.rotate_z(delta * 0.0611)
@@ -181,7 +186,6 @@ fov = 28.0
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_jiw0r")
-autoplay = true
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.489121, 0.657421, -32.6845)

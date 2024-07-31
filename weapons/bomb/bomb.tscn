@@ -84,6 +84,7 @@ func _physics_process(delta):
 		$OmniLight3D2.light_energy = 6.0
 		
 		Gamemanager.objectives[site][2] = 2
+		UiManager.scoreboard.set_objective(site, 1, 0)
 		
 		if is_multiplayer_authority():
 			for player in get_tree().get_nodes_in_group(\"Players\"):

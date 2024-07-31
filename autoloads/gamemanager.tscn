@@ -356,7 +356,7 @@ func plant_bomb(type : int, pos : Vector3, facing : Vector3, normal : Vector3, s
 	objectives[site][2] = 1
 	
 	if mp_active:
-		round_start_time = max(Time.get_ticks_msec() - 120000, round_start_time + 10000)
+		round_start_time = max(Time.get_ticks_msec() - round_time, round_start_time + 10000)
 
 
 
@@ -375,7 +375,7 @@ func take_objective(site : int):
 	objectives[site][2] = 1
 	
 	if mp_active:
-		round_start_time = max(Time.get_ticks_msec() - 120000, round_start_time + 10000)
+		round_start_time = max(Time.get_ticks_msec() - round_time, round_start_time + 10000)
 	
 	for player in get_tree().get_nodes_in_group(\"Players\"):
 		if int(str(player.name)) == multiplayer.get_remote_sender_id():
@@ -385,10 +385,21 @@ func take_objective(site : int):
 
 
 
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
+func recover_objective(site : int, player_id : int):
+	objectives[site][2] == 2
+	UiManager.scoreboard.set_objective(site, 1, 0)
+	if multiplayer.get_unique_id() == player_id:
+		UiManager.playerhud.set_objective(false)
+
+
+
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func reset():
 	bombs = Array()
 	get_tree().get_first_node_in_group(\"Levels\")._ready()
+	
+	UiManager.scoreboard.reset()
 	
 	for child in get_children():
 		if child.name == \"MultiplayerSpawner\":
