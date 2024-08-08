@@ -1,8 +1,10 @@
-res://autoloads/gamemanager.tscn
+res://classes/casing.tscn
 res://assets/metal_walls.tres
 res://assets/somnambulist.tres
 res://assets/fire.tres
 res://assets/fire2.tres
+res://classes/weaponbase.gd
+res://autoloads/gamemanager.tscn
 res://classes/player.tscn
 res://classes/bullet.tscn
 res://ui/main menu.tscn
@@ -11,7 +13,6 @@ res://weapons/grenades/claymore.tscn
 res://ui/player hud.tscn
 res://weapons/healing/healthkit.tscn
 res://ui/buy menu.tscn
-res://classes/casing.tscn
 res://weapons/ak12/ak12.tscn
 res://autoloads/settings.tscn
 res://ui/settings menu.tscn

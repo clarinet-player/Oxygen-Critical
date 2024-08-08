@@ -236,10 +236,10 @@ func _process(delta):
 				hud.start_progress(3.0, \"Objective\")
 			elif objective[0] == 2:
 				hud.start_progress(12.0, \"Objective\")
-				UiManager.scoreboard.set_objective.rpc(objective_index, 2, 12.0)
+				UiManager.scoreboard.set_objective.rpc(objective_index, 2, 16.0)
 			elif objective[0] == 3:
 				hud.start_progress(8.0, \"Objective\")
-				UiManager.scoreboard.set_objective.rpc(objective_index, 2, 8.0)
+				UiManager.scoreboard.set_objective.rpc(objective_index, 2, 10.0)
 			if active_item:
 				camera.remove_child(active_item)
 				active_item = null
@@ -323,7 +323,7 @@ func _process(delta):
 				Gamemanager.take_objective.rpc(objective_index)
 			else:
 				Gamemanager.take_objective(objective_index)
-			objective_index = -1
+			carrying_objective = true
 			hud.set_objective(true)
 	elif using_objective and team == 1 and Time.get_ticks_msec() - objective_time > 5000:
 		using_objective = false
@@ -376,13 +376,15 @@ func _process(delta):
 
 #region Physics Frame
 func _physics_process(delta : float):
-	if multiplayer.get_unique_id() == 1 and carrying_objective and Gamemanager.spawn_areas[1].has_point(global_position):
-		Gamemanager.recover_objective(objective_index, int(str(name)))
 	
 	if Gamemanager.mp_active and !is_multiplayer_authority():
 		global_translate(velocity * delta)
 		return
 	
+	if carrying_objective and Gamemanager.spawn_areas[1].has_point(global_position):
+		carrying_objective = false
+		Gamemanager.recover_objective.rpc(objective_index)
+		hud.set_objective(false)
 	
 	health -= breach * delta
 	if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):

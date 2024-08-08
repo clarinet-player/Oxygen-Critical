@@ -16,11 +16,6 @@ var c := 0
 
 @onready var audio = $AudioStreamPlayer
 
-@onready var a_prog = $HBoxContainer/VBoxContainer/A/ProgressBar
-@onready var b_prog = $HBoxContainer/VBoxContainer/B/ProgressBar
-@onready var c_prog = $HBoxContainer/VBoxContainer/C/ProgressBar
-
-
 
 func _process(delta):
 	var time_left = (Gamemanager.round_time - (Time.get_ticks_msec() - Gamemanager.round_start_time)) / 1000.0
@@ -46,14 +41,6 @@ func _process(delta):
 	$HBoxContainer/Defenders/Spawns.text = str(Gamemanager.c_spawns)
 	$HBoxContainer/Attackers/Players.text = str(t)
 	$HBoxContainer/Attackers/Spawns.text = str(Gamemanager.t_spawns)
-	
-	
-	if a > 1:
-		a_prog.value += delta
-	if b > 1:
-		b_prog.value += delta
-	if c > 1:
-		c_prog.value += delta
 
 
 
@@ -75,41 +62,26 @@ func set_objective(obj : int, state : int, time : float):
 	
 	if obj == 0:
 		a = state
-		a_prog.max_value = time
-		a_prog.value = 0
-		if state == 2:
-			a_prog.fill_mode = ProgressBar.FILL_BEGIN_TO_END
-		if state == 3:
-			a_prog.fill_mode = ProgressBar.FILL_END_TO_BEGIN
 		$HBoxContainer/VBoxContainer/A.visible = state > 0
 		$HBoxContainer/VBoxContainer/A/Label2.visible = state == 1
-		$HBoxContainer/VBoxContainer/A/ProgressBar.visible = state > 1
+		$HBoxContainer/VBoxContainer/A/label3.visible = state == 2
+		$HBoxContainer/VBoxContainer/A/Label4.visible = state == 3
 	
 	
 	elif obj == 1:
 		b = state
-		b_prog.max_value = time
-		b_prog.value = 0
-		if state == 2:
-			b_prog.fill_mode = ProgressBar.FILL_BEGIN_TO_END
-		if state == 3:
-			b_prog.fill_mode = ProgressBar.FILL_END_TO_BEGIN
 		$HBoxContainer/VBoxContainer/B.visible = state > 0
 		$HBoxContainer/VBoxContainer/B/Label2.visible = state == 1
-		$HBoxContainer/VBoxContainer/B/ProgressBar.visible = state > 1
+		$HBoxContainer/VBoxContainer/B/label3.visible = state == 2
+		$HBoxContainer/VBoxContainer/B/Label4.visible = state == 3
 	
 	
 	elif obj == 2:
 		c = state
-		c_prog.max_value = time
-		c_prog.value = 0
-		if state == 2:
-			c_prog.fill_mode = ProgressBar.FILL_BEGIN_TO_END
-		if state == 3:
-			c_prog.fill_mode = ProgressBar.FILL_END_TO_BEGIN
 		$HBoxContainer/VBoxContainer/C.visible = state > 0
 		$HBoxContainer/VBoxContainer/C/Label2.visible = state == 1
-		$HBoxContainer/VBoxContainer/C/ProgressBar.visible = state > 1
+		$HBoxContainer/VBoxContainer/C/label3.visible = state == 2
+		$HBoxContainer/VBoxContainer/C/Label4.visible = state == 3
 
 
 
@@ -184,7 +156,6 @@ theme_override_font_sizes/font_size = 50
 text = "0:00"
 
 [node name="A" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
-visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 
@@ -197,15 +168,15 @@ text = "A"
 layout_mode = 2
 text = "Destroyed"
 
-[node name="ProgressBar" type="ProgressBar" parent="HBoxContainer/VBoxContainer/A"]
-custom_minimum_size = Vector2(0, 20)
+[node name="Label3" type="Label" parent="HBoxContainer/VBoxContainer/A"]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-show_percentage = false
+text = "Under Attack"
+
+[node name="Label4" type="Label" parent="HBoxContainer/VBoxContainer/A"]
+layout_mode = 2
+text = "Defusing"
 
 [node name="B" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
-visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 
@@ -219,15 +190,15 @@ text = "B
 layout_mode = 2
 text = "Destroyed"
 
-[node name="ProgressBar" type="ProgressBar" parent="HBoxContainer/VBoxContainer/B"]
-custom_minimum_size = Vector2(0, 20)
+[node name="Label3" type="Label" parent="HBoxContainer/VBoxContainer/B"]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-show_percentage = false
+text = "Under Attack"
+
+[node name="Label4" type="Label" parent="HBoxContainer/VBoxContainer/B"]
+layout_mode = 2
+text = "Defusing"
 
 [node name="C" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
-visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 
@@ -240,12 +211,13 @@ text = "C"
 layout_mode = 2
 text = "Destroyed"
 
-[node name="ProgressBar" type="ProgressBar" parent="HBoxContainer/VBoxContainer/C"]
-custom_minimum_size = Vector2(0, 20)
+[node name="Label3" type="Label" parent="HBoxContainer/VBoxContainer/C"]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-show_percentage = false
+text = "Under Attack"
+
+[node name="Label4" type="Label" parent="HBoxContainer/VBoxContainer/C"]
+layout_mode = 2
+text = "Defusing"
 
 [node name="Attackers" type="GridContainer" parent="HBoxContainer"]
 layout_mode = 2

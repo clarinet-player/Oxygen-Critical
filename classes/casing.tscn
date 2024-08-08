@@ -20,8 +20,6 @@ var spawn_time := 0
 func _ready():
 	spawn_time = Time.get_ticks_msec()
 	
-	global_rotate(angular.normalized(), angular.length())
-	
 	if type == 2:
 		$\"9mm\".hide()
 	else:
@@ -45,11 +43,11 @@ func _physics_process(delta):
 		$AudioStreamPlayer3D.pitch_scale = 0.88 + velocity.length() / 50
 		$AudioStreamPlayer3D.play()
 		
-		if \"get_is_grabbable\" in collision.get_collider_shape() and velocity.length() < randf_range(1.5, 2.5):
+		if \"get_is_grabbable\" in collision.get_collider_shape() and velocity.length() < randf_range(1.5, 2.2):
 			landed = true
 			spawn_time += 10000
 		else:
-			velocity = velocity.bounce(collision.get_normal()) * randf_range(0.25, 0.5) + Vector3(randf_range(-0.3, 0.3), randf_range(-0.5, 0.5), randf_range(-0.3, 0.3))
+			velocity = velocity.bounce(collision.get_normal()) * randf_range(0.2, 0.45) + Vector3(randf_range(-0.3, 0.3), randf_range(-0.5, 0.5), randf_range(-0.3, 0.3))
 			angular += Vector3(randf_range(-0.75, 0.75), randf_range(-0.75, 0.75), randf_range(-0.75, 0.75))
 "
 

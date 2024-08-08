@@ -376,22 +376,14 @@ func take_objective(site : int):
 	
 	if mp_active:
 		round_start_time = max(Time.get_ticks_msec() - round_time, round_start_time + 10000)
-	
-	for player in get_tree().get_nodes_in_group(\"Players\"):
-		if int(str(player.name)) == multiplayer.get_remote_sender_id():
-			player.carrying_objective = true
-			player.objective_index = site
-			break
 
 
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
-func recover_objective(site : int, player_id : int):
+func recover_objective(site : int):
 	objectives[site][2] == 2
 	if DisplayServer.get_name() != \"headless\":
 		UiManager.scoreboard.set_objective(site, 1, 0)
-	if multiplayer.get_unique_id() == player_id:
-		UiManager.playerhud.set_objective(false)
 
 
 

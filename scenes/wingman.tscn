@@ -1273,7 +1273,7 @@ team = 1
 [node name="GPUParticles3D" type="GPUParticles3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.844425, 3.56483, -4.15953)
 cast_shadow = 0
-amount = 800
+amount = 700
 lifetime = 20.0
 preprocess = 10.0
 fixed_fps = 60
