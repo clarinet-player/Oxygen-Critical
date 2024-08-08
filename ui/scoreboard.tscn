@@ -49,6 +49,37 @@ func set_objective(obj : int, state : int, time : float):
 	if DisplayServer.get_name() == \"headless\":
 		return
 	
+	
+	if obj == 0:
+		if a == state:
+			return
+		a = state
+		$HBoxContainer/VBoxContainer/A.visible = state > 0
+		$HBoxContainer/VBoxContainer/A/Label2.visible = state == 1
+		$HBoxContainer/VBoxContainer/A/Label3.visible = state == 2
+		$HBoxContainer/VBoxContainer/A/Label4.visible = state == 3
+	
+	
+	elif obj == 1:
+		if b == state:
+			return
+		b = state
+		$HBoxContainer/VBoxContainer/B.visible = state > 0
+		$HBoxContainer/VBoxContainer/B/Label2.visible = state == 1
+		$HBoxContainer/VBoxContainer/B/Label3.visible = state == 2
+		$HBoxContainer/VBoxContainer/B/Label4.visible = state == 3
+	
+	
+	elif obj == 2:
+		if c == state:
+			return
+		c = state
+		$HBoxContainer/VBoxContainer/C.visible = state > 0
+		$HBoxContainer/VBoxContainer/C/Label2.visible = state == 1
+		$HBoxContainer/VBoxContainer/C/Label3.visible = state == 2
+		$HBoxContainer/VBoxContainer/C/Label4.visible = state == 3
+	
+	
 	if state == 1:
 		audio.stream = preload(\"res://assets/hack.mp3\")
 		audio.play()
@@ -58,30 +89,6 @@ func set_objective(obj : int, state : int, time : float):
 	elif state == 3:
 		audio.stream = preload(\"res://assets/defuse.mp3\")
 	audio.play()
-	
-	
-	if obj == 0:
-		a = state
-		$HBoxContainer/VBoxContainer/A.visible = state > 0
-		$HBoxContainer/VBoxContainer/A/Label2.visible = state == 1
-		$HBoxContainer/VBoxContainer/A/label3.visible = state == 2
-		$HBoxContainer/VBoxContainer/A/Label4.visible = state == 3
-	
-	
-	elif obj == 1:
-		b = state
-		$HBoxContainer/VBoxContainer/B.visible = state > 0
-		$HBoxContainer/VBoxContainer/B/Label2.visible = state == 1
-		$HBoxContainer/VBoxContainer/B/label3.visible = state == 2
-		$HBoxContainer/VBoxContainer/B/Label4.visible = state == 3
-	
-	
-	elif obj == 2:
-		c = state
-		$HBoxContainer/VBoxContainer/C.visible = state > 0
-		$HBoxContainer/VBoxContainer/C/Label2.visible = state == 1
-		$HBoxContainer/VBoxContainer/C/label3.visible = state == 2
-		$HBoxContainer/VBoxContainer/C/Label4.visible = state == 3
 
 
 
@@ -156,6 +163,7 @@ theme_override_font_sizes/font_size = 50
 text = "0:00"
 
 [node name="A" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 
@@ -177,6 +185,7 @@ layout_mode = 2
 text = "Defusing"
 
 [node name="B" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 
@@ -199,6 +208,7 @@ layout_mode = 2
 text = "Defusing"
 
 [node name="C" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 
