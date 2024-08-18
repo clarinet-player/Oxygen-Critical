@@ -19,11 +19,25 @@ extends Node3D
 @export var weight : float
 @export var camera_movement : float
 @export var casing : int
+@export var equip_pos : Node3D
+@export var unequip_pos : Node3D
+@export var equip_speed := 200.0
 
 @export var audio : AudioStreamPlayer3D
 @export var light : SpotLight3D
 @export var ejection : Marker3D
+@export var grip1 : Marker3D
+@export var grip2 : Marker3D
 
+
+enum wstate {
+	unequipped,
+	equipped,
+	equipping,
+	unequipping
+}
+var state := wstate.unequipped
+var equip_time : int
 
 var firemode := 0
 
@@ -43,40 +57,40 @@ var reload_start_time := 0
 @onready var hud = UiManager.playerhud
 
 
-
-#region entry/exit
-func _enter_tree():
-	set_multiplayer_authority(get_parent().get_multiplayer_authority())
+signal on_equip
+signal on_unequip
 
 
 
 func _ready():
-	if !Gamemanager.mp_active or is_multiplayer_authority():
-		hud.set_ammo(true, magazine)
-		hud.alt_fire(shots[firemode])
-		get_parent().get_parent().using_objective = false
-		hud.stop_progress("Planting")
-	
-	rotation = Vector3.ZERO
-	position = Vector3(0.207, -0.15, -0.205)
-	
 	Settings.settings_changed.connect(_load_settings)
 	_load_settings()
 
 
 
-func _exit_tree():
+func equip():
+	equip_time = Time.get_ticks_msec()
+	state = wstate.equipping
+	show()
+	
+	if !Gamemanager.mp_active or is_multiplayer_authority():
+		hud.set_ammo(true, magazine)
+		hud.alt_fire(shots[firemode])
+		get_parent().get_parent().using_objective = false
+		hud.stop_progress("Planting")
+
+
+
+func unequip():
+	equip_time = Time.get_ticks_msec()
+	state = wstate.unequipping
+	
 	reloading = false
 	_heat = 0
 	_burst = 0
 	_mouse_down = false
-	if is_multiplayer_authority():
+	if !Gamemanager.mp_active or is_multiplayer_authority():
 		hud.stop_progress("reloading")
-		hud.set_ammo(0, false)
-	audio.stop()
-	
-	request_ready()
-#endregion
 
 
 
@@ -86,6 +100,18 @@ func _load_settings():
 
 
 func _process(delta):
+	match state:
+		wstate.unequipped:
+			transform = unequip_pos.transform
+		wstate.equipping:
+			if Input.is_action_pressed("Mouse1"):
+				_mouse_down = true
+			else:
+				_mouse_down = false
+			transform = unequip_pos.transform.interpolate_with(equip_pos.transform, (Time.get_ticks_msec() - equip_time) / equip_speed)
+		wstate.unequipping:
+			transform = equip_pos.transform.interpolate_with(unequip_pos.transform, (Time.get_ticks_msec() - equip_time) / equip_speed)
+	
 	if Time.get_ticks_msec() > _fire_time_ms + _firedelay * 0.6:
 		light.light_energy = 0
 	else:
@@ -98,6 +124,19 @@ func _physics_process(delta):
 		return
 	
 	var time = Time.get_ticks_msec()
+	
+	
+	if state == wstate.equipping and Time.get_ticks_msec() - equip_time > equip_speed:
+		state = wstate.equipped
+		on_equip.emit()
+		transform = equip_pos.transform
+		get_parent().get_node("Crosshair").rotation = Vector3.ZERO
+	if state == wstate.unequipping and Time.get_ticks_msec() - equip_time > equip_speed:
+		state = wstate.unequipped
+		on_unequip.emit()
+		hide()
+	if state != wstate.equipped:
+		return
 	
 	
 	# Reloading
@@ -149,27 +188,33 @@ func _physics_process(delta):
 		_burst = 0
 	
 	
+	var player = $"../.."
+	var crosshair = get_parent().get_node("Crosshair")
+	
+	
 	# Firing
 	if _burst > 0 and time > _fire_time_ms + _firedelay:
 		
-		var player = $"../.."
+		var camera = get_parent()
 		var inaccuracy = player.velocity.length()
 		if !player.is_anchored():
 			inaccuracy = 3.0
 		inaccuracy = (inaccuracy + _heat) * spray / 400
 		
 		if Gamemanager.mp_active:
-			fire.rpc(get_parent().global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy * randf()).rotated(global_basis.z.normalized(), randf_range(0, TAU))).normalized())
+			fire.rpc(get_parent().global_position, player.get_velocity() + muzzle_vel * (-crosshair.global_basis.z + (crosshair.global_basis.y * inaccuracy * randf()).rotated(crosshair.global_basis.z.normalized(), randf_range(0, TAU))).normalized())
 		else:
-			fire(get_parent().global_position, player.get_velocity() + muzzle_vel * (-global_basis.z + (global_basis.y * inaccuracy * randf()).rotated(global_basis.z.normalized(), randf_range(0, TAU))))
+			fire(get_parent().global_position, player.get_velocity() + muzzle_vel * (-crosshair.global_basis.z + (crosshair.global_basis.y * inaccuracy * randf()).rotated(crosshair.global_basis.z.normalized(), randf_range(0, TAU))))
 		
 		
 		if !player.is_anchored() or player.velocity.length() > 1:
 			rotate(basis.x.normalized(), recoil * 0.005)
-			get_parent().rotate(basis.x.normalized(), recoil * 0.005 * camera_movement)
+			camera.rotate(camera.basis.x.normalized(), recoil * 0.005 * camera_movement)
+			crosshair.rotate(camera.basis.x.normalized(), recoil * 0.005)
 		else:
 			rotate(basis.x.normalized(), recoil * 0.004)
-			get_parent().rotate(basis.x.normalized(), recoil * 0.004 * camera_movement)
+			camera.rotate(camera.basis.x.normalized(), recoil * 0.004 * camera_movement)
+			crosshair.rotate(camera.basis.x.normalized(), recoil * 0.004)
 		
 		_heat += 1
 		_burst -= 1
@@ -181,7 +226,8 @@ func _physics_process(delta):
 	# Recovering heat after firing
 	if time - _fire_time_ms > _firedelay:
 		rotation.x = move_toward(rotation.x, 0.0, recovery * delta)
-		get_parent().rotation.x = move_toward(rotation.x, 0.0, recovery * delta * camera_movement)
+		get_parent().rotation.x = move_toward(get_parent().rotation.x, 0.0, recovery * delta * camera_movement)
+		crosshair.rotation.x = move_toward(crosshair.rotation.x, 0.0, recovery * delta)
 		_heat = move_toward(_heat, 0.0, recovery * delta * 100)
 
 

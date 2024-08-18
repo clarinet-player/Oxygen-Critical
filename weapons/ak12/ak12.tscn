@@ -86,7 +86,7 @@ bind/3/name = &"neutral_bone"
 bind/3/bone = -1
 bind/3/pose = Transform3D(7.62132e-07, 0, 10.0947, 0, 10.0947, 0, -10.0947, 0, 7.62132e-07, 0, 0, 0)
 
-[node name="AK12" type="Node3D" node_paths=PackedStringArray("audio", "light", "ejection")]
+[node name="AK12" type="Node3D" node_paths=PackedStringArray("audio", "light", "ejection", "grip1", "grip2")]
 script = ExtResource("1_fsuj5")
 item_id = 1
 firerate = [9.0, 9.0]
@@ -99,15 +99,18 @@ tearing = 4.0
 tagging = 0.5
 effective_range = 50.0
 recovery = 0.35
-recoil = 3.7
+recoil = 3.4
 spray = 3.0
 inventory_size = 2
 weight = 0.9
-camera_movement = 1.0
+camera_movement = 1.1
 casing = 2
+equip_speed = 350.0
 audio = NodePath("AudioStreamPlayer3D")
 light = NodePath("Skeleton3D2/SpotLight3D")
 ejection = NodePath("Skeleton3D2/Marker3D")
+grip1 = NodePath("Skeleton3D2/Marker3D2")
+grip2 = NodePath("Skeleton3D2/Marker3D3")
 
 [node name="Skeleton3D2" type="Skeleton3D" parent="."]
 transform = Transform3D(-0.00878338, 0.0996135, 8.7085e-09, 0.0996135, 0.00878338, 7.67868e-10, 3.82137e-16, 8.74228e-09, -0.1, 0, -0.00830968, 0.0432864)
@@ -159,6 +162,12 @@ spot_angle_attenuation = 1.8025
 
 [node name="Marker3D" type="Marker3D" parent="Skeleton3D2"]
 transform = Transform3D(0.97472, 0.0859455, 0.206238, -0.205441, -0.0181147, 0.978502, 0.0878338, -0.996135, -4.52391e-08, 0.420068, 0.268131, 2.1563)
+
+[node name="Marker3D2" type="Marker3D" parent="Skeleton3D2"]
+transform = Transform3D(1, 7.45058e-09, -8.32661e-17, -7.45058e-09, 1, 0, 3.40368e-15, -2.84217e-14, 1, -0.640619, 0.190477, 0.101624)
+
+[node name="Marker3D3" type="Marker3D" parent="Skeleton3D2"]
+transform = Transform3D(-0.812686, -0.342245, -0.471603, -0.485909, 0.844734, 0.224312, 0.321609, 0.411451, -0.852804, -0.113489, -0.3748, 3.00237)
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("1_b1tva")

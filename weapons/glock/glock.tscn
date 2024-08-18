@@ -62,6 +62,7 @@ inventory_size = 1
 weight = 0.4
 camera_movement = 0.75
 casing = 1
+equip_speed = 150.0
 audio = NodePath("AudioStreamPlayer3D")
 light = NodePath("Skeleton3D/SpotLight3D")
 ejection = NodePath("Skeleton3D/Marker3D")
