@@ -43,5 +43,3 @@ res://scenes/menu scene.tscn
 res://autoloads/ui manager.tscn
 res://ui/pause menu.tscn
 res://ui/multiplayer menu.tscn
-res://classes/weaponbase.gd
-res://classes/item base.gd

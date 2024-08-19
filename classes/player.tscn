@@ -36,6 +36,7 @@ var jump_stamina : float = 1.0
 var walking := false
 
 var oriented := true
+var up := Vector3.UP
 
 var _anchored_shape : CollisionShape3D
 var _anchor_point_l : Vector3
@@ -108,7 +109,7 @@ func _ready():
 		$Skeleton3D/Hips/RigidBody3D.queue_free()
 		$Skeleton3D/RightLeg/RigidBody3D.queue_free()
 		$Skeleton3D/LeftLeg/RigidBody3D.queue_free()
-		skeleton.hide()
+		#skeleton.hide()
 		
 		
 		Gamemanager.local_player = self
@@ -211,6 +212,23 @@ func _process(delta):
 	elif _anchored_shape:
 		oriented = true
 		reorient(global_basis.y, delta * 3.5)
+	
+	
+	if !Gamemanager.gravity.is_zero_approx():
+		up = lerp(up, Vector3.UP, delta * 10).normalized()
+		camera.global_position = global_position + up
+		var face := -(global_basis.z - global_basis.z.dot(up) * up).normalized()
+		skeleton.global_transform = Transform3D(Basis( face, up, face.cross(up) ), global_position + up * 0.54)
+	elif _anchored_shape:
+		up = lerp(up, _surface_normal, delta * 10).normalized()
+		camera.global_position = global_position + up
+		var face := -(global_basis.z - global_basis.z.dot(up) * up).normalized()
+		skeleton.global_transform = Transform3D(Basis( face, up, face.cross(up) ), global_position + up * 0.54)
+	else:
+		up = lerp(up, -velocity.normalized(), delta * 10).normalized()
+		camera.global_position = global_position - velocity.normalized()
+		var face := (global_basis.y - global_basis.y.dot(up) * up).normalized()
+		skeleton.global_transform = Transform3D(Basis( face, up, face.cross(up) ), global_position + up * 0.54)
 	
 	
 	if _anchored_shape:
@@ -446,29 +464,6 @@ func _physics_process(delta : float):
 				_grapple_point = _raycast.position
 		else:
 			_grapple_point = Vector3.ZERO
-	
-	
-	if !Gamemanager.gravity.is_zero_approx():
-		camera.global_position = global_position + Vector3.UP
-		skeleton.global_position = global_position + Vector3.UP * 0.54
-	
-	elif _anchored_shape:
-		camera.global_position = global_position + _surface_normal
-		skeleton.global_position = global_position + _surface_normal * 0.54
-		var _up : Vector3 = skeleton.global_basis.y
-		var _angle : float = acos(_up.dot(_surface_normal))
-		var _axis = _up.cross(_surface_normal)
-		if !_axis.is_zero_approx():
-			skeleton.global_rotate(_axis.normalized(), _angle)
-	
-	else:
-		camera.global_position = global_position - velocity.normalized()
-		skeleton.global_position = global_position - velocity.normalized() * 0.54
-		var _up : Vector3 = -skeleton.global_basis.y
-		var _angle : float = acos(_up.dot(velocity.normalized()))
-		var _axis = _up.cross(velocity.normalized())
-		if !_axis.is_zero_approx():
-			skeleton.global_rotate(_axis.normalized(), _angle)
 	
 	
 	# Delegate movement
@@ -1005,27 +1000,21 @@ properties/0/replication_mode = 1
 properties/1/path = NodePath(".:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
-properties/2/path = NodePath("Hitbox:position")
+properties/2/path = NodePath(".:team")
 properties/2/spawn = true
-properties/2/replication_mode = 1
-properties/3/path = NodePath("Hitbox:rotation")
+properties/2/replication_mode = 2
+properties/3/path = NodePath(".:username")
 properties/3/spawn = true
-properties/3/replication_mode = 1
-properties/4/path = NodePath("Camera3D:position")
+properties/3/replication_mode = 2
+properties/4/path = NodePath(".:velocity")
 properties/4/spawn = true
 properties/4/replication_mode = 1
-properties/5/path = NodePath("Camera3D:rotation")
+properties/5/path = NodePath("Skeleton3D:position")
 properties/5/spawn = true
 properties/5/replication_mode = 1
-properties/6/path = NodePath(".:team")
+properties/6/path = NodePath("Skeleton3D:rotation")
 properties/6/spawn = true
 properties/6/replication_mode = 1
-properties/7/path = NodePath(".:username")
-properties/7/spawn = true
-properties/7/replication_mode = 1
-properties/8/path = NodePath(".:velocity")
-properties/8/spawn = true
-properties/8/replication_mode = 1
 
 [node name="Player" type="RigidBody3D" groups=["Players"]]
 top_level = true
@@ -1145,13 +1134,14 @@ use_magnet = true
 magnet = Vector3(0.5, -1, -1)
 
 [node name="Marker3D" type="Marker3D" parent="Camera3D"]
-transform = Transform3D(0.996252, -0.00716533, -0.0861989, 0.0111266, 0.9989, 0.0455625, 0.0857776, -0.0463508, 0.995236, 0.129362, -0.158934, -0.140662)
+transform = Transform3D(0.996321, -0.00695575, -0.085417, 0.00698126, 0.999976, 0, 0.0854148, -0.000596318, 0.996346, 0.129362, -0.158934, -0.140662)
 
 [node name="Marker3D2" type="Marker3D" parent="Camera3D"]
-transform = Transform3D(0.707107, -0.671743, 0.220819, -2.98023e-08, 0.312285, 0.949988, -0.707107, -0.671743, 0.220819, 0.0498249, -0.416537, -0.253671)
+transform = Transform3D(0.707107, -0.671743, 0.220819, -2.98023e-08, 0.312285, 0.949988, -0.707107, -0.671743, 0.220819, 0.0498249, -0.432819, -0.253671)
 
 [node name="Skeleton3D" type="Skeleton3D" parent="."]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0.540054, 0)
+top_level = true
 bones/0/name = "Hips"
 bones/0/parent = -1
 bones/0/rest = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.176213, 0)
