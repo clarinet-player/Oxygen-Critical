@@ -43,7 +43,7 @@ bind/3/pose = Transform3D(26.5951, 0, -1.03565e-05, 0, -26.5951, 0, -1.03565e-05
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6y1rc"]
 albedo_color = Color(0.309804, 0.32549, 0.368627, 1)
 
-[node name="glock" type="Node3D" node_paths=PackedStringArray("audio", "light", "ejection")]
+[node name="glock" type="Node3D" node_paths=PackedStringArray("audio", "light", "ejection", "grip1", "grip2")]
 script = ExtResource("1_1us34")
 item_id = 3
 firerate = [16.0, 20.0]
@@ -51,7 +51,7 @@ shots = [1.0, 3.0]
 mag_size = 20
 reload_time = 800.0
 muzzle_vel = 400.0
-damage = [18.0, 34.0, 15.0]
+damage = [18.0, 32.0, 15.0]
 tearing = 4.75
 tagging = 0.9
 effective_range = 35.0
@@ -66,6 +66,8 @@ equip_speed = 150.0
 audio = NodePath("AudioStreamPlayer3D")
 light = NodePath("Skeleton3D/SpotLight3D")
 ejection = NodePath("Skeleton3D/Marker3D")
+grip1 = NodePath("Skeleton3D/Marker3D2")
+grip2 = NodePath("Skeleton3D/Marker3D3")
 
 [node name="Skeleton3D" type="Skeleton3D" parent="."]
 transform = Transform3D(-0.038, -3.32207e-09, 1.66103e-09, 1.66103e-09, 7.26061e-17, 0.038, -3.32207e-09, 0.038, 7.2606e-17, 0, -0.0344486, -0.131933)
@@ -116,6 +118,12 @@ spot_angle_attenuation = 1.8025
 
 [node name="Marker3D" type="Marker3D" parent="Skeleton3D"]
 transform = Transform3D(0.65035, -3.05674e-08, -0.759635, -3.05675e-08, 1, -6.64094e-08, 0.759635, 6.64094e-08, 0.65035, -0.647989, -0.366899, 1.44691)
+
+[node name="Marker3D2" type="Marker3D" parent="Skeleton3D"]
+transform = Transform3D(1, 1.74846e-07, -8.74227e-08, 1.74846e-07, -1, 8.74228e-08, -8.74226e-08, -8.74228e-08, -1, -0.647989, 2.89185, -0.459435)
+
+[node name="Marker3D3" type="Marker3D" parent="Skeleton3D"]
+transform = Transform3D(1, 1.74846e-07, -8.74227e-08, 1.74846e-07, -1, 8.74228e-08, -8.74226e-08, -8.74228e-08, -1, 0.778091, 2.96737, -1.21699)
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("1_6qqve")

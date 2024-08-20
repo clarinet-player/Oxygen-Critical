@@ -5,6 +5,8 @@ script/source = "extends Node
 
 
 
+const version = \"0.0.1\"
+
 var peer = ENetMultiplayerPeer.new()
 var local_player
 var freecam
@@ -33,6 +35,7 @@ var t_spawns := 0
 
 
 func _ready():
+	$Label.text = version
 	
 	# Server setup
 	if DisplayServer.get_name() == \"headless\":
@@ -47,10 +50,6 @@ func _ready():
 		
 		peer.create_server(7777)
 		multiplayer.multiplayer_peer = peer
-		
-		while true:
-			await get_tree().create_timer(0.5).timeout
-			print(objectives)
 
 
 
@@ -417,6 +416,30 @@ func switch_team():
 			if player.body != null:
 				player.body.die.rpc()
 			break
+
+
+
+func create_item(item : int):
+	if item == 1:
+		return preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
+	elif item == 2:
+		return preload(\"res://weapons/vector/vector.tscn\").instantiate()
+	elif item == 3:
+		return preload(\"res://weapons/glock/glock.tscn\").instantiate()
+	elif item == 4:
+		return preload(\"res://weapons/grenades/he_display.tscn\").instantiate()
+	elif item == 5:
+		return preload(\"res://weapons/healing/sealant.tscn\").instantiate()
+	elif item == 6:
+		return preload(\"res://weapons/healing/healthkit.tscn\").instantiate()
+	elif item == 7:
+		return preload(\"res://weapons/grenades/incendiary_display.tscn\").instantiate()
+	elif item == 8:
+		return preload(\"res://weapons/grenades/flash_display.tscn\").instantiate()
+	elif item == 9:
+		return preload(\"res://weapons/grenades/smoke_display.tscn\").instantiate()
+	elif item == 10:
+		return preload(\"res://weapons/grenades/claymore_display.tscn\").instantiate()
 "
 
 [node name="GameManager" type="Node"]
@@ -425,5 +448,14 @@ script = SubResource("GDScript_w478l")
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://classes/player.tscn", "res://classes/bullet.tscn")
 spawn_path = NodePath("..")
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -23.0
+offset_right = 44.0
+grow_vertical = 0
 
 [connection signal="spawned" from="MultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]

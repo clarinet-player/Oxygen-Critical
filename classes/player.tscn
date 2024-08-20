@@ -103,13 +103,12 @@ func _ready():
 		if !Gamemanager.username.is_empty():
 			username = Gamemanager.username
 		
-		
 		$Skeleton3D/Head/RigidBody3D.queue_free()
 		$Skeleton3D/Chest/RigidBody3D.queue_free()
 		$Skeleton3D/Hips/RigidBody3D.queue_free()
 		$Skeleton3D/RightLeg/RigidBody3D.queue_free()
 		$Skeleton3D/LeftLeg/RigidBody3D.queue_free()
-		#skeleton.hide()
+		skeleton.hide()
 		
 		
 		Gamemanager.local_player = self
@@ -120,43 +119,12 @@ func _ready():
 		flash_overlay.mesh.material.albedo_color.a = 0
 		
 		for item in Settings.saved_inventory:
-			if item == 1:
-				var ak = preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
-				ak.magazine = ak.mag_size
-				inventory.append(ak)
-			elif item == 2:
-				var vector = preload(\"res://weapons/vector/vector.tscn\").instantiate()
-				vector.magazine = vector.mag_size
-				inventory.append(vector)
-			elif item == 3:
-				var glock = preload(\"res://weapons/glock/glock.tscn\").instantiate()
-				glock.magazine = glock.mag_size
-				inventory.append(glock)
-			elif item == 4:
-				var grenade = preload(\"res://weapons/grenades/he_display.tscn\").instantiate()
-				inventory.append(grenade)
-			elif item == 5:
-				var sealant = preload(\"res://weapons/healing/sealant.tscn\").instantiate()
-				inventory.append(sealant)
-			elif item == 6:
-				var healthkit = preload(\"res://weapons/healing/healthkit.tscn\").instantiate()
-				inventory.append(healthkit)
-			elif item == 7:
-				var incendiary = preload(\"res://weapons/grenades/incendiary_display.tscn\").instantiate()
-				inventory.append(incendiary)
-			elif item == 8:
-				var flash = preload(\"res://weapons/grenades/flash_display.tscn\").instantiate()
-				inventory.append(flash)
-			elif item == 9:
-				var smoke = preload(\"res://weapons/grenades/smoke_display.tscn\").instantiate()
-				inventory.append(smoke)
-			elif item == 10:
-				var claymore = preload(\"res://weapons/grenades/claymore_display.tscn\").instantiate()
-				inventory.append(claymore)
-			elif item == 11:
+			if item == 11:
 				set_armor.rpc(1)
 			elif item == 12:
 				set_armor.rpc(3)
+			else:
+				inventory.append(Gamemanager.create_item(item))
 	
 	else:
 		$Camera3D/SpotLight3D.queue_free()
@@ -711,11 +679,11 @@ func set_team(new_team : int):
 	
 	else:
 		show()
-		$Skeleton3D/Head/RigidBody3D/Hitbox.disabled = true
-		$Skeleton3D/Chest/RigidBody3D/Hitbox.disabled = true
-		$Skeleton3D/Hips/RigidBody3D/Hitbox.disabled = true
-		$Skeleton3D/RightLeg/RigidBody3D/Hitbox.disabled = true
-		$Skeleton3D/LeftLeg/RigidBody3D/Hitbox.disabled = true
+		$Skeleton3D/Head/RigidBody3D/Hitbox.disabled = false
+		$Skeleton3D/Chest/RigidBody3D/Hitbox.disabled = false
+		$Skeleton3D/Hips/RigidBody3D/Hitbox.disabled = false
+		$Skeleton3D/RightLeg/RigidBody3D/Hitbox.disabled = false
+		$Skeleton3D/LeftLeg/RigidBody3D/Hitbox.disabled = false
 		
 		#if team == 1:
 		#	var mat = StandardMaterial3D.new()
@@ -752,7 +720,7 @@ func set_team(new_team : int):
 
 
 
-@rpc(\"any_peer\", \"call_local\", 'reliable')
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
 func set_armor(num : int):
 	if num == 0:
 		armor = null
@@ -769,6 +737,8 @@ func set_item(slot : int):
 	if inventory.size() <= slot or inventory[slot] == active_item or item_locked:
 		return
 	item_locked = true
+	
+	sync_item.rpc(inventory[slot].item_id)
 	
 	if active_item != null:
 		active_item.unequip()
@@ -789,6 +759,35 @@ func set_item(slot : int):
 	await active_item.on_equip
 	
 	item_locked = false
+
+
+
+@rpc(\"authority\", \"call_remote\", \"reliable\")
+func sync_item(id : int):
+	if active_item != null:
+		active_item.unequip()
+		await active_item.on_unequip
+	
+	var new_item
+	for item in inventory:
+		if item.item_id == id:
+			new_item = item
+			break
+	if !new_item:
+		new_item = Gamemanager.create_item(id)
+	
+	active_item = new_item
+	if !$Skeleton3D/Head.get_children().has(active_item):
+		$Skeleton3D/Head.add_child(active_item)
+		active_item.equip_pos = $Skeleton3D/Head/Marker3D
+		active_item.unequip_pos = $Skeleton3D/Hips/Marker3D
+	if active_item.grip1 != null:
+		$Skeleton3D/RightHandIK.target_node = active_item.grip1.get_path()
+		$Skeleton3D/RightHandIK.start()
+	if active_item.grip2 != null:
+		$Skeleton3D/LeftHandIK.target_node = active_item.grip2.get_path()
+		$Skeleton3D/LeftHandIK.start()
+	active_item.equip()
 
 
 
@@ -1028,7 +1027,7 @@ script = SubResource("GDScript_qj47s")
 shape = SubResource("SphereShape3D_ufnhc")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.929008, -1.1038)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.938321, -1.75206)
 
 [node name="Crosshair" type="Node3D" parent="Camera3D"]
 
@@ -1284,6 +1283,7 @@ font_size = 60
 process_priority = 1
 root_bone = &"Right Shoulder"
 tip_bone = &"Right Hand"
+target_node = NodePath("../Head/Marker3D")
 
 [node name="LeftHandIK" type="SkeletonIK3D" parent="Skeleton3D"]
 process_priority = 1
@@ -1307,6 +1307,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00155365, 0.00388426)
 shape = SubResource("SphereShape3D_soy3f")
 player = NodePath("../../../..")
 area = 1
+
+[node name="Marker3D" type="Marker3D" parent="Skeleton3D/Head"]
+transform = Transform3D(0.165616, 0, -0.98619, 0, 1, 0, 0.98619, 0, 0.165616, 0.315251, -0.0805038, 0.0942098)
 
 [node name="Chest" type="BoneAttachment3D" parent="Skeleton3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.090513, 0)
@@ -1341,6 +1344,9 @@ freeze = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.200668, 0.00299454)
 shape = SubResource("BoxShape3D_wa37y")
 player = NodePath("../../../..")
+
+[node name="Marker3D" type="Marker3D" parent="Skeleton3D/Hips"]
+transform = Transform3D(-4.37114e-08, 0.999938, 0.0111524, 0, -0.0111524, 0.999938, 1, 4.37087e-08, 4.87486e-10, -0.00356396, 0.228025, 0.225808)
 
 [node name="RightLeg" type="BoneAttachment3D" parent="Skeleton3D"]
 transform = Transform3D(0.999342, 0.0359959, -0.00440763, 0.0361934, -0.997601, 0.0590151, -0.00227275, -0.0591358, -0.998247, 0, -0.19595, 0.0819109)

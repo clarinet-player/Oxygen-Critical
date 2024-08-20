@@ -63,8 +63,10 @@ signal on_unequip
 
 
 func _ready():
+	set_multiplayer_authority(get_parent().get_multiplayer_authority())
 	Settings.settings_changed.connect(_load_settings)
 	_load_settings()
+	magazine = mag_size
 
 
 
@@ -78,6 +80,7 @@ func equip():
 		hud.alt_fire(shots[firemode])
 		get_parent().get_parent().using_objective = false
 		hud.stop_progress("Planting")
+		get_parent().get_node("Crosshair").rotation = Vector3.ZERO
 
 
 
@@ -102,15 +105,15 @@ func _load_settings():
 func _process(delta):
 	match state:
 		wstate.unequipped:
-			transform = unequip_pos.transform
+			global_transform = unequip_pos.global_transform
 		wstate.equipping:
 			if Input.is_action_pressed("Mouse1"):
 				_mouse_down = true
 			else:
 				_mouse_down = false
-			transform = unequip_pos.transform.interpolate_with(equip_pos.transform, (Time.get_ticks_msec() - equip_time) / equip_speed)
+			global_transform = unequip_pos.global_transform.interpolate_with(equip_pos.global_transform, (Time.get_ticks_msec() - equip_time) / equip_speed)
 		wstate.unequipping:
-			transform = equip_pos.transform.interpolate_with(unequip_pos.transform, (Time.get_ticks_msec() - equip_time) / equip_speed)
+			global_transform = equip_pos.global_transform.interpolate_with(unequip_pos.global_transform, (Time.get_ticks_msec() - equip_time) / equip_speed)
 	
 	if Time.get_ticks_msec() > _fire_time_ms + _firedelay * 0.6:
 		light.light_energy = 0
@@ -120,22 +123,21 @@ func _process(delta):
 
 
 func _physics_process(delta):
-	if Gamemanager.mp_active and !is_multiplayer_authority():
-		return
-	
 	var time = Time.get_ticks_msec()
 	
-	
-	if state == wstate.equipping and Time.get_ticks_msec() - equip_time > equip_speed:
+	if state == wstate.equipping and time - equip_time > equip_speed:
 		state = wstate.equipped
 		on_equip.emit()
-		transform = equip_pos.transform
-		get_parent().get_node("Crosshair").rotation = Vector3.ZERO
-	if state == wstate.unequipping and Time.get_ticks_msec() - equip_time > equip_speed:
+		global_transform = equip_pos.global_transform
+	if state == wstate.unequipping and time - equip_time > equip_speed:
 		state = wstate.unequipped
 		on_unequip.emit()
 		hide()
 	if state != wstate.equipped:
+		return
+	
+	
+	if Gamemanager.mp_active and !is_multiplayer_authority():
 		return
 	
 	
@@ -265,7 +267,7 @@ func fire(pos : Vector3, velocity : Vector3):
 	if get_parent():
 		var case = preload("res://classes/casing.tscn").instantiate()
 		case.type = casing
-		case.velocity = ejection.global_basis.z.normalized() * 5 + Vector3(randf_range(-0.3, 0.3), randf_range(-0.3, 0.3), randf_range(-0.3, 0.3)) + get_parent().get_parent().velocity
+		case.velocity = ejection.global_basis.z.normalized() * 5.25 + Vector3(randf_range(-0.75, 0.75), randf_range(-0.75, 0.75), randf_range(-0.75, 0.75)) + get_parent().get_parent().velocity
 		case.angular = Vector3(randf_range(-0.5, 0.5), randf_range(-0.5, 0.5), randf_range(-0.5, 0.5))
 		Gamemanager.add_child(case)
 		case.global_position = ejection.global_position

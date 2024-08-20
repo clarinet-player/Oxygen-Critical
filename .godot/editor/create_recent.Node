@@ -1,5 +1,6 @@
-Node3D
 Marker3D
+Label
+Node3D
 RigidBody3D
 BoneAttachment3D
 SkeletonIK3D
@@ -8,7 +9,6 @@ SubViewportContainer
 SubViewport
 AudioStreamPlayer
 ProgressBar
-Label
 TextureRect
 HBoxContainer
 VBoxContainer

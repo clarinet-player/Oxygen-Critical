@@ -100,7 +100,7 @@ tagging = 0.5
 effective_range = 50.0
 recovery = 0.35
 recoil = 3.4
-spray = 3.0
+spray = 4.0
 inventory_size = 2
 weight = 0.9
 camera_movement = 1.1
@@ -164,10 +164,10 @@ spot_angle_attenuation = 1.8025
 transform = Transform3D(0.97472, 0.0859455, 0.206238, -0.205441, -0.0181147, 0.978502, 0.0878338, -0.996135, -4.52391e-08, 0.420068, 0.268131, 2.1563)
 
 [node name="Marker3D2" type="Marker3D" parent="Skeleton3D2"]
-transform = Transform3D(1, 7.45058e-09, -8.32661e-17, -7.45058e-09, 1, 0, 3.40368e-15, -2.84217e-14, 1, -0.640619, 0.190477, 0.101624)
+transform = Transform3D(1, 2.23517e-08, -8.32661e-17, -2.23517e-08, 1, 0, 2.15588e-15, -4.26326e-14, 1, -0.634613, 0.122358, -0.17238)
 
 [node name="Marker3D3" type="Marker3D" parent="Skeleton3D2"]
-transform = Transform3D(-0.812686, -0.342245, -0.471603, -0.485909, 0.844734, 0.224312, 0.321609, 0.411451, -0.852804, -0.113489, -0.3748, 3.00237)
+transform = Transform3D(-0.910865, -0.304807, -0.27824, -0.402782, 0.803495, 0.438361, 0.089949, 0.511358, -0.854647, -0.0958847, -0.574453, 2.89109)
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("1_b1tva")
