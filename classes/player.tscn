@@ -168,7 +168,7 @@ func _input(event):
 func _process(delta):
 	if Gamemanager.mp_active and !is_multiplayer_authority():
 		if !username.is_empty():
-			$Hitbox/Label3D.text = username
+			$Skeleton3D/Label3D.text = username
 		return
 	
 	
@@ -183,17 +183,17 @@ func _process(delta):
 	
 	
 	if !Gamemanager.gravity.is_zero_approx():
-		up = lerp(up, Vector3.UP, delta * 10).normalized()
+		up = lerp(up, Vector3.UP, delta * 9).normalized()
 		camera.global_position = global_position + up
 		var face := -(global_basis.z - global_basis.z.dot(up) * up).normalized()
 		skeleton.global_transform = Transform3D(Basis( face, up, face.cross(up) ), global_position + up * 0.54)
 	elif _anchored_shape:
-		up = lerp(up, _surface_normal, delta * 10).normalized()
+		up = lerp(up, _surface_normal, delta * 9).normalized()
 		camera.global_position = global_position + up
 		var face := -(global_basis.z - global_basis.z.dot(up) * up).normalized()
 		skeleton.global_transform = Transform3D(Basis( face, up, face.cross(up) ), global_position + up * 0.54)
 	else:
-		up = lerp(up, -velocity.normalized(), delta * 10).normalized()
+		up = lerp(up, -velocity.normalized(), delta * 9).normalized()
 		camera.global_position = global_position - velocity.normalized()
 		var face := (global_basis.y - global_basis.y.dot(up) * up).normalized()
 		skeleton.global_transform = Transform3D(Basis( face, up, face.cross(up) ), global_position + up * 0.54)
@@ -577,8 +577,7 @@ func detach():
 
 
 func reorient(to : Vector3, speed : float):
-	var roll : Vector3 = global_transform.basis.z
-	var target : Vector3 = (_surface_normal - _surface_normal.dot(roll) * roll).normalized()
+	var target : Vector3 = (_surface_normal - _surface_normal.dot(global_basis.z) * global_basis.z).normalized()
 	var angle : float = acos(to.dot(target))
 	var axis = to.cross(target)
 	var look_angle = _surface_normal.cross(-global_basis.z).length()
@@ -749,10 +748,14 @@ func set_item(slot : int):
 		camera.add_child(active_item)
 		active_item.equip_pos = $Camera3D/Marker3D
 		active_item.unequip_pos = $Camera3D/Marker3D2
-	if active_item.grip1 != null:
+	if active_item.grip1 == null:
+		right_ik.stop()
+	else:
 		right_ik.target_node = active_item.grip1.get_path()
 		right_ik.start()
-	if active_item.grip2 != null:
+	if active_item.grip2 == null:
+		left_ik.stop()
+	else:
 		left_ik.target_node = active_item.grip2.get_path()
 		left_ik.start()
 	active_item.equip()
@@ -781,10 +784,14 @@ func sync_item(id : int):
 		$Skeleton3D/Head.add_child(active_item)
 		active_item.equip_pos = $Skeleton3D/Head/Marker3D
 		active_item.unequip_pos = $Skeleton3D/Hips/Marker3D
-	if active_item.grip1 != null:
+	if active_item.grip1 == null:
+		$Skeleton3D/RightHandIK.stop()
+	else:
 		$Skeleton3D/RightHandIK.target_node = active_item.grip1.get_path()
 		$Skeleton3D/RightHandIK.start()
-	if active_item.grip2 != null:
+	if active_item.grip2 == null:
+		$Skeleton3D/LeftHandIK.stop()
+	else:
 		$Skeleton3D/LeftHandIK.target_node = active_item.grip2.get_path()
 		$Skeleton3D/LeftHandIK.start()
 	active_item.equip()
@@ -1283,7 +1290,6 @@ font_size = 60
 process_priority = 1
 root_bone = &"Right Shoulder"
 tip_bone = &"Right Hand"
-target_node = NodePath("../Head/Marker3D")
 
 [node name="LeftHandIK" type="SkeletonIK3D" parent="Skeleton3D"]
 process_priority = 1
@@ -1309,7 +1315,7 @@ player = NodePath("../../../..")
 area = 1
 
 [node name="Marker3D" type="Marker3D" parent="Skeleton3D/Head"]
-transform = Transform3D(0.165616, 0, -0.98619, 0, 1, 0, 0.98619, 0, 0.165616, 0.315251, -0.0805038, 0.0942098)
+transform = Transform3D(0.165616, 0, -0.98619, 0, 1, 0, 0.98619, 0, 0.165616, 0.322136, -0.0805038, 0.0942098)
 
 [node name="Chest" type="BoneAttachment3D" parent="Skeleton3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.090513, 0)

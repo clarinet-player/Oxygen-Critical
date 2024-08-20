@@ -27,7 +27,7 @@ func _ready():
 
 
 func _physics_process(delta):
-	if Time.get_ticks_msec() - spawn_time > lifetime and get_viewport().get_camera_3d() != null and get_viewport().get_camera_3d().unproject_position(global_position).distance_to(Vector2(960, 540)) > 600:
+	if Time.get_ticks_msec() - spawn_time > lifetime and get_viewport().get_camera_3d() != null and get_viewport().get_camera_3d().unproject_position(global_position).distance_to(get_viewport().size / 2) > 600:
 		queue_free()
 	
 	if landed:

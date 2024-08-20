@@ -204,7 +204,7 @@ func _process(delta):
 		return
 	if get_viewport().get_camera_3d().global_position.distance_to(global_position) < 13:
 		hide()
-	elif get_viewport().get_camera_3d().unproject_position(global_position).distance_to(Vector2(960, 540)) < 120:
+	elif get_viewport().get_camera_3d().unproject_position(global_position).distance_to(get_viewport().size / 2) < 120:
 		hide()
 	else:
 		show()

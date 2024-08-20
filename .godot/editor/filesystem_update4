@@ -1,9 +1,9 @@
-res://classes/player.tscn
+res://autoloads/gamemanager.tscn
 res://assets/metal_walls.tres
 res://assets/somnambulist.tres
 res://assets/fire.tres
 res://assets/fire2.tres
-res://autoloads/gamemanager.tscn
+res://classes/player.tscn
 res://classes/bullet.tscn
 res://ui/main menu.tscn
 res://scenes/somnambulist 2.0.tscn
@@ -43,4 +43,3 @@ res://scenes/menu scene.tscn
 res://autoloads/ui manager.tscn
 res://ui/pause menu.tscn
 res://ui/multiplayer menu.tscn
-res://classes/weaponbase.gd

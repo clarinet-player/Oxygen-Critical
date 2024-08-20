@@ -1,3 +1,4 @@
+AnimationPlayer
 Marker3D
 Label
 Node3D
@@ -11,4 +12,3 @@ AudioStreamPlayer
 ProgressBar
 TextureRect
 HBoxContainer
-VBoxContainer

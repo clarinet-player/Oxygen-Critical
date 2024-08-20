@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://baf3wcacoxjv8"]
+[gd_scene load_steps=10 format=3 uid="uid://baf3wcacoxjv8"]
 
 [ext_resource type="Script" path="res://classes/weaponbase.gd" id="1_1us34"]
 [ext_resource type="AudioStream" uid="uid://wflo0sb33gra" path="res://weapons/glock/pistol_sfx_1.mp3" id="1_6qqve"]
@@ -43,7 +43,106 @@ bind/3/pose = Transform3D(26.5951, 0, -1.03565e-05, 0, -26.5951, 0, -1.03565e-05
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6y1rc"]
 albedo_color = Color(0.309804, 0.32549, 0.368627, 1)
 
+[sub_resource type="Animation" id="Animation_yijfy"]
+length = 0.001
+tracks/0/type = "position_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:Root")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, -5.35479e-16, 2.03217, 0.912508)
+tracks/1/type = "position_3d"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:Barrel")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = PackedFloat32Array(0, 1, -1.14222e-13, 4.15765, 0)
+tracks/2/type = "position_3d"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:Trigger")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = PackedFloat32Array(0, 1, 1.06317e-06, 2.10799, 0.791589)
+tracks/3/type = "position_3d"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".:Slide")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = PackedFloat32Array(0, 1, -1.14222e-13, 1.58023, 0)
+
+[sub_resource type="Animation" id="Animation_hh0m2"]
+resource_name = "fire"
+length = 0.15
+step = 0.01
+tracks/0/type = "position_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:Root")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, -5.35479e-16, 2.03217, 0.912508, 0.03, 1, -5.35479e-16, 2.03217, 0.912508, 0.06, 1, -5.35479e-16, 2.03217, 0.912508, 0.15, 1, -5.35479e-16, 2.03217, 0.912508)
+tracks/1/type = "position_3d"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:Barrel")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = PackedFloat32Array(0, 1, -1.14222e-13, 4.15765, 0, 0.03, 1, 5.18184e-08, 4.15765, 0.0399684, 0.06, 1, 5.18184e-08, 4.15765, 0.0399684, 0.15, 1, -1.14222e-13, 4.15765, 0)
+tracks/2/type = "position_3d"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:Trigger")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = PackedFloat32Array(0, 1, 1.06317e-06, 2.10799, 0.791589, 0.03, 1, 1.06317e-06, 2.10799, 0.791589, 0.06, 1, 1.06317e-06, 2.10799, 0.791589, 0.15, 1, 1.06317e-06, 2.10799, 0.791589)
+tracks/3/type = "position_3d"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".:Slide")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = PackedFloat32Array(0, 1, -1.14222e-13, 1.58023, 0, 0.03, 1, -0.000130973, 0.729614, 0.000152111, 0.06, 1, -0.000130973, 0.729614, 0.000152111, 0.15, 1, -1.14222e-13, 1.58023, 0)
+tracks/4/type = "rotation_3d"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath(".:Root")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = PackedFloat32Array(0, 1, 1, 0, -6.71545e-07, 0, 0.03, 1, 1, 0, -6.71544e-07, 0, 0.06, 1, 1, 0, -6.71544e-07, 0, 0.15, 1, 1, 0, -6.71545e-07, 0)
+tracks/5/type = "rotation_3d"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath(".:Barrel")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = PackedFloat32Array(0, 1, 0, 4.76837e-07, 0, 1, 0.03, 1, -0.0338965, 2.09796e-05, -9.30512e-06, 0.999425, 0.06, 1, -0.0338965, 2.09796e-05, -9.30512e-06, 0.999425, 0.15, 1, 0, 4.76837e-07, 0, 1)
+tracks/6/type = "rotation_3d"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath(".:Trigger")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = PackedFloat32Array(0, 1, 0.625869, 2.44832e-07, -6.44126e-07, 0.779929, 0.03, 1, 0.625869, 2.44833e-07, -6.44127e-07, 0.779929, 0.06, 1, 0.625869, 2.44833e-07, -6.44127e-07, 0.779929, 0.15, 1, 0.625869, 2.44832e-07, -6.44126e-07, 0.779929)
+tracks/7/type = "rotation_3d"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath(".:Slide")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = PackedFloat32Array(0, 1, 0, 4.76837e-07, 0, 1, 0.03, 1, 1.3022e-16, 4.76839e-07, 1.74623e-10, 1, 0.06, 1, 1.3022e-16, 4.76839e-07, 1.74623e-10, 1, 0.15, 1, 0, 4.76837e-07, 0, 1)
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_gvnum"]
+_data = {
+"RESET": SubResource("Animation_yijfy"),
+"fire": SubResource("Animation_hh0m2")
+}
+
 [node name="glock" type="Node3D" node_paths=PackedStringArray("audio", "light", "ejection", "grip1", "grip2")]
+transform = Transform3D(0.999998, 0.000838159, -0.00173755, -0.000834672, 0.999998, 0.00201979, 0.00173922, -0.00201834, 0.999996, 0, 0, 0)
 script = ExtResource("1_1us34")
 item_id = 3
 firerate = [16.0, 20.0]
@@ -51,7 +150,7 @@ shots = [1.0, 3.0]
 mag_size = 20
 reload_time = 800.0
 muzzle_vel = 400.0
-damage = [18.0, 32.0, 15.0]
+damage = [18.0, 30.0, 15.0]
 tearing = 4.75
 tagging = 0.9
 effective_range = 35.0
@@ -70,13 +169,13 @@ grip1 = NodePath("Skeleton3D/Marker3D2")
 grip2 = NodePath("Skeleton3D/Marker3D3")
 
 [node name="Skeleton3D" type="Skeleton3D" parent="."]
-transform = Transform3D(-0.038, -3.32207e-09, 1.66103e-09, 1.66103e-09, 7.26061e-17, 0.038, -3.32207e-09, 0.038, 7.2606e-17, 0, -0.0344486, -0.131933)
+transform = Transform3D(-0.038, -3.32511e-09, 1.66241e-09, 1.66435e-09, -1.45519e-11, 0.038, -3.32511e-09, 0.038, 7.27596e-12, 1.45519e-11, -0.0344486, -0.131933)
 bones/0/name = "Root"
 bones/0/parent = -1
 bones/0/rest = Transform3D(1, 0, -1.34309e-06, 0, -1, 0, -1.34309e-06, 0, -1, -5.35479e-16, 2.03217, 0.912508)
 bones/0/enabled = true
 bones/0/position = Vector3(-5.35479e-16, 2.03217, 0.912508)
-bones/0/rotation = Quaternion(1, 0, -6.71544e-07, 0)
+bones/0/rotation = Quaternion(1, 0, -6.71545e-07, 0)
 bones/0/scale = Vector3(1, 1, 1)
 bones/1/name = "Barrel"
 bones/1/parent = 0
@@ -90,7 +189,7 @@ bones/2/parent = 0
 bones/2/rest = Transform3D(1, 1.31121e-06, -4.24373e-07, -6.9828e-07, 0.216577, -0.976266, -1.18818e-06, 0.976266, 0.216577, 1.06317e-06, 2.10799, 0.791589)
 bones/2/enabled = true
 bones/2/position = Vector3(1.06317e-06, 2.10799, 0.791589)
-bones/2/rotation = Quaternion(0.625869, 2.44833e-07, -6.44127e-07, 0.779929)
+bones/2/rotation = Quaternion(0.625869, 2.44832e-07, -6.44127e-07, 0.779929)
 bones/2/scale = Vector3(1, 1, 1)
 bones/3/name = "Slide"
 bones/3/parent = 0
@@ -120,10 +219,15 @@ spot_angle_attenuation = 1.8025
 transform = Transform3D(0.65035, -3.05674e-08, -0.759635, -3.05675e-08, 1, -6.64094e-08, 0.759635, 6.64094e-08, 0.65035, -0.647989, -0.366899, 1.44691)
 
 [node name="Marker3D2" type="Marker3D" parent="Skeleton3D"]
-transform = Transform3D(1, 1.74846e-07, -8.74227e-08, 1.74846e-07, -1, 8.74228e-08, -8.74226e-08, -8.74228e-08, -1, -0.647989, 2.89185, -0.459435)
+transform = Transform3D(1, 1.74846e-07, -8.74227e-08, 1.74846e-07, -1, 8.74228e-08, -8.74226e-08, -8.74228e-08, -1, -0.526982, 2.89185, -0.459435)
 
 [node name="Marker3D3" type="Marker3D" parent="Skeleton3D"]
-transform = Transform3D(1, 1.74846e-07, -8.74227e-08, 1.74846e-07, -1, 8.74228e-08, -8.74226e-08, -8.74228e-08, -1, 0.778091, 2.96737, -1.21699)
+transform = Transform3D(1, 1.74846e-07, -8.74227e-08, 1.74846e-07, -1, 8.74228e-08, -8.74226e-08, -8.74228e-08, -1, 0.507603, 2.96737, -1.21699)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Skeleton3D"]
+libraries = {
+"": SubResource("AnimationLibrary_gvnum")
+}
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("1_6qqve")
