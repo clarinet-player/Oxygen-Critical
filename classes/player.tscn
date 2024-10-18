@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://bq3u0xb10re6"]
+[gd_scene load_steps=14 format=3 uid="uid://bq3u0xb10re6"]
 
 [ext_resource type="PackedScene" uid="uid://c2hluyirbi4rf" path="res://classes/hitbox.tscn" id="1_2yv3f"]
 [ext_resource type="Texture2D" uid="uid://dv4b2q2nb4u6n" path="res://assets/flash.png" id="1_qlxub"]
@@ -51,24 +51,19 @@ var tag_time : int
 
 var kill_contributors := []
 
-var armor : Resource
-
 var total_weight : float
 
 var inventory := Array()
 var active_item : Node3D
 var item_locked := false
 
+var highlighted : Node3D
+
 var spawn_time := 0
 
 var team := 0
 @export var username := \"\"
 
-var using_objective := false
-var objective_time := 0
-var objective_index := -1
-var beep_time := 0
-var carrying_objective := false
 
 
 var sound_time : int
@@ -103,11 +98,11 @@ func _ready():
 		if !Gamemanager.username.is_empty():
 			username = Gamemanager.username
 		
-		$Skeleton3D/Head/RigidBody3D.queue_free()
-		$Skeleton3D/Chest/RigidBody3D.queue_free()
-		$Skeleton3D/Hips/RigidBody3D.queue_free()
-		$Skeleton3D/RightLeg/RigidBody3D.queue_free()
-		$Skeleton3D/LeftLeg/RigidBody3D.queue_free()
+		$Skeleton3D/Head/Hitbox.queue_free()
+		$Skeleton3D/Chest/Hitbox.queue_free()
+		$Skeleton3D/Hips/Hitbox.queue_free()
+		$Skeleton3D/RightLeg/Hitbox.queue_free()
+		$Skeleton3D/LeftLeg/Hitbox.queue_free()
 		skeleton.hide()
 		
 		
@@ -119,12 +114,7 @@ func _ready():
 		flash_overlay.mesh.material.albedo_color.a = 0
 		
 		for item in Settings.saved_inventory:
-			if item == 11:
-				set_armor.rpc(1)
-			elif item == 12:
-				set_armor.rpc(3)
-			else:
-				inventory.append(Gamemanager.create_item(item))
+			inventory.append(Gamemanager.create_item(item))
 	
 	else:
 		$Camera3D/SpotLight3D.queue_free()
@@ -216,46 +206,38 @@ func _process(delta):
 		UiManager.set_ui(4)
 	
 	
-	if Input.is_action_just_pressed(\"E\") and team == 2 and _anchored_shape and !carrying_objective:
-		var objective
-		for obj in Gamemanager.objectives:
-			if obj[1].has_point(global_position) and obj[2] == 0:
-				objective = obj
-				objective_index = Gamemanager.objectives.find(obj)
-				break
-		if objective_index >= 0:
-			using_objective = true
-			objective_time = Time.get_ticks_msec()
-			if objective[0] == 1:
-				hud.start_progress(3.0, \"Objective\")
-			elif objective[0] == 2:
-				hud.start_progress(12.0, \"Objective\")
-				UiManager.scoreboard.set_objective.rpc(objective_index, 2, 16.0)
-			elif objective[0] == 3:
-				hud.start_progress(8.0, \"Objective\")
-				UiManager.scoreboard.set_objective.rpc(objective_index, 2, 10.0)
-			if active_item:
-				camera.remove_child(active_item)
-				active_item = null
+	var _space = get_world_3d().direct_space_state
+	var _ray = PhysicsRayQueryParameters3D.create(camera.global_position, camera.global_position - global_basis.z * 2)
+	var _raycast = _space.intersect_ray(_ray)
+	if _raycast.is_empty():
+		highlighted = null
+		hud.set_highlight(0)
+	elif \"owning\" in _raycast.collider:
+		var owning = _raycast.collider.owning
+		if owning.is_in_group(\"Objectives\"):
+			hud.set_highlight(2)
+			highlighted = owning
+		elif \"equip_speed\" in owning and owning.state == ItemBase.istate.dropped:
+			hud.set_highlight(1)
+			highlighted = owning
 	
 	
-	elif Input.is_action_just_pressed(\"E\") and team == 1:
-		for bomb in Gamemanager.bombs:
-			if bomb != null and bomb.global_position.distance_to(global_position) < 1.5:
-				objective_index = bomb.site
-				UiManager.scoreboard.set_objective.rpc(bomb.site, 3, 5.0)
-				break
-		if objective_index >= 0:
-			if !using_objective:
-				using_objective = true
-			objective_time = Time.get_ticks_msec()
-			hud.start_progress(5.0, \"Objective\")
-			if active_item:
-				camera.remove_child(active_item)
-				active_item = null
+	if Input.is_action_just_pressed(\"F\") and !UiManager.paused and highlighted != null:
+		if highlighted.is_in_group(\"Objectives\"):
+			pass
+			
+		elif \"equip_speed\" in highlighted:
+			var size := 0
+			for item in Gamemanager.local_player.inventory:
+				if item != null:
+					size += item.inventory_size
+			if size <= highlighted.inventory_size:
+				inventory.append(highlighted)
+				highlighted.pick($Camera3D/Marker3D, $Camera3D/Marker3D2)
+				set_item(inventory.find(highlighted))
 	
 	
-	if Input.is_action_just_pressed(\"F\"):
+	if Input.is_action_just_pressed(\"E\"):
 		var found_item
 		if breach > 0.0:
 			for item in inventory:
@@ -294,46 +276,13 @@ func _process(delta):
 					item.throw()
 				break
 	
+	if Input.is_action_just_pressed(\"I\"):
+		print(inventory)
 	
-	if using_objective and team == 2:
-		if Gamemanager.objectives[objective_index][0] == 1 and Time.get_ticks_msec() - objective_time > 3000 and Gamemanager.objectives[objective_index][2] == 0:
-			using_objective = false
-			if Gamemanager.mp_active:
-				Gamemanager.plant_bomb.rpc(1, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
-				UiManager.scoreboard.set_objective.rpc(objective_index, 2, 30.0)
-			else:
-				Gamemanager.plant_bomb(1, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
-			objective_index = -1
-		elif Gamemanager.objectives[objective_index][0] == 2 and Time.get_ticks_msec() - objective_time > 12000 and Gamemanager.objectives[objective_index][2] == 0:
-			using_objective = false
-			if Gamemanager.mp_active:
-				Gamemanager.plant_bomb.rpc(2, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
-			else:
-				Gamemanager.plant_bomb(2, global_position - _surface_normal * 0.5, global_basis.y, _surface_normal, objective_index)
-			objective_index = -1
-		elif Gamemanager.objectives[objective_index][0] == 3 and Time.get_ticks_msec() - objective_time > 7500 and Gamemanager.objectives[objective_index][2] == 0:
-			using_objective = false
-			if Gamemanager.mp_active:
-				Gamemanager.take_objective.rpc(objective_index)
-			else:
-				Gamemanager.take_objective(objective_index)
-			carrying_objective = true
-			hud.set_objective(true)
-	elif using_objective and team == 1 and Time.get_ticks_msec() - objective_time > 5000:
-		using_objective = false
-		Gamemanager.defuse_bomb.rpc(objective_index)
-		UiManager.scoreboard.set_objective.rpc(objective_index, 0, 0.0)
-		objective_index = -1
-	if using_objective and !Input.is_action_pressed(\"E\"):
-		using_objective = false
-		objective_index = -1
-		hud.stop_progress(\"Objective\")
-	
-	
-	if Input.is_action_just_pressed(\"MouseDown\")and !UiManager.paused:
+	if Input.is_action_just_pressed(\"MouseDown\") and active_item != null and !UiManager.paused:
 		set_item(inventory.find(active_item) + 1)
 	
-	if Input.is_action_just_pressed(\"MouseUp\") and !UiManager.paused:
+	if Input.is_action_just_pressed(\"MouseUp\") and active_item != null and !UiManager.paused:
 		set_item(inventory.find(active_item) - 1)
 	
 	elif Input.is_action_just_pressed(\"1\") and !UiManager.paused:
@@ -357,11 +306,6 @@ func _physics_process(delta : float):
 		global_translate(velocity * delta)
 		return
 	
-	if carrying_objective and Gamemanager.spawn_areas[1].has_point(global_position):
-		carrying_objective = false
-		Gamemanager.recover_objective.rpc(objective_index)
-		hud.set_objective(false)
-	
 	health -= breach * delta
 	if Gamemanager.playable_area and !Gamemanager.playable_area.has_point(global_position):
 		health -= 100 * delta
@@ -379,7 +323,14 @@ func _physics_process(delta : float):
 		warning_time = Time.get_ticks_msec()
 	
 	
-	if active_item == null and !using_objective:
+	if Input.is_action_just_pressed(\"Drop Item\"):
+		if active_item != null:
+			active_item.drop(camera.global_position - global_basis.y * 0.25, velocity - global_basis.z)
+			inventory.erase(active_item)
+			active_item = null
+			item_locked = false
+			hud.set_ammo(false, 0)
+	if active_item == null:
 		set_item(0)
 	
 	
@@ -391,21 +342,19 @@ func _physics_process(delta : float):
 	
 	
 	if _anchored_shape:
-		if (Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\")) and !UiManager.paused and !using_objective:
+		if (Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\")) and !UiManager.paused:
 			walking = true
 		else:
 			walking = false
 	
 	
 	total_weight = tagged
-	if armor != null:
-		total_weight += armor.weight
 	if active_item != null and \"weight\" in active_item:
 		total_weight += active_item.weight
 	
 	
 	# Jumping
-	if Input.is_action_just_pressed(\"Space\") and !UiManager.paused and !using_objective:
+	if Input.is_action_just_pressed(\"Space\") and !UiManager.paused:
 		if _anchored_shape:
 			detach()
 			if Gamemanager.gravity.is_zero_approx():
@@ -625,6 +574,14 @@ func damage(dmg, tearing, tagging):
 
 
 
+@rpc(\"any_peer\", \"call_remote\", \"reliable\")
+func heal(hp : float, tear := false):
+	health = min(100, health + hp)
+	if tear:
+		breach = 0
+
+
+
 func flash(pos : Vector3):
 	flash_overlay.global_position = camera.global_position + camera.global_position.direction_to(pos) * 0.18
 	
@@ -674,7 +631,6 @@ func set_team(new_team : int):
 		
 		$Camera3D.current = true
 		hud.set_team(team)
-		hud.set_objective(false)
 	
 	else:
 		show()
@@ -719,19 +675,6 @@ func set_team(new_team : int):
 
 
 
-@rpc(\"any_peer\", \"call_local\", \"reliable\")
-func set_armor(num : int):
-	if num == 0:
-		armor = null
-	elif num == 1:
-		armor = load(\"res://weapons/armor/light_armor.tres\")
-	elif num == 2:
-		armor = load(\"res://weapons/armor/assault_armor.tres\")
-	elif num == 3:
-		armor = load(\"res://weapons/armor/heavy_armor.tres\")
-
-
-
 func set_item(slot : int):
 	if inventory.size() <= slot or inventory[slot] == active_item or item_locked:
 		return
@@ -748,6 +691,7 @@ func set_item(slot : int):
 		camera.add_child(active_item)
 		active_item.equip_pos = $Camera3D/Marker3D
 		active_item.unequip_pos = $Camera3D/Marker3D2
+		
 	if active_item.grip1 == null:
 		right_ik.stop()
 	else:
@@ -758,6 +702,7 @@ func set_item(slot : int):
 	else:
 		left_ik.target_node = active_item.grip2.get_path()
 		left_ik.start()
+		
 	active_item.equip()
 	await active_item.on_equip
 	
@@ -815,9 +760,6 @@ func die():
 	
 	if kill_contributors.has(multiplayer.get_unique_id()):
 		Audiomanager.play(\"res://assets/death.mp3\")
-	
-	if carrying_objective:
-		Gamemanager.objectives[objective_index][2] = 0
 	
 	death.emit(int(str(name)))
 	queue_free()
@@ -985,19 +927,6 @@ bind/16/pose = Transform3D(0.99969, -0.0248133, -0.00043975, -0.0248166, -0.9996
 bind/17/name = &"Right Foot"
 bind/17/bone = -1
 bind/17/pose = Transform3D(0.0366188, 0.999329, -0.000440543, 0.999239, -0.0366215, -0.0133531, -0.0133552, 4.87847e-05, -0.999907, 1.01534, -0.0394458, 0.0543081)
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_soy3f"]
-radius = 0.138
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_qra2l"]
-size = Vector3(0.337341, 0.323242, 0.210266)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_wa37y"]
-size = Vector3(0.304749, 0.356476, 0.196693)
-
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_hi3hh"]
-height = 0.45
-radius = 0.07
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_0uupb"]
 properties/0/path = NodePath(".:position")
@@ -1301,18 +1230,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.473494, 0)
 bone_name = "Head"
 bone_idx = 7
 
-[node name="RigidBody3D" type="RigidBody3D" parent="Skeleton3D/Head"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0.0103389, 0.109344, 4.51928e-10)
-collision_layer = 2
-collision_mask = 0
-can_sleep = false
-freeze = true
-
-[node name="Hitbox" parent="Skeleton3D/Head/RigidBody3D" node_paths=PackedStringArray("player") instance=ExtResource("1_2yv3f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00155365, 0.00388426)
-shape = SubResource("SphereShape3D_soy3f")
-player = NodePath("../../../..")
-area = 1
+[node name="Hitbox" parent="Skeleton3D/Head" instance=ExtResource("1_2yv3f")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0.00645464, 0.10779, 2.82142e-10)
 
 [node name="Marker3D" type="Marker3D" parent="Skeleton3D/Head"]
 transform = Transform3D(0.165616, 0, -0.98619, 0, 1, 0, 0.98619, 0, 0.165616, 0.322136, -0.0805038, 0.0942098)
@@ -1322,34 +1241,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.090513, 0)
 bone_name = "Chest"
 bone_idx = 1
 
-[node name="RigidBody3D" type="RigidBody3D" parent="Skeleton3D/Chest"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
-collision_layer = 2
-collision_mask = 0
-can_sleep = false
-freeze = true
-
-[node name="Hitbox" parent="Skeleton3D/Chest/RigidBody3D" node_paths=PackedStringArray("player") instance=ExtResource("1_2yv3f")]
-transform = Transform3D(1, 7.13044e-10, -1.16415e-10, 1.30967e-10, 1, 2.98023e-08, -6.98492e-10, 0, 1, 0, 0.198, 0.001)
-shape = SubResource("BoxShape3D_qra2l")
-player = NodePath("../../../..")
+[node name="Hitbox" parent="Skeleton3D/Chest" instance=ExtResource("1_2yv3f")]
+transform = Transform3D(-4.30129e-08, -3.11682e-17, -1, 1.30967e-10, 1, 2.98023e-08, 1, 7.13044e-10, -4.38278e-08, -0.001, 0.198, -4.37114e-11)
 
 [node name="Hips" type="BoneAttachment3D" parent="Skeleton3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.176213, 0)
 bone_name = "Hips"
 bone_idx = 0
 
-[node name="RigidBody3D" type="RigidBody3D" parent="Skeleton3D/Hips"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, -0.0347798, 0)
-collision_layer = 2
-collision_mask = 0
-can_sleep = false
-freeze = true
-
-[node name="Hitbox" parent="Skeleton3D/Hips/RigidBody3D" node_paths=PackedStringArray("player") instance=ExtResource("1_2yv3f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.200668, 0.00299454)
-shape = SubResource("BoxShape3D_wa37y")
-player = NodePath("../../../..")
+[node name="Hitbox" parent="Skeleton3D/Hips" instance=ExtResource("1_2yv3f")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.00299454, 0.165888, -1.30896e-10)
 
 [node name="Marker3D" type="Marker3D" parent="Skeleton3D/Hips"]
 transform = Transform3D(-4.37114e-08, 0.999938, 0.0111524, 0, -0.0111524, 0.999938, 1, 4.37087e-08, 4.87486e-10, -0.00356396, 0.228025, 0.225808)
@@ -1359,36 +1260,16 @@ transform = Transform3D(0.999342, 0.0359959, -0.00440763, 0.0361934, -0.997601, 
 bone_name = "Right Leg"
 bone_idx = 15
 
-[node name="RigidBody3D" type="RigidBody3D" parent="Skeleton3D/RightLeg"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, -0.04, 0)
-collision_layer = 2
-collision_mask = 0
-can_sleep = false
-freeze = true
-
-[node name="Hitbox" parent="Skeleton3D/RightLeg/RigidBody3D" node_paths=PackedStringArray("player") instance=ExtResource("1_2yv3f")]
-transform = Transform3D(1, 4.65661e-10, 0, 4.19095e-09, 1, 3.72529e-09, 4.65661e-10, 0, 1, 0, 0.197531, 0.000305175)
-shape = SubResource("CylinderShape3D_hi3hh")
-player = NodePath("../../../..")
-area = 2
+[node name="Hitbox" parent="Skeleton3D/RightLeg" instance=ExtResource("1_2yv3f")]
+transform = Transform3D(-4.51691e-08, 3.72529e-09, -1, 4.27826e-09, 1, 7.45058e-09, 1, -1.57161e-09, -4.33065e-08, -0.000305175, 0.157531, 0)
 
 [node name="LeftLeg" type="BoneAttachment3D" parent="Skeleton3D"]
 transform = Transform3D(0.999352, 0.0359959, -0.000147829, 0.0359241, -0.997601, -0.0591795, -0.00227769, 0.0591358, -0.998247, 0, -0.19595, -0.0819091)
 bone_name = "Left Leg"
 bone_idx = 12
 
-[node name="RigidBody3D" type="RigidBody3D" parent="Skeleton3D/LeftLeg"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, -0.04, 0)
-collision_layer = 2
-collision_mask = 0
-can_sleep = false
-freeze = true
-
-[node name="Hitbox" parent="Skeleton3D/LeftLeg/RigidBody3D" node_paths=PackedStringArray("player") instance=ExtResource("1_2yv3f")]
-transform = Transform3D(1, 4.65661e-10, 0, 4.19095e-09, 1, 3.72529e-09, 4.65661e-10, 0, 1, 0, 0.197531, 0.000305175)
-shape = SubResource("CylinderShape3D_hi3hh")
-player = NodePath("../../../..")
-area = 2
+[node name="Hitbox" parent="Skeleton3D/LeftLeg" instance=ExtResource("1_2yv3f")]
+transform = Transform3D(-4.39322e-08, 0, -1, 2.77623e-09, 1, 3.72529e-09, 1, 6.38465e-10, -4.36994e-08, -0.000305175, 0.157531, 3.72529e-09)
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_0uupb")

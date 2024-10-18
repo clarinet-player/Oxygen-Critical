@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://3j2agbivhf6c"]
+[gd_scene load_steps=10 format=3 uid="uid://3j2agbivhf6c"]
 
 [ext_resource type="AudioStream" uid="uid://c6lgrkd5m54lw" path="res://weapons/vector/smg_sfx_1.mp3" id="1_il3kq"]
 [ext_resource type="Script" path="res://classes/weaponbase.gd" id="1_onunk"]
+[ext_resource type="PackedScene" uid="uid://c2hluyirbi4rf" path="res://classes/hitbox.tscn" id="3_b2ua3"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bfkyg"]
 albedo_color = Color(0.541176, 0.541176, 0.541176, 1)
@@ -38,9 +39,20 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_ow5o0")
 
-[node name="vector" type="Node3D" node_paths=PackedStringArray("audio", "light", "ejection", "grip1", "grip2")]
+[sub_resource type="BoxShape3D" id="BoxShape3D_rlw77"]
+size = Vector3(0.0531616, 0.218811, 0.386719)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_abd1c"]
+size = Vector3(0.0552979, 0.129341, 0.233887)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qqnox"]
+radius = 0.15
+height = 0.75
+
+[node name="vector" type="RigidBody3D" node_paths=PackedStringArray("audio", "light", "ejection")]
+collision_layer = 0
+freeze = true
 script = ExtResource("1_onunk")
-item_id = 2
 firerate = [23.0, 18.0]
 shots = [0, 2]
 mag_size = 35
@@ -53,16 +65,14 @@ effective_range = 25.0
 recovery = 0.17
 recoil = 0.88
 spray = 2.5
-inventory_size = 2
 weight = 0.7
 camera_movement = 0.9
 casing = 1
-equip_speed = 250.0
 audio = NodePath("AudioStreamPlayer3D")
 light = NodePath("Vector/SpotLight3D")
 ejection = NodePath("Vector/Marker3D")
-grip1 = NodePath("Vector/Marker3D2")
-grip2 = NodePath("Vector/Marker3D3")
+item_id = 2
+inventory_size = 2
 
 [node name="Vector" type="MeshInstance3D" parent="."]
 transform = Transform3D(-2.62216e-08, 0.599881, -0.0119477, -5.22252e-10, 0.0119477, 0.599881, 0.6, 2.62268e-08, 1.14641e-15, -0.00799983, -0.0106429, -0.103759)
@@ -91,3 +101,19 @@ transform = Transform3D(0.710043, -0.306794, -0.633811, 0.387379, 0.921838, -0.0
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("1_il3kq")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.999719, -0.0236994, 0, 0.0236994, 0.999719, 0, 0, 0, 1, -0.00717163, -0.0448303, -0.183594)
+shape = SubResource("BoxShape3D_rlw77")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.999719, -0.0236994, 0, 0.0236994, 0.999719, 0, 0, 0, 1, -0.00704212, -0.00755573, 0.12793)
+shape = SubResource("BoxShape3D_abd1c")
+
+[node name="Hitbox" parent="." node_paths=PackedStringArray("owning") instance=ExtResource("3_b2ua3")]
+collision_layer = 4
+owning = NodePath("..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -0.00551687, -0.0313243, -0.0629858)
+shape = SubResource("CapsuleShape3D_qqnox")

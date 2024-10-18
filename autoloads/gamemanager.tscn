@@ -25,12 +25,8 @@ var gravity := Vector3.ZERO
 var playable_area : AABB
 var spawn_areas : Array
 var objectives : Array
-var time_bonuses : Array
-var bombs : Array
 
 var round_start_time := -1
-var c_spawns := 0
-var t_spawns := 0
 
 
 
@@ -101,7 +97,8 @@ func _on_connect(id : int):
 	sync_level.rpc_id(id, 2)
 	
 	if round_running:
-		sync_scoreboard.rpc_id(id, Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
+		#sync_scoreboard.rpc_id(id, Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
+		pass
 	elif players.size() >= 2 and !game_running:
 		_game_loop()
 	elif !game_running:
@@ -138,9 +135,7 @@ func _game_loop():
 		
 		print(\"Round start.\")
 		round_start_time = Time.get_ticks_msec()
-		c_spawns = 2
-		t_spawns = 2
-		sync_scoreboard.rpc(0, 2, 2)
+		#sync_scoreboard.rpc(0, 2, 2)
 		
 		for player in players:
 			spawn_player(player)
@@ -152,15 +147,13 @@ func _game_loop():
 			
 			# Respawn players
 			for player in players:
-				if player.body == null and player.team == 1 and c_spawns > 0 and Time.get_ticks_msec() - player.death_time > respawn_time:
-					c_spawns -= 1
+				if player.body == null and player.team == 1 and Time.get_ticks_msec() - player.death_time > respawn_time:
 					spawn_player(player)
-					sync_scoreboard.rpc(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
+					#sync_scoreboard.rpc(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
 				
-				elif player.body == null and player.team == 2 and t_spawns > 0 and Time.get_ticks_msec() - player.death_time > respawn_time:
-					t_spawns -= 1
+				elif player.body == null and player.team == 2 and Time.get_ticks_msec() - player.death_time > respawn_time:
 					spawn_player(player)
-					sync_scoreboard.rpc(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
+					#sync_scoreboard.rpc(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
 			
 			
 			# Out of time
@@ -170,52 +163,40 @@ func _game_loop():
 				round_running = false
 				break
 			
-			# Bombsites destroyed
-			var objectives_complete := 0
+			
+			var index = 0
 			for obj in objectives:
-				if obj[2] == 2:
-					objectives_complete += 1
-			if objectives_complete > objectives.size() / 2:
-				ui_message.rpc(2)
-				print(\"Round end. Bombs detonated.\")
-				round_running = false
-				break
+				if obj.state == 1 and Time.get_ticks_msec() - obj.start_time > obj.complete_time:
+					complete_objective.rpc(index)
+				index += 1
 			
-			# Team eliminated
-			var team1 := true
-			var team2 := true
-			for player in players:
-				if player.team == 1 and player.body != null:
-					team1 = false
-				elif player.team == 2 and player.body != null:
-					team2 = false
-			if team2 and bombs.is_empty() and t_spawns < 1:
-				ui_message.rpc(1)
-				print(\"Round end. Ts eliminated.\")
-				round_running = false
-				break
-			elif team1 and c_spawns < 1:
-				ui_message.rpc(2)
-				print(\"Round end. CTs eliminated.\")
-				round_running = false
-				break
 			
-			team1 = true
-			team2 = true
-			for player in players:
-				if player.team == 1:
-					team1 = false
-				elif player.team == 2:
-					team2 = false
-			if team2:
-				ui_message.rpc(1)
-				print(\"Round end. Ts disconnected.\")
+			var atk_objectives := 0
+			var atk_objectives_complete := 0
+			var def_objectives := 0
+			var def_objectives_complete := 0
+			for obj in objectives:
+				if obj.team == 1:
+					def_objectives += 1
+					if obj.state == 2:
+						def_objectives_complete += 1
+				else:
+					atk_objectives += 1
+					if obj.state == 2:
+						atk_objectives_complete += 1
+			
+			if def_objectives_complete == def_objectives:
 				round_running = false
+				print(\"Round end. Defender objectives complete.\")
 				break
-			elif team1:
-				ui_message.rpc(2)
-				print(\"Round end. CTs disconnected.\")
+			if atk_objectives_complete == atk_objectives:
 				round_running = false
+				print(\"Round end. Attacker objectives complete.\")
+			
+			
+			if players.size() < 2:
+				round_running = false
+				print(\"Round end. Not enough players.\")
 				break
 		
 		
@@ -281,14 +262,6 @@ func sync_level(level : int):
 
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
-func sync_scoreboard(time_elapsed : int, c : int, t : int):
-	round_start_time = Time.get_ticks_msec() - time_elapsed
-	c_spawns = c
-	t_spawns = t
-
-
-
-@rpc(\"authority\", \"call_remote\", \"reliable\")
 func ui_message(ui : int):
 	UiManager.set_ui(6)
 	UiManager.spechud.set_message(ui)
@@ -318,13 +291,6 @@ func throw_grenade(type : int, id : int, position : Vector3, velocity : Vector3)
 		flash.global_position = position
 		flash.apply_impulse(velocity)
 	
-	elif type == 4:
-		var smoke = preload(\"res://weapons/grenades/smoke_grenade.tscn\").instantiate()
-		smoke.name = str(id)
-		add_child(smoke)
-		smoke.global_position = position
-		smoke.apply_impulse(velocity)
-	
 	elif type == 5:
 		var claymore = preload(\"res://weapons/grenades/claymore.tscn\").instantiate()
 		claymore.name = str(id)
@@ -344,56 +310,37 @@ func spawn_fire(pos, vel):
 
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
-func plant_bomb(type : int, pos : Vector3, facing : Vector3, normal : Vector3, site : int):
-	var bomb
-	if type == 1:
-		bomb = preload(\"res://weapons/bomb/bomb.tscn\").instantiate()
-	elif type == 2:
-		bomb = preload(\"res://weapons/bomb/emp.tscn\").instantiate()
-	add_child(bomb)
-	bomb.global_position = pos
-	bomb.look_at(pos + (facing - facing.dot(normal) * normal), normal)
-	bomb.site = site
-	bombs.append(bomb)
-	
-	objectives[site][2] = 1
-	
-	if mp_active:
-		round_start_time = max(Time.get_ticks_msec() - round_time, round_start_time + 10000)
-
-
+func start_objective(obj_index : int):
+	if objectives.size() > obj_index:
+		var obj = objectives[obj_index]
+		
+		obj.state = 1
+		obj.start_time = Time.get_ticks_msec()
+		obj.started.emit()
 
 @rpc(\"any_peer\", \"call_local\", \"reliable\")
-func defuse_bomb(site : int):
-	for bomb in bombs:
-		if bomb != null and bomb.site == site:
-			bomb.defuse()
-			bombs.erase(bomb)
-			objectives[site][2] = 0
+func interrupt_objective(obj_index : int):
+	if objectives.size() > obj_index:
+		var obj = objectives[obj_index]
+		
+		obj.state = 0
+		obj.interrupted.emit()
 
-
-
-@rpc(\"any_peer\", \"call_local\", \"reliable\")
-func take_objective(site : int):
-	objectives[site][2] = 1
-	
-	if mp_active:
-		round_start_time = max(Time.get_ticks_msec() - round_time, round_start_time + 10000)
-
-
-
-@rpc(\"any_peer\", \"call_local\", \"reliable\")
-func recover_objective(site : int):
-	objectives[site][2] == 2
-	if DisplayServer.get_name() != \"headless\":
-		UiManager.scoreboard.set_objective(site, 1, 0)
+@rpc(\"authority\", \"call_local\", \"reliable\")
+func complete_objective(obj_index : int):
+	if objectives.size() > obj_index:
+		var obj = objectives[obj_index]
+		
+		obj.state = 2
+		obj.completed.emit()
 
 
 
 @rpc(\"authority\", \"call_local\", \"reliable\")
 func reset():
-	bombs = Array()
 	get_tree().get_first_node_in_group(\"Levels\")._ready()
+	for obj in objectives:
+		obj.state = 0
 	
 	UiManager.scoreboard.reset()
 	
@@ -427,19 +374,17 @@ func create_item(item : int):
 	elif item == 3:
 		return preload(\"res://weapons/glock/glock.tscn\").instantiate()
 	elif item == 4:
-		return preload(\"res://weapons/grenades/he_display.tscn\").instantiate()
+		return preload(\"res://weapons/grenades/he_grenade.tscn\").instantiate()
 	elif item == 5:
 		return preload(\"res://weapons/healing/sealant.tscn\").instantiate()
 	elif item == 6:
 		return preload(\"res://weapons/healing/healthkit.tscn\").instantiate()
 	elif item == 7:
-		return preload(\"res://weapons/grenades/incendiary_display.tscn\").instantiate()
+		return preload(\"res://weapons/grenades/incendiary.tscn\").instantiate()
 	elif item == 8:
-		return preload(\"res://weapons/grenades/flash_display.tscn\").instantiate()
-	elif item == 9:
-		return preload(\"res://weapons/grenades/smoke_display.tscn\").instantiate()
+		return preload(\"res://weapons/grenades/flash_grenade.tscn\").instantiate()
 	elif item == 10:
-		return preload(\"res://weapons/grenades/claymore_display.tscn\").instantiate()
+		return preload(\"res://weapons/grenades/claymore.tscn\").instantiate()
 "
 
 [node name="GameManager" type="Node"]

@@ -174,9 +174,10 @@ shadow_enabled = true
 shadow_bias = 0.025
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Cube"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.75943)
-light_color = Color(0.619608, 0.733333, 1, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5.84868)
+light_color = Color(0.592157, 0.713726, 1, 1)
 light_energy = 16.0
+light_specular = 0.75
 shadow_enabled = true
 distance_fade_begin = 0.0
 

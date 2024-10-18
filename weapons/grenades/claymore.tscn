@@ -1,12 +1,12 @@
-[gd_scene load_steps=13 format=3 uid="uid://ct02rvfq74tjw"]
+[gd_scene load_steps=12 format=3 uid="uid://ct02rvfq74tjw"]
 
 [ext_resource type="PackedScene" uid="uid://c2hluyirbi4rf" path="res://classes/hitbox.tscn" id="1_ad7dt"]
 
 [sub_resource type="GDScript" id="GDScript_6vkc7"]
-script/source = "extends RigidBody3D
+script/source = "extends \"res://classes/item base.gd\"
 
 
-
+const throw_velocity := 4.0
 const fuse_time := 1800
 const blast_radius := 9
 
@@ -14,14 +14,16 @@ const damage := 60.0
 const tearing := 10.0
 const tagging := 1.0
 
-var velocity := Vector3.ZERO
 
 var arm_time := 0
-var beep_time
+var beep_time := 0
 var grounded := false
 var armed := false
 var expended := false
 var destroyed := false
+
+
+var player
 
 
 @onready var audio = $AudioStreamPlayer3D
@@ -30,14 +32,8 @@ var destroyed := false
 
 
 
+
 func _ready():
-	arm_time = Time.get_ticks_msec()
-	
-	audio.stream = load(\"res://weapons/grenades/grenade_sfx_1.mp3\")
-	audio.pitch_scale = randf_range(0.94, 1.2)
-	audio.volume_db = -30.0
-	audio.play()
-	
 	Settings.settings_changed.connect(_load_settings)
 	_load_settings()
 
@@ -49,12 +45,54 @@ func _load_settings():
 
 
 func _process(delta):
+	super(delta)
+	
 	if expended and Time.get_ticks_msec() - arm_time > 50:
 		light.light_energy = 0
 
 
 
+func equip():
+	super()
+	player = get_parent().get_parent()
+
+
+
 func _physics_process(delta):
+	super(delta)
+	
+	if !armed and state == istate.equipped and (Input.is_action_just_pressed(\"Mouse1\") or Input.is_action_just_pressed(\"Mouse2\")) and !UiManager.paused:
+		armed = true
+		arm_time = Time.get_ticks_msec()
+		
+		audio.stream = load(\"res://weapons/grenades/grenade_sfx_1.mp3\")
+		audio.pitch_scale = randf_range(0.94, 1.2)
+		audio.volume_db = -30.0
+		audio.play()
+	
+	if armed and state != istate.override and Input.is_action_just_released(\"Mouse1\"):
+		state = istate.override
+		player.inventory.erase(self)
+		player.active_item = null
+		get_parent().remove_child(self)
+		Gamemanager.add_child(self)
+		global_position = player.camera.global_position
+		velocity = player.velocity - player.global_basis.z * throw_velocity
+	
+	if armed and state != istate.override and Input.is_action_just_released(\"Mouse2\"):
+		state = istate.override
+		player.inventory.erase(self)
+		player.active_item = null
+		get_parent().remove_child(self)
+		Gamemanager.add_child(self)
+		global_position = player.camera.global_position
+		velocity = player.velocity - player.global_basis.z * throw_velocity * 0.5
+	
+	if state == istate.override:
+		var collision = move_and_collide(velocity * delta)
+		if collision:
+			velocity = velocity.bounce(collision.get_normal()) * 0.8
+	
 	if grounded and armed and !expended:
 		if Time.get_ticks_msec() - beep_time > 6000:
 			audio.play()
@@ -62,7 +100,7 @@ func _physics_process(delta):
 		
 		if !Gamemanager.mp_active or is_multiplayer_authority():
 			for player in get_tree().get_nodes_in_group(\"Players\"):
-				if global_position.direction_to(player.hitbox.global_position).dot(-global_basis.z) > 0.85 and global_position.distance_to(player.hitbox.global_position) < 6:
+				if global_position.direction_to(player.camera.global_position).dot(-global_basis.z) > 0.85 and global_position.distance_to(player.camera.global_position) < 6:
 					if Gamemanager.mp_active:
 						boom.rpc()
 					else:
@@ -260,16 +298,15 @@ rings = 2
 
 [sub_resource type="Skin" id="Skin_j3ngg"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_ig0lh"]
-size = Vector3(0.293848, 0.214783, 0.0510101)
-
 [node name="Claymore" type="RigidBody3D"]
-collision_layer = 0
+collision_layer = 4
 mass = 0.25
 gravity_scale = 0.0
 freeze = true
 continuous_cd = true
 script = SubResource("GDScript_6vkc7")
+item_id = 10
+inventory_size = 1
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.6, 0, 3.81438e-08, 0, 0.6, 0, -3.81438e-08, 0, 0.6, -2.26106e-09, 0, -0.0337264)
@@ -317,7 +354,5 @@ collision_layer = 2
 collision_mask = 0
 freeze = true
 
-[node name="Hitbox" parent="Hitbox" node_paths=PackedStringArray("player") instance=ExtResource("1_ad7dt")]
+[node name="Hitbox" parent="Hitbox" instance=ExtResource("1_ad7dt")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.05447e-05, 0, -0.0310355)
-shape = SubResource("BoxShape3D_ig0lh")
-player = NodePath("../..")

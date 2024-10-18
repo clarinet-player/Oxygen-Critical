@@ -1,8 +1,8 @@
-extends Node3D
+extends "res://classes/item base.gd"
+class_name Weaponbase
 
 
 
-@export var item_id : int
 @export var firerate : Array
 @export var shots : Array
 @export var mag_size : int
@@ -15,29 +15,14 @@ extends Node3D
 @export var recovery : float
 @export var recoil : float
 @export var spray : float
-@export var inventory_size : int
 @export var weight : float
 @export var camera_movement : float
 @export var casing : int
-@export var equip_pos : Node3D
-@export var unequip_pos : Node3D
-@export var equip_speed := 200.0
 
 @export var audio : AudioStreamPlayer3D
 @export var light : SpotLight3D
 @export var ejection : Marker3D
-@export var grip1 : Marker3D
-@export var grip2 : Marker3D
 
-
-enum wstate {
-	unequipped,
-	equipped,
-	equipping,
-	unequipping
-}
-var state := wstate.unequipped
-var equip_time : int
 
 var firemode := 0
 
@@ -57,10 +42,6 @@ var reload_start_time := 0
 @onready var hud = UiManager.playerhud
 
 
-signal on_equip
-signal on_unequip
-
-
 
 func _ready():
 	set_multiplayer_authority(get_parent().get_multiplayer_authority())
@@ -71,22 +52,30 @@ func _ready():
 
 
 func equip():
-	equip_time = Time.get_ticks_msec()
-	state = wstate.equipping
-	show()
+	super()
 	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
 		hud.set_ammo(true, magazine)
 		hud.alt_fire(shots[firemode])
-		get_parent().get_parent().using_objective = false
 		hud.stop_progress("Planting")
 		get_parent().get_node("Crosshair").rotation = Vector3.ZERO
 
 
 
 func unequip():
-	equip_time = Time.get_ticks_msec()
-	state = wstate.unequipping
+	super()
+	
+	reloading = false
+	_heat = 0
+	_burst = 0
+	_mouse_down = false
+	if !Gamemanager.mp_active or is_multiplayer_authority():
+		hud.stop_progress("reloading")
+
+
+
+func drop(pos, vel):
+	super(pos, vel)
 	
 	reloading = false
 	_heat = 0
@@ -103,17 +92,7 @@ func _load_settings():
 
 
 func _process(delta):
-	match state:
-		wstate.unequipped:
-			global_transform = unequip_pos.global_transform
-		wstate.equipping:
-			if Input.is_action_pressed("Mouse1"):
-				_mouse_down = true
-			else:
-				_mouse_down = false
-			global_transform = unequip_pos.global_transform.interpolate_with(equip_pos.global_transform, (Time.get_ticks_msec() - equip_time) / equip_speed)
-		wstate.unequipping:
-			global_transform = equip_pos.global_transform.interpolate_with(unequip_pos.global_transform, (Time.get_ticks_msec() - equip_time) / equip_speed)
+	super(delta)
 	
 	if Time.get_ticks_msec() > _fire_time_ms + _firedelay * 0.6:
 		light.light_energy = 0
@@ -123,22 +102,15 @@ func _process(delta):
 
 
 func _physics_process(delta):
-	var time = Time.get_ticks_msec()
+	super(delta)
 	
-	if state == wstate.equipping and time - equip_time > equip_speed:
-		state = wstate.equipped
-		on_equip.emit()
-		global_transform = equip_pos.global_transform
-	if state == wstate.unequipping and time - equip_time > equip_speed:
-		state = wstate.unequipped
-		on_unequip.emit()
-		hide()
-	if state != wstate.equipped:
+	if state != istate.equipped:
 		return
-	
-	
 	if Gamemanager.mp_active and !is_multiplayer_authority():
 		return
+	
+	
+	var time = Time.get_ticks_msec()
 	
 	
 	# Reloading
@@ -257,7 +229,7 @@ func fire(pos : Vector3, velocity : Vector3):
 	var _smoke = preload("res://classes/smoke.tscn").instantiate()
 	_smoke.size = Vector3(0.01, 0.01, 4)
 	_smoke.fade_speed = 0.15
-	_smoke.start_density = 0.002
+	_smoke.start_density = 0.003
 	Gamemanager.add_child(_smoke)
 	_smoke.global_position = light.global_position + velocity.normalized() * 3
 	_smoke.look_at(light.global_position)

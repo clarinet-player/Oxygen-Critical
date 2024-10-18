@@ -14,10 +14,6 @@ func _exit_tree():
 	for item in Gamemanager.local_player.inventory:
 		if item != null:
 			save.append(item.item_id)
-	if Gamemanager.local_player.armor == load(\"res://weapons/armor/light_armor.tres\"):
-		save.append(11)
-	elif Gamemanager.local_player.armor == load(\"res://weapons/armor/heavy_armor.tres\"):
-		save.append(12)
 	
 	Settings.saved_inventory = save
 	Settings.write_file()
@@ -83,7 +79,7 @@ func _buy_HE():
 		if item != null:
 			size += item.inventory_size
 	if size < 4:
-		var he = preload(\"res://weapons/grenades/he_display.tscn\").instantiate()
+		var he = preload(\"res://weapons/grenades/he_grenade.tscn\").instantiate()
 		Gamemanager.local_player.inventory.append(he)
 	else:
 		warningtime = Time.get_ticks_msec()
@@ -125,25 +121,12 @@ func _buy_flashbang():
 		if item != null:
 			size += item.inventory_size
 	if size < 4:
-		var flash = preload(\"res://weapons/grenades/flash_display.tscn\").instantiate()
+		var flash = preload(\"res://weapons/grenades/flash_grenade.tscn\").instantiate()
 		Gamemanager.local_player.inventory.append(flash)
 	else:
 		warningtime = Time.get_ticks_msec()
 		$spacewarning.show()
 
-
-func _buy_smoke():
-	
-	var size := 0
-	for item in Gamemanager.local_player.inventory:
-		if item != null:
-			size += item.inventory_size
-	if size < 4:
-		var smoke = preload(\"res://weapons/grenades/smoke_display.tscn\").instantiate()
-		Gamemanager.local_player.inventory.append(smoke)
-	else:
-		warningtime = Time.get_ticks_msec()
-		$spacewarning.show()
 
 
 func _buy_incendiary():
@@ -153,7 +136,7 @@ func _buy_incendiary():
 		if item != null:
 			size += item.inventory_size
 	if size < 4:
-		var incendiary = preload(\"res://weapons/grenades/incendiary_display.tscn\").instantiate()
+		var incendiary = preload(\"res://weapons/grenades/incendiary.tscn\").instantiate()
 		Gamemanager.local_player.inventory.append(incendiary)
 	else:
 		warningtime = Time.get_ticks_msec()
@@ -167,7 +150,7 @@ func _buy_claymore():
 		if item != null:
 			size += item.inventory_size
 	if size < 4:
-		var claymore = preload(\"res://weapons/grenades/claymore_display.tscn\").instantiate()
+		var claymore = preload(\"res://weapons/grenades/claymore.tscn\").instantiate()
 		Gamemanager.local_player.inventory.append(claymore)
 	else:
 		warningtime = Time.get_ticks_msec()
@@ -275,16 +258,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 80
 text = "Buy Glock"
 
-[node name="Button5" type="Button" parent="HBoxContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 80
-text = "Buy Sealant"
-
-[node name="Button6" type="Button" parent="HBoxContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 80
-text = " Buy Healthkit "
-
 [node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer"]
 layout_mode = 2
 alignment = 1
@@ -292,17 +265,12 @@ alignment = 1
 [node name="Button4" type="Button" parent="HBoxContainer/VBoxContainer2"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 80
-text = "Buy HE Grenade"
+text = "Buy Grenade"
 
 [node name="Button5" type="Button" parent="HBoxContainer/VBoxContainer2"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 80
 text = "Buy Flashbang"
-
-[node name="Button6" type="Button" parent="HBoxContainer/VBoxContainer2"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 80
-text = "Buy Smoke"
 
 [node name="Button7" type="Button" parent="HBoxContainer/VBoxContainer2"]
 layout_mode = 2
@@ -320,32 +288,23 @@ text = "Buy Claymore
 layout_mode = 2
 alignment = 1
 
-[node name="Button4" type="Button" parent="HBoxContainer/VBoxContainer3"]
+[node name="Button5" type="Button" parent="HBoxContainer/VBoxContainer3"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 80
-text = "Unarmored"
+text = "Buy Sealant"
 
-[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer3"]
+[node name="Button6" type="Button" parent="HBoxContainer/VBoxContainer3"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 80
-text = "Light Armor"
-
-[node name="Button3" type="Button" parent="HBoxContainer/VBoxContainer3"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 80
-text = "Heavy Armor"
+text = " Buy Healthkit "
 
 [connection signal="button_down" from="Button7" to="." method="_clear_inventory"]
 [connection signal="button_down" from="HBoxContainer/VBoxContainer/Button" to="." method="_buy_ak"]
 [connection signal="button_down" from="HBoxContainer/VBoxContainer/Button2" to="." method="_buy_vector"]
 [connection signal="button_down" from="HBoxContainer/VBoxContainer/Button3" to="." method="_buy_glock"]
-[connection signal="button_down" from="HBoxContainer/VBoxContainer/Button5" to="." method="_buy_sealant"]
-[connection signal="button_down" from="HBoxContainer/VBoxContainer/Button6" to="." method="_buy_healthkit"]
 [connection signal="button_down" from="HBoxContainer/VBoxContainer2/Button4" to="." method="_buy_HE"]
 [connection signal="button_down" from="HBoxContainer/VBoxContainer2/Button5" to="." method="_buy_flashbang"]
-[connection signal="button_down" from="HBoxContainer/VBoxContainer2/Button6" to="." method="_buy_smoke"]
 [connection signal="button_down" from="HBoxContainer/VBoxContainer2/Button7" to="." method="_buy_incendiary"]
 [connection signal="button_down" from="HBoxContainer/VBoxContainer2/Button8" to="." method="_buy_claymore"]
-[connection signal="button_down" from="HBoxContainer/VBoxContainer3/Button4" to="." method="_remove_armor"]
-[connection signal="button_down" from="HBoxContainer/VBoxContainer3/Button" to="." method="_buy_light_armor"]
-[connection signal="button_down" from="HBoxContainer/VBoxContainer3/Button3" to="." method="_buy_heavy_armor"]
+[connection signal="button_down" from="HBoxContainer/VBoxContainer3/Button5" to="." method="_buy_sealant"]
+[connection signal="button_down" from="HBoxContainer/VBoxContainer3/Button6" to="." method="_buy_healthkit"]

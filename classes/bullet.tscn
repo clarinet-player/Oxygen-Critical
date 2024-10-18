@@ -39,8 +39,7 @@ func _physics_process(delta):
 	
 	else:
 		# Get information about the collision
-		var _body = _raycast.collider
-		var _shape = _body.shape_owner_get_owner(_body.shape_find_owner(_raycast.shape))
+		var hitbox = _raycast.collider
 		var _point = _raycast.position
 		var _normal = _raycast.normal
 		var _travelled = global_position.distance_to(_point)
@@ -52,47 +51,39 @@ func _physics_process(delta):
 		global_position = _point
 		
 		
-		if \"player\" in _shape:
+		if \"owning\" in hitbox and \"health\" in hitbox.owning:
+			var _player = hitbox.owning
 			
-			if \"health\" in _shape.player:
-				var _player = _shape.player
+			if Gamemanager.mp_active and is_multiplayer_authority():
+				_player.damage.rpc(mass[hitbox.area] * clamp(1 - ((dist_travelled - effective_range) / effective_range), 0, 1), tearing, tagging)
 				
-				if Gamemanager.mp_active and is_multiplayer_authority():
-					var mult
-					if _player.armor != null:
-						mult = (1 - _player.armor.protection[_shape.area]) * clamp(1 - ((dist_travelled - effective_range) / effective_range), 0, 1)
-					else:
-						mult = clamp(1 - ((dist_travelled - effective_range) / effective_range), 0, 1)
-					_player.damage.rpc(mass[_shape.area] * mult, tearing, tagging)
-					if !_player.kill_contributors.has(get_multiplayer_authority()):
-						_player.kill_contributors.append(get_multiplayer_authority())
-					
-					if _shape.area == 1:
-						_player.play_sound.rpc(6)
-					elif _player.armor != null and mass[_shape.area] * (1 - _player.armor.protection[_shape.area]) > 10:
-						_player.play_sound.rpc(8)
-					else:
-						_player.play_sound.rpc(9)
+				if !_player.kill_contributors.has(get_multiplayer_authority()):
+					_player.kill_contributors.append(get_multiplayer_authority())
 				
-				var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
-				Gamemanager.add_child(blood)
-				blood.global_position = global_position
-				if blood.global_basis.y.cross(-velocity).is_zero_approx():
-					blood.rotate(global_basis.x, acos(blood.global_basis.y.dot(-velocity.normalized())))
+				if hitbox.area == 1:
+					_player.play_sound.rpc(6)
 				else:
-					blood.rotate(blood.global_basis.y.cross(-velocity).normalized(), acos(blood.global_basis.y.dot(-velocity.normalized())))
-				
-				queue_free()
-				return
+					_player.play_sound.rpc(9)
 			
-			elif \"fuse_time\" in _shape.player:
-				if Gamemanager.mp_active and is_multiplayer_authority():
-					_shape.player.destroy.rpc()
-				elif !Gamemanager.mp_active:
-					_shape.player.destroy()
-				
-				queue_free()
-				return
+			var blood = preload(\"res://classes/blood spray.tscn\").instantiate()
+			Gamemanager.add_child(blood)
+			blood.global_position = global_position
+			if blood.global_basis.y.cross(-velocity).is_zero_approx():
+				blood.rotate(global_basis.x, acos(blood.global_basis.y.dot(-velocity.normalized())))
+			else:
+				blood.rotate(blood.global_basis.y.cross(-velocity).normalized(), acos(blood.global_basis.y.dot(-velocity.normalized())))
+			
+			queue_free()
+			return
+			
+		elif \"owning\" in hitbox and \"fuse_time\" in hitbox.owning:
+			if Gamemanager.mp_active and is_multiplayer_authority():
+				hitbox.owning.destroy.rpc()
+			elif !Gamemanager.mp_active:
+				hitbox.owning.destroy()
+			
+			queue_free()
+			return
 		
 		else:
 			var impact = preload(\"res://classes/bullet impact.tscn\").instantiate()
@@ -106,7 +97,7 @@ func _physics_process(delta):
 			var smoke = preload(\"res://classes/smoke.tscn\").instantiate()
 			smoke.size = Vector3(0.2, 0.2, 0.2)
 			smoke.fade_speed = 0.15
-			smoke.start_density = 0.005
+			smoke.start_density = 0.004
 			Gamemanager.add_child(smoke)
 			smoke.global_position = global_position + _normal * 0.5
 			

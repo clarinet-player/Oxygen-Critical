@@ -1,12 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://cjnofdl32hx4a"]
+[gd_scene load_steps=9 format=3 uid="uid://cjnofdl32hx4a"]
 
 [ext_resource type="Texture2D" uid="uid://dxxt6ly8vu7uw" path="res://assets/Untitled2.png" id="1_2hg6l"]
+[ext_resource type="PackedScene" uid="uid://c2hluyirbi4rf" path="res://classes/hitbox.tscn" id="2_vorun"]
 
 [sub_resource type="GDScript" id="GDScript_xkkah"]
-script/source = "extends Node3D
+script/source = "extends \"res://classes/item base.gd\"
 
-const item_id := 6
-const inventory_size := 1
+
 var weight := 0.0
 
 const healing := 50
@@ -29,8 +29,8 @@ func _enter_tree():
 
 
 
-func _ready():
-	position = Vector3(0.207, -0.15, -0.205)
+func equip():
+	super()
 	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
 		hud.set_ammo(false, 0)
@@ -44,8 +44,9 @@ func _ready():
 
 
 
-func _exit_tree():
-	request_ready()
+func unequip():
+	super()
+	
 	hud.stop_progress(\"healing\")
 	in_use = false
 	weight = 0
@@ -54,6 +55,8 @@ func _exit_tree():
 
 
 func _physics_process(delta):
+	super(delta)
+	
 	if Gamemanager.mp_active and !is_multiplayer_authority():
 		return
 	
@@ -111,10 +114,30 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_jdcla")
 
-[node name="Healthkit" type="Node3D"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_ao6li"]
+size = Vector3(0.0943359, 0.152478, 0.22312)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_k3wv0"]
+radius = 0.11
+height = 0.31
+
+[node name="Healthkit" type="RigidBody3D"]
+freeze = true
 script = SubResource("GDScript_xkkah")
+item_id = 6
+inventory_size = 1
 
 [node name="Cube_004" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.460107, 0, -0.887864, 0, 1, 0, 0.887864, 0, 0.460107, 0.0488369, 0, -0.142168)
 mesh = SubResource("ArrayMesh_y5vbx")
 skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.887421, 0, 0.460959, 0, 1, 0, -0.460959, 0, 0.887421, 0.0471906, -0.000189215, -0.142751)
+shape = SubResource("BoxShape3D_ao6li")
+
+[node name="Hitbox" parent="." instance=ExtResource("2_vorun")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox"]
+transform = Transform3D(-2.22818e-08, -0.509747, -0.860324, 1, -4.37114e-08, 0, -3.7606e-08, -0.860324, 0.509747, 0.0503831, -0.00689539, -0.14573)
+shape = SubResource("CapsuleShape3D_k3wv0")

@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://blavw3fdrri7l"]
 
 [sub_resource type="GDScript" id="GDScript_4g8g7"]
-script/source = "extends Node3D
+script/source = "extends \"res://classes/item base.gd\"
 
 
 const use_time := 1600.0
@@ -22,8 +22,8 @@ func _enter_tree():
 
 
 
-func _ready():
-	position = Vector3(0.207, -0.15, -0.205)
+func equip():
+	super()
 	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
 		hud.set_ammo(false, 0)
@@ -37,8 +37,9 @@ func _ready():
 
 
 
-func _exit_tree():
-	request_ready()
+func unequip():
+	super()
+	
 	hud.stop_progress(\"healing\")
 	in_use = false
 #endregion
@@ -46,6 +47,8 @@ func _exit_tree():
 
 
 func _physics_process(delta):
+	super(delta)
+	
 	if Gamemanager.mp_active and !is_multiplayer_authority():
 		return
 	
@@ -99,7 +102,8 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_f0a4v")
 
-[node name="tape" type="Node3D"]
+[node name="tape" type="RigidBody3D"]
+freeze = true
 script = SubResource("GDScript_4g8g7")
 
 [node name="Cylinder" type="MeshInstance3D" parent="."]

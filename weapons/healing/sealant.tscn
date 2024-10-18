@@ -1,11 +1,10 @@
 [gd_scene load_steps=6 format=3 uid="uid://b21bpl783urvg"]
 
 [sub_resource type="GDScript" id="GDScript_4g8g7"]
-script/source = "extends Node3D
+script/source = "extends \"res://classes/item base.gd\"
 
 
-const item_id := 5
-const inventory_size := 1
+
 var weight := 0.0
 
 const use_time := 500.0
@@ -25,8 +24,8 @@ func _enter_tree():
 
 
 
-func _ready():
-	position = Vector3(0.207, -0.15, -0.205)
+func equip():
+	super()
 	
 	if !Gamemanager.mp_active or is_multiplayer_authority():
 		hud.set_ammo(false, 0)
@@ -41,8 +40,9 @@ func _ready():
 
 
 
-func _exit_tree():
-	request_ready()
+func unequip():
+	super()
+	
 	hud.stop_progress(\"healing\")
 	in_use = false
 	weight = 0
@@ -114,8 +114,11 @@ albedo_color = Color(0.188235, 0.572549, 0, 1)
 metallic = 0.09
 roughness = 0.66
 
-[node name="Sealant" type="Node3D"]
+[node name="Sealant" type="RigidBody3D"]
+freeze = true
 script = SubResource("GDScript_4g8g7")
+item_id = 5
+inventory_size = 1
 
 [node name="Circle" type="MeshInstance3D" parent="."]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.0169388, -0.077642, -0.115491)
