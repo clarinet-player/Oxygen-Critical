@@ -1,0 +1,406 @@
+[gd_scene load_steps=2 format=3 uid="uid://bcl6wucmqp8of"]
+
+[sub_resource type="GDScript" id="GDScript_w478l"]
+script/source = "extends Node
+
+
+
+const version = \"0.0.1\"
+
+var peer = ENetMultiplayerPeer.new()
+var local_player
+var freecam
+var mp_active = false
+
+var username := \"\"
+
+var players := Array()
+var game_running := false
+var round_running := false
+
+var round_time := 150000
+var respawn_time := 5000
+
+var gravity := Vector3.ZERO
+var playable_area : AABB
+var spawn_areas : Array
+var objectives : Array
+
+var round_start_time := -1
+
+
+
+func _ready():
+	$Label.text = version
+	
+	# Server setup
+	if DisplayServer.get_name() == \"headless\":
+		
+		mp_active = true
+		sync_level(2)
+		
+		await get_tree().create_timer(0.1).timeout
+		
+		multiplayer.peer_connected.connect(_on_connect)
+		multiplayer.peer_disconnected.connect(_on_disconnect)
+		
+		peer.create_server(7777)
+		multiplayer.multiplayer_peer = peer
+
+
+
+#region Multiplayer
+func connect_player():
+	peer.close()
+	peer.create_client(\"66.179.249.44\", 7777)
+	multiplayer.multiplayer_peer = peer
+	mp_active = true
+
+func cancel_connect():
+	peer.close()
+	mp_active = false
+
+func disconnect_player():
+	mp_active = false
+	for child in get_children():
+		if child.name == \"MultiplayerSpawner\":
+			continue
+		child.queue_free()
+		remove_child(child)
+	peer.close()
+
+
+
+func _on_connect(id : int):
+	print(\"player connected: \", id)
+	
+	# Syncing other players
+	for player in players:
+		if player.body != null:
+			player.body.set_team.rpc_id(id, player.team)
+	
+	
+	# Assigning player a team
+	var team1 := 0
+	var team2 := 0
+	for player in players:
+		if player.team == 1:
+			team1 += 1
+		elif player.team == 2:
+			team2 += 1
+	if team1 > team2:
+		players.append({\"id\": id, \"team\": 2, \"body\": null, \"ping\": 0, \"death_time\": Time.get_ticks_msec()})
+	else:
+		players.append({\"id\": id, \"team\": 1, \"body\": null, \"ping\": 0, \"death_time\": Time.get_ticks_msec()})
+	
+	
+	sync_level.rpc_id(id, 2)
+	
+	if round_running:
+		#sync_scoreboard.rpc_id(id, Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
+		pass
+	elif players.size() >= 2 and !game_running:
+		_game_loop()
+	elif !game_running:
+		ui_message.rpc(0)
+	else:
+		ui_message.rpc_id(id, 4)
+
+func _on_disconnect(id):
+	print(\"player disconnected: \", id)
+	if get_node_or_null(str(id)):
+		get_node(str(id)).die.rpc()
+	
+	for player in players:
+		if player.id == id:
+			players.erase(player)
+#endregion
+
+
+
+func spawn_player(player):
+	var new_player = preload(\"res://classes/player.tscn\").instantiate()
+	new_player.name = str(player.id)
+	add_child(new_player)
+	new_player.death.connect(on_death)
+	player.body = new_player
+	await get_tree().create_timer(0.1).timeout
+	new_player.set_team.rpc(player.team)
+
+
+
+func _game_loop():
+	game_running = true
+	while game_running:
+		
+		print(\"Round start.\")
+		round_start_time = Time.get_ticks_msec()
+		#sync_scoreboard.rpc(0, 2, 2)
+		
+		for player in players:
+			spawn_player(player)
+		
+		
+		round_running = true
+		while round_running:
+			await get_tree().create_timer(0.1).timeout
+			
+			# Respawn players
+			for player in players:
+				if player.body == null and player.team == 1 and Time.get_ticks_msec() - player.death_time > respawn_time:
+					spawn_player(player)
+					#sync_scoreboard.rpc(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
+				
+				elif player.body == null and player.team == 2 and Time.get_ticks_msec() - player.death_time > respawn_time:
+					spawn_player(player)
+					#sync_scoreboard.rpc(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
+			
+			
+			# Out of time
+			if Time.get_ticks_msec() - round_start_time > round_time:
+				ui_message.rpc(1)
+				print(\"Round end. Out of time.\")
+				round_running = false
+				break
+			
+			
+			var index = 0
+			for obj in objectives:
+				if obj.state == 1 and Time.get_ticks_msec() - obj.start_time > obj.complete_time:
+					complete_objective.rpc(index)
+				index += 1
+			
+			
+			var atk_objectives := 0
+			var atk_objectives_complete := 0
+			var def_objectives := 0
+			var def_objectives_complete := 0
+			for obj in objectives:
+				if obj.team == 1:
+					def_objectives += 1
+					if obj.state == 2:
+						def_objectives_complete += 1
+				else:
+					atk_objectives += 1
+					if obj.state == 2:
+						atk_objectives_complete += 1
+			
+			if def_objectives_complete == def_objectives:
+				round_running = false
+				print(\"Round end. Defender objectives complete.\")
+				break
+			if atk_objectives_complete == atk_objectives:
+				round_running = false
+				print(\"Round end. Attacker objectives complete.\")
+			
+			
+			if players.size() < 2:
+				round_running = false
+				print(\"Round end. Not enough players.\")
+				break
+		
+		
+		await get_tree().create_timer(5.0).timeout
+		reset.rpc()
+		await get_tree().create_timer(0.5).timeout
+		
+		if players.size() < 2:
+			game_running = false
+			ui_message.rpc(0)
+
+
+
+func on_death(id : int):
+	for player in players:
+		if player.id == id:
+			player.death_time = Time.get_ticks_msec()
+			return
+
+
+
+func find_spawnpoint(exclude, player_team):
+	var best_point
+	var best_value := 0.0
+	
+	var players = get_tree().get_nodes_in_group(\"Players\")
+	players.erase(exclude)
+	var spawnpoints = get_tree().get_nodes_in_group(\"Spawnpoints\")
+	
+	
+	for point in spawnpoints:
+		var value := 0.0
+		
+		if player_team != 0 and point.team != player_team:
+			continue
+		
+		for player in players:
+			value += point.global_position.distance_to(player.global_position)
+		if players.size() < 1:
+			value = randf()
+		if value > best_value:
+			best_value = value
+			best_point = point
+	
+	return best_point
+
+
+
+@rpc(\"authority\", \"call_remote\", \"reliable\")
+func sync_level(level : int):
+	if level == 1:
+		get_tree().change_scene_to_file(\"res://scenes/somnambulist 2.0.tscn\")
+	if level == 2:
+		get_tree().change_scene_to_file(\"res://scenes/wingman.tscn\")
+	
+	if DisplayServer.get_name() != \"headless\":
+		var cam = preload(\"res://classes/freecam.tscn\").instantiate()
+		add_child(cam)
+		cam.global_position = Vector3(8, 1.7, 20.7)
+		freecam = cam
+		UiManager.set_ui(6)
+
+
+
+@rpc(\"authority\", \"call_remote\", \"reliable\")
+func ui_message(ui : int):
+	UiManager.set_ui(6)
+	UiManager.spechud.set_message(ui)
+
+
+
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
+func throw_grenade(type : int, id : int, position : Vector3, velocity : Vector3):
+	if type == 1:
+		var grenade : RigidBody3D = preload(\"res://weapons/grenades/he_grenade.tscn\").instantiate()
+		grenade.name = str(id)
+		add_child(grenade)
+		grenade.global_position = position
+		grenade.apply_impulse(velocity)
+		
+	elif type == 2:
+		var incendiary = preload(\"res://weapons/grenades/incendiary.tscn\").instantiate()
+		incendiary.name = str(id)
+		add_child(incendiary)
+		incendiary.global_position = position
+		incendiary.apply_impulse(velocity)
+	
+	elif type == 3:
+		var flash = preload(\"res://weapons/grenades/flash_grenade.tscn\").instantiate()
+		flash.name = str(id)
+		add_child(flash)
+		flash.global_position = position
+		flash.apply_impulse(velocity)
+	
+	elif type == 5:
+		var claymore = preload(\"res://weapons/grenades/claymore.tscn\").instantiate()
+		claymore.name = str(id)
+		add_child(claymore)
+		claymore.global_position = position
+		claymore.velocity = velocity
+
+
+
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
+func spawn_fire(pos, vel):
+	var fire = load(\"res://classes/fire.tscn\").instantiate()
+	add_child(fire)
+	fire.global_position = pos
+	fire.velocity = vel
+
+
+
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
+func start_objective(obj_index : int):
+	if objectives.size() > obj_index:
+		var obj = objectives[obj_index]
+		
+		obj.state = 1
+		obj.start_time = Time.get_ticks_msec()
+		obj.started.emit()
+
+@rpc(\"any_peer\", \"call_local\", \"reliable\")
+func interrupt_objective(obj_index : int):
+	if objectives.size() > obj_index:
+		var obj = objectives[obj_index]
+		
+		obj.state = 0
+		obj.interrupted.emit()
+
+@rpc(\"authority\", \"call_local\", \"reliable\")
+func complete_objective(obj_index : int):
+	if objectives.size() > obj_index:
+		var obj = objectives[obj_index]
+		
+		obj.state = 2
+		obj.completed.emit()
+
+
+
+@rpc(\"authority\", \"call_local\", \"reliable\")
+func reset():
+	get_tree().get_first_node_in_group(\"Levels\")._ready()
+	for obj in objectives:
+		obj.state = 0
+	
+	UiManager.scoreboard.reset()
+	
+	for child in get_children():
+		if child.name == \"MultiplayerSpawner\":
+			continue
+		remove_child(child)
+		child.free()
+
+
+
+@rpc(\"any_peer\", \"call_remote\", \"reliable\")
+func switch_team():
+	for player in players:
+		if player.id == multiplayer.get_remote_sender_id():
+			if player.team == 1:
+				player.team = 2
+			else:
+				player.team = 1
+			if player.body != null:
+				player.body.die.rpc()
+			break
+
+
+
+func create_item(item : int):
+	if item == 1:
+		return preload(\"res://weapons/ak12/ak12.tscn\").instantiate()
+	elif item == 2:
+		return preload(\"res://weapons/vector/vector.tscn\").instantiate()
+	elif item == 3:
+		return preload(\"res://weapons/glock/glock.tscn\").instantiate()
+	elif item == 4:
+		return preload(\"res://weapons/grenades/he_grenade.tscn\").instantiate()
+	elif item == 5:
+		return preload(\"res://weapons/healing/sealant.tscn\").instantiate()
+	elif item == 6:
+		return preload(\"res://weapons/healing/healthkit.tscn\").instantiate()
+	elif item == 7:
+		return preload(\"res://weapons/grenades/incendiary.tscn\").instantiate()
+	elif item == 8:
+		return preload(\"res://weapons/grenades/flash_grenade.tscn\").instantiate()
+	elif item == 10:
+		return preload(\"res://weapons/grenades/claymore.tscn\").instantiate()
+"
+
+[node name="GameManager" type="Node"]
+script = SubResource("GDScript_w478l")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://classes/player.tscn", "res://classes/bullet.tscn")
+spawn_path = NodePath("..")
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -23.0
+offset_right = 44.0
+grow_vertical = 0
+
+[connection signal="spawned" from="MultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]

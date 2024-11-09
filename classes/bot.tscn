@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://cv6g7vms3csge"]
+
+[node name="Bot" type="RigidBody3D"]

@@ -1,15 +1,13 @@
-[gd_scene load_steps=50 format=3 uid="uid://biuxfaf0bntwb"]
+[gd_scene load_steps=48 format=3 uid="uid://biuxfaf0bntwb"]
 
 [ext_resource type="Material" uid="uid://dhs8hwst8a0pp" path="res://assets/metal_walls.tres" id="1_aiasi"]
 [ext_resource type="Material" uid="uid://bje2m6bnsa4r" path="res://assets/metal.tres" id="2_si174"]
 [ext_resource type="Texture2D" uid="uid://boixaq7472djr" path="res://assets/metal.jpg" id="2_xg154"]
 [ext_resource type="Material" uid="uid://y75gmnjjavok" path="res://assets/somnambulist.tres" id="3_7tlhp"]
 [ext_resource type="Texture2D" uid="uid://bxkndis3im8v" path="res://assets/360_F_469285845_ganfZEVY388wcbAn005zqC72v3p9aCVR.jpg" id="3_8ns53"]
-[ext_resource type="Texture2D" uid="uid://c7qwlpa75x88c" path="res://assets/a.png" id="3_lg61n"]
-[ext_resource type="Texture2D" uid="uid://b6mfajwcf4pvi" path="res://assets/site2.png" id="4_o2qkk"]
 [ext_resource type="PackedScene" uid="uid://d16rwkt574n4s" path="res://classes/gameSurface.tscn" id="4_x2lcu"]
-[ext_resource type="Texture2D" uid="uid://05ddnnkibkgu" path="res://assets/Untitled.png" id="6_hufdc"]
-[ext_resource type="Texture2D" uid="uid://dpp3dskrwv8k4" path="res://assets/b3.png" id="8_1nfpf"]
+[ext_resource type="PackedScene" uid="uid://b03r4jyacavuy" path="res://classes/objective.tscn" id="6_cdgpa"]
+[ext_resource type="PackedScene" uid="uid://c2hluyirbi4rf" path="res://classes/hitbox.tscn" id="8_axoku"]
 [ext_resource type="Material" uid="uid://cqypfqm3ivsmt" path="res://assets/diamond_metal.tres" id="11_3bxgd"]
 [ext_resource type="PackedScene" uid="uid://de0weem1pd67y" path="res://classes/spawnpoint.tscn" id="11_oa0ib"]
 
@@ -24,11 +22,13 @@ func _ready():
 	Gamemanager.playable_area = AABB(Vector3(-30, -1, -25), Vector3(61, 9, 42))
 	Gamemanager.spawn_areas = [AABB(Vector3(-6.5, 5, 4.5), Vector3(10, 3, 10)), AABB(Vector3(5.5, -1, 6.3), Vector3(10, 3, 10))]
 	Gamemanager.objectives = [
-		[1, AABB(Vector3(16.5, -1, -7.5), Vector3(14, 6, 14)), 0],
-		[3, AABB(Vector3(-22, 3, -13.8), Vector3(3, 3, 3)), 0]
+		$Objectives/Objective,
+		$Objectives/Objective2
 	]
 	Gamemanager.respawn_time = 6000
 	Gamemanager.round_time = 120000
+	
+	UiManager.playerhud.set_minimap(load(\"res://assets/wingman_layout.tres\"), 48, $Walls/Cube_002.global_transform)
 	
 	if !Gamemanager.mp_active:
 		spawn_player(1)
@@ -127,7 +127,7 @@ _surfaces = [{
 }]
 blend_shape_mode = 0
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_a7sau"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_lm1m8"]
 resource_name = "wingman_Cube_002"
 _surfaces = [{
 "aabb": AABB(-5, -1, -5, 10, 3, 22),
@@ -193,23 +193,6 @@ emission = Color(0.784314, 0.784314, 1, 1)
 material = SubResource("StandardMaterial3D_ew45i")
 radius = 0.1
 height = 0.5
-
-[sub_resource type="GDScript" id="GDScript_ycngj"]
-script/source = "extends Sprite3D
-
-var force_hide := false
-
-func _process(delta):
-	if get_viewport().get_camera_3d() == null:
-		return
-	if get_viewport().get_camera_3d().global_position.distance_to(global_position) < 13:
-		hide()
-	elif get_viewport().get_camera_3d().unproject_position(global_position).distance_to(get_viewport().size / 2) < 120:
-		hide()
-	else:
-		show()
-	
-"
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_3vp4s"]
 points = PackedVector3Array(-0.7, 0, -0.604072, -0.604072, 0, -0.7, -0.7, 0, 0.603935, -0.7, 2.30392, -0.604072, 0.603935, 0, -0.7, -0.604072, 2.30392, -0.7, -0.604072, 0, 0.699863, -0.7, 2.30392, 0.603935, -0.604072, 2.4, -0.604072, 0.699863, 0, -0.604072, 0.603935, 2.30392, -0.7, 0.603935, 0, 0.699863, -0.604072, 2.30392, 0.699863, -0.604072, 2.4, 0.603935, 0.603935, 2.4, -0.604072, 0.699863, 0, 0.603935, 0.699863, 2.30392, -0.604072, 0.603935, 2.30392, 0.699863, 0.603935, 2.4, 0.603935, 0.699863, 2.30392, 0.603935)
@@ -278,6 +261,9 @@ _surfaces = [{
 }]
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_d82ih")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jxmkr"]
+size = Vector3(2, 2.38757, 2)
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_ii1b0"]
 _surfaces = [{
@@ -394,7 +380,7 @@ environment = SubResource("Environment_jjncm")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.40235, 0, -0.589905)
 
 [node name="Cube_002" type="MeshInstance3D" parent="Walls"]
-mesh = SubResource("ArrayMesh_a7sau")
+mesh = SubResource("ArrayMesh_lm1m8")
 skeleton = NodePath("")
 
 [node name="GameSurface" parent="Walls" instance=ExtResource("4_x2lcu")]
@@ -509,47 +495,36 @@ omni_range = 12.0
 
 [node name="Objectives" type="Node3D" parent="."]
 
-[node name="Sprite3D" type="Sprite3D" parent="Objectives"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.6014, 1.96042, -0.631097)
-pixel_size = 0.0003
-billboard = 1
-no_depth_test = true
-fixed_size = true
-alpha_cut = 1
-texture = ExtResource("3_lg61n")
-script = SubResource("GDScript_ycngj")
+[node name="Objective" parent="Objectives" instance=ExtResource("6_cdgpa")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 2, 0)
+team = 2
 
-[node name="Decal" type="Decal" parent="Objectives"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.6147, -1.00001, -0.598638)
-size = Vector3(14.1952, 0.00714111, 14.146)
-texture_albedo = ExtResource("4_o2qkk")
-texture_orm = ExtResource("6_hufdc")
+[node name="Objective2" parent="Objectives" instance=ExtResource("6_cdgpa")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.2022, 4, -12.5779)
+collision_mask = 0
+team = 1
 
-[node name="Sprite3D2" type="Sprite3D" parent="Objectives"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.3746, 4.4151, -12.6433)
-pixel_size = 0.0003
-billboard = 1
-no_depth_test = true
-fixed_size = true
-alpha_cut = 1
-texture = ExtResource("8_1nfpf")
-script = SubResource("GDScript_ycngj")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="Objectives"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Objectives/StaticBody3D"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -19.1076, 2.99956, -12.5893)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Objectives/Objective2"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, -1.00044, 0)
 shape = SubResource("ConvexPolygonShape3D_3vp4s")
 
-[node name="Cube_002" type="MeshInstance3D" parent="Objectives/StaticBody3D"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -19.1076, 2.99956, -12.5893)
+[node name="Cube_002" type="MeshInstance3D" parent="Objectives/Objective2"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, -1.00044, 0)
 mesh = SubResource("ArrayMesh_hc204")
 skeleton = NodePath("")
 
-[node name="OmniLight3D" type="OmniLight3D" parent="Objectives/StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.523, 4.11467, -12.616)
+[node name="OmniLight3D" type="OmniLight3D" parent="Objectives/Objective2"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0.11467, 0)
 light_color = Color(0, 0.156863, 0, 1)
 omni_range = 4.0
+
+[node name="Hitbox" parent="Objectives/Objective2" node_paths=PackedStringArray("owning") instance=ExtResource("8_axoku")]
+collision_layer = 4
+owning = NodePath("..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Objectives/Objective2/Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.200794, 0.193787, 0)
+shape = SubResource("BoxShape3D_jxmkr")
 
 [node name="Obstacles" type="Node3D" parent="."]
 

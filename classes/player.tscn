@@ -38,8 +38,7 @@ var walking := false
 var oriented := true
 var up := Vector3.UP
 
-var _anchored_shape : CollisionShape3D
-var _anchor_point_l : Vector3
+var _anchored_object : Node3D
 var _grapple_point : Vector3
 var _surface_normal : Vector3
 
@@ -146,7 +145,7 @@ func _input(event):
 		if Settings.comfort_mode or !Gamemanager.gravity.is_zero_approx():
 			rotate(Vector3.UP, event.relative.x * mouse_sensitivity * -0.001)
 			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
-		elif oriented and _anchored_shape:
+		elif oriented and _anchored_object != null:
 			rotate(_surface_normal, event.relative.x * mouse_sensitivity * -0.001)
 			rotate(global_transform.basis.x.normalized(), event.relative.y * mouse_sensitivity * -0.001)
 		else:
@@ -167,7 +166,7 @@ func _process(delta):
 	
 	if Input.is_action_pressed(\"Shift\") or Settings.comfort_mode or !Gamemanager.gravity.is_zero_approx():
 		oriented = false
-	elif _anchored_shape:
+	elif _anchored_object != null:
 		oriented = true
 		reorient(global_basis.y, delta * 3.5)
 	
@@ -177,7 +176,7 @@ func _process(delta):
 		camera.global_position = global_position + up
 		var face := -(global_basis.z - global_basis.z.dot(up) * up).normalized()
 		skeleton.global_transform = Transform3D(Basis( face, up, face.cross(up) ), global_position + up * 0.54)
-	elif _anchored_shape:
+	elif _anchored_object != null:
 		up = lerp(up, _surface_normal, delta * 9).normalized()
 		camera.global_position = global_position + up
 		var face := -(global_basis.z - global_basis.z.dot(up) * up).normalized()
@@ -189,7 +188,7 @@ func _process(delta):
 		skeleton.global_transform = Transform3D(Basis( face, up, face.cross(up) ), global_position + up * 0.54)
 	
 	
-	if _anchored_shape:
+	if _anchored_object != null:
 		if oriented or !Gamemanager.gravity.is_zero_approx():
 			hud.set_hud_anchor(1, 0)
 		elif acos(_surface_normal.dot(global_basis.x)) < PI / 2:
@@ -214,11 +213,20 @@ func _process(delta):
 		hud.set_highlight(0)
 	elif \"owning\" in _raycast.collider:
 		var owning = _raycast.collider.owning
-		if owning.is_in_group(\"Objectives\"):
+		if owning.is_in_group(\"Objectives\") and owning.team == team:
 			hud.set_highlight(2)
 			highlighted = owning
+		elif owning.is_in_group(\"Objectives\") and owning.team != team:
+			hud.set_highlight(4)
+			highlighted = null
 		elif \"equip_speed\" in owning and owning.state == ItemBase.istate.dropped:
 			hud.set_highlight(1)
+			highlighted = owning
+		elif \"open\" in owning and owning.state == 0:
+			hud.set_highlight(5)
+			highlighted = owning
+		elif \"open\" in owning and owning.state == 1:
+			hud.set_highlight(3)
 			highlighted = owning
 	
 	
@@ -235,6 +243,14 @@ func _process(delta):
 				inventory.append(highlighted)
 				highlighted.pick($Camera3D/Marker3D, $Camera3D/Marker3D2)
 				set_item(inventory.find(highlighted))
+		
+		elif \"open\" in highlighted:
+			if highlighted.state == 1:
+				highlighted.close()
+				hud.set_highlight(0)
+			else:
+				highlighted.open()
+				hud.set_highlight(0)
 	
 	
 	if Input.is_action_just_pressed(\"E\"):
@@ -341,7 +357,7 @@ func _physics_process(delta : float):
 			jump_stamina = 1
 	
 	
-	if _anchored_shape:
+	if _anchored_object != null:
 		if (Input.is_action_pressed(\"W\") or Input.is_action_pressed(\"A\") or Input.is_action_pressed(\"S\") or Input.is_action_pressed(\"D\")) and !UiManager.paused:
 			walking = true
 		else:
@@ -355,7 +371,7 @@ func _physics_process(delta : float):
 	
 	# Jumping
 	if Input.is_action_just_pressed(\"Space\") and !UiManager.paused:
-		if _anchored_shape:
+		if _anchored_object != null:
 			detach()
 			if Gamemanager.gravity.is_zero_approx():
 				velocity += -global_basis.z * max(jump_power * jump_stamina - total_weight, 0)
@@ -374,7 +390,7 @@ func _physics_process(delta : float):
 			var _raycast = _space.intersect_ray(_ray)
 			
 			if !_raycast.is_empty():
-				if Time.get_ticks_msec() - sound_time > 200 or _anchored_shape:
+				if Time.get_ticks_msec() - sound_time > 200 or _anchored_object != null:
 					sound_time = Time.get_ticks_msec()
 					play_sound.rpc(3)
 				detach()
@@ -384,7 +400,7 @@ func _physics_process(delta : float):
 	
 	
 	# Delegate movement
-	if _anchored_shape:
+	if _anchored_object != null:
 		_anchored_move(delta)
 	else:
 		_free_move(delta)
@@ -434,7 +450,7 @@ func _anchored_move(delta : float):
 		
 		_time -= delta * (_collision.get_travel().length() / velocity.length())
 		
-		if _shape == _anchored_shape and acos(_surface_normal.dot(_normal)) < 1.5:
+		if _shape == _anchored_object != null and acos(_surface_normal.dot(_normal)) < 1.5:
 			_surface_normal = _normal
 			_forward = (-global_basis.z + global_basis.z.dot(_surface_normal) * _surface_normal).normalized()
 			_side = (global_basis.x - global_basis.x.dot(_surface_normal) * _surface_normal).normalized()
@@ -452,8 +468,7 @@ func _anchored_move(delta : float):
 	
 	# Checking we're still on the ground
 	_collision = move_and_collide(_surface_normal * -100 * delta)
-	if _collision and _collision.get_collider_shape() == _anchored_shape and (Gamemanager.gravity.is_zero_approx() or acos(_collision.get_normal().dot(Vector3.UP)) < 0.5):
-		_anchor_point_l = _anchored_shape.to_local(self.global_position)
+	if _collision and _collision.get_collider_shape() == _anchored_object != null and (Gamemanager.gravity.is_zero_approx() or acos(_collision.get_normal().dot(Vector3.UP)) < 0.5):
 		_surface_normal = _collision.get_normal()
 	else:
 		move_and_collide(_surface_normal * 100 * delta)
@@ -475,9 +490,9 @@ func _free_move(delta : float):
 	var _collision = move_and_collide(velocity * delta)
 	
 	while _collision:
-		var _shape = _collision.get_collider_shape()
 		var _normal = _collision.get_normal()
-		if (Gamemanager.gravity.is_zero_approx() and \"get_is_grabbable\" in _shape) or (!Gamemanager.gravity.is_zero_approx() and acos(_normal.dot(Vector3.UP)) < 0.5):
+		var hitbox = _collision.get_collider()
+		if (\"owning\" in hitbox and hitbox.grabbable) or (!Gamemanager.gravity.is_zero_approx() and acos(_normal.dot(Vector3.UP)) < 0.5):
 			if Time.get_ticks_msec() - sound_time > 200:
 				sound_time = Time.get_ticks_msec()
 				if Gamemanager.mp_active:
@@ -485,7 +500,7 @@ func _free_move(delta : float):
 				else:
 					play_sound(2)
 			
-			attach(_shape, _normal)
+			attach(hitbox, _normal)
 			if !velocity.is_zero_approx():
 				_anchored_move(_collision.get_remainder().length()/velocity.length())
 			return
@@ -499,14 +514,13 @@ func _free_move(delta : float):
 
 
 
-func attach(_shape : CollisionShape3D, _normal : Vector3):
+func attach(hitbox : Node3D, _normal : Vector3):
 	
 	global_position = camera.global_position
 	move_and_collide(-_normal)
 	camera.global_position = global_position + _normal
 	
-	_anchored_shape = _shape
-	_anchor_point_l = _anchored_shape.to_local(global_position)
+	_anchored_object = hitbox
 	_surface_normal = _normal
 	
 	if _grapple_point != Vector3.ZERO:
@@ -521,7 +535,7 @@ func attach(_shape : CollisionShape3D, _normal : Vector3):
 func detach():
 	oriented = false
 	
-	_anchored_shape = null
+	_anchored_object = null
 
 
 
@@ -541,7 +555,7 @@ func reorient(to : Vector3, speed : float):
 
 
 func is_anchored() -> bool:
-	if _anchored_shape:
+	if _anchored_object != null:
 		return true
 	else:
 		return false
@@ -549,10 +563,6 @@ func is_anchored() -> bool:
 
 
 func get_velocity() -> Vector3:
-	if _anchored_shape:
-		var _body = _anchored_shape.get_parent()
-		if \"centrifuge_angular_velocity\" in _body:
-			return velocity + (_body.global_position - global_position).cross(_body.centrifuge_angular_velocity)
 	return velocity
 
 
@@ -750,8 +760,7 @@ func die():
 		
 		Gamemanager.local_player = null
 		hud.stop_progress(\"\")
-		if UiManager.active_menu != UiManager.spechud:
-			Gamemanager.ui_message(3)
+		Gamemanager.ui_message(3)
 		
 		var freecam = preload(\"res://classes/freecam.tscn\").instantiate()
 		Gamemanager.add_child(freecam)
@@ -1053,6 +1062,7 @@ bones/8/rotation = Quaternion(-0.0178548, -2.63817e-06, 5.63647e-08, 0.999841)
 bones/8/scale = Vector3(1, 1, 1)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Camera3D/Skeleton3D"]
+cast_shadow = 0
 mesh = SubResource("ArrayMesh_m6r8d")
 skin = SubResource("Skin_0ca6m")
 

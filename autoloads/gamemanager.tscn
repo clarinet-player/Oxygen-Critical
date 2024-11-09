@@ -5,8 +5,6 @@ script/source = "extends Node
 
 
 
-const version = \"0.0.1\"
-
 var peer = ENetMultiplayerPeer.new()
 var local_player
 var freecam
@@ -31,8 +29,6 @@ var round_start_time := -1
 
 
 func _ready():
-	$Label.text = version
-	
 	# Server setup
 	if DisplayServer.get_name() == \"headless\":
 		
@@ -402,5 +398,6 @@ offset_left = 4.0
 offset_top = -23.0
 offset_right = 44.0
 grow_vertical = 0
+text = "0.0.1"
 
 [connection signal="spawned" from="MultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]

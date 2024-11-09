@@ -1,8 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://bw31ycr56hs2f"]
+[gd_scene load_steps=14 format=3 uid="uid://bw31ycr56hs2f"]
 
 [ext_resource type="Texture2D" uid="uid://c67skss10c7mf" path="res://assets/anchor.png" id="1_xoek8"]
 [ext_resource type="Texture2D" uid="uid://chgg0w0akk1ch" path="res://assets/crosshair.png" id="2_h03sm"]
 [ext_resource type="Texture2D" uid="uid://vyjwe05dj6hf" path="res://assets/indicator.png" id="3_tdxfv"]
+[ext_resource type="Material" uid="uid://clqavsrwv2c3x" path="res://assets/minimap_level.tres" id="4_601co"]
+[ext_resource type="Texture2D" uid="uid://ba332c84ta20a" path="res://assets/objective_icon.png" id="5_vtb5o"]
+[ext_resource type="Texture2D" uid="uid://cqnlqrdn8d1u2" path="res://assets/enemy_objective.png" id="6_2bidp"]
 
 [sub_resource type="GDScript" id="GDScript_wnrnt"]
 script/source = "extends Control
@@ -13,7 +16,7 @@ var progress_name : String
 var progress_speed : float
 
 
-@onready var progress := $\"Progress Bar\"
+@onready var progress := $\"Crosshair/Progress Bar\"
 @onready var crosshair := $Crosshair
 
 
@@ -35,16 +38,27 @@ func set_ammo(vis : bool, ammo : int):
 
 
 
+func set_timer(time_left : int):
+	$Scoreboard/Timer
+
+
+
 func set_highlight(new : int):
-	$Label.hide()
-	$Label2.hide()
-	$Label3.hide()
+	$Crosshair/Label.hide()
+	$Crosshair/Label2.hide()
+	$Crosshair/Label3.hide()
+	$Crosshair/Label4.hide()
+	$Crosshair/Label5.hide()
 	if new == 1:
-		$Label.show()
+		$Crosshair/Label.show()
 	elif new == 2:
-		$Label2.show()
+		$Crosshair/Label2.show()
 	elif new == 3:
-		$Label3.show()
+		$Crosshair/Label5.show()
+	elif new == 4:
+		$Crosshair/Label4.show()
+	elif new == 5:
+		$Crosshair/Label3.show()
 
 
 
@@ -86,6 +100,14 @@ func stop_progress(task_name : String):
 
 
 
+func set_minimap(level_mesh : ArrayMesh, camera_distance : float, level_transform := Transform3D()):
+	$Minimap/SubViewport/LevelMesh.mesh = level_mesh
+	$Minimap/SubViewport/Node3D/Camera3D.position = Vector3(0, 0, camera_distance)
+	$Minimap/SubViewport/Node3D.rotation = Vector3.ZERO
+	$Minimap/SubViewport/LevelMesh.global_transform = level_transform
+
+
+
 func _process(delta):
 	if progress.visible == true:
 		progress.value += delta * progress_speed
@@ -93,7 +115,57 @@ func _process(delta):
 			progress.visible = false
 	
 	if Gamemanager.local_player != null:
-		$SubViewportContainer/SubViewport/Node3D.global_rotation = Gamemanager.local_player.global_rotation
+		$Minimap/SubViewport/Node3D.global_rotation = Gamemanager.local_player.global_rotation
+	
+	
+	
+	var time_left = (Gamemanager.round_time - (Time.get_ticks_msec() - Gamemanager.round_start_time)) / 1000.0
+	var minutes = int(time_left / 60)
+	
+	if time_left < 0 or Gamemanager.round_start_time == -1:
+		$Scoreboard/Timer.text = \"0:00\"
+	elif time_left - int(time_left / 60) * 60 < 10:
+		$Scoreboard/Timer.text = str(minutes) + \":0\" + str(int(time_left - minutes * 60))
+	else:
+		$Scoreboard/Timer.text = str(minutes) + \":\" + str(int(time_left - minutes * 60))
+	
+	
+	
+	for child in $Minimap.get_children():
+		if child != $Minimap/SubViewport:
+			child.queue_free()
+	
+	for player in get_tree().get_nodes_in_group(\"Players\"):
+		if player == Gamemanager.local_player:
+			var sprite = Sprite2D.new()
+			sprite.texture = preload(\"res://assets/player_icon.png\")
+			$Minimap.add_child(sprite)
+			sprite.position = $Minimap/SubViewport/Node3D/Camera3D.unproject_position(player.global_position)
+		
+		elif (Gamemanager.local_player != null and player.team == Gamemanager.local_player.team) or (Gamemanager.local_player == null and player.team == 1):
+			var sprite = Sprite2D.new()
+			sprite.texture = preload(\"res://assets/ally_icon.png\")
+			$Minimap.add_child(sprite)
+			sprite.position = $Minimap/SubViewport/Node3D/Camera3D.unproject_position(player.global_position)
+		
+		else:
+			var sprite = Sprite2D.new()
+			sprite.texture = preload(\"res://assets/enemy_icon.png\")
+			$Minimap.add_child(sprite)
+			sprite.position = $Minimap/SubViewport/Node3D/Camera3D.unproject_position(player.global_position)
+	
+	for objective in Gamemanager.objectives:
+		if objective.state == 0:
+			if (Gamemanager.local_player != null and objective.team == Gamemanager.local_player.team) or (Gamemanager.local_player == null and objective.team == 1):
+				var sprite = Sprite2D.new()
+				sprite.texture = preload(\"res://assets/objective_icon.png\")
+				$Minimap.add_child(sprite)
+				sprite.position = $Minimap/SubViewport/Node3D/Camera3D.unproject_position(objective.global_position)
+			else:
+				var sprite = Sprite2D.new()
+				sprite.texture = preload(\"res://assets/enemy_objective.png\")
+				$Minimap.add_child(sprite)
+				sprite.position = $Minimap/SubViewport/Node3D/Camera3D.unproject_position(objective.global_position)
 "
 
 [sub_resource type="Theme" id="Theme_s0mw5"]
@@ -122,12 +194,6 @@ volumetric_fog_emission = Color(0, 0, 0.00784314, 1)
 volumetric_fog_gi_inject = 0.0
 volumetric_fog_length = 32.0
 volumetric_fog_temporal_reprojection_enabled = false
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_juwpw"]
-cull_mode = 1
-albedo_color = Color(0, 0, 0, 1)
-emission_enabled = true
-emission = Color(0, 0, 1, 1)
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_e71yw"]
 _surfaces = [{
@@ -171,7 +237,7 @@ _surfaces = [{
 "format": 34896613399,
 "index_count": 2067,
 "index_data": PackedByteArray(15, 0, 41, 0, 26, 0, 6, 0, 15, 0, 11, 0, 39, 0, 71, 0, 47, 0, 33, 0, 70, 0, 38, 0, 46, 0, 69, 0, 24, 0, 55, 0, 59, 0, 51, 0, 60, 0, 65, 0, 52, 0, 64, 0, 56, 0, 67, 0, 183, 0, 74, 0, 200, 0, 190, 0, 231, 0, 178, 0, 123, 0, 162, 0, 84, 0, 98, 0, 118, 0, 102, 0, 85, 0, 121, 0, 80, 0, 91, 0, 116, 0, 95, 0, 92, 0, 96, 0, 85, 0, 112, 0, 157, 0, 119, 0, 115, 0, 120, 0, 94, 0, 139, 0, 143, 0, 134, 0, 108, 0, 154, 0, 114, 0, 100, 0, 142, 0, 97, 0, 81, 0, 122, 0, 83, 0, 144, 0, 167, 0, 135, 0, 130, 0, 164, 0, 125, 0, 215, 0, 219, 0, 211, 0, 169, 0, 221, 0, 174, 0, 218, 0, 232, 0, 210, 0, 196, 0, 224, 0, 228, 0, 195, 0, 227, 0, 179, 0, 198, 0, 180, 0, 185, 0, 46, 1, 0, 1, 7, 1, 29, 1, 239, 0, 3, 5, 45, 1, 16, 1, 32, 1, 13, 1, 21, 1, 244, 0, 31, 1, 12, 5, 25, 1, 40, 1, 255, 0, 44, 1, 70, 1, 94, 1, 86, 1, 92, 1, 137, 1, 88, 1, 143, 1, 80, 1, 102, 1, 84, 1, 133, 1, 59, 1, 70, 1, 102, 1, 94, 1, 69, 1, 85, 1, 61, 1, 108, 1, 131, 1, 100, 1, 121, 1, 128, 1, 124, 1, 114, 1, 123, 1, 118, 1, 60, 1, 135, 1, 54, 1, 147, 1, 210, 1, 158, 1, 230, 1, 218, 1, 213, 1, 247, 0, 254, 0, 39, 1, 8, 5, 243, 0, 20, 1, 16, 2, 243, 1, 237, 1, 233, 1, 242, 1, 15, 2, 248, 1, 245, 1, 254, 1, 0, 4, 243, 3, 195, 3, 9, 2, 239, 1, 3, 2, 5, 2, 241, 1, 42, 2, 85, 2, 48, 2, 45, 2, 98, 2, 56, 2, 64, 2, 44, 2, 47, 2, 79, 2, 245, 4, 26, 1, 1, 5, 198, 3, 209, 3, 109, 2, 4, 2, 40, 2, 252, 1, 184, 3, 238, 3, 188, 3, 11, 4, 35, 4, 8, 4, 18, 4, 32, 4, 22, 4, 181, 2, 124, 2, 154, 2, 142, 2, 211, 2, 147, 2, 197, 2, 210, 2, 141, 2, 161, 2, 215, 2, 156, 2, 145, 2, 209, 2, 178, 2, 174, 2, 177, 2, 170, 2, 146, 2, 179, 2, 151, 2, 190, 2, 65, 3, 184, 2, 182, 2, 204, 2, 186, 2, 176, 2, 207, 2, 168, 2, 124, 2, 52, 3, 131, 2, 206, 2, 193, 2, 203, 2, 152, 2, 212, 2, 201, 2, 36, 3, 42, 3, 10, 3, 249, 2, 27, 3, 3, 3, 43, 3, 39, 3, 33, 3, 56, 3, 71, 3, 63, 3, 85, 3, 104, 3, 88, 3, 82, 3, 74, 3, 98, 3, 77, 3, 81, 3, 95, 3, 89, 3, 68, 3, 86, 3, 239, 2, 102, 3, 83, 3, 241, 2, 84, 3, 54, 3, 96, 3, 101, 3, 107, 3, 190, 2, 113, 3, 65, 3, 59, 3, 116, 3, 52, 3, 175, 3, 151, 3, 155, 3, 182, 3, 178, 3, 129, 3, 120, 3, 148, 3, 156, 3, 152, 3, 170, 3, 139, 3, 174, 3, 154, 3, 147, 3, 120, 3, 156, 3, 143, 3, 162, 3, 166, 3, 159, 3, 128, 3, 176, 3, 124, 3, 140, 3, 171, 3, 146, 3, 196, 3, 200, 3, 192, 3, 185, 3, 202, 3, 206, 3, 194, 3, 242, 3, 199, 3, 2, 4, 16, 4, 120, 2, 19, 4, 28, 4, 23, 4, 29, 4, 33, 4, 24, 4, 37, 4, 10, 5, 98, 2, 89, 4, 41, 4, 105, 4, 89, 4, 67, 4, 41, 4, 122, 4, 117, 4, 84, 4, 123, 4, 85, 4, 102, 4, 98, 4, 119, 4, 100, 4, 58, 4, 83, 4, 80, 4, 81, 4, 114, 4, 86, 4, 68, 4, 83, 4, 58, 4, 97, 4, 99, 4, 141, 5, 68, 4, 91, 4, 95, 4, 95, 4, 142, 5, 68, 4, 113, 4, 116, 4, 121, 4, 226, 3, 215, 3, 76, 4, 215, 3, 73, 4, 76, 4, 144, 4, 153, 4, 142, 4, 151, 4, 160, 4, 147, 4, 133, 4, 144, 4, 142, 4, 158, 4, 172, 4, 155, 4, 162, 4, 177, 4, 165, 4, 176, 4, 156, 4, 179, 4, 167, 4, 180, 4, 148, 4, 191, 4, 186, 4, 229, 4, 209, 4, 235, 4, 198, 4, 210, 4, 199, 4, 216, 4, 227, 4, 219, 4, 222, 4, 233, 4, 184, 4, 223, 4, 200, 4, 238, 4, 194, 4, 28, 5, 53, 5, 23, 5, 58, 5, 81, 5, 52, 5, 64, 5, 88, 5, 71, 5, 44, 5, 53, 5, 28, 5, 55, 5, 57, 5, 51, 5, 43, 5, 83, 5, 60, 5, 26, 5, 48, 5, 18, 5, 28, 5, 69, 5, 36, 5, 49, 5, 75, 5, 19, 5, 74, 5, 85, 5, 61, 5, 20, 5, 76, 5, 15, 5, 200, 4, 127, 5, 213, 4, 200, 4, 113, 5, 127, 5, 193, 3, 129, 5, 255, 3, 45, 0, 27, 0, 42, 0, 45, 0, 23, 0, 27, 0, 43, 0, 32, 0, 37, 0, 43, 0, 36, 0, 32, 0, 15, 0, 26, 0, 11, 0, 34, 0, 8, 0, 30, 0, 34, 0, 14, 0, 8, 0, 40, 0, 48, 0, 44, 0, 54, 0, 18, 0, 57, 0, 54, 0, 12, 0, 18, 0, 15, 0, 35, 0, 41, 0, 61, 0, 5, 0, 49, 0, 61, 0, 1, 0, 5, 0, 50, 0, 11, 0, 53, 0, 50, 0, 6, 0, 11, 0, 29, 0, 2, 0, 62, 0, 29, 0, 7, 0, 2, 0, 31, 0, 63, 0, 66, 0, 58, 0, 22, 0, 68, 0, 58, 0, 19, 0, 22, 0, 55, 1, 10, 0, 63, 1, 55, 1, 3, 0, 10, 0, 163, 0, 136, 0, 168, 0, 163, 0, 128, 0, 136, 0, 66, 1, 212, 0, 234, 0, 85, 0, 76, 0, 88, 0, 85, 0, 80, 0, 76, 0, 137, 0, 96, 0, 140, 0, 137, 0, 85, 0, 96, 0, 166, 0, 99, 0, 147, 0, 166, 0, 141, 0, 99, 0, 85, 0, 88, 0, 92, 0, 89, 0, 152, 0, 107, 0, 89, 0, 105, 0, 152, 0, 113, 0, 153, 0, 158, 0, 104, 0, 79, 0, 151, 0, 104, 0, 77, 0, 79, 0, 148, 0, 117, 0, 156, 0, 148, 0, 101, 0, 117, 0, 138, 0, 147, 5, 144, 5, 138, 0, 132, 0, 147, 5, 76, 0, 103, 0, 88, 0, 124, 0, 87, 0, 129, 0, 155, 0, 160, 0, 146, 0, 155, 0, 149, 0, 160, 0, 150, 0, 82, 0, 161, 0, 150, 0, 78, 0, 82, 0, 145, 0, 159, 0, 165, 0, 216, 0, 173, 0, 220, 0, 216, 0, 74, 0, 173, 0, 236, 0, 170, 0, 225, 0, 236, 0, 222, 0, 170, 0, 74, 0, 188, 0, 173, 0, 191, 0, 181, 0, 229, 0, 191, 0, 186, 0, 181, 0, 64, 1, 199, 0, 72, 0, 64, 1, 192, 0, 199, 0, 73, 0, 182, 0, 187, 0, 214, 1, 76, 1, 231, 1, 214, 1, 205, 0, 76, 1, 226, 0, 176, 0, 230, 0, 226, 0, 171, 0, 176, 0, 223, 0, 194, 0, 235, 0, 175, 0, 177, 0, 172, 0, 175, 0, 189, 0, 177, 0, 65, 1, 233, 0, 193, 0, 201, 0, 197, 0, 184, 0, 9, 1, 18, 1, 48, 1, 9, 1, 255, 4, 18, 1, 250, 0, 242, 0, 241, 4, 249, 0, 238, 0, 244, 4, 33, 1, 17, 1, 12, 1, 11, 1, 252, 0, 6, 1, 11, 1, 2, 1, 252, 0, 246, 0, 35, 1, 14, 1, 246, 0, 38, 1, 35, 1, 33, 1, 159, 1, 47, 1, 33, 1, 166, 1, 159, 1, 17, 1, 23, 1, 10, 5, 49, 1, 162, 1, 41, 1, 49, 1, 160, 1, 162, 1, 241, 0, 24, 1, 248, 4, 241, 0, 30, 1, 24, 1, 36, 1, 168, 1, 34, 1, 36, 1, 170, 1, 168, 1, 1, 1, 43, 1, 253, 0, 1, 1, 50, 1, 43, 1, 62, 1, 16, 0, 71, 1, 62, 1, 9, 0, 16, 0, 56, 1, 0, 0, 51, 1, 56, 1, 4, 0, 0, 0, 70, 1, 6, 0, 58, 1, 70, 1, 15, 0, 6, 0, 105, 1, 82, 1, 154, 1, 105, 1, 110, 1, 82, 1, 117, 1, 122, 1, 127, 1, 106, 1, 155, 1, 130, 1, 115, 1, 58, 1, 113, 1, 115, 1, 143, 1, 58, 1, 102, 1, 58, 1, 143, 1, 102, 1, 70, 1, 58, 1, 68, 1, 90, 1, 214, 0, 68, 1, 98, 1, 90, 1, 102, 1, 80, 1, 109, 1, 87, 1, 96, 1, 91, 1, 107, 1, 104, 1, 111, 1, 107, 1, 99, 1, 104, 1, 138, 1, 101, 1, 132, 1, 138, 1, 93, 1, 101, 1, 52, 1, 134, 1, 119, 1, 125, 1, 146, 1, 116, 1, 125, 1, 140, 1, 146, 1, 112, 1, 53, 1, 120, 1, 112, 1, 57, 1, 53, 1, 126, 1, 153, 1, 141, 1, 126, 1, 129, 1, 153, 1, 121, 1, 136, 1, 128, 1, 145, 5, 133, 0, 208, 0, 145, 5, 148, 5, 133, 0, 213, 0, 95, 1, 217, 0, 213, 0, 89, 1, 95, 1, 216, 0, 102, 1, 74, 0, 216, 0, 94, 1, 102, 1, 75, 0, 97, 1, 67, 1, 75, 0, 103, 1, 97, 1, 207, 0, 126, 0, 78, 1, 207, 0, 131, 0, 126, 0, 79, 1, 86, 0, 75, 1, 79, 1, 127, 0, 86, 0, 167, 1, 198, 1, 149, 1, 167, 1, 73, 1, 198, 1, 227, 1, 165, 1, 222, 1, 227, 1, 173, 1, 165, 1, 202, 0, 194, 1, 197, 1, 202, 0, 197, 1, 72, 1, 232, 1, 74, 1, 176, 1, 232, 1, 77, 1, 74, 1, 148, 1, 159, 1, 166, 1, 42, 1, 171, 1, 37, 1, 42, 1, 163, 1, 171, 1, 193, 1, 172, 1, 226, 1, 193, 1, 169, 1, 172, 1, 181, 1, 175, 1, 178, 1, 181, 1, 229, 1, 175, 1, 224, 1, 185, 1, 192, 1, 224, 1, 188, 1, 185, 1, 228, 1, 187, 1, 223, 1, 228, 1, 180, 1, 187, 1, 177, 1, 166, 1, 184, 1, 177, 1, 72, 1, 166, 1, 166, 1, 191, 1, 184, 1, 72, 1, 177, 1, 174, 1, 200, 1, 217, 1, 203, 1, 200, 1, 196, 1, 217, 1, 139, 1, 151, 1, 145, 1, 139, 1, 206, 1, 151, 1, 211, 1, 208, 1, 220, 1, 211, 1, 152, 1, 208, 1, 195, 1, 206, 0, 215, 1, 195, 1, 203, 0, 206, 0, 221, 1, 161, 1, 212, 1, 221, 1, 164, 1, 161, 1, 219, 1, 202, 1, 216, 1, 219, 1, 207, 1, 202, 1, 157, 1, 201, 1, 205, 1, 157, 1, 83, 1, 201, 1, 218, 1, 230, 1, 225, 1, 144, 1, 199, 1, 81, 1, 144, 1, 150, 1, 199, 1, 156, 1, 209, 1, 142, 1, 156, 1, 204, 1, 209, 1, 17, 2, 107, 2, 22, 2, 17, 2, 13, 2, 107, 2, 9, 5, 243, 4, 245, 0, 236, 1, 27, 2, 0, 2, 236, 1, 31, 2, 27, 2, 23, 2, 35, 2, 20, 2, 23, 2, 38, 2, 35, 2, 36, 2, 21, 2, 105, 2, 102, 2, 25, 2, 36, 2, 2, 2, 103, 2, 7, 2, 253, 1, 244, 1, 234, 1, 19, 2, 30, 2, 235, 1, 19, 2, 34, 2, 30, 2, 36, 2, 105, 2, 102, 2, 41, 2, 240, 1, 247, 1, 249, 1, 24, 2, 101, 2, 249, 1, 255, 1, 24, 2, 1, 2, 250, 1, 102, 2, 39, 2, 246, 1, 251, 1, 238, 1, 14, 2, 18, 2, 238, 1, 8, 2, 14, 2, 86, 2, 84, 2, 76, 2, 86, 2, 46, 2, 84, 2, 88, 2, 62, 2, 55, 2, 88, 2, 74, 2, 62, 2, 66, 2, 54, 2, 61, 2, 66, 2, 58, 2, 54, 2, 49, 2, 39, 4, 81, 2, 49, 2, 91, 2, 39, 4, 78, 2, 82, 2, 43, 2, 83, 2, 68, 2, 75, 2, 83, 2, 37, 4, 68, 2, 53, 2, 92, 2, 50, 2, 53, 2, 96, 2, 92, 2, 51, 2, 48, 2, 85, 2, 98, 2, 68, 2, 37, 4, 37, 4, 83, 2, 80, 2, 57, 2, 95, 2, 52, 2, 57, 2, 99, 2, 95, 2, 77, 2, 73, 2, 87, 2, 77, 2, 70, 2, 73, 2, 10, 2, 65, 2, 60, 2, 10, 2, 104, 2, 65, 2, 67, 2, 97, 2, 63, 2, 28, 1, 100, 2, 11, 5, 28, 1, 94, 2, 100, 2, 11, 2, 69, 2, 106, 2, 11, 2, 71, 2, 69, 2, 12, 2, 59, 2, 72, 2, 12, 2, 6, 2, 59, 2, 105, 2, 64, 2, 102, 2, 105, 2, 68, 2, 64, 2, 4, 4, 189, 1, 112, 2, 4, 4, 186, 1, 189, 1, 120, 2, 184, 1, 2, 4, 120, 2, 177, 1, 184, 1, 115, 2, 183, 1, 119, 2, 115, 2, 190, 1, 183, 1, 116, 2, 179, 1, 121, 2, 116, 2, 182, 1, 179, 1, 153, 2, 202, 2, 180, 2, 196, 2, 133, 2, 200, 2, 196, 2, 140, 2, 133, 2, 124, 2, 164, 2, 154, 2, 124, 2, 131, 2, 149, 2, 214, 2, 169, 2, 208, 2, 214, 2, 160, 2, 169, 2, 129, 2, 172, 2, 222, 2, 129, 2, 163, 2, 172, 2, 163, 2, 148, 2, 172, 2, 163, 2, 123, 2, 148, 2, 155, 2, 165, 2, 159, 2, 149, 2, 175, 2, 173, 2, 199, 2, 192, 2, 195, 2, 199, 2, 53, 3, 192, 2, 183, 2, 188, 2, 126, 2, 194, 2, 187, 2, 205, 2, 194, 2, 191, 2, 187, 2, 131, 2, 52, 3, 198, 2, 203, 2, 213, 2, 206, 2, 134, 2, 162, 2, 127, 2, 134, 2, 157, 2, 162, 2, 218, 2, 158, 2, 136, 2, 218, 2, 167, 2, 158, 2, 220, 2, 166, 2, 216, 2, 220, 2, 171, 2, 166, 2, 237, 2, 223, 2, 229, 2, 237, 2, 130, 2, 223, 2, 35, 3, 226, 2, 44, 3, 35, 3, 234, 2, 226, 2, 224, 2, 128, 2, 235, 2, 224, 2, 135, 2, 128, 2, 225, 2, 219, 2, 137, 2, 225, 2, 232, 2, 219, 2, 228, 2, 217, 2, 231, 2, 228, 2, 221, 2, 217, 2, 252, 2, 20, 3, 248, 2, 252, 2, 236, 2, 20, 3, 19, 3, 233, 2, 34, 3, 19, 3, 230, 2, 233, 2, 237, 2, 229, 2, 21, 3, 56, 3, 253, 2, 3, 3, 56, 3, 63, 3, 253, 2, 12, 3, 253, 2, 15, 3, 12, 3, 237, 2, 253, 2, 249, 2, 3, 3, 253, 2, 16, 3, 2, 3, 41, 3, 16, 3, 254, 2, 2, 3, 11, 3, 14, 3, 37, 3, 45, 3, 238, 2, 13, 3, 45, 3, 227, 2, 238, 2, 22, 3, 30, 3, 23, 3, 22, 3, 18, 3, 30, 3, 28, 3, 25, 3, 46, 3, 28, 3, 250, 2, 25, 3, 49, 3, 5, 3, 29, 3, 49, 3, 8, 3, 5, 3, 229, 2, 17, 3, 21, 3, 47, 3, 24, 3, 31, 3, 47, 3, 26, 3, 24, 3, 38, 3, 48, 3, 32, 3, 40, 3, 9, 3, 50, 3, 40, 3, 1, 3, 9, 3, 246, 2, 251, 2, 62, 3, 246, 2, 255, 2, 251, 2, 55, 3, 87, 3, 70, 3, 243, 2, 0, 3, 247, 2, 243, 2, 7, 3, 0, 3, 57, 3, 6, 3, 242, 2, 57, 3, 4, 3, 6, 3, 103, 3, 245, 2, 93, 3, 103, 3, 240, 2, 245, 2, 91, 3, 105, 3, 109, 3, 92, 3, 61, 3, 75, 3, 92, 3, 244, 2, 61, 3, 64, 3, 72, 3, 79, 3, 63, 3, 78, 3, 76, 3, 60, 3, 185, 2, 67, 3, 60, 3, 125, 2, 185, 2, 90, 3, 108, 3, 69, 3, 100, 3, 111, 3, 106, 3, 73, 3, 110, 3, 97, 3, 80, 3, 99, 3, 94, 3, 130, 3, 117, 3, 135, 3, 130, 3, 114, 3, 117, 3, 124, 2, 59, 3, 52, 3, 112, 3, 51, 3, 115, 3, 112, 3, 189, 2, 51, 3, 122, 3, 113, 3, 126, 3, 122, 3, 65, 3, 113, 3, 118, 3, 66, 3, 123, 3, 118, 3, 58, 3, 66, 3, 132, 3, 59, 3, 120, 3, 132, 3, 116, 3, 59, 3, 161, 3, 137, 3, 163, 3, 161, 3, 133, 3, 137, 3, 136, 3, 119, 3, 142, 3, 136, 3, 131, 3, 119, 3, 164, 3, 145, 3, 169, 3, 164, 3, 138, 3, 145, 3, 153, 3, 144, 3, 157, 3, 153, 3, 141, 3, 144, 3, 149, 3, 125, 3, 177, 3, 149, 3, 121, 3, 125, 3, 181, 3, 134, 3, 160, 3, 181, 3, 127, 3, 134, 3, 173, 3, 168, 3, 150, 3, 172, 3, 180, 3, 167, 3, 158, 3, 165, 3, 179, 3, 223, 3, 187, 3, 250, 3, 223, 3, 111, 2, 187, 3, 204, 3, 208, 3, 203, 3, 204, 3, 235, 3, 208, 3, 109, 2, 215, 3, 226, 3, 185, 3, 109, 2, 202, 3, 189, 3, 239, 3, 251, 3, 108, 2, 190, 3, 197, 3, 245, 3, 210, 3, 201, 3, 245, 3, 212, 3, 210, 3, 237, 3, 186, 3, 207, 3, 237, 3, 183, 3, 186, 3, 236, 3, 211, 3, 244, 3, 236, 3, 205, 3, 211, 3, 109, 2, 209, 3, 202, 3, 231, 3, 227, 3, 252, 3, 231, 3, 224, 3, 227, 3, 213, 3, 246, 3, 217, 3, 213, 3, 221, 3, 246, 3, 59, 4, 72, 4, 56, 4, 59, 4, 69, 4, 72, 4, 110, 2, 222, 3, 216, 3, 191, 3, 232, 3, 131, 5, 232, 3, 109, 2, 226, 3, 232, 3, 191, 3, 109, 2, 253, 3, 218, 3, 247, 3, 253, 3, 228, 3, 218, 3, 249, 3, 234, 3, 241, 3, 248, 3, 240, 3, 254, 3, 10, 4, 114, 2, 26, 4, 10, 4, 3, 4, 114, 2, 7, 4, 34, 4, 31, 4, 17, 4, 6, 4, 30, 4, 2, 4, 5, 4, 16, 4, 25, 4, 117, 2, 20, 4, 25, 4, 113, 2, 117, 2, 21, 4, 122, 2, 14, 4, 21, 4, 118, 2, 122, 2, 5, 4, 2, 4, 9, 4, 15, 4, 18, 4, 22, 4, 120, 2, 16, 4, 13, 4, 12, 4, 27, 4, 36, 4, 51, 4, 90, 2, 48, 4, 51, 4, 38, 4, 90, 2, 93, 2, 27, 1, 89, 2, 50, 4, 10, 5, 37, 4, 10, 5, 53, 4, 17, 1, 10, 5, 50, 4, 53, 4, 55, 4, 49, 4, 45, 4, 55, 4, 52, 4, 49, 4, 5, 5, 54, 4, 46, 4, 5, 5, 19, 1, 54, 4, 58, 4, 215, 3, 68, 4, 58, 4, 73, 4, 215, 3, 66, 4, 219, 3, 40, 4, 66, 4, 214, 3, 219, 3, 43, 4, 70, 4, 62, 4, 43, 4, 220, 3, 70, 4, 118, 4, 92, 4, 103, 4, 118, 4, 96, 4, 92, 4, 68, 4, 101, 4, 83, 4, 106, 4, 61, 4, 111, 4, 106, 4, 42, 4, 61, 4, 88, 4, 78, 4, 82, 4, 88, 4, 109, 4, 78, 4, 110, 4, 57, 4, 79, 4, 110, 4, 60, 4, 57, 4, 94, 4, 104, 4, 93, 4, 94, 4, 90, 4, 104, 4, 64, 4, 225, 3, 75, 4, 64, 4, 230, 3, 225, 3, 68, 4, 142, 5, 101, 4, 107, 4, 112, 4, 120, 4, 87, 4, 115, 4, 108, 4, 229, 3, 63, 4, 220, 3, 63, 4, 70, 4, 220, 3, 130, 4, 63, 4, 126, 4, 130, 4, 70, 4, 63, 4, 127, 4, 77, 4, 143, 4, 127, 4, 65, 4, 77, 4, 142, 4, 73, 4, 133, 4, 142, 4, 76, 4, 73, 4, 134, 4, 71, 4, 131, 4, 134, 4, 74, 4, 71, 4, 173, 4, 125, 4, 170, 4, 173, 4, 128, 4, 125, 4, 149, 4, 181, 4, 159, 4, 169, 4, 141, 4, 152, 4, 169, 4, 124, 4, 141, 4, 146, 4, 168, 4, 150, 4, 154, 4, 145, 4, 157, 4, 161, 4, 129, 4, 174, 4, 161, 4, 132, 4, 129, 4, 164, 4, 144, 4, 133, 4, 164, 4, 166, 4, 144, 4, 217, 4, 188, 4, 192, 4, 217, 4, 226, 4, 188, 4, 176, 4, 171, 4, 156, 4, 163, 4, 175, 4, 178, 4, 137, 4, 182, 4, 232, 4, 140, 4, 202, 4, 195, 4, 140, 4, 206, 4, 202, 4, 224, 4, 197, 4, 234, 4, 238, 4, 200, 4, 213, 4, 189, 4, 183, 4, 138, 4, 196, 4, 218, 4, 212, 4, 196, 4, 221, 4, 218, 4, 220, 4, 239, 4, 214, 4, 236, 4, 205, 4, 139, 4, 236, 4, 211, 4, 205, 4, 190, 4, 225, 4, 185, 4, 190, 4, 228, 4, 225, 4, 193, 4, 231, 4, 136, 4, 193, 4, 237, 4, 231, 4, 252, 4, 251, 0, 247, 4, 252, 4, 5, 1, 251, 0, 230, 4, 187, 4, 135, 4, 242, 4, 4, 5, 240, 0, 242, 4, 7, 5, 4, 5, 251, 4, 246, 4, 2, 5, 248, 0, 240, 4, 237, 0, 21, 5, 0, 5, 27, 5, 21, 5, 249, 4, 0, 5, 15, 1, 253, 4, 22, 1, 17, 5, 250, 4, 22, 5, 17, 5, 4, 1, 250, 4, 24, 5, 8, 1, 29, 5, 24, 5, 254, 4, 8, 1, 30, 5, 3, 1, 13, 5, 30, 5, 10, 1, 3, 1, 86, 5, 37, 5, 70, 5, 86, 5, 32, 5, 37, 5, 16, 5, 77, 5, 63, 5, 28, 5, 66, 5, 69, 5, 139, 5, 36, 5, 137, 5, 36, 5, 44, 5, 28, 5, 36, 5, 139, 5, 44, 5, 56, 5, 40, 5, 59, 5, 56, 5, 46, 5, 40, 5, 67, 5, 14, 5, 62, 5, 67, 5, 31, 5, 14, 5, 25, 5, 54, 5, 47, 5, 65, 5, 72, 5, 68, 5, 82, 5, 34, 5, 87, 5, 82, 5, 42, 5, 34, 5, 45, 5, 135, 5, 39, 5, 45, 5, 140, 5, 135, 5, 84, 5, 73, 5, 79, 5, 50, 5, 80, 5, 78, 5, 17, 0, 91, 5, 21, 0, 17, 0, 89, 5, 91, 5, 106, 5, 25, 0, 92, 5, 106, 5, 28, 0, 25, 0, 122, 5, 20, 0, 13, 0, 122, 5, 90, 5, 20, 0, 105, 5, 11, 0, 26, 0, 105, 5, 121, 5, 11, 0, 95, 5, 110, 0, 94, 5, 95, 5, 106, 0, 110, 0, 126, 5, 109, 0, 96, 5, 126, 5, 90, 0, 109, 0, 125, 5, 92, 0, 88, 0, 125, 5, 119, 5, 92, 0, 120, 5, 111, 0, 93, 0, 120, 5, 93, 5, 111, 0, 32, 2, 97, 5, 28, 2, 32, 2, 99, 5, 97, 5, 124, 5, 29, 2, 98, 5, 124, 5, 26, 2, 29, 2, 117, 5, 25, 2, 123, 5, 117, 5, 36, 2, 25, 2, 103, 5, 131, 2, 101, 5, 103, 5, 149, 2, 131, 2, 108, 5, 132, 2, 139, 2, 108, 5, 102, 5, 132, 2, 104, 5, 144, 2, 150, 2, 104, 5, 110, 5, 144, 2, 109, 5, 138, 2, 143, 2, 109, 5, 107, 5, 138, 2, 118, 5, 33, 2, 37, 2, 118, 5, 100, 5, 33, 2, 89, 2, 44, 4, 47, 4, 44, 4, 27, 1, 6, 5, 44, 4, 89, 2, 27, 1, 207, 4, 112, 5, 204, 4, 207, 4, 115, 5, 112, 5, 128, 5, 208, 4, 215, 4, 128, 5, 116, 5, 208, 4, 114, 5, 203, 4, 111, 5, 114, 5, 201, 4, 203, 4, 233, 3, 130, 5, 132, 5, 233, 3, 1, 4, 130, 5, 33, 5, 136, 5, 133, 5, 33, 5, 41, 5, 136, 5, 134, 5, 38, 5, 35, 5, 134, 5, 138, 5, 38, 5, 204, 0, 146, 5, 209, 0, 204, 0, 150, 5, 146, 5, 143, 5, 85, 0, 137, 0, 85, 0, 202, 0, 72, 1, 202, 0, 143, 5, 149, 5, 143, 5, 202, 0, 85, 0),
-"material": SubResource("StandardMaterial3D_juwpw"),
+"material": ExtResource("4_601co"),
 "name": "Walls",
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
@@ -183,7 +249,7 @@ _surfaces = [{
 "format": 34896613399,
 "index_count": 282,
 "index_data": PackedByteArray(99, 0, 157, 0, 93, 0, 154, 0, 143, 0, 155, 0, 99, 0, 154, 0, 157, 0, 143, 0, 99, 0, 142, 0, 154, 0, 99, 0, 143, 0, 116, 0, 45, 0, 49, 0, 116, 0, 112, 0, 45, 0, 84, 0, 13, 0, 81, 0, 84, 0, 17, 0, 13, 0, 120, 0, 48, 0, 53, 0, 120, 0, 115, 0, 48, 0, 124, 0, 52, 0, 57, 0, 124, 0, 119, 0, 52, 0, 95, 0, 23, 0, 90, 0, 95, 0, 27, 0, 23, 0, 127, 0, 56, 0, 60, 0, 127, 0, 123, 0, 56, 0, 132, 0, 61, 0, 65, 0, 132, 0, 128, 0, 61, 0, 104, 0, 32, 0, 100, 0, 104, 0, 35, 0, 32, 0, 135, 0, 64, 0, 68, 0, 135, 0, 131, 0, 64, 0, 77, 0, 2, 0, 72, 0, 77, 0, 9, 0, 2, 0, 107, 0, 69, 0, 40, 0, 107, 0, 136, 0, 69, 0, 111, 0, 41, 0, 44, 0, 111, 0, 108, 0, 41, 0, 8, 0, 167, 0, 14, 0, 8, 0, 161, 0, 167, 0, 76, 0, 160, 0, 7, 0, 76, 0, 139, 0, 160, 0, 12, 0, 76, 0, 80, 0, 140, 0, 12, 0, 166, 0, 76, 0, 140, 0, 139, 0, 140, 0, 76, 0, 12, 0, 148, 0, 86, 0, 153, 0, 148, 0, 19, 0, 86, 0, 30, 0, 141, 0, 98, 0, 30, 0, 164, 0, 141, 0, 146, 0, 18, 0, 147, 0, 89, 0, 152, 0, 85, 0, 89, 0, 151, 0, 152, 0, 146, 0, 22, 0, 18, 0, 89, 0, 146, 0, 151, 0, 22, 0, 146, 0, 89, 0, 26, 0, 165, 0, 31, 0, 159, 0, 168, 0, 144, 0, 26, 0, 159, 0, 165, 0, 158, 0, 26, 0, 94, 0, 26, 0, 168, 0, 159, 0, 168, 0, 26, 0, 158, 0, 36, 0, 149, 0, 3, 0, 36, 0, 162, 0, 149, 0, 145, 0, 169, 0, 156, 0, 103, 0, 163, 0, 37, 0, 103, 0, 137, 0, 163, 0, 4, 0, 103, 0, 73, 0, 138, 0, 4, 0, 150, 0, 103, 0, 138, 0, 137, 0, 138, 0, 103, 0, 4, 0, 130, 0, 91, 0, 125, 0, 130, 0, 97, 0, 91, 0, 92, 0, 121, 0, 126, 0, 92, 0, 87, 0, 121, 0, 122, 0, 82, 0, 117, 0, 122, 0, 88, 0, 82, 0, 83, 0, 114, 0, 118, 0, 83, 0, 79, 0, 114, 0, 113, 0, 75, 0, 110, 0, 113, 0, 78, 0, 75, 0, 74, 0, 106, 0, 109, 0, 74, 0, 71, 0, 106, 0, 105, 0, 102, 0, 134, 0, 105, 0, 70, 0, 102, 0, 101, 0, 129, 0, 133, 0, 101, 0, 96, 0, 129, 0, 47, 0, 6, 0, 11, 0, 47, 0, 43, 0, 6, 0, 39, 0, 5, 0, 42, 0, 39, 0, 1, 0, 5, 0, 38, 0, 33, 0, 0, 0, 38, 0, 66, 0, 33, 0, 63, 0, 34, 0, 67, 0, 63, 0, 29, 0, 34, 0, 62, 0, 24, 0, 28, 0, 62, 0, 58, 0, 24, 0, 54, 0, 25, 0, 59, 0, 54, 0, 20, 0, 25, 0, 55, 0, 16, 0, 21, 0, 55, 0, 51, 0, 16, 0, 46, 0, 15, 0, 50, 0, 46, 0, 10, 0, 15, 0),
-"material": SubResource("StandardMaterial3D_juwpw"),
+"material": ExtResource("4_601co"),
 "name": "Inner Hull",
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
@@ -195,7 +261,7 @@ _surfaces = [{
 "format": 34896613399,
 "index_count": 408,
 "index_data": PackedByteArray(36, 0, 29, 0, 38, 0, 41, 0, 44, 0, 32, 0, 61, 0, 84, 0, 12, 0, 70, 0, 78, 0, 93, 0, 67, 0, 90, 0, 75, 0, 62, 0, 15, 0, 87, 0, 120, 0, 142, 0, 107, 0, 135, 0, 130, 0, 150, 0, 113, 0, 139, 0, 117, 0, 132, 0, 147, 0, 125, 0, 161, 0, 163, 0, 46, 0, 179, 0, 171, 0, 159, 0, 169, 0, 198, 0, 166, 0, 161, 0, 167, 0, 163, 0, 173, 0, 182, 0, 177, 0, 170, 0, 185, 0, 199, 0, 206, 0, 213, 0, 197, 0, 194, 0, 190, 0, 175, 0, 195, 0, 212, 0, 192, 0, 223, 0, 221, 0, 215, 0, 98, 0, 228, 0, 226, 0, 236, 0, 240, 0, 234, 0, 243, 0, 241, 0, 96, 0, 231, 0, 247, 0, 228, 0, 249, 0, 254, 0, 245, 0, 239, 0, 1, 1, 233, 0, 13, 1, 22, 1, 18, 1, 23, 1, 27, 1, 20, 1, 10, 0, 3, 0, 60, 0, 10, 0, 6, 0, 3, 0, 79, 0, 24, 0, 26, 0, 79, 0, 71, 0, 24, 0, 42, 0, 34, 0, 8, 0, 42, 0, 28, 0, 34, 0, 9, 0, 33, 0, 45, 0, 9, 0, 35, 0, 33, 0, 37, 0, 40, 0, 31, 0, 39, 0, 30, 0, 43, 0, 125, 0, 54, 0, 132, 0, 125, 0, 51, 0, 54, 0, 64, 0, 2, 0, 1, 0, 64, 0, 58, 0, 2, 0, 19, 0, 7, 0, 14, 0, 19, 0, 5, 0, 7, 0, 17, 0, 0, 0, 4, 0, 17, 0, 63, 0, 0, 0, 76, 0, 13, 0, 80, 0, 76, 0, 18, 0, 13, 0, 81, 0, 21, 0, 77, 0, 81, 0, 27, 0, 21, 0, 74, 0, 22, 0, 66, 0, 74, 0, 20, 0, 22, 0, 72, 0, 23, 0, 25, 0, 72, 0, 68, 0, 23, 0, 82, 0, 65, 0, 86, 0, 82, 0, 59, 0, 65, 0, 91, 0, 73, 0, 94, 0, 91, 0, 69, 0, 73, 0, 85, 0, 92, 0, 95, 0, 85, 0, 89, 0, 92, 0, 83, 0, 78, 0, 11, 0, 83, 0, 93, 0, 78, 0, 88, 0, 75, 0, 90, 0, 88, 0, 16, 0, 75, 0, 115, 0, 103, 0, 110, 0, 115, 0, 105, 0, 103, 0, 123, 0, 157, 0, 119, 0, 123, 0, 155, 0, 157, 0, 108, 0, 154, 0, 121, 0, 108, 0, 102, 0, 154, 0, 116, 0, 104, 0, 112, 0, 116, 0, 156, 0, 104, 0, 114, 0, 129, 0, 127, 0, 114, 0, 106, 0, 129, 0, 135, 0, 53, 0, 130, 0, 135, 0, 56, 0, 53, 0, 128, 0, 50, 0, 126, 0, 128, 0, 52, 0, 50, 0, 134, 0, 57, 0, 137, 0, 134, 0, 55, 0, 57, 0, 144, 0, 118, 0, 140, 0, 144, 0, 122, 0, 118, 0, 149, 0, 136, 0, 153, 0, 149, 0, 133, 0, 136, 0, 152, 0, 141, 0, 148, 0, 152, 0, 145, 0, 141, 0, 151, 0, 109, 0, 143, 0, 151, 0, 131, 0, 109, 0, 111, 0, 146, 0, 138, 0, 111, 0, 124, 0, 146, 0, 165, 0, 158, 0, 168, 0, 165, 0, 160, 0, 158, 0, 180, 0, 47, 0, 164, 0, 180, 0, 49, 0, 47, 0, 187, 0, 179, 0, 183, 0, 187, 0, 171, 0, 179, 0, 48, 0, 179, 0, 159, 0, 176, 0, 167, 0, 196, 0, 176, 0, 163, 0, 167, 0, 162, 0, 174, 0, 178, 0, 209, 0, 184, 0, 204, 0, 209, 0, 188, 0, 184, 0, 186, 0, 207, 0, 200, 0, 201, 0, 172, 0, 189, 0, 201, 0, 181, 0, 172, 0, 216, 0, 211, 0, 220, 0, 216, 0, 191, 0, 211, 0, 214, 0, 208, 0, 222, 0, 205, 0, 225, 0, 210, 0, 203, 0, 219, 0, 224, 0, 217, 0, 202, 0, 193, 0, 217, 0, 218, 0, 202, 0, 238, 0, 97, 0, 242, 0, 238, 0, 99, 0, 97, 0, 244, 0, 227, 0, 229, 0, 244, 0, 101, 0, 227, 0, 231, 0, 98, 0, 237, 0, 231, 0, 228, 0, 98, 0, 96, 0, 100, 0, 243, 0, 2, 1, 243, 0, 252, 0, 2, 1, 241, 0, 243, 0, 8, 1, 0, 1, 17, 1, 8, 1, 232, 0, 0, 1, 230, 0, 251, 0, 246, 0, 26, 1, 21, 1, 28, 1, 26, 1, 12, 1, 21, 1, 19, 1, 253, 0, 14, 1, 19, 1, 3, 1, 253, 0, 4, 1, 235, 0, 9, 1, 4, 1, 248, 0, 235, 0, 15, 1, 250, 0, 6, 1, 15, 1, 255, 0, 250, 0, 16, 1, 31, 1, 24, 1, 16, 1, 7, 1, 31, 1, 11, 1, 30, 1, 5, 1, 10, 1, 25, 1, 29, 1),
-"material": SubResource("StandardMaterial3D_juwpw"),
+"material": ExtResource("4_601co"),
 "name": "Vents",
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
@@ -246,6 +312,103 @@ grow_vertical = 2
 texture = ExtResource("2_h03sm")
 expand_mode = 1
 
+[node name="Progress Bar" type="ProgressBar" parent="Crosshair"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -61.0
+offset_top = 54.0
+offset_right = 62.0
+offset_bottom = 77.0
+grow_horizontal = 2
+grow_vertical = 2
+show_percentage = false
+
+[node name="Label" type="Label" parent="Crosshair"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = 52.0
+offset_right = 40.0
+offset_bottom = 75.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "[F] pick up"
+
+[node name="Label2" type="Label" parent="Crosshair"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -62.5
+offset_top = 52.0
+offset_right = 62.5
+offset_bottom = 75.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "[F] use objective"
+
+[node name="Label3" type="Label" parent="Crosshair"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -45.5
+offset_top = 52.0
+offset_right = 45.5
+offset_bottom = 75.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "[F] open door"
+
+[node name="Label5" type="Label" parent="Crosshair"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -45.5
+offset_top = 52.0
+offset_right = 45.5
+offset_bottom = 75.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "[F] close door"
+
+[node name="Label4" type="Label" parent="Crosshair"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -63.5
+offset_top = 52.0
+offset_right = 63.5
+offset_bottom = 75.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "enemy objective
+"
+
 [node name="Wheel" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 8
@@ -276,126 +439,203 @@ offset_right = 16.0
 offset_bottom = 50.0
 texture = ExtResource("3_tdxfv")
 
-[node name="Progress Bar" type="ProgressBar" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -61.0
-offset_top = 54.0
-offset_right = 62.0
-offset_bottom = 77.0
-grow_horizontal = 2
-grow_vertical = 2
-show_percentage = false
-
-[node name="Label" type="Label" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -40.0
-offset_top = 52.0
-offset_right = 40.0
-offset_bottom = 75.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "[F] pick up"
-
-[node name="Label2" type="Label" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -40.0
-offset_top = 52.0
-offset_right = 40.0
-offset_bottom = 75.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "[F] use objective"
-
-[node name="Label3" type="Label" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -40.0
-offset_top = 52.0
-offset_right = 40.0
-offset_bottom = 75.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "[F] use door"
-
-[node name="Ammo Counter" type="RichTextLabel" parent="."]
+[node name="Ammo Counter" type="Label" parent="."]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = 272.0
-offset_top = -86.0
-offset_right = 355.0
+offset_left = 258.0
+offset_top = -102.0
+offset_right = 350.0
+offset_bottom = 8.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_font_sizes/normal_font_size = 60
+theme_override_font_sizes/font_size = 80
 text = "10
 "
-scroll_active = false
 
-[node name="Alt Fire" type="RichTextLabel" parent="."]
+[node name="Alt Fire" type="Label" parent="."]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = 270.0
-offset_top = -114.0
-offset_right = 431.0
-offset_bottom = -72.0
+offset_left = 268.0
+offset_top = -124.0
+offset_right = 358.0
+offset_bottom = -82.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_font_sizes/normal_font_size = 30
+theme_override_font_sizes/font_size = 30
 text = "Burst"
-scroll_active = false
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+[node name="Minimap" type="SubViewportContainer" parent="."]
 layout_mode = 1
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+[node name="SubViewport" type="SubViewport" parent="Minimap"]
 own_world_3d = true
 transparent_bg = true
 handle_input_locally = false
-size = Vector2i(600, 350)
+size = Vector2i(550, 350)
 render_target_update_mode = 4
 
-[node name="Node3D" type="Node3D" parent="SubViewportContainer/SubViewport"]
+[node name="Node3D" type="Node3D" parent="Minimap/SubViewport"]
 
-[node name="Camera3D" type="Camera3D" parent="SubViewportContainer/SubViewport/Node3D"]
+[node name="Camera3D" type="Camera3D" parent="Minimap/SubViewport/Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 60)
 fov = 50.0
+size = 30.0
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="SubViewportContainer/SubViewport"]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Minimap/SubViewport"]
 environment = SubResource("Environment_u0jos")
 
-[node name="Circle_002" type="MeshInstance3D" parent="SubViewportContainer/SubViewport"]
-transform = Transform3D(0.92388, 0, 0.382684, 0, 1, 0, -0.382684, 0, 0.92388, 0, -2, 0)
+[node name="LevelMesh" type="MeshInstance3D" parent="Minimap/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 0.766044, -0.642788, 0, 0.642788, 0.766044, 0, 7, 0)
 mesh = SubResource("ArrayMesh_auyuh")
 skeleton = NodePath("")
+
+[node name="Scoreboard" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -80.0
+offset_top = -12.0
+offset_right = 80.0
+offset_bottom = 144.0
+grow_horizontal = 2
+
+[node name="Timer" type="Label" parent="Scoreboard"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "2:00"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Scoreboard"]
+layout_mode = 2
+theme_override_constants/separation = 30
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Scoreboard/HBoxContainer"]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="Scoreboard/HBoxContainer/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("5_vtb5o")
+expand_mode = 2
+
+[node name="Label" type="Label" parent="Scoreboard/HBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "2 / 5"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Scoreboard/HBoxContainer"]
+layout_mode = 2
+
+[node name="TextureRect2" type="TextureRect" parent="Scoreboard/HBoxContainer/HBoxContainer2"]
+layout_mode = 2
+texture = ExtResource("6_2bidp")
+expand_mode = 2
+
+[node name="Label2" type="Label" parent="Scoreboard/HBoxContainer/HBoxContainer2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "3 / 4"
+
+[node name="Playerlist" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+
+[node name="HBoxContainer5" type="HBoxContainer" parent="Playerlist"]
+layout_mode = 2
+alignment = 2
+
+[node name="Label2" type="Label" parent="Playerlist/HBoxContainer5"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "0:09"
+
+[node name="Label" type="Label" parent="Playerlist/HBoxContainer5"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.67451, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 30
+text = "dailyjaydenx"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="Playerlist"]
+layout_mode = 2
+alignment = 2
+
+[node name="Label2" type="Label" parent="Playerlist/HBoxContainer3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "0:17"
+
+[node name="Label" type="Label" parent="Playerlist/HBoxContainer3"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.67451, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 30
+text = "Dethcookies"
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="Playerlist"]
+layout_mode = 2
+alignment = 2
+
+[node name="Label2" type="Label" parent="Playerlist/HBoxContainer4"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+
+[node name="Label" type="Label" parent="Playerlist/HBoxContainer4"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.67451, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 30
+text = "yourmother"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Playerlist"]
+layout_mode = 2
+alignment = 2
+
+[node name="Label2" type="Label" parent="Playerlist/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "0:28"
+
+[node name="Label" type="Label" parent="Playerlist/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 30
+text = "clarinet_player"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Playerlist"]
+layout_mode = 2
+alignment = 2
+
+[node name="Label2" type="Label" parent="Playerlist/HBoxContainer2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+
+[node name="Label" type="Label" parent="Playerlist/HBoxContainer2"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 30
+text = "Jack
+"

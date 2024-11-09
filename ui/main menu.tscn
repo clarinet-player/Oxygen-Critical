@@ -15,7 +15,7 @@ func _connect():
 
 func _singleplayer():
 	Gamemanager.cancel_connect()
-	get_tree().change_scene_to_file(\"res://scenes/wingman.tscn\")
+	get_tree().change_scene_to_file(\"res://scenes/battleship.tscn\")
 
 
 func _quit():

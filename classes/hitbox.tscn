@@ -6,6 +6,7 @@ class_name Hitbox
 
 @export var owning : Node3D
 @export var area : int
+@export var grabbable := false
 "
 
 [node name="Hitbox" type="RigidBody3D"]

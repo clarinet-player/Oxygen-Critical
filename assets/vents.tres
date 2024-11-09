@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://dsoehem47dqcu"]
+
+[ext_resource type="Texture2D" uid="uid://bxkndis3im8v" path="res://assets/360_F_469285845_ganfZEVY388wcbAn005zqC72v3p9aCVR.jpg" id="1_dpcas"]
+
+[resource]
+albedo_texture = ExtResource("1_dpcas")
+metallic = 0.65
+roughness_texture = ExtResource("1_dpcas")

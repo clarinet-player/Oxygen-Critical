@@ -11,8 +11,8 @@ signal completed
 @export var complete_time : int
 @export var area : AABB
 
-var start_time : int
-var state : int
+var start_time := -1
+var state := -1
 "
 
 [node name="Objective" type="RigidBody3D" groups=["Objectives"]]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://j50xd2vp8mfv"]
 
-[ext_resource type="Shader" path="res://assets/poster.gdshader" id="1_pcl6d"]
+[ext_resource type="Shader" path="res://assets/poster2.gdshader" id="1_xxoh2"]
 
 [sub_resource type="GDScript" id="GDScript_noakj"]
 script/source = "extends  Node
@@ -9,10 +9,8 @@ script/source = "extends  Node
 var mainmenu
 var pausemenu
 var playerhud
-var spechud
 var settingsmenu
 var buymenu
-var scoreboard
 var multiplayermenu
 
 var active_menu
@@ -30,10 +28,8 @@ func _ready():
 	mainmenu = load(\"res://ui/main menu.tscn\").instantiate()
 	pausemenu = load(\"res://ui/pause menu.tscn\").instantiate()
 	playerhud = load(\"res://ui/player hud.tscn\").instantiate()
-	spechud = load(\"res://ui/spectator hud.tscn\").instantiate()
 	settingsmenu = load(\"res://ui/settings menu.tscn\").instantiate()
 	buymenu = load(\"res://ui/buy menu.tscn\").instantiate()
-	scoreboard = load(\"res://ui/scoreboard.tscn\").instantiate()
 	multiplayermenu = load(\"res://ui/multiplayer menu.tscn\").instantiate()
 	
 	if DisplayServer.get_name() == \"headless\":
@@ -46,6 +42,7 @@ func _ready():
 func _process(delta):
 	if Input.is_action_just_pressed(\"Escape\"):
 		exit()
+
 
 
 func exit():
@@ -73,12 +70,8 @@ func set_ui(ui : int):
 	
 	if ui == 2 and active_menu == playerhud:
 		prev_menu = 3
-	elif ui == 2 and active_menu == spechud:
-		prev_menu = 6
 	if active_menu:
 		remove_child(active_menu)
-	if get_children().has(scoreboard):
-		remove_child(scoreboard)
 	
 	if ui == 1:
 		add_child(mainmenu)
@@ -97,9 +90,6 @@ func set_ui(ui : int):
 		active_menu = playerhud
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		paused = false
-		
-		if Gamemanager.mp_active:
-			add_child(scoreboard)
 	
 	elif ui == 4:
 		add_child(buymenu)
@@ -112,22 +102,14 @@ func set_ui(ui : int):
 		active_menu = settingsmenu
 		paused = true
 	
-	elif ui == 6:
-		add_child(spechud)
-		active_menu = spechud
-		paused = false
-		
-		if Gamemanager.mp_active:
-			add_child(scoreboard)
-	
 	elif ui == 7:
 		add_child(multiplayermenu)
 		active_menu = multiplayermenu
 "
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ufbwn"]
-shader = ExtResource("1_pcl6d")
-shader_parameter/intensity = 1.0
+shader = ExtResource("1_xxoh2")
+shader_parameter/intensity = 0.1
 
 [node name="UiManager" type="Node"]
 script = SubResource("GDScript_noakj")

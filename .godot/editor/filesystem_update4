@@ -1,8 +1,14 @@
-res://weapons/grenades/he_grenade.tscn
-res://assets/poster.gdshader
+res://classes/player.tscn
+res://assets/poster2.gdshader
 res://assets/metal_walls.tres
 res://assets/somnambulist.tres
-res://assets/poster2.gdshader
+res://assets/minimap_level.tres
+res://assets/battleship_walls.tres
+res://assets/vents.tres
+res://assets/fire.tres
+res://assets/fire2.tres
+res://assets/poster.gdshader
+res://weapons/grenades/he_grenade.tscn
 res://weapons/grenades/flash_grenade.tscn
 res://weapons/grenades/claymore.tscn
 res://weapons/grenades/incendiary.tscn
@@ -10,7 +16,6 @@ res://weapons/healing/healthkit.tscn
 res://weapons/healing/sealant.tscn
 res://weapons/healing/tape.tscn
 res://scenes/wingman.tscn
-res://classes/player.tscn
 res://weapons/glock/glock.tscn
 res://classes/bullet.tscn
 res://autoloads/gamemanager.tscn
@@ -20,6 +25,13 @@ res://weapons/vector/vector.tscn
 res://autoloads/ui manager.tscn
 res://classes/smoke.tscn
 res://scenes/menu scene.tscn
-res://classes/weaponbase.gd
 res://ui/player hud.tscn
 res://scenes/battleship.tscn
+res://ui/scoreboard.tscn
+res://classes/objective.tscn
+res://scenes/testscene.tscn
+res://classes/door.tscn
+res://classes/bot.tscn
+res://classes/fire.tscn
+res://ui/main menu.tscn
+res://scenes/somnambulist.tscn
