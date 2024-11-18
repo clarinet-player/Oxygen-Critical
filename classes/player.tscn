@@ -626,6 +626,11 @@ func play_sound(sound : int):
 	elif sound == 9:
 		audio.stream = preload(\"res://assets/bullet_hit.mp3\")
 		audio.play()
+	
+	var ghost = preload(\"res://classes/ghost.tscn\").instantiate()
+	ghost.velocity = velocity
+	Gamemanager.add_child(ghost)
+	ghost.global_position = global_position
 
 
 
@@ -1251,8 +1256,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.090513, 0)
 bone_name = "Chest"
 bone_idx = 1
 
-[node name="Hitbox" parent="Skeleton3D/Chest" instance=ExtResource("1_2yv3f")]
+[node name="Hitbox" parent="Skeleton3D/Chest" node_paths=PackedStringArray("owning") instance=ExtResource("1_2yv3f")]
 transform = Transform3D(-4.30129e-08, -3.11682e-17, -1, 1.30967e-10, 1, 2.98023e-08, 1, 7.13044e-10, -4.38278e-08, -0.001, 0.198, -4.37114e-11)
+owning = NodePath("../../..")
 
 [node name="Hips" type="BoneAttachment3D" parent="Skeleton3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.176213, 0)

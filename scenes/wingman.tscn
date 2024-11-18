@@ -376,14 +376,19 @@ script = SubResource("GDScript_hs3at")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_jjncm")
 
-[node name="Walls" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.40235, 0, -0.589905)
+[node name="Walls" parent="." node_paths=PackedStringArray("owning") instance=ExtResource("8_axoku")]
+collision_layer = 1
+owning = NodePath("..")
+area = 0
+grabbable = true
 
 [node name="Cube_002" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.40235, 0, -0.589905)
 mesh = SubResource("ArrayMesh_lm1m8")
 skeleton = NodePath("")
 
 [node name="GameSurface" parent="Walls" instance=ExtResource("4_x2lcu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.40235, 0, -0.589905)
 shape = SubResource("ConcavePolygonShape3D_3vnkn")
 
 [node name="Lights" type="Node3D" parent="."]
@@ -521,6 +526,8 @@ omni_range = 4.0
 [node name="Hitbox" parent="Objectives/Objective2" node_paths=PackedStringArray("owning") instance=ExtResource("8_axoku")]
 collision_layer = 4
 owning = NodePath("..")
+area = 0
+grabbable = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Objectives/Objective2/Hitbox"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.200794, 0.193787, 0)

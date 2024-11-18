@@ -1,8 +1,9 @@
 MeshInstance3D
+CollisionShape3D
+RayCast3D
+RigidBody3D
 AudioStreamPlayer3D
 Node3D
-RigidBody3D
-CollisionShape3D
 BoneAttachment3D
 AnimationPlayer
 Label
@@ -11,4 +12,3 @@ VBoxContainer
 TextureRect
 Sprite2D
 Sprite3D
-Camera3D

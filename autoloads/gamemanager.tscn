@@ -259,8 +259,7 @@ func sync_level(level : int):
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
 func ui_message(ui : int):
-	UiManager.set_ui(6)
-	UiManager.spechud.set_message(ui)
+	UiManager.playerhud.set_message(ui)
 
 
 

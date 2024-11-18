@@ -11,7 +11,7 @@ signal on_unequip
 @export var grip1 : Node3D
 @export var grip2 : Node3D
 
-@export var equip_speed := 200
+@export var equip_speed := 200.0
 
 @export var item_id : int
 @export var inventory_size : int

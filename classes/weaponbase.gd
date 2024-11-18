@@ -210,6 +210,10 @@ func fire(pos : Vector3, velocity : Vector3):
 	audio.pitch_scale = randf_range(0.94, 1.06)
 	audio.play()
 	
+	var ghost = preload("res://classes/ghost.tscn").instantiate()
+	Gamemanager.add_child(ghost)
+	ghost.global_position = global_position
+	
 	_fire_time_ms -= _firedelay
 	if Time.get_ticks_msec() > _fire_time_ms + _firedelay:
 		_fire_time_ms = Time.get_ticks_msec()

@@ -1,4 +1,4 @@
-res://classes/player.tscn
+res://classes/drone.tscn
 res://assets/poster2.gdshader
 res://assets/metal_walls.tres
 res://assets/somnambulist.tres
@@ -16,6 +16,7 @@ res://weapons/healing/healthkit.tscn
 res://weapons/healing/sealant.tscn
 res://weapons/healing/tape.tscn
 res://scenes/wingman.tscn
+res://classes/player.tscn
 res://weapons/glock/glock.tscn
 res://classes/bullet.tscn
 res://autoloads/gamemanager.tscn
@@ -31,7 +32,7 @@ res://ui/scoreboard.tscn
 res://classes/objective.tscn
 res://scenes/testscene.tscn
 res://classes/door.tscn
-res://classes/bot.tscn
 res://classes/fire.tscn
 res://ui/main menu.tscn
 res://scenes/somnambulist.tscn
+res://classes/ghost.tscn

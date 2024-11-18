@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=3 uid="uid://b0xpwodwsohr5"]
+
+[sub_resource type="GDScript" id="GDScript_f7s1y"]
+script/source = "extends \"res://classes/ai base.gd\"
+
+
+var velocity := Vector3.ZERO
+
+
+func _physics_process(delta):
+	velocity = lerp(velocity, target_direction, delta)
+	look_at(global_position + velocity)
+	
+	move_and_collide(velocity * delta)
+"
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ugb35"]
+radius = 0.25
+
+[sub_resource type="SphereMesh" id="SphereMesh_v2hv0"]
+radius = 0.25
+height = 0.5
+
+[node name="Drone" type="RigidBody3D"]
+collision_layer = 0
+freeze = true
+script = SubResource("GDScript_f7s1y")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_ugb35")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_v2hv0")
