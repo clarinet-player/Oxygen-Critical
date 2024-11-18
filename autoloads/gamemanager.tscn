@@ -98,9 +98,9 @@ func _on_connect(id : int):
 	elif players.size() >= 2 and !game_running:
 		_game_loop()
 	elif !game_running:
-		ui_message.rpc(0)
+		UiManager.message.rpc(0)
 	else:
-		ui_message.rpc_id(id, 4)
+		UiManager.message.rpc_id(id, 3)
 
 func _on_disconnect(id):
 	print(\"player disconnected: \", id)
@@ -143,18 +143,12 @@ func _game_loop():
 			
 			# Respawn players
 			for player in players:
-				if player.body == null and player.team == 1 and Time.get_ticks_msec() - player.death_time > respawn_time:
+				if player.body == null and Time.get_ticks_msec() - player.death_time > respawn_time:
 					spawn_player(player)
-					#sync_scoreboard.rpc(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
-				
-				elif player.body == null and player.team == 2 and Time.get_ticks_msec() - player.death_time > respawn_time:
-					spawn_player(player)
-					#sync_scoreboard.rpc(Time.get_ticks_msec() - round_start_time, c_spawns, t_spawns)
 			
 			
 			# Out of time
 			if Time.get_ticks_msec() - round_start_time > round_time:
-				ui_message.rpc(1)
 				print(\"Round end. Out of time.\")
 				round_running = false
 				break
@@ -183,12 +177,14 @@ func _game_loop():
 			
 			if def_objectives_complete == def_objectives:
 				round_running = false
+				UiManager.message.rpc(1)
 				print(\"Round end. Defender objectives complete.\")
 				break
 			if atk_objectives_complete == atk_objectives:
 				round_running = false
+				UiManager.message.rpc(2)
 				print(\"Round end. Attacker objectives complete.\")
-			
+				break
 			
 			if players.size() < 2:
 				round_running = false
@@ -202,7 +198,7 @@ func _game_loop():
 		
 		if players.size() < 2:
 			game_running = false
-			ui_message.rpc(0)
+			UiManager.message.rpc(0)
 
 
 
@@ -259,7 +255,7 @@ func sync_level(level : int):
 
 @rpc(\"authority\", \"call_remote\", \"reliable\")
 func ui_message(ui : int):
-	UiManager.playerhud.set_message(ui)
+	UiManager.set_message(ui)
 
 
 

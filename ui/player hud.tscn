@@ -26,11 +26,6 @@ func set_team(team : int):
 
 
 
-func set_message(message : int):
-	pass
-
-
-
 func set_health(new : float):
 	$\"Health Bar\".value = new
 

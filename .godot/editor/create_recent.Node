@@ -1,3 +1,4 @@
+Label
 AnimationPlayer
 GPUParticles3D
 Sprite3D
@@ -8,7 +9,6 @@ RigidBody3D
 AudioStreamPlayer3D
 Node3D
 BoneAttachment3D
-Label
 HBoxContainer
 VBoxContainer
 TextureRect

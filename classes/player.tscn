@@ -154,10 +154,15 @@ func _process(delta):
 	if Gamemanager.mp_active and !is_multiplayer_authority():
 		if !username.is_empty():
 			$Skeleton3D/Label3D.text = username
-		if sync_is_anchored and $Skeleton3D/AnimationPlayer.current_animation != \"walk\":
-			$Skeleton3D/AnimationPlayer.play(\"fly_end\")
-			$Skeleton3D/AnimationPlayer.queue(\"walk\")
-		elif !sync_is_anchored and $Skeleton3D/AnimationPlayer.current_animation == \"walk\":
+		if sync_is_anchored:
+			if $Skeleton3D/AnimationPlayer.current_animation == \"walk\":
+				$Skeleton3D/AnimationPlayer.speed_scale = velocity.length() / 4.0
+			else:
+				$Skeleton3D/AnimationPlayer.speed_scale = 1
+				$Skeleton3D/AnimationPlayer.play(\"fly_end\")
+				$Skeleton3D/AnimationPlayer.queue(\"walk\")
+		elif $Skeleton3D/AnimationPlayer.current_animation == \"walk\":
+			$Skeleton3D/AnimationPlayer.speed_scale = 1
 			$Skeleton3D/AnimationPlayer.play(\"fly_start\")
 		return
 	
@@ -1333,7 +1338,7 @@ tracks/17/interp = 1
 tracks/17/loop_wrap = true
 tracks/17/keys = PackedFloat32Array(0, 1, 0.000383234, -0.00870205, -0.702865, 0.71127, 0.2, 1, 0.000409178, -0.00846865, -0.684007, 0.729426, 0.5, 1, 0.000112419, -0.0106839, -0.862991, 0.505106, 0.7, 1, 0.000222723, -0.00997201, -0.80547, 0.592553, 1, 1, 0.000383234, -0.00870205, -0.702865, 0.71127)
 
-[sub_resource type="Animation" id="Animation_ntqg6"]
+[sub_resource type="Animation" id="Animation_j7db0"]
 resource_name = "fly_end"
 length = 0.5
 tracks/0/type = "rotation_3d"
@@ -1426,35 +1431,35 @@ tracks/12/enabled = true
 tracks/12/path = NodePath(".:Left Leg")
 tracks/12/interp = 1
 tracks/12/loop_wrap = true
-tracks/12/keys = PackedFloat32Array(0, 1, 0.856558, 0.515822, -0.0110532, 0.010691, 0.5, 1, 0.9994, 0.0179908, -0.000606745, 0.0295966)
+tracks/12/keys = PackedFloat32Array(0, 1, 0.856558, 0.515822, -0.0110532, 0.010691, 0.5, 1, 0.993198, -0.112611, -0.00446469, 0.0292642)
 tracks/13/type = "rotation_3d"
 tracks/13/imported = false
 tracks/13/enabled = true
 tracks/13/path = NodePath(".:Left Knee")
 tracks/13/interp = 1
 tracks/13/loop_wrap = true
-tracks/13/keys = PackedFloat32Array(0, 1, 0.0125039, -0.0306415, 0.880279, 0.473301, 0.5, 1, 0.0239103, -0.000154918, 0.0303877, 0.999252)
+tracks/13/keys = PackedFloat32Array(0, 1, 0.0125039, -0.0306415, 0.880279, 0.473301, 0.5, 1, 0.0232596, -0.00928396, 0.28789, 0.957336)
 tracks/14/type = "rotation_3d"
 tracks/14/imported = false
 tracks/14/enabled = true
 tracks/14/path = NodePath(".:Left Foot")
 tracks/14/interp = 1
 tracks/14/loop_wrap = true
-tracks/14/keys = PackedFloat32Array(0, 1, -0.00100192, 0.00870156, -0.702864, 0.71127, 0.5, 1, -0.00100192, 0.00870156, -0.702864, 0.71127)
+tracks/14/keys = PackedFloat32Array(0, 1, -0.00100192, 0.00870156, -0.702864, 0.71127, 0.5, 1, -0.000945073, 0.00977619, -0.789683, 0.613436)
 tracks/15/type = "rotation_3d"
 tracks/15/imported = false
 tracks/15/enabled = true
 tracks/15/path = NodePath(".:Right Leg")
 tracks/15/interp = 1
 tracks/15/loop_wrap = true
-tracks/15/keys = PackedFloat32Array(0, 1, 0.856526, 0.515886, 0.0133242, -0.00697174, 0.5, 1, 0.999399, 0.0180582, -0.0016711, -0.0295555)
+tracks/15/keys = PackedFloat32Array(0, 1, 0.856526, 0.515886, 0.0133242, -0.00697174, 0.5, 1, 0.960671, 0.276106, -0.00926369, -0.0281159)
 tracks/16/type = "rotation_3d"
 tracks/16/imported = false
 tracks/16/enabled = true
 tracks/16/path = NodePath(".:Right Knee")
 tracks/16/interp = 1
 tracks/16/loop_wrap = true
-tracks/16/keys = PackedFloat32Array(0, 1, -0.0101103, 0.0315121, 0.88031, 0.473244, 0.5, 1, -0.0238276, 0.00199298, 0.0304526, 0.99925)
+tracks/16/keys = PackedFloat32Array(0, 1, -0.0101103, 0.0315121, 0.88031, 0.473244, 0.5, 1, -0.0212169, 0.0153257, 0.410402, 0.911529)
 tracks/17/type = "rotation_3d"
 tracks/17/imported = false
 tracks/17/enabled = true
@@ -1466,7 +1471,7 @@ tracks/17/keys = PackedFloat32Array(0, 1, 0.000383234, -0.00870205, -0.702865, 0
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_6ujt4"]
 _data = {
 "RESET": SubResource("Animation_c0d33"),
-"fly_end": SubResource("Animation_ntqg6"),
+"fly_end": SubResource("Animation_j7db0"),
 "fly_start": SubResource("Animation_0vsq6"),
 "walk": SubResource("Animation_j7t0b")
 }

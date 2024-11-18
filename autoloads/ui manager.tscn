@@ -64,6 +64,31 @@ func exit():
 
 
 
+@rpc(\"authority\", \"call_remote\", \"reliable\")
+func message(message : int):
+	if message == 0:
+		$Label.show()
+		$Label2.hide()
+		$Label3.hide()
+		$Label4.hide()
+	elif message == 1:
+		$Label.hide()
+		$Label2.hide()
+		$Label3.show()
+		$Label4.hide()
+	elif message == 2:
+		$Label.hide()
+		$Label2.hide()
+		$Label3.hide()
+		$Label4.show()
+	elif message == 3:
+		$Label.hide()
+		$Label2.show()
+		$Label3.hide()
+		$Label4.hide()
+
+
+
 func set_ui(ui : int):
 	if DisplayServer.get_name() == \"headless\":
 		return
@@ -125,3 +150,74 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 metadata/_edit_use_anchors_ = true
+
+[node name="Label" type="Label" parent="."]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -329.0
+offset_top = -125.0
+offset_right = 329.0
+offset_bottom = -70.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 40
+text = "Waiting for minimum player count"
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="."]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -329.0
+offset_top = -125.0
+offset_right = 329.0
+offset_bottom = -70.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 40
+text = "Waiting for respawn
+"
+horizontal_alignment = 1
+
+[node name="Label3" type="Label" parent="."]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -329.0
+offset_top = -125.0
+offset_right = 329.0
+offset_bottom = -70.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 40
+text = "Attacker victory
+"
+horizontal_alignment = 1
+
+[node name="Label4" type="Label" parent="."]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -329.0
+offset_top = -125.0
+offset_right = 329.0
+offset_bottom = -70.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 40
+text = "Defender victory
+"
+horizontal_alignment = 1
