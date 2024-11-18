@@ -1,3 +1,6 @@
+AnimationPlayer
+GPUParticles3D
+Sprite3D
 CollisionShape3D
 MeshInstance3D
 RayCast3D
@@ -5,10 +8,7 @@ RigidBody3D
 AudioStreamPlayer3D
 Node3D
 BoneAttachment3D
-AnimationPlayer
 Label
 HBoxContainer
 VBoxContainer
 TextureRect
-Sprite2D
-Sprite3D
