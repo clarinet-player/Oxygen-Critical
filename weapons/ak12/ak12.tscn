@@ -97,7 +97,7 @@ size = Vector3(0.0494232, 0.0931168, 0.451202)
 radius = 0.19
 height = 0.98
 
-[node name="AK12" type="RigidBody3D" node_paths=PackedStringArray("audio", "light", "ejection")]
+[node name="AK12" type="RigidBody3D" node_paths=PackedStringArray("audio", "light", "ejection", "grip1", "grip2")]
 collision_layer = 0
 freeze = true
 script = ExtResource("1_fsuj5")
@@ -119,6 +119,8 @@ casing = 2
 audio = NodePath("AudioStreamPlayer3D")
 light = NodePath("Skeleton3D2/SpotLight3D")
 ejection = NodePath("Skeleton3D2/Marker3D")
+grip1 = NodePath("Skeleton3D2/Marker3D2")
+grip2 = NodePath("Skeleton3D2/Marker3D3")
 item_id = 1
 inventory_size = 2
 

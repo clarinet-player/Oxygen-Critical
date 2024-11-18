@@ -337,8 +337,6 @@ func reset():
 	for obj in objectives:
 		obj.state = 0
 	
-	UiManager.scoreboard.reset()
-	
 	for child in get_children():
 		if child.name == \"MultiplayerSpawner\":
 			continue

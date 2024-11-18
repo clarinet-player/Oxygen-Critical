@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://bq3u0xb10re6"]
+[gd_scene load_steps=18 format=3 uid="uid://bq3u0xb10re6"]
 
 [ext_resource type="PackedScene" uid="uid://c2hluyirbi4rf" path="res://classes/hitbox.tscn" id="1_2yv3f"]
 [ext_resource type="Texture2D" uid="uid://dv4b2q2nb4u6n" path="res://assets/flash.png" id="1_qlxub"]
@@ -118,11 +118,6 @@ func _ready():
 	else:
 		$Camera3D/SpotLight3D.queue_free()
 		hide()
-		$Skeleton3D/Head/RigidBody3D/Hitbox.disabled = true
-		$Skeleton3D/Chest/RigidBody3D/Hitbox.disabled = true
-		$Skeleton3D/Hips/RigidBody3D/Hitbox.disabled = true
-		$Skeleton3D/RightLeg/RigidBody3D/Hitbox.disabled = true
-		$Skeleton3D/LeftLeg/RigidBody3D/Hitbox.disabled = true
 		$Camera3D/Skeleton3D.hide()
 
 
@@ -649,11 +644,6 @@ func set_team(new_team : int):
 	
 	else:
 		show()
-		$Skeleton3D/Head/RigidBody3D/Hitbox.disabled = false
-		$Skeleton3D/Chest/RigidBody3D/Hitbox.disabled = false
-		$Skeleton3D/Hips/RigidBody3D/Hitbox.disabled = false
-		$Skeleton3D/RightLeg/RigidBody3D/Hitbox.disabled = false
-		$Skeleton3D/LeftLeg/RigidBody3D/Hitbox.disabled = false
 		
 		#if team == 1:
 		#	var mat = StandardMaterial3D.new()
@@ -941,6 +931,19 @@ bind/16/pose = Transform3D(0.99969, -0.0248133, -0.00043975, -0.0248166, -0.9996
 bind/17/name = &"Right Foot"
 bind/17/bone = -1
 bind/17/pose = Transform3D(0.0366188, 0.999329, -0.000440543, 0.999239, -0.0366215, -0.0133531, -0.0133552, 4.87847e-05, -0.999907, 1.01534, -0.0394458, 0.0543081)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_p7hx4"]
+radius = 0.136449
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_obeyk"]
+size = Vector3(0.33136, 0.328224, 0.195374)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_kujsl"]
+size = Vector3(0.291174, 0.278363, 0.186694)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_pce37"]
+radius = 0.075
+height = 0.5
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_0uupb"]
 properties/0/path = NodePath(".:position")
@@ -1245,8 +1248,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.473494, 0)
 bone_name = "Head"
 bone_idx = 7
 
-[node name="Hitbox" parent="Skeleton3D/Head" instance=ExtResource("1_2yv3f")]
+[node name="Hitbox" parent="Skeleton3D/Head" node_paths=PackedStringArray("owning") instance=ExtResource("1_2yv3f")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0.00645464, 0.10779, 2.82142e-10)
+collision_layer = 2
+owning = NodePath("../../..")
+area = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Skeleton3D/Head/Hitbox"]
+shape = SubResource("SphereShape3D_p7hx4")
 
 [node name="Marker3D" type="Marker3D" parent="Skeleton3D/Head"]
 transform = Transform3D(0.165616, 0, -0.98619, 0, 1, 0, 0.98619, 0, 0.165616, 0.322136, -0.0805038, 0.0942098)
@@ -1258,34 +1267,57 @@ bone_idx = 1
 
 [node name="Hitbox" parent="Skeleton3D/Chest" node_paths=PackedStringArray("owning") instance=ExtResource("1_2yv3f")]
 transform = Transform3D(-4.30129e-08, -3.11682e-17, -1, 1.30967e-10, 1, 2.98023e-08, 1, 7.13044e-10, -4.38278e-08, -0.001, 0.198, -4.37114e-11)
+collision_layer = 2
 owning = NodePath("../../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Skeleton3D/Chest/Hitbox"]
+transform = Transform3D(1, 0, -5.82077e-11, -2.91038e-11, 1, 0, 5.82077e-11, -2.98023e-07, 1, 1.16415e-10, -0.00754678, 5.96046e-08)
+shape = SubResource("BoxShape3D_obeyk")
 
 [node name="Hips" type="BoneAttachment3D" parent="Skeleton3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.176213, 0)
 bone_name = "Hips"
 bone_idx = 0
 
-[node name="Hitbox" parent="Skeleton3D/Hips" instance=ExtResource("1_2yv3f")]
+[node name="Hitbox" parent="Skeleton3D/Hips" node_paths=PackedStringArray("owning") instance=ExtResource("1_2yv3f")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.00299454, 0.165888, -1.30896e-10)
+collision_layer = 2
+owning = NodePath("../../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Skeleton3D/Hips/Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.27254e-05, 0.00684512, -0.00284424)
+shape = SubResource("BoxShape3D_kujsl")
 
 [node name="Marker3D" type="Marker3D" parent="Skeleton3D/Hips"]
 transform = Transform3D(-4.37114e-08, 0.999938, 0.0111524, 0, -0.0111524, 0.999938, 1, 4.37087e-08, 4.87486e-10, -0.00356396, 0.228025, 0.225808)
 
 [node name="RightLeg" type="BoneAttachment3D" parent="Skeleton3D"]
-transform = Transform3D(0.999342, 0.0359959, -0.00440763, 0.0361934, -0.997601, 0.0590151, -0.00227275, -0.0591358, -0.998247, 0, -0.19595, 0.0819109)
+transform = Transform3D(0.999344, 0.0359959, -0.00440764, 0.0361935, -0.997601, 0.0590154, -0.00227275, -0.0591359, -0.998251, 0, -0.19595, 0.0819109)
 bone_name = "Right Leg"
 bone_idx = 15
 
-[node name="Hitbox" parent="Skeleton3D/RightLeg" instance=ExtResource("1_2yv3f")]
+[node name="Hitbox" parent="Skeleton3D/RightLeg" node_paths=PackedStringArray("owning") instance=ExtResource("1_2yv3f")]
 transform = Transform3D(-4.51691e-08, 3.72529e-09, -1, 4.27826e-09, 1, 7.45058e-09, 1, -1.57161e-09, -4.33065e-08, -0.000305175, 0.157531, 0)
+collision_layer = 2
+owning = NodePath("../../..")
+area = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Skeleton3D/RightLeg/Hitbox"]
+shape = SubResource("CapsuleShape3D_pce37")
 
 [node name="LeftLeg" type="BoneAttachment3D" parent="Skeleton3D"]
-transform = Transform3D(0.999352, 0.0359959, -0.000147829, 0.0359241, -0.997601, -0.0591795, -0.00227769, 0.0591358, -0.998247, 0, -0.19595, -0.0819091)
+transform = Transform3D(0.999353, 0.035996, -0.000147826, 0.0359242, -0.997601, -0.0591798, -0.0022777, 0.0591359, -0.998251, 0, -0.19595, -0.0819091)
 bone_name = "Left Leg"
 bone_idx = 12
 
-[node name="Hitbox" parent="Skeleton3D/LeftLeg" instance=ExtResource("1_2yv3f")]
+[node name="Hitbox" parent="Skeleton3D/LeftLeg" node_paths=PackedStringArray("owning") instance=ExtResource("1_2yv3f")]
 transform = Transform3D(-4.39322e-08, 0, -1, 2.77623e-09, 1, 3.72529e-09, 1, 6.38465e-10, -4.36994e-08, -0.000305175, 0.157531, 3.72529e-09)
+collision_layer = 2
+owning = NodePath("../../..")
+area = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Skeleton3D/LeftLeg/Hitbox"]
+shape = SubResource("CapsuleShape3D_pce37")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_0uupb")
