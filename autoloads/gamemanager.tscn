@@ -98,7 +98,7 @@ func _on_connect(id : int):
 	elif players.size() >= 2 and !game_running:
 		_game_loop()
 	elif !game_running:
-		UiManager.message.rpc(0)
+		UiManager.message.rpc(4)
 	else:
 		UiManager.message.rpc_id(id, 3)
 
@@ -198,7 +198,7 @@ func _game_loop():
 		
 		if players.size() < 2:
 			game_running = false
-			UiManager.message.rpc(0)
+			UiManager.message.rpc(4)
 
 
 

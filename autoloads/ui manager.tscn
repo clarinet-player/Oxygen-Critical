@@ -67,7 +67,7 @@ func exit():
 @rpc(\"authority\", \"call_remote\", \"reliable\")
 func message(message : int):
 	if message == 0:
-		$Label.show()
+		$Label.hide()
 		$Label2.hide()
 		$Label3.hide()
 		$Label4.hide()
@@ -84,6 +84,11 @@ func message(message : int):
 	elif message == 3:
 		$Label.hide()
 		$Label2.show()
+		$Label3.hide()
+		$Label4.hide()
+	elif message == 4:
+		$Label.show()
+		$Label2.hide()
 		$Label3.hide()
 		$Label4.hide()
 
